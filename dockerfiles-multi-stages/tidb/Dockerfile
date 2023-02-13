@@ -3,11 +3,15 @@
 # build requires:
 #   - docker >= vX.Y.Z
 #   - git >= vX.Y.Z
+# build steps:
+#   - git clone https://github.com/pingcap/tidb.git tidb 
+#   - rm tidb/..dockerignore # make step depended on git metadata.
+#   - docker build -t tidb -f Dockerfile ./tidb
 
 #build stage
 FROM rockylinux:9 as builder
 
-ENV GOLANG_VERSION 1.19.3
+ENV GOLANG_VERSION 1.19.5
 ENV ARCH amd64
 ENV GOLANG_DOWNLOAD_URL https://dl.google.com/go/go$GOLANG_VERSION.linux-$ARCH.tar.gz
 ENV GOPATH /go
@@ -17,9 +21,10 @@ RUN yum update -y && yum groupinstall 'Development Tools' -y \
     && curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
     && tar -C /usr/local -xzf golang.tar.gz \
     && rm golang.tar.gz
-COPY . .
+COPY . /tidb
 ARG GOPROXY
-RUN export GOPROXY=${GOPROXY} && make server
+RUN cd /tidb && GOPROXY=${GOPROXY} make server
+RUN /tidb/bin/tidb-server -V
 
 #final stage
 FROM rockylinux:9
