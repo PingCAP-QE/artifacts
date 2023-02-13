@@ -3,9 +3,10 @@
 # build requires:
 #   - docker >= vX.Y.Z
 #   - git >= vX.Y.Z
+#
 # build steps:
 #   - git clone https://github.com/pingcap/tidb.git tidb 
-#   - rm tidb/..dockerignore # make step depended on git metadata.
+#   - rm tidb/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb -f Dockerfile ./tidb
 
 #build stage
@@ -28,6 +29,10 @@ RUN /tidb/bin/tidb-server -V
 
 #final stage
 FROM rockylinux:9
+# pingcap-base
+COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+# tidb-base
+RUN dnf install -y curl && dnf clean all
 
 COPY --from=builder /tidb/bin/tidb-server /tidb-server
 
