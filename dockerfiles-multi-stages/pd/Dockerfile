@@ -1,5 +1,3 @@
-# Ref: https://github.com/pingcap/tidb/raw/master/Dockerfile
-#
 # build requires:
 #   - docker >= vX.Y.Z
 #   - git >= vX.Y.Z
