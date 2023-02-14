@@ -1,5 +1,27 @@
+# build requires:
+#   - docker >= vX.Y.Z
+#   - git >= vX.Y.Z
+#
+# build steps:
+#   - git clone https://github.com/pingcap/tiflash.git tiflash
+#   - docker build -t tiflash -f Dockerfile ./tiflash
 
+#build stage
+FROM rockylinux:9 as builder
 
+ENV GOLANG_VERSION 1.19.5
+ENV ARCH amd64
+ENV GOLANG_DOWNLOAD_URL https://dl.google.com/go/go$GOLANG_VERSION.linux-$ARCH.tar.gz
+ENV GOPATH /go
+ENV GOROOT /usr/local/go
+ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
+RUN yum update -y && yum groupinstall 'Development Tools' -y \
+    && curl -fsSL "$GOLANG_DOWNLOAD_URL" -o golang.tar.gz \
+    && tar -C /usr/local -xzf golang.tar.gz \
+    && rm golang.tar.gz
+COPY . /tiflash
+RUN cd /tiflow && TODO
+RUN /tiflow/bin/tiflash --version # TODO
 
 FROM hub.pingcap.net/tiflash/centos:7.9.2009-amd64
 
@@ -95,7 +117,14 @@ fi
 rm -rf ${TARGET}/build-release || true
 """
 
-FROM hub.pingcap.net/bases/pingcap-base:v1.1.0
+################
+
+#final stage
+FROM rockylinux:9
+# pingcap-base
+COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+
 ENV LD_LIBRARY_PATH /tiflash
-COPY tiflash /tiflash
+COPY --from=builder /tiflow/bin/tiflash /tiflash
+
 ENTRYPOINT ["/tiflash/tiflash", "server"]
