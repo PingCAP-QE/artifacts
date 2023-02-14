@@ -1,6 +1,11 @@
 Multi stages docker images building
 ===
 
+> We using [just](https://github.com/casey/just) tool to group the shell steps.
+
+**Attention**: currently they are only tested on linux/x86_64 platform.
+
+
 ## TiDB
 
 ### How to build the image from source
