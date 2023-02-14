@@ -1,6 +1,7 @@
 FROM rockylinux:8 as builder
 RUN yum groupinstall -y "Development Tools"
-RUN yum install -y git make cmake gawk llvm protobuf-compiler
+RUN yum --enablerepo=powertools install -y git make cmake gawk llvm protobuf-compiler libstdc++-static python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 WORKDIR /tikv
@@ -13,6 +14,7 @@ ENV TIKV_BUILD_GIT_TAG=${GIT_TAG}
 ENV TIKV_BUILD_GIT_BRANCH=${GIT_BRANCH}
 ADD . .
 RUN ROCKSDB_SYS_STATIC=1 make dist_release
+RUN bin/tikv-server --version
 
 FROM rockylinux:9.1
 COPY --from=busybox:1.36.0 /bin/busybox /bin/busybox
