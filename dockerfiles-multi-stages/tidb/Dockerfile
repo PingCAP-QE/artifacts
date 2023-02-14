@@ -32,7 +32,7 @@ FROM rockylinux:9
 # pingcap-base
 COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
 # tidb-base
-RUN dnf install -y curl && dnf clean all
+RUN dnf install --allowerasing -y curl && dnf clean all
 
 COPY --from=builder /tidb/bin/tidb-server /tidb-server
 
