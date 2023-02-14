@@ -2,6 +2,12 @@ msb-tikv: (_msb "tikv" "https://github.com/tikv/tikv.git")
 msb-tiflash: (_msb "tiflash" "https://github.com/pingcap/tiflash")
 
 ##### follows are OK. ########
+msb-dm: (_msb "dm" "https://github.com/pingcap/tiflow.git")
+    docker run --rm dm /dm-master -V
+    docker run --rm dm /dm-worker -V
+    docker run --rm dm /dm-syncer -V
+    docker run --rm dm /dmctl -V
+
 msb-ticdc: (_msb "ticdc" "https://github.com/pingcap/tiflow.git")
     docker run --rm ticdc /cdc version
 

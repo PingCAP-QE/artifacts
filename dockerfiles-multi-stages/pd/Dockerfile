@@ -4,7 +4,7 @@
 #
 # build steps:
 #   - git clone https://github.com/tikv/pd.git pd
-#   - docker build -t tidb -f Dockerfile ./pd
+#   - docker build -t pd -f Dockerfile ./pd
 
 #build stage
 FROM rockylinux:9 as builder
