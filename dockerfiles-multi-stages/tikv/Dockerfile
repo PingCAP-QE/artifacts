@@ -1,10 +1,7 @@
 FROM rockylinux:8 as builder
 RUN yum groupinstall -y "Development Tools"
-RUN yum install -y git make cmake gawk llvm unzip
-RUN curl -OL https://github.com/google/protobuf/releases/download/v3.3.0/protoc-3.3.0-linux-x86_64.zip \
-	&& unzip -o protoc-3.3.0-linux-x86_64.zip -d /usr/local bin/protoc \
-	&& rm -f protoc-3.3.0-linux-x86_64.zip
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y
+RUN yum install -y git make cmake gawk llvm protobuf-compiler
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 WORKDIR /tikv
 ARG GIT_FALLBACK="v6.7.0-alpha"
@@ -16,13 +13,16 @@ ENV TIKV_BUILD_GIT_TAG=${GIT_TAG}
 ENV TIKV_BUILD_GIT_BRANCH=${GIT_BRANCH}
 ADD . .
 RUN ROCKSDB_SYS_STATIC=1 make build_dist_release
-WORKDIR /tikv/bin
 
+FROM rockylinux:9.1
+COPY --from=busybox:1.36.0 /bin/busybox /bin/busybox
 
+RUN dnf install -y tzdata
+ENV TZ=/etc/localtime
+ENV TZDIR=/usr/share/zoneinfo
 
-FROM hub.pingcap.net/bases/tikv-base:v1
-COPY --from=builder tikv-server /tikv-server
-COPY --from=builder tikv-ctl /tikv-ctl
+COPY --from=builder /tikv/bin/tikv-server /tikv-server
+COPY --from=builder /tikv/bin/tikv-ctl /tikv-ctl
 ENV MALLOC_CONF="prof:true,prof_active:false"
 EXPOSE 20160
 ENTRYPOINT ["/tikv-server"]
