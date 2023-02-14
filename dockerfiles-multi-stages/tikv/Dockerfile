@@ -12,7 +12,7 @@ ENV TIKV_BUILD_GIT_HASH=${GIT_HASH}
 ENV TIKV_BUILD_GIT_TAG=${GIT_TAG}
 ENV TIKV_BUILD_GIT_BRANCH=${GIT_BRANCH}
 ADD . .
-RUN ROCKSDB_SYS_STATIC=1 make build_dist_release
+RUN ROCKSDB_SYS_STATIC=1 make dist_release
 
 FROM rockylinux:9.1
 COPY --from=busybox:1.36.0 /bin/busybox /bin/busybox
