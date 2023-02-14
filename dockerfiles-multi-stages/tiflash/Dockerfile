@@ -7,7 +7,7 @@
 
 #build stag
 
-FROM centos:7
+FROM centos:8
 
 COPY release-centos7-llvm/dockerfiles/misc /misc
 
