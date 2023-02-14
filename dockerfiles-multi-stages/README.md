@@ -46,7 +46,7 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ### How to check the server version
 
 ```bash
-docker run --rm tikv:latest -V
+docker run --rm tikv:latest --version
 ```
 
 ## PD
@@ -95,5 +95,5 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 
 You can get the information by the command:
 ```bash
-docker run --rm tiflash:latest -V
+docker run --rm --entrypoint=/tiflash/tiflash tiflash:latest version
 ```
