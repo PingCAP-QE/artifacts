@@ -23,12 +23,11 @@ ENV PATH="/opt/cmake/bin:/usr/local/bin/:${PATH}:/usr/local/go/bin:/root/.cargo/
     CXX=clang++ \
     LD=ld.lld
 
-USER root
-WORKDIR /root/
-ENV HOME /root/
 ENV TZ Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+WORKDIR /tiflash/
+ADD . .
 RUN "release-centos7-llvm/scripts/build-release.sh"
 
 ################
@@ -39,6 +38,6 @@ FROM rockylinux:9
 COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
 
 ENV LD_LIBRARY_PATH /tiflash
-COPY --from=builder /tiflow/bin/tiflash /tiflash
+COPY --from=builder /tiflash/bin/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]
