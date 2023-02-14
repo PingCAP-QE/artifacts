@@ -1,6 +1,5 @@
 # build requires:
-#   - docker >= vX.Y.Z
-#   - git >= vX.Y.Z
+#   - docker >= v20.10
 #
 # build steps:
 #   - git clone https://github.com/tikv/pd.git pd
