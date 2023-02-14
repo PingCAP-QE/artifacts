@@ -28,7 +28,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /tiflash/
 ADD . .
 RUN "release-centos7-llvm/scripts/build-release.sh"
-RUN "mkdir output && mv release-centos7-llvm/tiflash output/tiflash"
+RUN mkdir output && mv release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash  version
 
 ################
