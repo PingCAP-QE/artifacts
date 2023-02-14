@@ -39,6 +39,6 @@ FROM rockylinux:9
 COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
 
 ENV LD_LIBRARY_PATH /tiflash
-COPY --from=builder output/tiflash /tiflash
+COPY --from=builder /tiflash/output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]
