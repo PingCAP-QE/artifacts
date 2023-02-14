@@ -4,7 +4,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb.git tidb 
+#   - git clone --recurse-submodules https://github.com/pingcap/tidb.git tidb 
 #   - rm tidb/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb -f Dockerfile ./tidb
 

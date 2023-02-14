@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tiflow.git tiflow
+#   - git clone --recurse-submodules https://github.com/pingcap/tiflow.git tiflow
 #   - docker build -t dm -f Dockerfile ./tiflow
 
 #build stage

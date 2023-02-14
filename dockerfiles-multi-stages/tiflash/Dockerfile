@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tiflash.git tiflash
+#   - git clone --recurse-submodules https://github.com/pingcap/tiflash.git tiflash
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
 #build stag

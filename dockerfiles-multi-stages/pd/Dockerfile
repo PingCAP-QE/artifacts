@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/tikv/pd.git pd
+#   - git clone --recurse-submodules https://github.com/tikv/pd.git pd
 #   - docker build -t pd -f Dockerfile ./pd
 
 #build stage
