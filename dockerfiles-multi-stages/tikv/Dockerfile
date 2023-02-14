@@ -5,7 +5,7 @@ RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 WORKDIR /tikv
-ARG GIT_FALLBACK="v6.7.0-alpha"
+ARG GIT_FALLBACK="unknown git info"
 ARG GIT_HASH=${GIT_FALLBACK}
 ARG GIT_TAG=${GIT_FALLBACK}
 ARG GIT_BRANCH=${GIT_FALLBACK}

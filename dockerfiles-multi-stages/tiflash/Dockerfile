@@ -28,7 +28,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /tiflash/
 ADD . .
 RUN "release-centos7-llvm/scripts/build-release.sh"
-RUN /tiflash/bin/tiflash/tiflash  version
+RUN "mkdir output && mv release-centos7-llvm/tiflash output/tiflash"
+RUN output/tiflash/tiflash  version
 
 ################
 
@@ -38,6 +39,6 @@ FROM rockylinux:9
 COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
 
 ENV LD_LIBRARY_PATH /tiflash
-COPY --from=builder /tiflash/bin/tiflash /tiflash
+COPY --from=builder output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]
