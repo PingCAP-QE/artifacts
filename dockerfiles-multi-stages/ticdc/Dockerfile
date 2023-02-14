@@ -22,7 +22,7 @@ RUN yum update -y && yum groupinstall 'Development Tools' -y \
 COPY . /tiflow
 ARG GOPROXY
 RUN cd /tiflow && GOPROXY=${GOPROXY} make cdc
-RUN /tiflow/bin/cdc -V
+RUN /tiflow/bin/cdc version
 
 #final stage
 FROM rockylinux:9
