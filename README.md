@@ -30,6 +30,21 @@ You can get the information by the command:
 docker run --rm tidb:latest -V
 ```
 
+Example of output:
+
+```yaml
+Release Version: v6.7.0-alpha-6-g55c83585d-dirty
+Edition: Community
+Git Commit Hash: 55c83585d2b58e88ba8eaf58c47448f624022d1d
+Git Branch: master
+UTC Build Time: 2023-02-14 03:10:00
+GoVersion: go1.19.5
+Race Enabled: false
+TiKV Min Version: 6.2.0-alpha
+Check Table Before Drop: false
+Store: unistore
+```
+
 ## TiKV
 
 ### How to build the image from source
