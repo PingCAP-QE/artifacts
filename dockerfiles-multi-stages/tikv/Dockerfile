@@ -1,4 +1,4 @@
-FROM rockylinux:8 as builder
+FROM rockylinux:9 as builder
 RUN yum groupinstall -y "Development Tools"
 RUN yum --enablerepo=powertools install -y git make cmake gawk llvm protobuf-compiler libstdc++-static python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
