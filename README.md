@@ -22,6 +22,12 @@ git_url=https://github.com/pingcap/tidb.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
+System Requirement:
+- docker >= 20.10
+- 8 core CPU and 16GiB RAM
+
+Estimated Time: 0.5 hour
+
 ### How to check the server version
 
 You can get the information by the command:
@@ -62,6 +68,12 @@ git_url=https://github.com/tikv/tikv.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
+System Requirement:
+- docker >= 20.10
+- 8 core CPU and 32GiB RAM
+
+Estimated Time: 1.5 hour
+
 ### How to check the server version
 
 ```bash
@@ -84,6 +96,12 @@ git_url=https://github.com/tikv/pd.git
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
+
+System Requirement:
+- docker >= 20.10
+- 8 core CPU and 16GiB RAM
+
+Estimated Time: 0.5 hour
 
 ### How to check the server version
 
@@ -109,6 +127,12 @@ git_url=https://github.com/pingcap/tiflash.git
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
+
+System Requirement:
+- docker >= 20.10
+- 8 core CPU and 32GiB RAM
+
+Estimated Time: 6 hour
 
 ### How to check the server version
 
