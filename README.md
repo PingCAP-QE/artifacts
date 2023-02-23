@@ -23,8 +23,9 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ```
 
 ### System Requirement:
-- docker >= 20.10
-- 8 core CPU and 16GiB RAM
+- docker version: 20.10
+- CPU: 8 core or higher
+- RAM: 16GiB or higher
 
 Estimated Time: 0.5 hour
 
@@ -69,8 +70,9 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ```
 
 ### System Requirement:
-- docker >= 20.10
-- 8 core CPU and 32GiB RAM
+- docker version: 20.10
+- CPU: 8 core or higher
+- RAM: 32GiB or higher
 
 Estimated Time: 1.5 hour
 
@@ -98,8 +100,9 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ```
 
 ### System Requirement:
-- docker >= 20.10
-- 8 core CPU and 16GiB RAM
+- docker version: 20.10
+- CPU: 8 core or higher
+- RAM: 16GiB or higher
 
 Estimated Time: 0.5 hour
 
@@ -129,9 +132,10 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ```
 
 ### System Requirement:
-- docker >= 20.10
-- 8 core CPU and 32GiB RAM
-
+- docker version: 20.10
+- CPU: 8 core or higher
+- RAM: 32GiB or higher
+- 
 Estimated Time: 6 hour
 
 ### How to check the server version
