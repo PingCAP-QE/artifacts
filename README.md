@@ -70,7 +70,7 @@ docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile
 ```
 
 ### System Requirement:
-- docker version: 20.10
+- Docker version: 20.10
 - CPU: 8 core or higher
 - RAM: 32GiB or higher
 
