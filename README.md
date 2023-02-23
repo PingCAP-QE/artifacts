@@ -22,7 +22,7 @@ git_url=https://github.com/pingcap/tidb.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
-### System Requirement:
+### System Requirement
 - Docker version: 20.10
 - CPU: 8 core or higher
 - RAM: 16 GiB or higher
@@ -69,7 +69,7 @@ git_url=https://github.com/tikv/tikv.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
-### System Requirement:
+### System Requirement
 - Docker version: 20.10
 - CPU: 8 core or higher
 - RAM: 32 GiB or higher
@@ -99,7 +99,7 @@ git_url=https://github.com/tikv/pd.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
-### System Requirement:
+### System Requirement
 - Docker version: 20.10
 - CPU: 8 core or higher
 - RAM: 16 GiB or higher
@@ -131,7 +131,7 @@ git_url=https://github.com/pingcap/tiflash.git
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
 
-### System Requirement:
+### System Requirement
 - Docker version: 20.10
 - CPU: 8 core or higher
 - RAM: 32 GiB or higher
