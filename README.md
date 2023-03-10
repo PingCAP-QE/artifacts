@@ -38,6 +38,7 @@ docker run --rm tidb:latest -V
 ```
 
 Example of output:
+> The `.dockerignore` file is removed when building, so the version string may has the `-dirty` suffix.
 
 ```yaml
 Release Version: v6.7.0-alpha-6-g55c83585d-dirty
