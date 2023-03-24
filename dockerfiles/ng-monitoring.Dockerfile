@@ -1,4 +1,4 @@
-FROM hub.pingcap.net/bases/pingcap-base:v1.2.0
+FROM hub.pingcap.net/bases/pingcap-base:v1.3.0
 COPY ng-monitoring-server /ng-monitoring-server
 EXPOSE 12020
 ENTRYPOINT ["/ng-monitoring-server"]
