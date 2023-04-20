@@ -1,2 +1,2 @@
-FROM hub.pingcap.net/bases/pingcap-base:v1.3.0
+FROM hub.pingcap.net/bases/pingcap-base:v1.4.0
 COPY br /br
