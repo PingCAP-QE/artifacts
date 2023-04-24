@@ -13,6 +13,5 @@ RUN apt-get update && \
     apt-get clean
 
 # install bazel tool
-
 RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-linux-${ARCH}" \
     -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
