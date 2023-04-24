@@ -2,7 +2,7 @@ LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 
 ARG ARCH=amd64
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.19.7
+ARG GOLANG_VERSION=1.20.3
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
 ARG BAZELISK_VERSION=v1.16.0
 
