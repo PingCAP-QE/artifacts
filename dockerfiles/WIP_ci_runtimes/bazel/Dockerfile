@@ -1,3 +1,5 @@
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+
 ARG ARCH=amd64
 # renovate: datasource=docker depName=golang
 ARG GOLANG_VERSION=1.19.7
