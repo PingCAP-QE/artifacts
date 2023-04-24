@@ -1,3 +1,6 @@
+# Base image
+FROM golang:${GOLANG_VERSION}
+
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 
 ARG ARCH=amd64
@@ -5,9 +8,6 @@ ARG ARCH=amd64
 ARG GOLANG_VERSION=1.19.7
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
 ARG BAZELISK_VERSION=v1.16.0
-
-# Base image
-FROM golang:${GOLANG_VERSION}
 
 # install build essential
 RUN apt-get update && \
