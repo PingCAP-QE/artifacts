@@ -1,13 +1,13 @@
 # Base image
+# renovate: datasource=docker depName=golang
+ARG GOLANG_VERSION=1.19.7
 FROM golang:${GOLANG_VERSION}
 
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 
-ARG ARCH=amd64
-# renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.19.7
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
 ARG BAZELISK_VERSION=v1.16.0
+ARG ARCH=amd64
 
 # install build essential
 RUN apt-get update && \
