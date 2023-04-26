@@ -1,4 +1,4 @@
-FROM hub.pingcap.net/bases/tools-base:v1.3.0
+FROM hub.pingcap.net/bases/tools-base:v1.5.0
 COPY cdc /cdc
 EXPOSE 8300
 
