@@ -13,16 +13,13 @@ RUN apt-get update && \
     apt-get install -y build-essential unzip psmisc jq && \
     apt-get clean
 
-# install tools: bazelisk, yq
+##### install tools: bazelisk, yq
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
 ARG BAZELISK_VERSION=v1.17.0
+RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 # renovate: datasource=github-tags depName=mikefarah/yq
 ARG YQ_VERSION=v4.34.1
-
-RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" \
-    -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel && \
-    curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" \
-    -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq &&
+RUN curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 # install release tool
 ARG ORAS_VERSION=1.0.0
