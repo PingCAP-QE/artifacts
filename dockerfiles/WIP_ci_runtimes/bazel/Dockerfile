@@ -1,6 +1,6 @@
 # Base image
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.19.7
+ARG GOLANG_VERSION=1.20.4
 FROM golang:${GOLANG_VERSION}
 
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
