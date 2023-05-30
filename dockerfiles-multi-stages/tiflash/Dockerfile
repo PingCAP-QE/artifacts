@@ -36,7 +36,7 @@ RUN output/tiflash/tiflash  version
 #final stage
 FROM rockylinux:9
 # pingcap-base
-COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 
 ENV LD_LIBRARY_PATH /tiflash
 COPY --from=builder /tiflash/output/tiflash /tiflash

@@ -29,7 +29,7 @@ RUN /tidb/bin/tidb-server -V
 #final stage
 FROM rockylinux:9
 # pingcap-base
-COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 # tidb-base
 RUN dnf install --allowerasing -y curl && dnf clean all
 
