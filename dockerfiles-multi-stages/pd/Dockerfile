@@ -27,7 +27,7 @@ RUN /pd/bin/pd-ctl -V
 #final stage
 FROM rockylinux:9
 # pingcap-base
-COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 # pd-base
 RUN dnf install bind-utils wget -y && dnf clean all
 

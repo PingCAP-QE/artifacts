@@ -34,7 +34,7 @@ RUN /tiflow/bin/dmctl -V
 #final stage
 FROM rockylinux:9
 # pingcap-base
-COPY --from=busybox:1.34.1 /bin/busybox /bin/busybox
+COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 # tools-base
 RUN dnf install -y bind-utils wget nc && dnf clean all
 

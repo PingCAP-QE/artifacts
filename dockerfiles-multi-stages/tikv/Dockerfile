@@ -17,7 +17,7 @@ RUN ROCKSDB_SYS_STATIC=1 make dist_release
 RUN bin/tikv-server --version
 
 FROM rockylinux:9.1
-COPY --from=busybox:1.36.0 /bin/busybox /bin/busybox
+COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 
 RUN dnf install -y tzdata
 ENV TZ=/etc/localtime
