@@ -16,7 +16,7 @@ ADD . .
 RUN ROCKSDB_SYS_STATIC=1 make dist_release
 RUN bin/tikv-server --version
 
-FROM rockylinux:9.1
+FROM rockylinux:9.2
 COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 
 RUN dnf install -y tzdata
