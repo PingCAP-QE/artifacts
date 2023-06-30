@@ -1,4 +1,4 @@
-FROM rockylinux:8 as builder
+FROM rockylinux:9 as builder
 RUN yum groupinstall -y "Development Tools"
 RUN yum --enablerepo=powertools install -y git make cmake gawk llvm protobuf-compiler libstdc++-static python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
@@ -16,7 +16,7 @@ ADD . .
 RUN ROCKSDB_SYS_STATIC=1 make dist_release
 RUN bin/tikv-server --version
 
-FROM rockylinux:9.1
+FROM rockylinux:9.2
 COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 
 RUN dnf install -y tzdata
