@@ -16,8 +16,9 @@ You can simplely build it by run `just msb-tidb`, or run the same steps in bash:
 
 component=tidb
 git_url=https://github.com/pingcap/tidb.git
+branch=master # or other branch
 
-[ -e ../${component} ] || git clone --recurse-submodules ${git_url} ../${component}
+[ -e ../${component} ] || git clone ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
@@ -64,8 +65,9 @@ You can simplely build it by run `just msb-tikv`, or run the same steps in bash:
 
 component=tikv
 git_url=https://github.com/tikv/tikv.git
+branch=master # or other branch
 
-[ -e ../${component} ] || git clone --recurse-submodules ${git_url} ../${component}
+[ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
@@ -94,8 +96,9 @@ You can simplely build it by run `just msb-pd`, or run the same steps in bash:
 
 component=pd
 git_url=https://github.com/tikv/pd.git
+branch=master # or other branch
 
-[ -e ../${component} ] || git clone --recurse-submodules ${git_url} ../${component}
+[ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
@@ -126,8 +129,9 @@ You can simplely build it by run `just msb-tiflash`, or run the same steps in ba
 
 component=tiflash
 git_url=https://github.com/pingcap/tiflash.git
+branch=master # or other branch
 
-[ -e ../${component} ] || git clone --recurse-submodules ${git_url} ../${component}
+[ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
 docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
 ```
