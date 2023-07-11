@@ -8,7 +8,7 @@
 #build stage
 FROM rockylinux:9 as builder
 
-ENV GOLANG_VERSION 1.19.5
+ENV GOLANG_VERSION 1.20.5
 ENV ARCH amd64
 ENV GOLANG_DOWNLOAD_URL https://dl.google.com/go/go$GOLANG_VERSION.linux-$ARCH.tar.gz
 ENV GOPATH /go
