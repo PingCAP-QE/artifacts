@@ -8,14 +8,29 @@ ARG ARCH=amd64
 ARG OS=linux
 
 # install packages.
-RUN yum makecache -y && \
-    yum install -y epel-release centos-release-scl && \
-    yum install -y deltarpm && \
-    # Import the missing public key
-    rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7 && \
-    yum makecache -y && \
-    yum install -y wget unzip psmisc lsof jq && \
+RUN yum makecache --nogpgcheck -y && \
+    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    yum makecache --nogpgcheck -y && \
+    yum install --nogpgcheck -y \
+        # install or update libraries.
+        bind-license cyrus-sasl-lib expat glib2 gzip krb5-libs  openssl-libs systemd systemd-libs xz xz-libs zlib nss nss-sysinit nss-tools \
+        # insall tools.
+        wget unzip psmisc lsof jq \
+        # Development tools.
+        git make cmake gawk llvm protobuf-compiler libstdc++-static python3 && \
     yum clean all
+
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
+##### install golang toolchain
+# renovate: datasource=docker depName=golang
+ARG GOLANG_VERSION=1.20.6
+RUN curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.${OS}-${ARCH}.tar.gz | tar -C /usr/local -xz
+ENV PATH /usr/local/go/bin/:$PATH
+
+##### install rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain nightly
+ENV PATH /root/.cargo/bin:$PATH
 
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk

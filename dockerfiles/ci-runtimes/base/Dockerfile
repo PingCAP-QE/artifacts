@@ -14,6 +14,10 @@ RUN apt-get update && \
     apt-get install -y build-essential wget unzip psmisc lsof jq mariadb-client openjdk-${OPENJDK_VER}-jdk && \
     apt-get clean
 
+# rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain nightly
+ENV PATH /root/.cargo/bin:$PATH
+
 # java tool chains -> open-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-${OPENJDK_VER}-openjdk-${ARCH}
 ENV PATH=$PATH:$JAVA_HOME/bin
