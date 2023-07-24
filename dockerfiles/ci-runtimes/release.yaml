@@ -1,19 +1,34 @@
 dockerfiles/ci-runtimes/base:
-  repo: hub.pingcap.net/ee/ci/base    
+  repo: hub.pingcap.net/ee/ci/base
   builds:
     - name: golang v1.20.x
-      archs: [amd64, 'arm64']
+      archs: [amd64, "arm64"]
       build_args:
-        GOLANG_VERSION: "1.20.4"
+        GOLANG_VERSION: "1.20.6"
       tags:
-        - v{{ .date }}-go1.20.4
+        - v{{ .date }}-go1.20.6
         - v{{ .date }}-go1.20
     - name: golang v1.19.x
-      archs: [amd64, 'arm64']
+      archs: [amd64, "arm64"]
       build_args:
-        GOLANG_VERSION: "1.19.9"
+        GOLANG_VERSION: "1.19.11"
       tags:
-        - v{{ .date }}-go1.19.9
+        - v{{ .date }}-go1.19.11
         - v{{ .date }}-go1.19
-
-      
+dockerfiles/ci-runtimes/release-build-base:
+  repo: hub.pingcap.net/ee/ci/release-build-base
+  builds:
+    - name: golang v1.20.x
+      archs: [amd64, "arm64"]
+      build_args:
+        GOLANG_VERSION: "1.20.6"
+      tags:
+        - v{{ .date }}-go1.20.6
+        - v{{ .date }}-go1.20
+    - name: golang v1.19.x
+      archs: [amd64, "arm64"]
+      build_args:
+        GOLANG_VERSION: "1.19.11"
+      tags:
+        - v{{ .date }}-go1.19.11
+        - v{{ .date }}-go1.19

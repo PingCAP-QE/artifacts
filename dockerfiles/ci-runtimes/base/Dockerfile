@@ -42,9 +42,9 @@ RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VER
 ARG CODECOV_VERSION=v0.6.1
 # Download different codecov version based on architecture
 RUN if [ "$ARCH" = "arm64" ]; then \
-        curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/aarch64/codecov -o /usr/local/bin/codecov; \
+    curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/aarch64/codecov -o /usr/local/bin/codecov; \
     else \
-        curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/linux/codecov -o /usr/local/bin/codecov; \
+    curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/linux/codecov -o /usr/local/bin/codecov; \
     fi && \
     chmod +x /usr/local/bin/codecov
 
