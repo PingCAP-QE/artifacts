@@ -16,7 +16,7 @@ RUN yum update --nogpgcheck -y && \
     # libraries.
     bind-license cyrus-sasl-lib glib2 krb5-libs nss nss-sysinit nss-tools openssl-libs systemd systemd-libs xpat xz xz-libs zlib \
     # insall tools.
-    jq lsof gzip psmisc unzip wget \
+    jq lsof gzip psmisc unzip wget which \
     # Development tools.
     cmake gawk git libstdc++-static llvm protobuf-compiler python3 \
     && \
