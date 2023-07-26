@@ -8,18 +8,20 @@ ARG ARCH=amd64
 ARG OS=linux
 
 # install packages.
-RUN yum makecache --nogpgcheck -y && \
+RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
-    yum makecache --nogpgcheck -y && \
+    yum update --nogpgcheck -y && \
+    yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install --nogpgcheck -y \
-        # install or update libraries.
-        bind-license cyrus-sasl-lib expat glib2 gzip krb5-libs  openssl-libs systemd systemd-libs xz xz-libs zlib nss nss-sysinit nss-tools \
-        # insall tools.
-        wget unzip psmisc lsof jq \
-        # Development tools.
-        git make cmake gawk llvm protobuf-compiler libstdc++-static python3 && \
+    # libraries.
+    bind-license cyrus-sasl-lib glib2 krb5-libs nss nss-sysinit nss-tools openssl-libs systemd systemd-libs xpat xz xz-libs zlib \
+    # insall tools.
+    jq lsof gzip psmisc unzip wget \
+    # Development tools.
+    cmake gawk git libstdc++-static llvm protobuf-compiler python3 \
+    && \
     yum clean all
-
+# should run after yum.
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 ##### install golang toolchain
