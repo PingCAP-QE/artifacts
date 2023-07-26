@@ -9,7 +9,7 @@ ARG OS=linux
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install --nogpgcheck -y \
