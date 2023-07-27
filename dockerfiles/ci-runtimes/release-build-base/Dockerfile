@@ -21,8 +21,6 @@ RUN yum update --nogpgcheck -y && \
     cmake gawk git libstdc++-static llvm protobuf-compiler python3 \
     && \
     yum clean all
-# should run after yum.
-RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 ##### install golang toolchain
 # renovate: datasource=docker depName=golang
