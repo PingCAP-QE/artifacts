@@ -52,3 +52,7 @@ RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VER
     tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/ && \
     mv oras-install/oras /usr/local/bin/ && \
     rm -rf oras_${ORAS_VERSION}_*.tar.gz oras-install/
+
+# go template tool
+# renovate: datasource=docker depName=hairyhenderson/gomplate
+COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
