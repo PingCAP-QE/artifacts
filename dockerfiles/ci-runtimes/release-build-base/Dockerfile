@@ -35,9 +35,9 @@ ENV PATH /root/.cargo/bin:$PATH
 ##### install nodejs toolchain
 ARG NODE_VERSION=16
 RUN curl -sL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
-    curl -sL https://dl.yarnpkg.com/rpm/yarn.repo -o /etc/yum.repos.d/yarn.repo && \
-    yum install -y nodejs yarn && \
+    yum install -y nodejs && \
     yum clean all
+RUN npm install -g yarn
 
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
