@@ -14,6 +14,10 @@ RUN apt-get update && \
     apt-get install -y build-essential wget unzip psmisc lsof jq mariadb-client openjdk-${OPENJDK_VER}-jdk && \
     apt-get clean
 
+# rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain nightly
+ENV PATH /root/.cargo/bin:$PATH
+
 # java tool chains -> open-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-${OPENJDK_VER}-openjdk-${ARCH}
 ENV PATH=$PATH:$JAVA_HOME/bin
@@ -42,9 +46,9 @@ RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VER
 ARG CODECOV_VERSION=v0.6.1
 # Download different codecov version based on architecture
 RUN if [ "$ARCH" = "arm64" ]; then \
-        curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/aarch64/codecov -o /usr/local/bin/codecov; \
+    curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/aarch64/codecov -o /usr/local/bin/codecov; \
     else \
-        curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/linux/codecov -o /usr/local/bin/codecov; \
+    curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/linux/codecov -o /usr/local/bin/codecov; \
     fi && \
     chmod +x /usr/local/bin/codecov
 
