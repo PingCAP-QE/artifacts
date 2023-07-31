@@ -39,3 +39,10 @@ dockerfiles/ci-runtimes/release-build-base/tikv:
       archs: [amd64, arm64]
       tags:
         - v{{ .date }}
+dockerfiles/ci-runtimes/release-build-base/tiflash:
+  repo: hub.pingcap.net/ee/ci/release-build-base-tiflash
+  builds:
+    - name: base
+      archs: [amd64, arm64]
+      tags:
+        - v{{ .date }}
