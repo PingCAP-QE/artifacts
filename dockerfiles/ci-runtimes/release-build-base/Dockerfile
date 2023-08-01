@@ -9,16 +9,16 @@ ARG OS=linux
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
+    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install --nogpgcheck -y \
     # libraries.
-    bind-license cyrus-sasl-lib glib2 krb5-libs nss nss-sysinit nss-tools openssl-libs systemd systemd-libs xpat xz xz-libs zlib \
+    bind-license cyrus-sasl-lib glib2 glibc-static krb5-libs nss nss-sysinit ncurses-static nss-tools openssl-libs systemd systemd-libs xpat xz xz-libs zlib zlib-devel devtoolset-10 \
     # insall tools.
-    jq lsof gzip psmisc unzip wget which \
+    jq lsof gzip psmisc unzip wget which bzip2 \
     # Development tools.
-    cmake gawk git libstdc++-static llvm protobuf-compiler python3 \
+    cmake ninja-build gawk git libstdc++-static llvm protobuf-compiler python3 python3-devel \
     && \
     yum clean all
 
@@ -61,5 +61,17 @@ RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VER
 # go template tool
 # renovate: datasource=docker depName=hairyhenderson/gomplate
 COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
+
+# make cmake3 as default cmake
+# renovate: datasource=github-tags depName=Kitware/CMake
+ARG CMAKE_VERSION=3.22.1
+RUN if [ "$ARCH" = "arm64" ]; then \
+    filename="cmake-${CMAKE_VERSION}-${OS}-aarch64.sh"; \
+    else \
+    filename="cmake-${CMAKE_VERSION}-${OS}-x86_64.sh"; \
+    fi; \
+    wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} && \
+    sh ${filename} --prefix=/usr/local --skip-license --exclude-subdir && \
+    rm -f ${filename}
 
 

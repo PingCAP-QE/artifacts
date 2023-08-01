@@ -18,3 +18,13 @@ RUN curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/v${TIFLASH_VE
     fi && \
     popd && \
     rm -rf tiflash.tar.gz tiflash-${TIFLASH_VER}
+
+ENV PATH="/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin"
+ENV CC=clang
+ENV CXX=clang++
+ENV LD=ld.lld
+
+# LIBRARY_PATH="/usr/local/lib/aarch64-unknown-linux-gnu/:${LIBRARY_PATH}" \
+# LD_LIBRARY_PATH="/usr/local/lib/aarch64-unknown-linux-gnu/:${LD_LIBRARY_PATH}" \
+# CPLUS_INCLUDE_PATH="/usr/local/include/aarch64-unknown-linux-gnu/c++/v1/:${CPLUS_INCLUDE_PATH}" \
+# OPENSSL_ROOT_DIR="/usr/local/opt/openssl" \
