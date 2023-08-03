@@ -8,17 +8,43 @@ ARG ARCH=amd64
 ARG OS=linux
 
 # install packages.
+# ? need devscripts  debhelper ?
 RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install --nogpgcheck -y \
-    # libraries.
-    bind-license cyrus-sasl-lib glib2 glibc-static krb5-libs nss nss-sysinit ncurses-static nss-tools openssl-libs systemd systemd-libs xpat xz xz-libs zlib zlib-devel devtoolset-10 \
-    # insall tools.
-    jq lsof gzip psmisc unzip wget which bzip2 \
-    # Development tools.
-    cmake ninja-build gawk git libstdc++-static llvm protobuf-compiler python3 python3-devel \
+    bind-license \
+    bzip2 \
+    chrpath \
+    cmake \
+    cyrus-sasl-lib \
+    devtoolset-10 \
+    fakeroot \
+    gawk \
+    glib2 \
+    glibc-static \
+    gzip \
+    it \
+    jq \
+    krb5-libs \
+    libstdc++-static \
+    libtool libtool-ltdl-devel \
+    lsof \
+    ncurses-static \
+    ninja-build \
+    nss nss-sysinit nss-tools \
+    openssl-libs \
+    protobuf-compiler \
+    psmisc \
+    python3 python3-devel \
+    systemd systemd-libs \
+    unzip \
+    wget \
+    which \
+    xpat \
+    xz xz-libs \
+    zlib zlib-devel \
     && \
     yum clean all
 
@@ -37,7 +63,7 @@ ARG NODE_VERSION=16
 RUN curl -sL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
     yum install -y nodejs && \
     yum clean all
-RUN npm install -g yarn
+RUN npm install -g yarn pnpm
 
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
@@ -62,7 +88,7 @@ RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VER
 # renovate: datasource=docker depName=hairyhenderson/gomplate
 COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
 
-# make cmake3 as default cmake
+# Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
 ARG CMAKE_VERSION=3.22.1
 RUN if [ "$ARCH" = "arm64" ]; then \
@@ -73,5 +99,36 @@ RUN if [ "$ARCH" = "arm64" ]; then \
     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} && \
     sh ${filename} --prefix=/usr/local --skip-license --exclude-subdir && \
     rm -f ${filename}
+
+# Link ninja for arm64 ARCH
+RUN if [ "$ARCH" = "arm64" ]; then \
+    ln -sf /usr/bin/ninja-build /usr/bin/ninja; \
+    fi
+
+ARG TIFLASH_TAG=v7.1.1
+# LLVM
+ARG LLVM_VERSION=13.0.0
+ENV LIBRARY_PATH="/usr/local/lib/$(uname -m)-unknown-linux-gnu/:${LIBRARY_PATH:+LIBRARY_PATH:}"
+ENV LD_LIBRARY_PATH="/usr/local/lib/$(uname -m)-unknown-linux-gnu/:${LD_LIBRARY_PATH:+LD_LIBRARY_PATH:}"
+ENV CPLUS_INCLUDE_PATH="/usr/local/include/$(uname -m)-unknown-linux-gnu/c++/v1/:${CPLUS_INCLUDE_PATH:+CPLUS_INCLUDE_PATH:}"
+RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-centos7-llvm/dockerfiles/misc/bootstrap_llvm.sh -o install_llvm.sh && \
+    source ./install_llvm.sh && \
+    bootstrap_llvm ${LLVM_VERSION}
+
+# OpenSSL
+ARG OPENSSL_TAG=1_1_1t
+RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-centos7-llvm/dockerfiles/misc/install_openssl.sh -o install_openssl.sh && \
+    source ./install_openssl.sh && install_openssl ${OPENSSL_TAG}
+ENV OPENSSL_ROOT_DIR="/usr/local/opt/openssl"
+
+ENV CC=clang
+ENV CXX=clang++
+ENV LD=ld.lld
+
+# CCache
+ARG CCACHE_VERSION=4.5.1
+RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-centos7-llvm/dockerfiles/misc/install_ccache.sh -o install_ccache.sh && \
+    source ./install_ccache.sh && \
+    install_ccache ${CCACHE_VERSION}
 
 
