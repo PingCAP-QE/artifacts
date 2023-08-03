@@ -69,8 +69,7 @@ ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 # install nodejs toolchain
 ARG NODE_VERSION=16
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
-    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
     apt update && \
-    apt-get install -y nodejs yarn && \
-    apt-get clean
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    npm install -g yarn pnpm
