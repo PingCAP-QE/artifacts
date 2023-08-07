@@ -1,0 +1,410 @@
+components:
+  pd:
+    desc: pd server component tarball
+    git:
+      url: https://github.com/tikv/pd.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/tikv/pd/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "pd-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/pd-server] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/pd-ctl, bin/pd-recover] # output files.
+            flatten: true
+  tikv:
+    desc: tikv components tarball
+    git:
+      url: https://github.com/tikv/tikv.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/tikv/tikv/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tikv-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tikv-server] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tikv-ctl] # output files.
+            flatten: true
+  tiflow:
+    desc: tiflow components tarball
+    git:
+      url: https://github.com/pingcap/tiflow.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tiflow/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/cdc] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "dm-master-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-master
+                src: bin/dm-master
+              - name: conf/dm_worker.rules.yml
+                src: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: scripts/DM-Professional.json
+                src: metrics/grafana/DM-Professional.json
+              - name: scripts/DM-Monitor-Standard.json
+                src: metrics/grafana/DM-Monitor-Standard.json
+          - name: "dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-worker
+                src: bin/dm-worker
+              - name: conf/dm_worker.rules.yml
+                src: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: scripts/DM-Professional.json
+                src: metrics/grafana/DM-Professional.json
+              - name: scripts/DM-Monitor-Standard.json
+                src: metrics/grafana/DM-Monitor-Standard.json
+          - name: "dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dmctl
+                src: bin/dmctl
+              - name: conf/dm_worker.rules.yml
+                src: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: scripts/DM-Professional.json
+                src: metrics/grafana/DM-Professional.json
+              - name: scripts/DM-Monitor-Standard.json
+                src: metrics/grafana/DM-Monitor-Standard.json
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tiflow-operator:
+    desc: tiflow operator components tarball
+    git:
+      url: https://github.com/pingcap/tiflow-operator.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tiflow-operator/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tiflow-operator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [manager] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tidb:
+    desc: tidb server component tarball
+    git:
+      url: https://github.com/pingcap/tidb.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tidb-server] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/br]
+            flatten: true
+          - name: "dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/dumpling]
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tidb-lightning-ctl]
+          - name: "tidb-lightning-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tidb-lightning]
+  tidb-tools:
+    desc: tidb tools component tarball
+    git:
+      url: https://github.com/pingcap/tidb-tools.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-tools/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tidb-tools-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/sync_diff_inspector] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tiflash:
+    desc: tiflash components tarball
+    git:
+      url: https://github.com/pingcap/tiflash.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    routers:
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tiflash/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tiflash-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - release-centos7-llvm/tiflash/libc++.so.1
+              - release-centos7-llvm/tiflash/libc++.so.1.0
+              - release-centos7-llvm/tiflash/libc++abi.so.1
+              - release-centos7-llvm/tiflash/libc++abi.so.1.0
+              - release-centos7-llvm/tiflash/libgmssl.so
+              - release-centos7-llvm/tiflash/libgmssl.so.3
+              - release-centos7-llvm/tiflash/libgmssl.so.3.0
+              - release-centos7-llvm/tiflash/libtiflash_proxy.so
+              - release-centos7-llvm/tiflash/tiflash
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tidb-ctl:
+    desc: tidb ctl component tarball
+    git:
+      url: https://github.com/pingcap/tidb-ctl.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-ctl/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tidb-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/tidb-ctl] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tidb-binlog:
+    desc: tidb binlog component tarball
+    git:
+      url: https://github.com/pingcap/tidb-binlog.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-binlog/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tidb-binlog-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz" 
+            files: [bin/pump, bin/drainer, bin/repare, bin/binlogctl]
+            flatten: true # will archive the files into the tarball file using flatten mode.
+            not_tiup: true # docker only
+          - name: "drainer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/drainer] # output files.
+          - name: "pump-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/pump] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  tidb-opreator:
+    desc: tidb opreator component tarball
+    git:
+      url: https://github.com/pingcap/tidb-opreator.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-opreator/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "tidb-opreator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:  # output files.
+              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
+            flatten: true
+          - name: "tidb-backup-manager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
+            flatten: true
+          - name: "br-federation-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  ng-monitoring:
+    desc: ng-monitoring component tarball
+    git:
+      url: https://github.com/pingcap/ng-monitoring.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/ng-monitoring/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "ng-monitoring-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: [bin/ng-monitoring-server] # output files.
+            flatten: true # will archive the files into the tarball file using flatten mode.
+  ctl:
+    desc: ctl components
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">=7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/ctl/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ .Git.ref }}-{{ .Git.sha }}
+            {{- end }}
+            - {{ .Git.ref }}
+        artifacts:
+          - name: "ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: binlogctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-binlog:{{ .Git.ref }}"
+                  path: "tidb-binlog-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: binlogctl
+              - name: cdc
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tiflow/package:{{ .Git.ref }}"
+                  path: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: cdc
+              - name: ctl
+                src:
+                  type: http
+                  url: "https://tiup-mirrors.pingcap.com/tiup-v1.8.1-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tiup
+              - name: etcdctl
+                src:
+                  type: http
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.3.10-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl
+              - name: pd-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
+                  path: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: pd-ctl
+              - name: tidb-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  path: "tidb-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-ctl
+              - name: tikv-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
+                  path: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tikv-ctl
+              - name: tidb-lightning-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  path: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
