@@ -1,0 +1,184 @@
+artifacts:
+  community:
+    desc: community offline package
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">=7.1.0"
+        os: [linux]
+        arch: [amd64, arm64]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/offline-package/community
+          tags:
+            - {{ .Release.version }}
+        artifacts:
+          - name: "tidb-community-server-{{ .Release.version }}-linux-{{ .Release.arch }}"
+            desc: community offline server package
+            files:
+              - name: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                description: tidb package.
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  path: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+              - name: tikv-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
+                  path: tikv-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: tiflash-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tiflash/package:{{ .Git.ref }}"
+                  path: tiflash-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: pd-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
+                  path: pd-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: cluster-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  type: unknown
+                  path: cluster-latest-linux-{{ .Release.arch }}.tar.gz # version: latest
+              - name: alertmanager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: alertmanager-latest-linux-{{ .Release.arch }}.tar.gz
+              - name: ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: grafana-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: grafana-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: blackbox_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: blackbox_exporter-latest-linux-{{ .Release.arch }}.tar.gz
+              - name: prometheus-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: prometheus-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: node_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: node_exporter-latest-linux-{{ .Release.arch }}.tar.gz
+              - name: tiup-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path:  tiup-linux-{{ .Release.arch }}.tar.gz
+              - name: diag-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.0.0
+                src:
+                  path: diag-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: insight-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: insight-latest-linux-{{ .Release.arch }}.tar.gz
+              - name: influxdb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: influxdb-latest-linux-{{ .Release.arch }}.tar.gz
+              - name: local_install.sh
+                src:
+                  path: local_install.sh
+              - name: playground-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: playground-latest-linux-{{ .Release.arch }}.tar.gz
+          - name: tidb-community-toolkit-{{ .Release.version }}-linux-{{ .Release.arch }}
+            desc: community offline toolkit package
+            files:
+              - name: tikv-importer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: tikv-importer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: pd-recover-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: pd-recover-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: etcdctl	# New in v6.0.0
+                src:
+                  path: etcdctl	# New in v6.0.0
+              - name: tiup-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: tiup-linux-{{ .Release.arch }}.tar.gz
+              - name: tiup-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: tiup-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: tidb-lightning-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: tidb-lightning-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: tidb-lightning-ctl
+                src:
+                  path: tidb-lightning-ctl
+              - name: dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: dm-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dm-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: dm-master-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dm-master-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: spark-{{ .Release.version }}-any-any.tar.gz
+                src:
+                  path: spark-{{ .Release.version }}-any-any.tar.gz
+              - name: tispark-{{ .Release.version }}-any-any.tar.gz
+                src:
+                  path: tispark-{{ .Release.version }}-any-any.tar.gz
+              - name: package-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: package-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: bench-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: bench-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: errdoc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: errdoc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: dba-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: dba-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: PCC-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: PCC-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: pump-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: pump-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: drainer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+                src:
+                  path: drainer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz
+              - name: binlogctl # New in v6.0.0
+                src:
+                  path: binlogctl # New in v6.0.0
+              - name: sync_diff_inspector
+                src:
+                  path: sync_diff_inspector
+              - name: reparo
+                src:
+                  path: reparo
+              - name: arbiter
+                files:
+                  - arbiter
+              - name: mydumper # New in v6.0.0
+                src:
+                  path: mydumper # New in v6.0.0
+              - name: server-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: server-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+              - name: grafana-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: grafana-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+              - name: alertmanager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: alertmanager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+              - name: prometheus-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: prometheus-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+              - name: blackbox_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: blackbox_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+              - name: node_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
+                src:
+                  path: node_exporter-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz # New in v6.2.0
