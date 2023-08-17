@@ -19,6 +19,7 @@ RUN yum update --nogpgcheck -y && \
     chrpath \
     cmake \
     cyrus-sasl-lib \
+    devtoolset-8 \
     devtoolset-10 \
     fakeroot \
     gawk \
