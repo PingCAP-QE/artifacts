@@ -1,0 +1,8 @@
+FROM hub.pingcap.net/bases/tools-base:v1.6.0
+RUN adduser nonroot
+USER nonroot
+COPY dm-worker /dm-worker
+COPY dm-master /dm-master
+COPY dmctl /dmctl
+
+EXPOSE 8291 8261 8262
