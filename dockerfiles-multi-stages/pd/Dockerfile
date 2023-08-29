@@ -29,10 +29,11 @@ FROM rockylinux:9
 # pingcap-base
 COPY --from=busybox:1.36.1 /bin/busybox /bin/busybox
 # pd-base
-RUN dnf install bind-utils wget -y && dnf clean all
+RUN dnf install bind-utils wget jq -y && dnf clean all
 
 COPY --from=builder /pd/bin/pd-server /pd-server
 COPY --from=builder /pd/bin/pd-ctl /pd-ctl
+COPY --from=builder /pd/bin/pd-recover /pd-recover
 
 EXPOSE 2379 2380
 ENTRYPOINT ["/pd-server"]
