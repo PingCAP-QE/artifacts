@@ -8,7 +8,6 @@ ARG ARCH=amd64
 ARG OS=linux
 
 # install packages.
-# ? need devscripts  debhelper ?
 RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     yum update --nogpgcheck -y && \
