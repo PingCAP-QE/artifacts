@@ -631,7 +631,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">=7.1.0"
+          constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
