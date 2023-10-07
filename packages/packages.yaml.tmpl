@@ -8,24 +8,59 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release, debug]
         artifactory:
           repo: hub.pingcap.net/tikv/pd/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make build
+          debug:
+            - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/pd-server] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+          - name: "pd-recover-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
           - name: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/pd-ctl, bin/pd-recover] # output files.
-            flatten: true
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/pd/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
   tikv:
     desc: tikv components tarball
     git:
@@ -35,24 +70,58 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release, debug]
         artifactory:
           repo: hub.pingcap.net/tikv/tikv/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: |
+                source /opt/rh/devtoolset-8/enable
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+                ROCKSDB_SYS_STATIC=1 make dist_release
+          debug:
+            - script: |
+                source /opt/rh/devtoolset-8/enable
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+                ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tikv-server] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: tikv-server
+                src:
+                  path: bin/tikv-server
           - name: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tikv-ctl] # output files.
-            flatten: true
+            files:
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/tikv/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tikv.Dockerfile
+            files: # prepare for context
+              - name: tikv-server
+                src:
+                  path: bin/tikv-server
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
   tiflow:
     desc: tiflow components tarball
     git:
@@ -62,52 +131,95 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tiflow/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
           - name: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/cdc] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: cdc
+                src:
+                  path: bin/cdc
           - name: "dm-master-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
-              - name: dm-master
-                src: bin/dm-master
-              - name: conf/dm_worker.rules.yml
-                src: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: scripts/DM-Professional.json
-                src: metrics/grafana/DM-Professional.json
-              - name: scripts/DM-Monitor-Standard.json
-                src: metrics/grafana/DM-Monitor-Standard.json
+              - name: dm-master/dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-master/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-master/scripts/DM-Monitor-Professional.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Professional.json
+              - name: dm-master/scripts/DM-Monitor-Standard.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Standard.json
           - name: "dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
-              - name: dm-worker
-                src: bin/dm-worker
-              - name: conf/dm_worker.rules.yml
-                src: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: scripts/DM-Professional.json
-                src: metrics/grafana/DM-Professional.json
-              - name: scripts/DM-Monitor-Standard.json
-                src: metrics/grafana/DM-Monitor-Standard.json
+              - name: dm-worker/dm-worker
+                src:
+                  path: bin/dm-worker
+              - name: dm-worker/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-worker/scripts/DM-Monitor-Professional.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Professional.json
+              - name: dm-worker/scripts/DM-Monitor-Standard.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Standard.json
           - name: "dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
+              - name: dmctl/dmctl
+                src:
+                  path: bin/dmctl
+              - name: dmctl/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dmctl/scripts/DM-Monitor-Professional.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Professional.json
+              - name: dmctl/scripts/DM-Monitor-Standard.json
+                src:
+                  path: metrics/grafana/DM-Monitor-Standard.json
+          - name: container image - cdc
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflow/images/cdc
+            dockerfile: config/release/dockerfiles/tiflow/cdc.Dockerfile
+            files: # context files
+              - name: cdc
+                src:
+                  path: bin/cdc
+          - name: container image - dm
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflow/images/dm
+            dockerfile: config/release/dockerfiles/tiflow/dm.Dockerfile
+            files:
+              - name: dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-worker
+                src:
+                  path: bin/dm-worker
               - name: dmctl
-                src: bin/dmctl
-              - name: conf/dm_worker.rules.yml
-                src: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: scripts/DM-Professional.json
-                src: metrics/grafana/DM-Professional.json
-              - name: scripts/DM-Monitor-Standard.json
-                src: metrics/grafana/DM-Monitor-Standard.json
-            flatten: true # will archive the files into the tarball file using flatten mode.
+                src:
+                  path: bin/dmctl
   tiflow-operator:
     desc: tiflow operator components tarball
     git:
@@ -117,21 +229,35 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tiflow-operator/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: go build -o manager
         artifacts:
           - name: "tiflow-operator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [manager] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: manager
+                src:
+                  path: manager
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflow-operator/image
+            context: . # just build under git repo folder.
+            dockerfile: Dockerfile
   tidb:
     desc: tidb server component tarball
     git:
@@ -141,30 +267,96 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release, debug]
         artifactory:
-          repo: hub.pingcap.net/pingcap/tidb/package
+          repo: hub.pingcap.net/pingcap_enterprise/tidb/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: |
+                make server build_tools build_dumpling
+          debug:
+            - script: |
+                make failpoint-enable
+
+                NEED_CLONE=NO WITH_RACE=1 make server build_tools build_dumpling # failpoint
+
+                NEED_CLONE=NO make failpoint-disable
         artifacts:
           - name: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tidb-server] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
           - name: "br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/br]
-            flatten: true
+            files:
+              - name: br
+                src:
+                  path: bin/br
           - name: "dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/dumpling]
+            files:
+              - name: dumpling
+                src:
+                  path: bin/dumpling
           - name: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tidb-lightning-ctl]
+            files:
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
           - name: "tidb-lightning-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tidb-lightning]
+            files:
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+          - name: container image - tidb server
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb.Dockerfile
+            files: # prepare for context
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+          - name: container image - br tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/br
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles//br.Dockerfile
+            files: # prepare for context
+              - name: br
+                src:
+                  path: bin/br
+          - name: container image - dumpling tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/dumpling.Dockerfile
+            files: # prepare for context
+              - name: dumpling
+                src:
+                  path: bin/dumpling
+          - name: container image - tidb-lightning
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-lightning.Dockerfile
+            files: # prepare for context
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
   tidb-tools:
     desc: tidb tools component tarball
     git:
@@ -174,21 +366,38 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tidb-tools/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make build
         artifacts:
           - name: "tidb-tools-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/sync_diff_inspector] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files:
+              - name: sync_diff_inspector
+                src:
+                  path: bin/sync_diff_inspector
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-tools/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-tools.Dockerfile
+            files:
+              - name: sync_diff_inspector
+                src:
+                  path: bin/sync_diff_inspector
   tiflash:
     desc: tiflash components tarball
     git:
@@ -197,30 +406,58 @@ components:
       sha: {{ .Git.sha | default "" }}
     routers:
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tiflash/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-release.sh
+
+                # debug it.
+                ccache -s
         artifacts:
           - name: "tiflash-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files: # output files.
-              - release-centos7-llvm/tiflash/libc++.so.1
-              - release-centos7-llvm/tiflash/libc++.so.1.0
-              - release-centos7-llvm/tiflash/libc++abi.so.1
-              - release-centos7-llvm/tiflash/libc++abi.so.1.0
-              - release-centos7-llvm/tiflash/libgmssl.so
-              - release-centos7-llvm/tiflash/libgmssl.so.3
-              - release-centos7-llvm/tiflash/libgmssl.so.3.0
-              - release-centos7-llvm/tiflash/libtiflash_proxy.so
-              - release-centos7-llvm/tiflash/tiflash
-            flatten: true # will archive the files into the tarball file using flatten mode.
+              - name: tiflash/
+                src:
+                  path: release-centos7-llvm/tiflash/
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflash/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tiflash.Dockerfile
+            files:
+              - name: tiflash/
+                src:
+                  path: release-centos7-llvm/tiflash/
   tidb-ctl:
     desc: tidb ctl component tarball
     git:
@@ -230,21 +467,29 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tidb-ctl/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: go build
         artifacts:
           - name: "tidb-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/tidb-ctl] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+            files: # output files.
+              - name: tidb-ctl
+                src:
+                  path: bin/tidb-ctl
   tidb-binlog:
     desc: tidb binlog component tarball
     git:
@@ -254,28 +499,71 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+         semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-binlog/package
+          repo: hub.pingcap.net/pingcap_enterprise/tidb-binlog/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make build
         artifacts:
-          - name: "tidb-binlog-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz" 
-            files: [bin/pump, bin/drainer, bin/repare, bin/binlogctl]
-            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "binaries-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             not_tiup: true # docker only
+            files: # output files.
+              - name: pump
+                src:
+                  path: bin/pump
+              - name: drainer
+                src:
+                  path: bin/drainer
+              - name: reparo
+                src:
+                  path: bin/reparo
+              - name: arbiter
+                src:
+                  path: bin/arbiter
+              - name: binlogctl
+                src:
+                  path: bin/binlogctl
           - name: "drainer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/drainer] # output files.
+            files:
+              - name: drainer
+                src:
+                  path: bin/drainer
           - name: "pump-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/pump] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
-  tidb-opreator:
+            files:
+              - name: pump
+                src:
+                  path: bin/pump
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-binlog/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-binlog.Dockerfile
+            files: # context files
+              - name: pump
+                src:
+                  path: bin/pump
+              - name: drainer
+                src:
+                  path: bin/drainer
+              - name: reparo
+                src:
+                  path: bin/drainer
+              - name: binlogctl
+                src:
+                  path: bin/binlogctl
+  tidb-operator:
     desc: tidb opreator component tarball
     git:
       url: https://github.com/pingcap/tidb-opreator.git
@@ -285,32 +573,54 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+         semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=1.5.0-0"
+          if: {{ semver.MatchConstraint ">=1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/tidb-opreator/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make build
         artifacts:
-          - name: "tidb-opreator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-operator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:  # output files.
-              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
-              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
-              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
-              - images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
-            flatten: true
+              - name: tidb-scheduler
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - name: tidb-discovery
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - name: tidb-controller-manager
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - name: tidb-admission-webhook
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
           - name: "tidb-backup-manager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
-              - images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
-            flatten: true
+              - name: tidb-backup-manager
+                src:
+                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
           - name: "br-federation-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
-              - images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
-            flatten: true # will archive the files into the tarball file using flatten mode.
+              - name: br-federation-manager
+                src:
+                  path: images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-opreator/image
+            context: . # build under git repo.
+            dockerfile: images/tidb-operator/Dockerfile
   ng-monitoring:
     desc: ng-monitoring component tarball
     git:
@@ -321,59 +631,76 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">7.1.0"
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
-          repo: hub.pingcap.net/pingcap/ng-monitoring/package
+          repo: hub.pingcap.net/pingcap_enterprise/ng-monitoring/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
+        steps:
+          release:
+            - script: make default
         artifacts:
-          - name: "ng-monitoring-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
-            files: [bin/ng-monitoring-server] # output files.
-            flatten: true # will archive the files into the tarball file using flatten mode.
+          - name: "ng-monitoring-ee-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+          - name: container image
+            type: image
+            dockerfile: config/release/dockerfiles/ng-monitoring/Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
   ctl:
     desc: ctl components
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">=7.1.0"
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=7.1.0-0"
+          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [release]
         artifactory:
           repo: hub.pingcap.net/pingcap/ctl/package
           tags:
             {{- if .Git.sha }}
-            - {{ .Git.ref }}-{{ .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
             {{- end }}
-            - {{ .Git.ref }}
+            - "{{ .Git.ref }}"
         artifacts:
           - name: "ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: binlogctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog:{{ .Git.ref }}"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}"
                   path: "tidb-binlog-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: cdc
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tiflow/package:{{ .Git.ref }}"
-                  path: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
+                  path: "cdc-ee-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: cdc
               - name: ctl
                 src:
                   type: http
-                  url: "https://tiup-mirrors.pingcap.com/tiup-v1.8.1-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: tiup
+                  extract_inner_path: bin/tiup-ctl
               - name: etcdctl
                 src:
                   type: http
