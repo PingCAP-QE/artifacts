@@ -46,18 +46,12 @@ profiles:
         useBuildkit: true
         concurrency: 0
     patches:
-      - op: remove
-        path: /build/artifacts/0/kaniko
-      - op: add
+      - op: move
+        from: /build/artifacts/0/kaniko
         path: /build/artifacts/0/docker
-        value:
-          dockerfile: base/Dockerfile
-      - op: add
+      - op: move
+        from: /build/artifacts/1/kaniko
         path: /build/artifacts/1/docker
-        value:
-          dockerfile: release-build-base/Dockerfile
-      - op: remove
-        path: /build/artifacts/1/kaniko
   - name: go-1.21
     patches:
       - op: replace
