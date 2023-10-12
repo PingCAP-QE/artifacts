@@ -1,4 +1,4 @@
-FROM hub.pingcap.net/bases/tools-base:v1.6.0
+FROM hub.pingcap.net/bases/tools-base:v1.7.0
 COPY pump /pump
 COPY drainer /drainer
 COPY reparo /reparo
