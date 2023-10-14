@@ -1,4 +1,4 @@
-# Ref: https://skaffold.dev/docs/builders/builder-types/kaniko/
+# Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
 # --- Go v1.21.0
 apiVersion: skaffold/v4beta6
 kind: Config
