@@ -1,0 +1,112 @@
+# Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  # use "--module" cli option to select.
+  name: pingcap-base
+build:
+  artifacts:
+    - image: hub.pingcap.net/bases/pingcap-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: pingcap-base/Dockerfile
+        cache: {}
+  tagPolicy:
+    customTemplate:
+      template: "v1.7.0-tmp"
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+    patches:
+      - op: move
+        from: /build/artifacts/0/kaniko
+        path: /build/artifacts/0/docker
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: component-bases
+build:
+  artifacts:
+    - image: hub.pingcap.net/bases/pd-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: pd-base/Dockerfile
+        cache: {}
+    - image: hub.pingcap.net/bases/tidb-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tidb-base/Dockerfile
+        cache: {}
+    - image: hub.pingcap.net/bases/tiflash-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tiflash-base/Dockerfile
+        cache: {}
+    - image: hub.pingcap.net/bases/tikv-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tikv-base/Dockerfile
+        cache: {}
+    - image: hub.pingcap.net/bases/tools-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tools-base/Dockerfile
+        cache: {}        
+  tagPolicy:
+    customTemplate:
+      template: "v1.7.0-tmp"
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+    patches:
+      - op: move
+        from: /build/artifacts/0/kaniko
+        path: /build/artifacts/0/docker
+      - op: move
+        from: /build/artifacts/1/kaniko
+        path: /build/artifacts/1/docker
+      - op: move
+        from: /build/artifacts/2/kaniko
+        path: /build/artifacts/2/docker
+      - op: move
+        from: /build/artifacts/3/kaniko
+        path: /build/artifacts/3/docker
+      - op: move
+        from: /build/artifacts/4/kaniko
+        path: /build/artifacts/4/docker
