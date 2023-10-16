@@ -110,7 +110,7 @@ artifacts:
                   url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.3.10-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl"
-      - description: "Started from v7.1.0 to latest"
+      - description: "Started from v7.1.0 until v7.5"
         semver:
           constraint: ">=7.1.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
