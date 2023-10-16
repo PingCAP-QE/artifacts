@@ -7,11 +7,114 @@ artifacts:
       tags:
         - "{{ .Release.version }}"
     routers: # match once.
-      - description: "Started from v7.1.0 to latest"
+      - description: "Started from v7.5.0 to latest"
         semver:
-          constraint: ">=7.1.0-0"
+          constraint: ">=7.5.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.MatchConstraint ">=7.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        artifacts:
+          - name: "tidb-community-server-{{ .Release.version }}-linux-{{ .Release.arch }}"
+            desc: community offline server package
+            components:
+              - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } }
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: cluster, src: { type: tiup-clone, version: latest } }
+              - { name: insight, src: { type: tiup-clone, version: latest } }
+              - { name: diag, src: { type: tiup-clone, version: latest } }
+              - { name: influxdb, src: { type: tiup-clone, version: latest } }
+              - { name: playground, src: { type: tiup-clone, version: latest } }
+              - { name: tidb, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tikv, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: pd, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tiflash, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+          - name: "tidb-community-toolkit-{{ .Release.version }}-linux-{{ .Release.arch }}"
+            desc: community offline toolkit package
+            components:
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: spark, src: { type: tiup-clone, version: latest } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: tispark, src: { type: tiup-clone, version: latest } }
+              - name: package
+                if: {{ eq .Release.arch "amd64" }}
+                src: { type: tiup-clone, version: latest }
+              - { name: bench, src: { type: tiup-clone, version: latest } }
+              - { name: errdoc, src: { type: tiup-clone, version: latest } }
+              - name: dba
+                if: {{ eq .Release.arch "amd64" }}
+                src: { type: tiup-clone, version: latest }
+              - name: PCC
+                if: {{ eq .Release.arch "amd64" }}
+                src: { type: tiup-clone, version: latest }
+              - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
+              - { name: server, src: { type: tiup-clone, version: latest } } # New in v6.2.0, it's tiup-server.
+              - { name: pd-recover, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tidb-lightning, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dumpling, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: br, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: cdc, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-master, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-worker, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dmctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: pump, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: drainer, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - name: binlogctl # New in v6.0.0
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: binlogctl
+              - name: reparo # New in v6.0.0
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: reparo
+              - name: arbiter # New in v6.0.0
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: arbiter
+              - name: tidb-lightning-ctl # New in v6.0.0
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}"
+                  path: "tidb-lightning-ctl-*-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+              - name: sync_diff_inspector # New in v6.0.0
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}"
+                  path: "tidb-tools-*-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: sync_diff_inspector
+              - name: etcdctl	# New in v6.0.0
+                src:
+                  type: http
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.3.10-linux-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: "etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl"
+      - description: "Started from v7.1.0 until v7.5"
+        semver:
+          constraint: ">=7.1.0-0 <7.5.0-0"
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          if: {{ semver.MatchConstraint ">=7.1.0-0 <7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
