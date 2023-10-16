@@ -9,9 +9,9 @@ artifacts:
     routers: # match once.
       - description: "Started from v7.5.0 to latest"
         semver:
-          constraint: ">=7.5.0"
+          constraint: ">=7.5.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          if: {{ semver.MatchConstraint ">=7.5.0" .Release.version }}
+          if: {{ semver.MatchConstraint ">=7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
@@ -112,9 +112,9 @@ artifacts:
                   extract_inner_path: "etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.1.0 until v7.5"
         semver:
-          constraint: ">=7.1.0-0"
+          constraint: ">=7.1.0-0 <7.5.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.MatchConstraint ">=7.1.0-0 <7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
