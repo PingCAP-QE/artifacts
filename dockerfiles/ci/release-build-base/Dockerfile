@@ -49,7 +49,7 @@ RUN yum update --nogpgcheck -y && \
 
 ##### install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.20.6
+ARG GOLANG_VERSION=1.21.3
 RUN curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.${OS}-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
