@@ -37,6 +37,7 @@ jobs:
           skaffold-version: 2.8.0
           command: build
           working-directory: dockerfiles/ci
+          image: base
           # internal repository: hub.pingcap.net/ee/ci
           repository: ghcr.io/pingcap-qe/ci
           profile: local-docker
