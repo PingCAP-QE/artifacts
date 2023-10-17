@@ -1,0 +1,41 @@
+name: Skaffold
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - dockerfiles/bases/**/Dockerfile
+      - dockerfiles/ci-runtimes/**/Dockerfile
+      - .github/workflows/ci.yml    
+  pull_request:
+    branches:
+      - main
+    paths:
+      - dockerfiles/bases/**/Dockerfile
+      - dockerfiles/ci-runtimes/**/Dockerfile
+      - .github/workflows/ci.yml
+  
+jobs:
+  build:
+    name: Skaffold Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Cache layers
+        uses: actions/cache@v3
+        with:
+          path: "${{ github.workspace }}/.skaffold/cache"
+          key: skaffold-${{ hashFiles('**/cache') }}
+          restore-keys: |
+            skaffold-
+
+      - name: Run Skaffold pipeline as command
+        uses: hiberbee/github-action-skaffold@latest
+        id: build-ci-base
+        with:
+          command: build
+          working-directory: dockerfiles/ci-runtimes
+          repository: ghcr.io/pingcap-qe
+          profile: local-docker
