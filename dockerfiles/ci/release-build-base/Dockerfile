@@ -76,7 +76,7 @@ RUN curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
-ARG ORAS_VERSION=1.0.0
+ARG ORAS_VERSION=v1.1.0
 RUN curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_${OS}_${ARCH}.tar.gz" && \
     mkdir -p oras-install/ && \
     tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/ && \
