@@ -6,7 +6,7 @@ on:
     paths:
       - dockerfiles/bases/**/Dockerfile
       - dockerfiles/ci-runtimes/**/Dockerfile
-      - .github/workflows/ci.yml    
+      - .github/workflows/ci.yml
   pull_request:
     branches:
       - main
@@ -14,7 +14,7 @@ on:
       - dockerfiles/bases/**/Dockerfile
       - dockerfiles/ci-runtimes/**/Dockerfile
       - .github/workflows/ci.yml
-  
+
 jobs:
   build:
     name: Skaffold Build
@@ -35,6 +35,7 @@ jobs:
         uses: hiberbee/github-action-skaffold@latest
         id: build-ci-base
         with:
+          skaffold-version: 2.8.0
           command: build
           working-directory: dockerfiles/ci-runtimes
           repository: ghcr.io/pingcap-qe
