@@ -3,12 +3,12 @@ apiVersion: skaffold/v4beta6
 kind: Config
 build:
   artifacts:
-    - image: ci/base
+    - image: base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: base/Dockerfile
         cache: {}
-    - image: ci/release-build-base
+    - image: release-build-base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: release-build-base/Dockerfile
@@ -38,9 +38,9 @@ build:
         cpu: "2"
         memory: 4Gi
 profiles:
-  - name: local-docker    
+  - name: local-docker
     build:
-      local:        
+      local:
         useDockerCLI: true
         useBuildkit: true
         concurrency: 0

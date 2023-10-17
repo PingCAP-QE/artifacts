@@ -3,43 +3,43 @@ apiVersion: skaffold/v4beta6
 kind: Config
 build:
   artifacts:
-    - image: bases/pingcap-base
+    - image: pingcap-base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: pingcap-base/Dockerfile
         cache: {}
-    - image: bases/pd-base
+    - image: pd-base
       platforms: [linux/amd64, linux/arm64]
       requires:
-        - image: bases/pingcap-base
+        - image: pingcap-base
       kaniko:
         dockerfile: pd-base/Dockerfile
         cache: {}
-    - image: bases/tidb-base
+    - image: tidb-base
       platforms: [linux/amd64, linux/arm64]
       requires:
-        - image: bases/pingcap-base
+        - image: pingcap-base
       kaniko:
         dockerfile: tidb-base/Dockerfile
         cache: {}
-    - image: bases/tiflash-base
+    - image: tiflash-base
       platforms: [linux/amd64, linux/arm64]
       requires:
-        - image: bases/pingcap-base
+        - image: pingcap-base
       kaniko:
         dockerfile: tiflash-base/Dockerfile
         cache: {}
-    - image: bases/tikv-base
+    - image: tikv-base
       platforms: [linux/amd64, linux/arm64]
       requires:
-        - image: bases/pingcap-base
+        - image: pingcap-base
       kaniko:
         dockerfile: tikv-base/Dockerfile
         cache: {}
-    - image: bases/tools-base
+    - image: tools-base
       platforms: [linux/amd64, linux/arm64]
       requires:
-        - image: bases/pingcap-base
+        - image: pingcap-base
       kaniko:
         dockerfile: tools-base/Dockerfile
         cache: {}

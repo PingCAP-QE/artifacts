@@ -5,14 +5,14 @@ on:
       - main
     paths:
       - dockerfiles/bases/**/Dockerfile
-      - dockerfiles/ci-runtimes/**/Dockerfile
+      - dockerfiles/ci/**/Dockerfile
       - .github/workflows/ci.yml
   pull_request:
     branches:
       - main
     paths:
       - dockerfiles/bases/**/Dockerfile
-      - dockerfiles/ci-runtimes/**/Dockerfile
+      - dockerfiles/ci/**/Dockerfile
       - .github/workflows/ci.yml
 
 jobs:
@@ -31,12 +31,24 @@ jobs:
           restore-keys: |
             skaffold-
 
-      - name: Run Skaffold pipeline as command
+      - name: Build CI base images
         uses: hiberbee/github-action-skaffold@latest
-        id: build-ci-base
         with:
           skaffold-version: 2.8.0
           command: build
-          working-directory: dockerfiles/ci-runtimes
-          repository: ghcr.io/pingcap-qe
+          working-directory: dockerfiles/ci
+          image: base
+          # internal repository: hub.pingcap.net/ee/ci
+          repository: ghcr.io/pingcap-qe/ci
+          profile: local-docker
+      - name: Build product base images
+        uses: hiberbee/github-action-skaffold@latest
+        if: false
+        with:
+          skaffold-version: 2.8.0
+          command: build
+          working-directory: dockerfiles/bases
+          # internal repository: hub.pingcap.net/bases
+          # dockerhub: pingcap/
+          repository: ghcr.io/pingcap-qe/bases
           profile: local-docker
