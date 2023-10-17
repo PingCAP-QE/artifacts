@@ -8,7 +8,7 @@ build:
       kaniko:
         dockerfile: base/Dockerfile
         cache: {}
-    - image: release-build-disable
+    - image: release-build-base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: release-build-base/Dockerfile
@@ -62,20 +62,10 @@ profiles:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.21.3
       - op: add
-        path: /build/artifacts/0/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.21.3
-      - op: add
         path: /build/artifacts/1/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.21.3
-      - op: add
-        path: /build/artifacts/1/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.21.3
   - name: go-1.20
     patches:
       - op: replace
@@ -87,20 +77,10 @@ profiles:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.20.10
       - op: add
-        path: /build/artifacts/0/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.20.10
-      - op: add
         path: /build/artifacts/1/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.20.10
-      - op: add
-        path: /build/artifacts/1/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.20.10
   - name: go-1.19
     patches:
       - op: replace
@@ -112,17 +92,7 @@ profiles:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.19.12
       - op: add
-        path: /build/artifacts/0/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.19.12
-      - op: add
         path: /build/artifacts/1/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.19.12
-      - op: add
-        path: /build/artifacts/1/kaniko/label
-        value:
-          # renovate: datasource=docker depName=golang
-          go-version: 1.19.12

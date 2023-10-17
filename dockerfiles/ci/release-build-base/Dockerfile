@@ -52,6 +52,7 @@ RUN yum update --nogpgcheck -y && \
 ARG GOLANG_VERSION=1.20.6
 RUN curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.${OS}-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
+LABEL go-version="${GOLANG_VERSION}"
 
 ##### install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain nightly

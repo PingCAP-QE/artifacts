@@ -3,6 +3,7 @@
 ARG GOLANG_VERSION=1.21.3
 FROM golang:${GOLANG_VERSION}
 
+LABEL go-version="${GOLANG_VERSION}"
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 
 ARG ARCH=amd64

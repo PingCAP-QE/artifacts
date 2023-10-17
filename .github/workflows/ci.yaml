@@ -24,6 +24,11 @@ jobs:
       contents: read
       packages: write
 
+    strategy:
+      matrix:
+        go-profile: [go-1.21, go-1.20, go-1.19]
+        builder-profile: [local-docker]
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -60,7 +65,7 @@ jobs:
           image: base
           # internal repository: hub.pingcap.net/ee/ci
           repository: ghcr.io/pingcap-qe/ci
-          profile: local-docker
+          profile: ${{ matrix.go-profile }},${{ matrix.builder-profile }}
       - name: Build product base images
         uses: hiberbee/github-action-skaffold@latest
         if: false
@@ -71,4 +76,4 @@ jobs:
           # internal repository: hub.pingcap.net/bases
           # dockerhub: pingcap/
           repository: ghcr.io/pingcap-qe/bases
-          profile: local-docker
+          profile: ${{ matrix.go-profile }},${{ matrix.builder-profile }}
