@@ -1,15 +1,14 @@
 # Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
-# --- Go v1.21.0
 apiVersion: skaffold/v4beta6
 kind: Config
 build:
   artifacts:
-    - image: hub.pingcap.net/ee/ci/base
+    - image: ci/base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: base/Dockerfile
         cache: {}
-    - image: hub.pingcap.net/ee/ci/release-build-base
+    - image: ci/release-build-base
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: release-build-base/Dockerfile
