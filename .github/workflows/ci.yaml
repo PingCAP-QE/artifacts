@@ -1,4 +1,4 @@
-name: Skaffold
+name: Skaffold - test
 on:
   pull_request:
     branches:
@@ -6,6 +6,10 @@ on:
     paths:
       - dockerfiles/**/Dockerfile
       - .github/workflows/ci.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
