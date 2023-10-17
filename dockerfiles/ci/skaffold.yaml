@@ -8,7 +8,7 @@ build:
       kaniko:
         dockerfile: base/Dockerfile
         cache: {}
-    - image: release-build-base
+    - image: release-build-disable
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: release-build-base/Dockerfile
