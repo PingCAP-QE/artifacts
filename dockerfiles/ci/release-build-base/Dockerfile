@@ -67,7 +67,7 @@ RUN npm install -g yarn pnpm
 
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
-ARG BAZELISK_VERSION=v1.17.0
+ARG BAZELISK_VERSION=v1.18.0
 RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
 # yq tool
