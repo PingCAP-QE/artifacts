@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 ARG ARCH=amd64
 ARG OS=linux
 # renovate: datasource=github-tags depName=pingcap/tiflash
-ARG TIFLASH_VER=7.1.1
+ARG TIFLASH_VER=v7.4.0
 
 RUN curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/v${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
     tar -zxf tiflash.tar.gz tiflash-${TIFLASH_VER}/release-centos7-llvm/dockerfiles/misc && \
