@@ -3,8 +3,8 @@ apiVersion: skaffold/v4beta6
 kind: Config
 build:
   artifacts:
-    - image: pingcap-base
-      platforms: [linux/amd64, linux/arm64]
+    - image: pingcap-base      
+      platforms: [linux/amd64, linux/arm64]      
       kaniko:
         dockerfile: pingcap-base/Dockerfile
         cache: {}
@@ -12,6 +12,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
+          alias: PINGCAP_BASE
       kaniko:
         dockerfile: pd-base/Dockerfile
         cache: {}
@@ -19,6 +20,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
+          alias: PINGCAP_BASE
       kaniko:
         dockerfile: tidb-base/Dockerfile
         cache: {}
@@ -26,6 +28,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
+          alias: PINGCAP_BASE
       kaniko:
         dockerfile: tiflash-base/Dockerfile
         cache: {}
@@ -33,6 +36,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
+          alias: PINGCAP_BASE
       kaniko:
         dockerfile: tikv-base/Dockerfile
         cache: {}
@@ -40,6 +44,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
+          alias: PINGCAP_BASE
       kaniko:
         dockerfile: tools-base/Dockerfile
         cache: {}
@@ -64,7 +69,7 @@ profiles:
     build:
       local:
         useDockerCLI: true
-        useBuildkit: true
+        useBuildkit: true        
         concurrency: 0
     patches:
       - op: move

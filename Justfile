@@ -19,7 +19,13 @@ msb-tidb: (_msb "tidb" "https://github.com/pingcap/tidb.git" "master")
 msb-pd: (_msb "pd" "https://github.com/tikv/pd.git" "master")
     docker run --rm pd -V
 
+build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")
+
 _msb component git_url git_branch:
     [ -e ../{{component}} ] || git clone --recurse-submodules {{git_url}} --branch {{git_branch}} ../{{component}}
     ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
     docker build -t {{component}} -f dockerfiles-multi-stages/{{component}}/Dockerfile ../{{component}}
+
+_docker_build_prod_base_images registry_prefix:
+    cd dockerfiles/build_product_base_images
+    skaffold build --profile local-docker --default-repo {{registry_prefix}}
