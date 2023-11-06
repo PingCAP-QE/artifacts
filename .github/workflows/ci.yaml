@@ -71,7 +71,7 @@ jobs:
           skaffold build \
             --push=false \
             --platform ${{ matrix.platform }} \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
+            --profile ${{ matrix.builder-profile }} \
             --default-repo ghcr.io/pingcap-qe/bases
 
   build-ci-bases:

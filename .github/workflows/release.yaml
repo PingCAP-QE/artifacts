@@ -22,7 +22,6 @@ jobs:
 
     strategy:
       matrix:
-        go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
 
     steps:
@@ -69,7 +68,7 @@ jobs:
         working-directory: dockerfiles/bases
         run: |
           skaffold build \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
+            --profile ${{ matrix.builder-profile }} \
             --default-repo ghcr.io/pingcap-qe/bases
 
   build-ci-bases:
