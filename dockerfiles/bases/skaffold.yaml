@@ -82,3 +82,6 @@ profiles:
       - op: move
         from: /build/artifacts/4/kaniko
         path: /build/artifacts/4/docker
+      - op: move
+        from: /build/artifacts/5/kaniko
+        path: /build/artifacts/5/docker
