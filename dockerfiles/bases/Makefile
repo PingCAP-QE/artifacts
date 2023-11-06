@@ -1,4 +1,4 @@
-Images  = $(shell gawk '/^\# hub/{printf "-t %s " , $$2}' $@/Dockerfile )
+Images = $(shell gawk '/^\# hub/{printf "-t %s " , $$2}' $@/Dockerfile )
 
 products_bases := tidb-base tikv-base pd-base tools-base tiflash-base
 pingcap-base :
