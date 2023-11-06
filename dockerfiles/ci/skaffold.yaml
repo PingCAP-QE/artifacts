@@ -163,7 +163,7 @@ build:
     - image: release-utils
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: release/utils/Dockerfile
+        dockerfile: release-utils/Dockerfile
         cache: {}
   tagPolicy:
     customTemplate:
