@@ -3,8 +3,9 @@
 ARG GOLANG_VERSION=1.21.3
 FROM golang:${GOLANG_VERSION}
 
-LABEL go-version="${GOLANG_VERSION}"
-LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL go-version "${GOLANG_VERSION}"
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "CI Base image for building/testing"
 
 ARG ARCH=amd64
 ARG OS=linux

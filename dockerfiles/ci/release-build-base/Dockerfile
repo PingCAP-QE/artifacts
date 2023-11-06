@@ -2,7 +2,8 @@
 # renovate: datasource=docker depName=centos
 FROM centos:7.9.2009
 
-LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "CD Base image for building"
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
