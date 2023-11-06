@@ -23,7 +23,7 @@ function main() {
     yq -i ".Git.ref=\"$git_ref\"" release-context.yaml
     yq -i ".Git.sha=\"$git_sha\"" release-context.yaml
 
-    gomplate --context .=release-context.yaml -f template_file --out release-packages.yaml
+    gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
 
     # filter by os and arch and release version.
     yq ".components[\"${component}\"].routers | map(select(
