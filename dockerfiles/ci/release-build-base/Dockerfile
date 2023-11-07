@@ -2,10 +2,8 @@
 # renovate: datasource=docker depName=centos
 FROM centos:7.9.2009
 
-LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
-
-ARG ARCH=amd64
-ARG OS=linux
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "CD Base image for building"
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
@@ -50,7 +48,8 @@ RUN yum update --nogpgcheck -y && \
 ##### install golang toolchain
 # renovate: datasource=docker depName=golang
 ARG GOLANG_VERSION=1.21.3
-RUN curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.${OS}-${ARCH}.tar.gz | tar -C /usr/local -xz
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
@@ -68,17 +67,20 @@ RUN npm install -g yarn pnpm
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
 ARG BAZELISK_VERSION=v1.18.0
-RUN curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
 # yq tool
 # renovate: datasource=github-tags depName=mikefarah/yq
 ARG YQ_VERSION=v4.35.2
-RUN curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
 ARG ORAS_VERSION=v1.1.0
-RUN curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
     mkdir -p oras-install/ && \
     tar -zxf oras_*_${OS}_${ARCH}.tar.gz -C oras-install/ && \
     install oras-install/oras /usr/local/bin/ && \
@@ -91,17 +93,13 @@ COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
 # Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
 ARG CMAKE_VERSION=3.22.1
-RUN if [ "$ARCH" = "arm64" ]; then \
-    filename="cmake-${CMAKE_VERSION}-${OS}-aarch64.sh"; \
-    else \
-    filename="cmake-${CMAKE_VERSION}-${OS}-x86_64.sh"; \
-    fi; \
+RUN filename="cmake-${CMAKE_VERSION}-linux-$(arch).sh"; \
     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} && \
     sh ${filename} --prefix=/usr/local --skip-license --exclude-subdir && \
     rm -f ${filename}
 
-# Link ninja for arm64 ARCH
-RUN if [ "$ARCH" = "arm64" ]; then \
+# Link ninja for arm64 arch
+RUN if [ "$(arch)" = "aarch64" ]; then \
     ln -sf /usr/bin/ninja-build /usr/bin/ninja; \
     fi
 
