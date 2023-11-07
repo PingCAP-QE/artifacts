@@ -132,7 +132,7 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.21.3
+          GOLANG_VERSION: 1.21.4
   - name: go-1.20
     patches:
       - op: replace
@@ -142,7 +142,7 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.20.10
+          GOLANG_VERSION: 1.21.4
   - name: go-1.19
     patches:
       - op: replace
@@ -152,7 +152,7 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.19.12
+          GOLANG_VERSION: 1.21.4
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
