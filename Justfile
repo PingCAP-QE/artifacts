@@ -27,5 +27,4 @@ _msb component git_url git_branch:
     docker build -t {{component}} -f dockerfiles-multi-stages/{{component}}/Dockerfile ../{{component}}
 
 _docker_build_prod_base_images registry_prefix:
-    cd dockerfiles/build_product_base_images
-    skaffold build --profile local-docker --default-repo {{registry_prefix}}
+    cd dockerfiles/bases; skaffold build --profile local-docker --default-repo {{registry_prefix}}
