@@ -107,9 +107,9 @@ artifacts:
               - name: etcdctl	# New in v6.0.0
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.3.10-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl"
+                  extract_inner_path: "etcd-v3.4.21-linux-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.1.0 until v7.5"
         semver:
           constraint: ">=7.1.0-0 <7.5.0-0"
@@ -211,9 +211,9 @@ artifacts:
               - name: etcdctl	# New in v6.0.0
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.3.10-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "etcd-v3.3.10-linux-{{ .Release.arch }}/etcdctl"
+                  extract_inner_path: "etcd-v3.4.21-linux-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
                 if: {{ eq .Release.arch "amd64" }}
                 src:
