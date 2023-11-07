@@ -98,7 +98,7 @@ jobs:
         with:
           filters: |
             ${{ matrix.module }}:
-              - 'dockerfiles/ci/${{ matrix.module }}**'
+              - 'dockerfiles/ci/${{ matrix.module }}/**'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
@@ -129,7 +129,7 @@ jobs:
             skaffold-
 
       - name: Build images
-        if: steps.changes.outputs.${{ matrix.platform }} == 'true'
+        if: steps.changes.outputs.${{ matrix.module }} == 'true'
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
@@ -193,7 +193,7 @@ jobs:
             skaffold-
 
       - name: Build images
-        if: steps.changes.outputs.${{ matrix.platform }} == 'true'
+        if: steps.changes.outputs.${{ matrix.module }} == 'true'
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
