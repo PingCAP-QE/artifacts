@@ -7,7 +7,7 @@ main() {
     release_ws="$1"
     need_build="${2:-false}" # true or false
     kaniko_executor="${3:-/kaniko/executor}"
-
+    mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
 
     # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>

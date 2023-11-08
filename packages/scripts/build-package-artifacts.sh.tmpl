@@ -5,7 +5,8 @@ set -exo pipefail
 
 function main() {
     local release_ws="$1"
-    local need_build="${2:-true}" # true or false
+    local need_build="${2:-true}" # true or false    
+    mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
 
     # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
@@ -16,7 +17,6 @@ function main() {
     fi
     # <<<<<<<<<<<<<<<< build steps <<<<<<<<<<<<<<<<
 
-    mkdir -p ${release_ws}
     ################# create tarballs ################
     {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
     # >>>>>>>>>>>>>>>> file: {{ .name }} >>>>>>>>>>>>>>>>
