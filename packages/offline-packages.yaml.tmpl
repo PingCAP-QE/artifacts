@@ -39,11 +39,9 @@ artifacts:
             desc: community offline toolkit package
             components:
               - { name: tiup, src: { type: tiup-clone, version: latest } }
-              - { name: spark, src: { type: tiup-clone, version: latest } }
               - { name: alertmanager, src: { type: tiup-clone, version: latest } } # New in v6.2.0
               - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
               - { name: node_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
-              - { name: tispark, src: { type: tiup-clone, version: latest } }
               - name: package
                 if: {{ eq .Release.arch "amd64" }}
                 src: { type: tiup-clone, version: latest }
