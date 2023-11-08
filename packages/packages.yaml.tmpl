@@ -50,7 +50,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/pd/image
-            dockerfile: dockerfiles/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -114,7 +114,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: dockerfiles/tikv.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tikv.Dockerfile
             files: # prepare for context
               - name: tikv-server
                 src:
@@ -322,7 +322,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
-            dockerfile: dockerfiles/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -331,7 +331,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/br
-            dockerfile: dockerfiles/br.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -340,7 +340,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/dumpling
-            dockerfile: dockerfiles/dumpling.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -349,7 +349,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
-            dockerfile: dockerfiles/tidb-lightning.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -393,7 +393,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb-tools/image
-            dockerfile: dockerfiles/tidb-tools.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-tools.Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -453,7 +453,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflash/image
-            dockerfile: dockerfiles/tiflash.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tiflash.Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -549,7 +549,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb-binlog/image
-            dockerfile: dockerfiles/tidb-binlog.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-binlog.Dockerfile
             files: # context files
               - name: pump
                 src:
