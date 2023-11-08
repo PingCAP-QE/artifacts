@@ -12,7 +12,7 @@ function main() {
     local profile=$5
     local git_ref=$6
     local git_sha=$7
-    local template_file="${8:-${PROJECT_ROOT_DIR}/packages.yaml.tmpl}"
+    local template_file="${8:-${PROJECT_ROOT_DIR}/packages/packages.yaml.tmpl}"
     local out_file="${9:-${RELEASE_SCRIPTS_DIR}/build-package-images.sh}"
 
     # prepare template file's context.
@@ -52,7 +52,7 @@ function main() {
     yq -i ".profile=\"$profile\"" release-package.yaml
     yq -i ".steps=.steps[.profile]" release-package.yaml
     yq -i '.artifacts = (.artifacts | map(select(.type == "image")))' release-package.yaml
-    yq -i ".artifacts[] |= (with(select(.context == null); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-package.yaml
+    yq -i ".artifacts[] |= (with(select((.context == null) and (.dockerfile | test(\"^http(s)?://\") | false)); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-package.yaml
 
     gomplate --context .=release-package.yaml -f $RELEASE_SCRIPTS_DIR/build-package-images.sh.tmpl --chmod "755" --out $out_file
     echo "Generated shell script: $out_file"

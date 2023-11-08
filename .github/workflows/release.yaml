@@ -94,7 +94,7 @@ jobs:
         with:
           filters: |
             ${{ matrix.module }}:
-              - 'dockerfiles/ci/${{ matrix.module }}**'
+              - 'dockerfiles/ci/${{ matrix.module }}/**'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
