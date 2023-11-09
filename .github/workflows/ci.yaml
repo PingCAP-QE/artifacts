@@ -4,7 +4,9 @@ on:
     branches:
       - main
     paths:
-      - dockerfiles/**/Dockerfile
+      - "**/Dockerfile"
+      - "**/*.Dockerfile"
+      - "**/skaffold.yaml"
       - .github/workflows/ci.yml
 
 concurrency:
