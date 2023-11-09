@@ -31,18 +31,18 @@ jobs:
         id: filter-product-bases
         with:
           filters: |
-            bases: dockerfiles/bases
+            bases: dockerfiles/bases/**
       - uses: dorny/paths-filter@v2
         id: filter-ci-bases
         with:
           filters: |
-            base: dockerfiles/ci/base
-            release-build-base: dockerfiles/ci/release-build-base
+            base: dockerfiles/ci/base/**
+            release-build-base: dockerfiles/ci/release-build-base/**
       - uses: dorny/paths-filter@v2
         id: filter-ci-utils
         with:
           filters: |
-            release-utils: dockerfiles/ci/release-utils
+            release-utils: dockerfiles/ci/release-utils/**
 
   build-product-bases:
     name: Skaffold release product base images
