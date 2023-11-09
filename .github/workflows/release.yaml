@@ -25,6 +25,7 @@ jobs:
       packages-ci-bases: ${{ steps.filter-ci-bases.outputs.changes }}
       packages-ci-utils: ${{ steps.filter-ci-utils.outputs.changes }}
     steps:
+      - uses: actions/checkout@v4
       # For pull requests it's not necessary to checkout the code
       - uses: dorny/paths-filter@v2
         id: filter-product-bases
@@ -36,7 +37,7 @@ jobs:
         with:
           filters: |
             base: dockerfiles/ci/base
-            release-build-base: dockerfiles/ci/release-build-base          
+            release-build-base: dockerfiles/ci/release-build-base
       - uses: dorny/paths-filter@v2
         id: filter-ci-utils
         with:
