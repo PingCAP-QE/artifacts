@@ -4,8 +4,10 @@ on:
     branches:
       - main
     paths:
-      - dockerfiles/**/Dockerfile
-      - .github/workflows/ci.yml
+      - "**/Dockerfile"
+      - "**/*.Dockerfile"
+      - "**/skaffold.yaml"
+      - .github/workflows/release.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
