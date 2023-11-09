@@ -1,4 +1,4 @@
-# hub.pingcap.net/bases/pd-base:v1.7.0
+# hub.pingcap.net/bases/pd-base:v1.7.1
 # hub.pingcap.net/bases/pd-base:v1.7
 # hub.pingcap.net/bases/pd-base:v1
 ARG PINGCAP_BASE
