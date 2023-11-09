@@ -1,4 +1,4 @@
-FROM golang:1.21.3-alpine3.18 as gomplate_builder
+FROM golang:1.21.4-alpine3.18 as gomplate_builder
 
 RUN wget https://github.com/wuhuizuo/gomplate/archive/refs/heads/feature/semver-functions.zip -O - | unzip - && cd gomplate-feature-semver-functions && go build -o /usr/bin/gomplate ./cmd/gomplate
 
