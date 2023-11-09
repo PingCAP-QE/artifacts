@@ -4,16 +4,51 @@ on:
     branches:
       - main
     paths:
-      - dockerfiles/**/Dockerfile
-      - .github/workflows/ci.yml
+      - "**/Dockerfile"
+      - "**/*.Dockerfile"
+      - "**/skaffold.yaml"
+      - .github/workflows/release.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # JOB to run change detection
+  dockerfiles-changes:
+    name: detect changes for Dockerfiles.
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      contents: read
+    outputs:
+      # Expose matched filters as job 'packages' output variable
+      packages-prod-bases: ${{ steps.filter-product-bases.outputs.changes }}
+      packages-ci-bases: ${{ steps.filter-ci-bases.outputs.changes }}
+      packages-ci-utils: ${{ steps.filter-ci-utils.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@v2
+        id: filter-product-bases
+        with:
+          filters: |
+            bases: dockerfiles/bases/**
+      - uses: dorny/paths-filter@v2
+        id: filter-ci-bases
+        with:
+          filters: |
+            base: dockerfiles/ci/base/**
+            release-build-base: dockerfiles/ci/release-build-base/**
+      - uses: dorny/paths-filter@v2
+        id: filter-ci-utils
+        with:
+          filters: |
+            release-utils: dockerfiles/ci/release-utils/**
+
   build-product-bases:
     name: Skaffold release product base images
+    needs: dockerfiles-changes
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,18 +57,12 @@ jobs:
 
     strategy:
       matrix:
+        no-use: ${{ fromJSON(needs.dockerfiles-changes.outputs.packages-prod-bases) }}
         builder-profile: [local-docker]
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            bases:
-              - 'dockerfiles/bases/**'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
@@ -64,7 +93,6 @@ jobs:
             skaffold-
 
       - name: Build images
-        if: steps.changes.outputs.bases == 'true'
         working-directory: dockerfiles/bases
         run: |
           skaffold build \
@@ -73,6 +101,7 @@ jobs:
 
   build-ci-bases:
     name: Skaffold release CI base images
+    needs: dockerfiles-changes
     runs-on: ubuntu-latest
 
     permissions:
@@ -81,20 +110,13 @@ jobs:
 
     strategy:
       matrix:
-        module: [base, release-build-base]
+        module: ${{ fromJSON(needs.dockerfiles-changes.outputs.packages-ci-bases) }}
         go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            ${{ matrix.module }}:
-              - 'dockerfiles/ci/${{ matrix.module }}**'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
@@ -125,7 +147,6 @@ jobs:
             skaffold-
 
       - name: Build images
-        if: steps.changes.outputs.${{ matrix.module }} == 'true'
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
@@ -135,6 +156,7 @@ jobs:
 
   build-ci-utils:
     name: Skaffold release CI util images
+    needs: dockerfiles-changes
     runs-on: ubuntu-latest
 
     permissions:
@@ -143,20 +165,13 @@ jobs:
 
     strategy:
       matrix:
-        module: [release-utils]
+        no-use: ${{ fromJSON(needs.dockerfiles-changes.outputs.packages-ci-utils) }}
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            ${{ matrix.module }}:
-              - 'dockerfiles/ci/${{ matrix.module }}/**'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
@@ -187,10 +202,9 @@ jobs:
             skaffold-
 
       - name: Build images
-        if: steps.changes.outputs.${{ matrix.module }} == 'true'
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
-            --module ${{ matrix.module }} \
+            --module release-utils \
             --profile ${{ matrix.builder-profile }} \
             --default-repo ghcr.io/pingcap-qe/ci

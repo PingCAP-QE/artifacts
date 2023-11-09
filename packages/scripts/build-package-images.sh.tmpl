@@ -7,7 +7,7 @@ main() {
     release_ws="$1"
     need_build="${2:-false}" # true or false
     kaniko_executor="${3:-/kaniko/executor}"
-
+    mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
 
     # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
@@ -85,7 +85,16 @@ main() {
     {{- end }}
 
     ## build and push
-    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile={{ .dockerfile }} --destination=${destination}
+    dockerfile="{{ .dockerfile }}"
+    # get dockerfile from url if the `.dockerfile` value is a http url.
+    if [ "${dockerfile#https://}" != "$dockerfile" ] || [ "${dockerfile#http://}" != "$dockerfile" ]; then
+        echo "URL starts with https:// or http://, now I will download it and save it into: '$archive_dir/Dockerfile'."
+        wget "$dockerfile" -O "$archive_dir/Dockerfile"
+        dockerfile="$archive_dir/Dockerfile"
+    fi
+    dockerfile="$(realpath $dockerfile)"
+
+    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile" --destination=${destination}
     rm -rf $archive_dir
   {{- end }}
 
