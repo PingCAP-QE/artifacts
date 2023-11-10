@@ -275,7 +275,7 @@ components:
         arch: [amd64, arm64]
         profile: [release, debug]
         artifactory:
-          repo: hub.pingcap.net/pingcap_enterprise/tidb/package
+          repo: hub.pingcap.net/pingcap/tidb/package
           tags:
             {{- if .Git.sha }}
             - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
@@ -288,10 +288,8 @@ components:
           debug:
             - script: |
                 make failpoint-enable
-
-                NEED_CLONE=NO WITH_RACE=1 make server build_tools build_dumpling # failpoint
-
-                NEED_CLONE=NO make failpoint-disable
+                WITH_RACE=1 make server build_tools build_dumpling # failpoint
+                make failpoint-disable
         artifacts:
           - name: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
@@ -507,7 +505,7 @@ components:
         arch: [amd64, arm64]
         profile: [release]
         artifactory:
-          repo: hub.pingcap.net/pingcap_enterprise/tidb-binlog/package
+          repo: hub.pingcap.net/pingcap/tidb-binlog/package
           tags:
             {{- if .Git.sha }}
             - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
@@ -636,7 +634,7 @@ components:
         arch: [amd64, arm64]
         profile: [release]
         artifactory:
-          repo: hub.pingcap.net/pingcap_enterprise/ng-monitoring/package
+          repo: hub.pingcap.net/pingcap/ng-monitoring/package
           tags:
             {{- if .Git.sha }}
             - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
@@ -646,7 +644,7 @@ components:
           release:
             - script: make default
         artifacts:
-          - name: "ng-monitoring-ee-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "ng-monitoring-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: ng-monitoring-server
                 src:
@@ -691,7 +689,7 @@ components:
                 src:
                   type: oci
                   url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
-                  path: "cdc-ee-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: cdc
               - name: ctl
