@@ -4,11 +4,12 @@ set -euxo pipefail
 RELEASE_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
 PROJECT_ROOT_DIR=$(realpath "${RELEASE_SCRIPTS_DIR}/../..")
 
-function config_driven_wip() {
+function config_driven() {
     local os=$1
     local arch=$2
     local version=$3
     local release_ws=$4
+    local edition="${5:-community}"
 
     # prepare template file's context.
     : >release-context.yaml
@@ -19,7 +20,7 @@ function config_driven_wip() {
     gomplate --context .=release-context.yaml -f "$PROJECT_ROOT_DIR/config/release/offline-packages.yaml.tmpl" --out release-offline-packages.yaml
 
     # filter by os and arch and release version.
-    yq ".artifacts.enterprise.routers | map(select(
+    yq ".artifacts.${edition}.routers | map(select(
             .semver.if
             and
             ([\"$os\"] - .os | length == 0)
@@ -87,7 +88,7 @@ function install_tiup_tool() {
 
 function main() {
     install_tiup_tool
-    config_driven_wip "$@"
+    config_driven "$@"
 }
 
 main "$@"
