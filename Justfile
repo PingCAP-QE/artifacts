@@ -5,21 +5,21 @@ msb-tiflash: (_msb "tiflash" "https://github.com/pingcap/tiflash" "master")
     docker run --rm --entrypoint=/tiflash/tiflash tiflash:latest version
 
 msb-dm: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
-    docker build -t localhost/dm:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-dm ../tiflow
+    docker build --load -t localhost/dm:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-dm ../tiflow
     docker run --rm localhost/dm:local-build /dm-master -V
     docker run --rm localhost/dm:local-build /dm-worker -V
     docker run --rm localhost/dm:local-build /dm-syncer -V
     docker run --rm localhost/dm:local-build /dmctl -V
 
 msb-ticdc: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
-    docker build -t localhost/ticdc:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-cdc ../tiflow
+    docker build --load -t localhost/ticdc:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-cdc ../tiflow
     docker run --rm localhost/ticdc:local-build /cdc version
 
 msb-tidb: (_msb "tidb" "https://github.com/pingcap/tidb.git" "master")
     docker run --rm tidb -V
 
 msb-pd: (_clone "pd" "https://github.com/tikv/pd.git" "master")
-    docker build -t localhost/pd:local-build -f dockerfiles/cd/tikv/pd/Dockerfile ../pd
+    docker build --load -t localhost/pd:local-build -f dockerfiles/cd/tikv/pd/Dockerfile ../pd
     docker run --rm localhost/pd:local-build -V
 
 build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")

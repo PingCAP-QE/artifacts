@@ -61,14 +61,6 @@ COPY --from=building-cdc /tiflow/bin/cdc /cdc
 EXPOSE 8300
 CMD ["/cdc"]
 
-COPY . /tiflow
-ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make dm-master-with-webui dm-worker dmctl dm-syncer -c /tiflow
-RUN /tiflow/bin/dm-master -V
-RUN /tiflow/bin/dm-worker -V
-RUN /tiflow/bin/dm-syncer -V
-RUN /tiflow/bin/dmctl -V
-
 ########### stage: Final image - dm
 FROM ghcr.io/pingcap-qe/bases/tools-base:v1.7.1 as final-dm
 
