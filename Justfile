@@ -20,7 +20,7 @@ msb-tidb: (_msb "tidb" "https://github.com/pingcap/tidb.git" "master")
 
 msb-pd: (_clone "pd" "https://github.com/tikv/pd.git" "master")
     docker build -t localhost/pd:local-build -f dockerfiles/cd/tikv/pd/Dockerfile ../pd
-    docker run --rm localhost/pd:local-build /cdc -V
+    docker run --rm localhost/pd:local-build -V
 
 build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")
 

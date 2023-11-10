@@ -31,7 +31,7 @@ ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make build tools -C /pd
 RUN /pd/bin/pd-server -V
 RUN /pd/bin/pd-ctl -V
-RUN /pd-recover -V
+RUN /pd/bin/pd-recover -V
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pd-base:v1.7.1
