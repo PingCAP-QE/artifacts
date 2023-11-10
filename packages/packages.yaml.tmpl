@@ -200,7 +200,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflow/images/cdc
-            dockerfile: config/release/dockerfiles/tiflow/cdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tiflow/cdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -209,7 +209,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflow/images/dm
-            dockerfile: config/release/dockerfiles/tiflow/dm.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tiflow/dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -653,7 +653,7 @@ components:
                   path: bin/ng-monitoring-server
           - name: container image
             type: image
-            dockerfile: config/release/dockerfiles/ng-monitoring/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
