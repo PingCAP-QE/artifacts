@@ -28,7 +28,7 @@ LABEL go-version="${GOLANG_VERSION}"
 FROM builder as building
 COPY . /pd
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make build tools -c /pd
+RUN GOPROXY=${GOPROXY} make build tools -C /pd
 RUN /pd/bin/pd-server -V
 RUN /pd/bin/pd-ctl -V
 RUN /pd-recover -V
@@ -36,8 +36,8 @@ RUN /pd-recover -V
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pd-base:v1.7.1
 
-COPY --from=building /pd/bin/pd-server /pd-server
-COPY --from=building /pd/bin/pd-ctl /pd-ctl
+COPY --from=building /pd/bin/pd-server  /pd-server
+COPY --from=building /pd/bin/pd-ctl     /pd-ctl
 COPY --from=building /pd/bin/pd-recover /pd-recover
 
 EXPOSE 2379 2380
