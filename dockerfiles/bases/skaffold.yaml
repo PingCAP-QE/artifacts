@@ -16,6 +16,14 @@ build:
       kaniko:
         dockerfile: pd-base/Dockerfile
         cache: {}
+    - image: ng-monitoring-base
+      platforms: [linux/amd64, linux/arm64]
+      requires:
+        - image: pingcap-base
+          alias: PINGCAP_BASE
+      kaniko:
+        dockerfile: ng-monitoring-base/Dockerfile
+        cache: {}
     - image: tidb-base
       platforms: [linux/amd64, linux/arm64]
       requires:
@@ -90,3 +98,6 @@ profiles:
       - op: move
         from: /build/artifacts/5/kaniko
         path: /build/artifacts/5/docker
+      - op: move
+        from: /build/artifacts/6/kaniko
+        path: /build/artifacts/6/docker
