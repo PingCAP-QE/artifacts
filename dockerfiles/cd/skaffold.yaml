@@ -1,0 +1,162 @@
+# Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder-go
+build:
+  artifacts:
+    - image: tidb
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: pingcap/tidb/Dockerfile
+        cache: {}
+        target: builder
+    - image: tiflow
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: pingcap/tiflow/Dockerfile
+        cache: {}
+        target: builder
+    - image: pd
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tikv/pd/Dockerfile
+        cache: {}
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "v{{ .DATE }}-{{ .SHA }}"
+      components:
+        - name: DATE
+          dateTime:
+            format: "20060102"
+            timezone: "UTC"
+        - name: SHA
+          gitCommit:
+            variant: AbbrevCommitSha
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net-ee
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+    patches:
+      - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
+      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+      - { op: move, from: /build/artifacts/2/kaniko, path: /build/artifacts/2/docker }
+  - name: go-1.21
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "v{{ .DATE }}-{{ .SHA }}-go1.21"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-21
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.21.4
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: &value-go1-21
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: &value-go1-21
+  - name: go-1.20
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "v{{ .DATE }}-{{ .SHA }}-go1.20"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-20
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.20.10
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: &value-go1-20
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: &value-go1-20
+  - name: go-1.19
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "v{{ .DATE }}-{{ .SHA }}-go1.19"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-19
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.19.12
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: &value-go1-19
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: &value-go1-19
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder-others
+build:
+  artifacts:  
+    - image: tiflash
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: pingcap/tiflash/Dockerfile
+        cache: {}
+        target: builder  
+    - image: tikv
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tikv/tikv/Dockerfile
+        cache: {}
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "v{{ .DATE }}-{{ .SHA }}"
+      components:
+        - name: DATE
+          dateTime:
+            format: "20060102"
+            timezone: "UTC"
+        - name: SHA
+          gitCommit:
+            variant: AbbrevCommitSha
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net-ee
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+    patches:
+      - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
+      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }

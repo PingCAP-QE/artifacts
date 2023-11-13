@@ -1,4 +1,4 @@
-name: ci-product-runtime-base-images
+name: Pull test for building product base images
 on:
   pull_request:
     branches:

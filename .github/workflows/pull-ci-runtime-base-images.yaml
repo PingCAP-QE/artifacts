@@ -1,4 +1,4 @@
-name: Skaffold - test
+name: Pull test for CI base images
 on:
   pull_request:
     branches:

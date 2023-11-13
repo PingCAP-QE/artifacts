@@ -11,17 +11,15 @@ FROM centos:7.9.2009 as builder
 RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install -y git make cmake gawk llvm protobuf-compiler libstdc++-static python3 && \
+    yum install -y git devtoolset-8 perl cmake3 && \
     yum clean all && \
-    ln -fs /usr/bin/python3 /usr/bin/python
+    ln -s /usr/bin/cmake3 /usr/bin/cmake
 
-# Set cmake3 as default cmake
-# renovate: datasource=github-tags depName=Kitware/CMake
-ARG CMAKE_VERSION=3.22.1
-RUN filename="cmake-${CMAKE_VERSION}-linux-$(arch).sh"; \
-    curl --proto '=https' --tlsv1.2 -sSf https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} | \
-    sh -s - --prefix=/usr/local --skip-license --exclude-subdir
+# install protoc.
+# renovate: datasource=github-release depName=protocolbuffers/protobuf
+ARG PROTOBUF_VER=v3.15.8
+RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
+    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
@@ -31,6 +29,7 @@ ENV PATH /root/.cargo/bin/:$PATH
 FROM builder as building
 COPY . /tikv
 RUN --mount=type=cache,target=/tikv/target \
+    source /opt/rh/devtoolset-8/enable && \
     ROCKSDB_SYS_STATIC=1 \
     make dist_release -C /tikv
 RUN /tikv/bin/tikv-server --version

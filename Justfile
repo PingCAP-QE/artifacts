@@ -2,8 +2,9 @@ msb-tikv: (_clone "tikv" "https://github.com/tikv/tikv.git" "master")
     docker build --load -t localhost/tikv:local-build -f dockerfiles/cd/tikv/tikv/Dockerfile ../tikv
     docker run --rm localhost/tikv:local-build --version
 
-msb-tiflash: (_msb "tiflash" "https://github.com/pingcap/tiflash" "master")
-    docker run --rm --entrypoint=/tiflash/tiflash tiflash:latest version
+msb-tiflash: (_clone "tiflash" "https://github.com/pingcap/tiflash" "master")
+    docker build --load -t localhost/tiflash:local-build -f dockerfiles/cd/pingcap/tiflash/Dockerfile ../tiflash
+    docker run --rm --entrypoint=/tiflash/tiflash localhost/tiflash:local-build version
 
 msb-dm: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/dm:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-dm ../tiflow
