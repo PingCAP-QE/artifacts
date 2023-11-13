@@ -1,5 +1,6 @@
-msb-tikv: (_msb "tikv" "https://github.com/tikv/tikv.git" "master")
-    docker run --rm tikv:latest --version
+msb-tikv: (_clone "tikv" "https://github.com/tikv/tikv.git" "master")
+    docker build --load -t localhost/tikv:local-build -f dockerfiles/cd/tikv/tikv/Dockerfile ../tikv
+    docker run --rm localhost/tikv:local-build --version
 
 msb-tiflash: (_msb "tiflash" "https://github.com/pingcap/tiflash" "master")
     docker run --rm --entrypoint=/tiflash/tiflash tiflash:latest version
