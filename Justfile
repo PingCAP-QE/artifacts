@@ -15,8 +15,9 @@ msb-ticdc: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/ticdc:local-build -f dockerfiles/cd/pingcap/tiflow/Dockerfile --target final-cdc ../tiflow
     docker run --rm localhost/ticdc:local-build /cdc version
 
-msb-tidb: (_msb "tidb" "https://github.com/pingcap/tidb.git" "master")
-    docker run --rm tidb -V
+msb-tidb: (_clone_without_submodules "tidb" "https://github.com/pingcap/tidb.git" "master")
+    docker build --load -t localhost/tidb:local-build -f dockerfiles/cd/pingcap/tidb/Dockerfile ../tidb
+    docker run --rm localhost/tidb:local-build -V
 
 msb-pd: (_clone "pd" "https://github.com/tikv/pd.git" "master")
     docker build --load -t localhost/pd:local-build -f dockerfiles/cd/tikv/pd/Dockerfile ../pd
@@ -31,6 +32,10 @@ _msb component git_url git_branch:
 
 _clone component git_url git_branch:
     [ -e ../{{component}} ] || git clone --recurse-submodules {{git_url}} --branch {{git_branch}} ../{{component}}
+    ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
+
+_clone_without_submodules component git_url git_branch:
+    [ -e ../{{component}} ] || git clone {{git_url}} --branch {{git_branch}} ../{{component}}
     ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
 
 _docker_build_prod_base_images registry_prefix:
