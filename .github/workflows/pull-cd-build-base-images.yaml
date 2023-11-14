@@ -74,7 +74,6 @@ jobs:
         working-directory: dockerfiles/cd
         run: |
           skaffold build \
-            --cache-artifacts \
             --push=false \
             --platform ${{ matrix.platform }} \
             --module ${{ matrix.module }} \
