@@ -12,7 +12,7 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_VER=v7.4.0
-RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64"); \
+RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
     curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
     tar -zxf tiflash.tar.gz "tiflash-${TIFLASH_VER#?}/release-centos7-llvm/dockerfiles/misc" && \
     pushd "tiflash-${TIFLASH_VER#?}/release-centos7-llvm/dockerfiles/misc" && \
@@ -29,8 +29,7 @@ ENV LD=ld.lld
 FROM builder as building
 
 ADD . /tiflash
-WORKDIR /tiflash/
-RUN source scl_source enable devtoolset-10; "release-centos7-llvm/scripts/build-release.sh"
+RUN /tiflash/release-centos7-llvm/scripts/build-release.sh
 RUN mkdir output && mv release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
