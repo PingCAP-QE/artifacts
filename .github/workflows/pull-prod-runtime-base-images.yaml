@@ -50,10 +50,20 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.8.0/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
+      - name: Cache layers
+        uses: actions/cache@v3
+        with:
+          path: "~/.skaffold/cache"
+          key: skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
+          restore-keys: |
+            skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
+            skaffold/${{ matrix.platform }}/prod-bases-
+
       - name: Build images
         working-directory: dockerfiles/bases
         run: |
           skaffold build \
+            --cache-artifacts \
             --push=false \
             --platform ${{ matrix.platform }} \
             --profile ${{ matrix.builder-profile }} \

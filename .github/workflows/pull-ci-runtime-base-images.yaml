@@ -55,14 +55,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold-${{ hashFiles('**/cache') }}
+          key: skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-${{ github.sha }}
           restore-keys: |
-            skaffold-
+            skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-${{ github.sha }}
+            skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-
+            skaffold/${{ matrix.platform }}/ci-base-
 
       - name: Build images
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
+            --cache-artifacts \
             --push=false \
             --platform ${{ matrix.platform }} \
             --module base \

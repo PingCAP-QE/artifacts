@@ -54,14 +54,16 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold-${{ hashFiles('**/cache') }}
+          key: skaffold/${{ matrix.platform }}/release-utils-${{ github.sha }}
           restore-keys: |
-            skaffold-
+            skaffold/${{ matrix.platform }}/release-utils-${{ github.sha }}
+            skaffold/${{ matrix.platform }}/release-utils-
 
       - name: Build images
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
+            --cache-artifacts \
             --push=false \
             --platform ${{ matrix.platform }} \
             --module release-utils \
