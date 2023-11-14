@@ -10,8 +10,6 @@ FROM centos:7.9.2009 as builder
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 
-ARG ARCH=amd64
-ARG OS=linux
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_VER=v7.4.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64"); \
@@ -30,14 +28,9 @@ ENV LD=ld.lld
 ########### stage: Buiding
 FROM builder as building
 
-# LIBRARY_PATH="/usr/local/lib/aarch64-unknown-linux-gnu/:${LIBRARY_PATH}" \
-# LD_LIBRARY_PATH="/usr/local/lib/aarch64-unknown-linux-gnu/:${LD_LIBRARY_PATH}" \
-# CPLUS_INCLUDE_PATH="/usr/local/include/aarch64-unknown-linux-gnu/c++/v1/:${CPLUS_INCLUDE_PATH}" \
-# OPENSSL_ROOT_DIR="/usr/local/opt/openssl" \
-
 ADD . /tiflash
 WORKDIR /tiflash/
-RUN "release-centos7-llvm/scripts/build-release.sh"
+RUN source scl_source enable devtoolset-10; "release-centos7-llvm/scripts/build-release.sh"
 RUN mkdir output && mv release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
