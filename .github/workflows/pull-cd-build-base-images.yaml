@@ -75,6 +75,7 @@ jobs:
         run: |
           skaffold build \
             --push=false \
+            --build-concurrency \
             --platform ${{ matrix.platform }} \
             --module ${{ matrix.module }} \
             --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
