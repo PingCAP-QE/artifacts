@@ -69,10 +69,10 @@ profiles:
           GOLANG_VERSION: 1.21.4
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
-        value: &value-go1-21
+        value: *value-go1-21
       - op: add
         path: /build/artifacts/2/kaniko/buildArgs
-        value: &value-go1-21
+        value: *value-go1-21
   - name: go-1.20
     patches:
       - op: replace
@@ -101,10 +101,10 @@ profiles:
           GOLANG_VERSION: 1.19.12
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
-        value: &value-go1-19
+        value: *value-go1-19
       - op: add
         path: /build/artifacts/2/kaniko/buildArgs
-        value: &value-go1-19
+        value: *value-go1-19
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
