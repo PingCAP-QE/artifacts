@@ -52,6 +52,7 @@ profiles:
         useDockerCLI: true
         useBuildkit: true
         concurrency: 0
+        tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
@@ -154,6 +155,7 @@ profiles:
         useDockerCLI: true
         useBuildkit: true
         concurrency: 0
+        tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }

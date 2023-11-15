@@ -79,6 +79,7 @@ profiles:
         useDockerCLI: true
         useBuildkit: true        
         concurrency: 0
+        tryImportMissing: true
     patches:
       - op: move
         from: /build/artifacts/0/kaniko
