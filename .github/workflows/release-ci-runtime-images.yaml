@@ -1,20 +1,17 @@
-name: Pull test for building product base images
+name: Publish CI base images
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
     branches:
       - main
     paths:
-      - "dockerfiles/bases/**/Dockerfile"
-      - "dockerfiles/bases/**/*.Dockerfile"
-      - "dockerfiles/bases/skaffold.yaml"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - "dockerfiles/ci/base/**/Dockerfile"
+      - "dockerfiles/ci/base/**/*.Dockerfile"
+      - "dockerfiles/ci/skaffold.yaml"
 
 jobs:
   skaffold:
-    name: build images with skaffold
+    name: publish images with skaffold
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,10 +19,16 @@ jobs:
       packages: write
 
     strategy:
+      max-parallel: 1
       matrix:
+        module: [base, release-utils]
         builder-profile: [local-docker]
-        platform: [linux/amd64, linux/arm64]
-
+        go-profile: [go-1.21, go-1.20, go-1.19]
+        exclude:
+          - module: release-utils
+            go-profile: go-1.20
+          - module: release-utils
+            go-profile: go-1.19
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -54,18 +57,18 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
+          key: skaffold/ci/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
           restore-keys: |
-            skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
-            skaffold/${{ matrix.platform }}/prod-bases-
+            skaffold/ci/${{ matrix.module }}/${{ matrix.go-profile }}-
+            skaffold/ci/${{ matrix.module }}/
+            skaffold/ci/
 
-      - name: Build images
-        working-directory: dockerfiles/bases
+      - name: Publish images
+        working-directory: dockerfiles/ci
         run: |
           skaffold build \
+            --build-concurrency 1 \
             --cache-artifacts \
-            --push=false \
-            --platform ${{ matrix.platform }} \
-            --profile ${{ matrix.builder-profile }} \
-            --default-repo ghcr.io/pingcap-qe/bases
-
+            --default-repo ghcr.io/pingcap-qe/ci \
+            --module ${{ matrix.module }} \
+            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }}

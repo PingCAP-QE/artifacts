@@ -1,11 +1,11 @@
-name: Pull test for CI utils images
+name: Pull test for CI base images
 on:
   pull_request:
     branches:
       - main
     paths:
-      - "dockerfiles/ci/release-utils/**/Dockerfile"
-      - "dockerfiles/ci/release-utils/**/*.Dockerfile"
+      - "dockerfiles/ci/base/**/Dockerfile"
+      - "dockerfiles/ci/base/**/*.Dockerfile"
       - "dockerfiles/ci/skaffold.yaml"
 
 concurrency:
@@ -22,10 +22,17 @@ jobs:
       packages: write
 
     strategy:
+      max-parallel: 1
       matrix:
-        builder-profile: [local-docker]
+        module: [base, release-utils]
         platform: [linux/amd64, linux/arm64]
-
+        builder-profile: [local-docker]
+        go-profile: [go-1.21, go-1.20, go-1.19]
+        exclude:
+          - module: release-utils
+            go-profile: go-1.20
+          - module: release-utils
+            go-profile: go-1.19
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -54,18 +61,20 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold/${{ matrix.platform }}/release-utils-${{ github.sha }}
+          key: skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
           restore-keys: |
-            skaffold/${{ matrix.platform }}/release-utils-${{ github.sha }}
-            skaffold/${{ matrix.platform }}/release-utils-
+            skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/${{ matrix.go-profile }}-
+            skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/
+            skaffold/${{ matrix.platform }}/ci/
 
       - name: Build images
         working-directory: dockerfiles/ci
         run: |
           skaffold build \
+            --build-concurrency 1 \
             --cache-artifacts \
-            --push=false \
+            --default-repo ghcr.io/pingcap-qe/ci \
+            --module ${{ matrix.module }} \
             --platform ${{ matrix.platform }} \
-            --module release-utils \
-            --profile ${{ matrix.builder-profile }} \
-            --default-repo ghcr.io/pingcap-qe/ci
+            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
+            --push=false

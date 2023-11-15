@@ -1,6 +1,7 @@
-name: Pull test for CD builder images
+name: Publish CD builder images
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
     branches:
       - main
     paths:
@@ -8,13 +9,9 @@ on:
       - "dockerfiles/cd/**/*.Dockerfile"
       - "dockerfiles/cd/skaffold.yaml"
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   skaffold:
-    name: build images with skaffold
+    name: publish images with skaffold
     runs-on: ubuntu-latest
 
     permissions:
@@ -22,13 +19,11 @@ jobs:
       packages: write
 
     strategy:
+      max-parallel: 1
       matrix:
+        module: [builder-go, builder-others]
+        go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
-        platform: [linux/amd64, linux/arm64]
-        # go-profile: [go-1.21, go-1.20, go-1.19]
-        # module: [builder-go, builder-others]
-        go-profile: [go-1.21]
-        module: [builder-go]
         exclude:
           - module: builder-others
             go-profile: go-1.20
@@ -63,19 +58,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold/${{ matrix.platform }}/cd/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
+          key: skaffold/cd/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
           restore-keys: |
-            skaffold/${{ matrix.platform }}/cd/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
-            skaffold/${{ matrix.platform }}/cd/${{ matrix.module }}/${{ matrix.go-profile }}-
-            skaffold/${{ matrix.platform }}/cd/${{ matrix.module }}/
+            skaffold/cd/${{ matrix.module }}/${{ matrix.go-profile }}-
+            skaffold/cd/${{ matrix.module }}/
 
-      - name: Build images
+      - name: Publish images
         working-directory: dockerfiles/cd
         run: |
           skaffold build \
-            --push=false \
             --build-concurrency 1 \
-            --platform ${{ matrix.platform }} \
+            --cache-artifacts \
+            --default-repo ghcr.io/pingcap-qe/cd/builders \
             --module ${{ matrix.module }} \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
-            --default-repo ghcr.io/pingcap-qe/cd/builders
+            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }}

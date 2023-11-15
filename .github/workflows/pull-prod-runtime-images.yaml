@@ -1,12 +1,12 @@
-name: Pull test for CI base images
+name: Pull test for building product base images
 on:
   pull_request:
     branches:
       - main
     paths:
-      - "dockerfiles/ci/base/**/Dockerfile"
-      - "dockerfiles/ci/base/**/*.Dockerfile"
-      - "dockerfiles/ci/skaffold.yaml"
+      - "dockerfiles/bases/**/Dockerfile"
+      - "dockerfiles/bases/**/*.Dockerfile"
+      - "dockerfiles/bases/skaffold.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,8 +22,8 @@ jobs:
       packages: write
 
     strategy:
+      max-parallel: 1
       matrix:
-        go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
 
@@ -55,19 +55,17 @@ jobs:
         uses: actions/cache@v3
         with:
           path: "~/.skaffold/cache"
-          key: skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-${{ github.sha }}
+          key: skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
           restore-keys: |
-            skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-${{ github.sha }}
-            skaffold/${{ matrix.platform }}/ci-base-${{ matrix.go-profile }}-
-            skaffold/${{ matrix.platform }}/ci-base-
+            skaffold/${{ matrix.platform }}/prod-bases-
 
       - name: Build images
-        working-directory: dockerfiles/ci
+        working-directory: dockerfiles/bases
         run: |
           skaffold build \
+            --build-concurrency 1 \
             --cache-artifacts \
-            --push=false \
+            --default-repo ghcr.io/pingcap-qe/bases \
             --platform ${{ matrix.platform }} \
-            --module base \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
-            --default-repo ghcr.io/pingcap-qe/ci
+            --profile ${{ matrix.builder-profile }} \
+            --push=false
