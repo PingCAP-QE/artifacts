@@ -23,7 +23,6 @@ function main() {
     yq -i ".Git.ref=\"$git_ref\"" release-context.yaml
     yq -i ".Git.sha=\"$git_sha\"" release-context.yaml
 
-    echo "$template_file"
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
 
     # filter by os and arch and release version.
