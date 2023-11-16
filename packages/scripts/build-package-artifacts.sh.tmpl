@@ -4,18 +4,77 @@
 set -exo pipefail
 
 function main() {
+    local release_ws="build"
+    local need_build="false" # true | false
+    local need_package="false" # true | false
+    local need_push="false" # true | false
+    parse_arguments "$@"
+
+    if $need_build; then
+        build
+    fi
+    if $need_package; then
+        archive "${release_ws}"
+    fi    
+    if $need_push; then
+        push_files "${release_ws}"
+    fi
+}
+
+function parse_arguments() {
+  while getopts ":w:abph" opt; do
+    case ${opt} in
+      w)
+        release_ws=${OPTARG}
+        ;;
+      a)
+        need_package=true
+        ;;
+      b)
+        need_build=true
+        ;;
+      p)
+        need_push=true
+        ;;        
+      h)
+        print_help
+        exit 0
+        ;;
+      \?)
+        echo "Invalid option: -$OPTARG" 1>&2
+        exit 1
+        ;;
+      :)
+        echo "Option -$OPTARG requires an argument." 1>&2
+        exit 1
+        ;;
+    esac
+  done
+  shift $((OPTIND -1))
+}
+
+function print_help() {
+  echo "Usage: ./your_script.sh [-w RELEASE_WS] [-b] [-h]"
+  echo "Options:"
+  echo "  -w RELEASE_WS   Set the release workspace path (default: /path/to/release/ws)"
+  echo "  -b              Perform a build (default: false)"
+  echo "  -a              Perform a package tarballs (default: false)"
+  echo "  -p              Perform a push (default: false)"
+  echo "  -h              Show this help message"
+}
+
+# >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
+function build() {
+    {{- range .steps }}
+    {{ .script | indent 4 }}
+    {{- end }}
+}
+
+function archive() {
     local release_ws="$1"
-    local need_build="${2:-true}" # true or false    
+    local need_build="$2" # true or false
     mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
-
-    # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
-    if $need_build; then
-{{- range .steps }}
-{{ .script | indent 8 }}
-{{- end }}
-    fi
-    # <<<<<<<<<<<<<<<< build steps <<<<<<<<<<<<<<<<
 
     ################# create tarballs ################
     {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
@@ -83,4 +142,23 @@ function main() {
     {{- end }}
 }
 
+function push_files() {
+    local release_ws="$1"
+
+    local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}-{{ .arch }}"
+    local destination="{{ .artifactory.repo  }}:$tag"    
+
+    # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
+    # Login steps:
+    #   local registry=$(echo "${destination}" | cut -d/ -f)
+    #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
+
+    pushd "$release_ws"
+        oras push --artifact-type application/gzip ${destination}
+        {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
+    popd
+}
+
+##############################################################################
+###### Call the main function with the arguments passed to the script ########
 main "$@"
