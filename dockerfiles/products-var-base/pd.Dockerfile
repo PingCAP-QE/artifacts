@@ -1,5 +1,5 @@
-ARG BASE=hub.pingcap.net/bases/pd-base:v1.7.0
-FROM $BASE
+ARG BASE_IMG=hub.pingcap.net/bases/pd-base:v1.7.0
+FROM $BASE_IMG
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
 COPY pd-recover /pd-recover

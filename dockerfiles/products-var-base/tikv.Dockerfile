@@ -1,5 +1,5 @@
-ARG BASE=hub.pingcap.net/bases/tikv-base:v1.7.0
-FROM $BASE
+ARG BASE_IMG=hub.pingcap.net/bases/tikv-base:v1.7.0
+FROM $BASE_IMG
 COPY tikv-server /tikv-server
 COPY tikv-ctl /tikv-ctl
 ENV MALLOC_CONF="prof:true,prof_active:false"
