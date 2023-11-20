@@ -80,7 +80,8 @@ function archive() {
     {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
     # >>>>>>>>>>>>>>>> file: {{ .name }} >>>>>>>>>>>>>>>>
     echo "Start composing artifact: {{ .name }} ..."
-    local archive_dir="$(mktemp -d -p $release_ws)"
+    local archive_dir="$release_ws/$(uuidgen)"
+    mkdir -p "$archive_dir"
 
     {{- $files := (.files | jq `map(select(.if != false ))`) -}}
     {{- $localFiles := ($files | jq `map(select(.src.type == "local" or .src.type == null))`) -}}
