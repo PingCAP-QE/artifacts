@@ -12,7 +12,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
         artifactory:
@@ -33,11 +33,21 @@ components:
               - name: pd-server
                 src:
                   path: bin/pd-server
+            tiup: # will publish to tiup.
+              description: >-
+                PD is the abbreviation for Placement Driver. 
+                It is used to manage and schedule the TiKV cluster.
+              entrypoint: pd-server
           - name: "pd-recover-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-recover
                 src:
                   path: bin/pd-recover
+            tiup:
+              description: >-
+                PD Recover is a disaster recovery tool of PD, used to recover 
+                the PD cluster which cannot start or provide services normally.
+              entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-recover
@@ -74,7 +84,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
         artifactory:
@@ -86,14 +96,19 @@ components:
             - "{{ .Git.ref }}"
         steps:
           release:
-            - script: |
+            - os: linux
+              script: |
                 source /opt/rh/devtoolset-8/enable
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
                 ROCKSDB_SYS_STATIC=1 make dist_release
+            - os: darwin
+              script: |
+                ROCKSDB_SYS_STATIC=1 make dist_release
           debug:
-            - script: |
+            - os: linux
+              script: |
                 source /opt/rh/devtoolset-8/enable
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
@@ -105,6 +120,10 @@ components:
               - name: tikv-server
                 src:
                   path: bin/tikv-server
+            tiup:
+              description: >-
+                Distributed transactional key-value database, originally created to complement TiDB.
+              entrypoint: tikv-server
           - name: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: tikv-ctl
@@ -168,6 +187,10 @@ components:
               - name: dm-master/scripts/DM-Monitor-Standard.json
                 src:
                   path: metrics/grafana/DM-Monitor-Standard.json
+            tiup:
+              description: >- 
+                dm-master component of Data Migration Platform.
+              entrypoint: dm-master/dm-master
           - name: "dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: dm-worker/dm-worker
@@ -182,6 +205,10 @@ components:
               - name: dm-worker/scripts/DM-Monitor-Standard.json
                 src:
                   path: metrics/grafana/DM-Monitor-Standard.json
+            tiup:
+              description: >-
+                dm-worker component of Data Migration Platform.
+              entrypoint: dm-worker/dm-worker
           - name: "dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: dmctl/dmctl
@@ -196,6 +223,10 @@ components:
               - name: dmctl/scripts/DM-Monitor-Standard.json
                 src:
                   path: metrics/grafana/DM-Monitor-Standard.json
+            tiup:
+              description: >-
+                dmctl component of Data Migration Platform.
+              entrypoint: dmctl/dmctl
           - name: container image - cdc
             type: image
             artifactory:
@@ -271,7 +302,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
         artifactory:
@@ -296,16 +327,29 @@ components:
               - name: tidb-server
                 src:
                   path: bin/tidb-server
+            tiup:
+              description: >
+                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+              entrypoint: tidb-server
           - name: "br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: br
                 src:
                   path: bin/br
+            tiup:
+              description: >-
+                TiDB/TiKV cluster backup restore tool.
+              standalone: true
+              entrypoint: br
           - name: "dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: dumpling
                 src:
                   path: bin/dumpling
+            tiup:
+              entrypoint: dumpling
+              description: >
+                Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
           - name: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-lightning-ctl
@@ -316,6 +360,11 @@ components:
               - name: tidb-lightning
                 src:
                   path: bin/tidb-lightning
+            tiup:
+              description: >-
+                TiDB Lightning is a tool used for fast full import of large amounts of data into a TiDB cluster
+              entrypoint: tidb-lightning
+              standalone: true
           - name: container image - tidb server
             type: image
             artifactory:
@@ -447,6 +496,9 @@ components:
               - name: tiflash/
                 src:
                   path: release-centos7-llvm/tiflash/
+            tiup:
+              description: The TiFlash Columnar Storage Engine
+              entrypoint: tiflash/tiflash
           - name: container image
             type: image
             artifactory:
@@ -665,7 +717,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         artifactory:
@@ -732,3 +784,6 @@ components:
                   path: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
+            tiup:
+              description: TiDB controller suite
+              entrypoint: ctl
