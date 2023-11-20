@@ -15,7 +15,7 @@ function main() {
     fi
     if $need_package; then
         archive "${release_ws}"
-    fi    
+    fi
     if $need_push; then
         push_files "${release_ws}"
     fi
@@ -35,7 +35,7 @@ function parse_arguments() {
         ;;
       p)
         need_push=true
-        ;;        
+        ;;
       h)
         print_help
         exit 0
@@ -146,8 +146,8 @@ function archive() {
 function push_files() {
     local release_ws="$1"
 
-    local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}-{{ .arch }}"
-    local destination="{{ .artifactory.repo  }}:$tag"    
+    local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
+    local destination="{{ .artifactory.repo  }}:$tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:

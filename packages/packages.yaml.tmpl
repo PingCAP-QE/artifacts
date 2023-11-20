@@ -28,27 +28,27 @@ components:
           debug:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
-          - name: "pd-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-server
                 src:
                   path: bin/pd-server
             tiup: # will publish to tiup.
               description: >-
-                PD is the abbreviation for Placement Driver. 
+                PD is the abbreviation for Placement Driver.
                 It is used to manage and schedule the TiKV cluster.
               entrypoint: pd-server
-          - name: "pd-recover-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-recover
                 src:
                   path: bin/pd-recover
             tiup:
               description: >-
-                PD Recover is a disaster recovery tool of PD, used to recover 
+                PD Recover is a disaster recovery tool of PD, used to recover
                 the PD cluster which cannot start or provide services normally.
               entrypoint: pd-recover
-          - name: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-recover
                 src:
@@ -115,7 +115,7 @@ components:
                 fi
                 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
-          - name: "tikv-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tikv-server
                 src:
@@ -124,7 +124,7 @@ components:
               description: >-
                 Distributed transactional key-value database, originally created to complement TiDB.
               entrypoint: tikv-server
-          - name: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tikv-ctl
                 src:
@@ -168,12 +168,12 @@ components:
           release:
             - script: make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
-          - name: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: cdc
                 src:
                   path: bin/cdc
-          - name: "dm-master-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: dm-master/dm-master
                 src:
@@ -188,10 +188,10 @@ components:
                 src:
                   path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
-              description: >- 
+              description: >-
                 dm-master component of Data Migration Platform.
               entrypoint: dm-master/dm-master
-          - name: "dm-worker-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "dm-worker-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: dm-worker/dm-worker
                 src:
@@ -209,7 +209,7 @@ components:
               description: >-
                 dm-worker component of Data Migration Platform.
               entrypoint: dm-worker/dm-worker
-          - name: "dmctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "dmctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: dmctl/dmctl
                 src:
@@ -278,7 +278,7 @@ components:
           release:
             - script: go build -o manager
         artifacts:
-          - name: "tiflow-operator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tiflow-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: manager
                 src:
@@ -322,7 +322,7 @@ components:
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
                 make failpoint-disable
         artifacts:
-          - name: "tidb-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-server
                 src:
@@ -331,7 +331,7 @@ components:
               description: >
                 TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
               entrypoint: tidb-server
-          - name: "br-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: br
                 src:
@@ -341,7 +341,7 @@ components:
                 TiDB/TiKV cluster backup restore tool.
               standalone: true
               entrypoint: br
-          - name: "dumpling-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: dumpling
                 src:
@@ -350,12 +350,12 @@ components:
               entrypoint: dumpling
               description: >
                 Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
-          - name: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-lightning-ctl
                 src:
                   path: bin/tidb-lightning-ctl
-          - name: "tidb-lightning-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-lightning
                 src:
@@ -431,7 +431,7 @@ components:
           release:
             - script: make build
         artifacts:
-          - name: "tidb-tools-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-tools-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: sync_diff_inspector
                 src:
@@ -491,7 +491,7 @@ components:
                 # debug it.
                 ccache -s
         artifacts:
-          - name: "tiflash-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: tiflash/
                 src:
@@ -535,7 +535,7 @@ components:
           release:
             - script: go build
         artifacts:
-          - name: "tidb-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: tidb-ctl
                 src:
@@ -567,7 +567,7 @@ components:
           release:
             - script: make build
         artifacts:
-          - name: "binaries-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             not_tiup: true # docker only
             files: # output files.
               - name: pump
@@ -585,12 +585,12 @@ components:
               - name: binlogctl
                 src:
                   path: bin/binlogctl
-          - name: "drainer-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "drainer-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: drainer
                 src:
                   path: bin/drainer
-          - name: "pump-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "pump-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pump
                 src:
@@ -640,7 +640,7 @@ components:
           release:
             - script: make build
         artifacts:
-          - name: "tidb-operator-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:  # output files.
               - name: tidb-scheduler
                 src:
@@ -654,12 +654,12 @@ components:
               - name: tidb-admission-webhook
                 src:
                   path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
-          - name: "tidb-backup-manager-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-backup-manager
                 src:
                   path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
-          - name: "br-federation-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "br-federation-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: br-federation-manager
                 src:
@@ -696,7 +696,7 @@ components:
           release:
             - script: make default
         artifacts:
-          - name: "ng-monitoring-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: ng-monitoring-server
                 src:
@@ -728,60 +728,60 @@ components:
             {{- end }}
             - "{{ .Git.ref }}"
         artifacts:
-          - name: "ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+          - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: binlogctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}"
-                  path: "tidb-binlog-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "tidb-binlog-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: cdc
                 src:
                   type: oci
                   url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
-                  path: "cdc-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: cdc
               - name: ctl
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: bin/tiup-ctl
               - name: etcdctl
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: etcd-v3.4.21-linux-{{ .Release.arch }}/etcdctl
+                  extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
               - name: pd-ctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
-                  path: "pd-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: pd-ctl
               - name: tidb-ctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-ctl
               - name: tikv-ctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
-                  path: "tikv-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tikv-ctl
               - name: tidb-lightning-ctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-lightning-ctl-{{ .Release.version }}-linux-{{ .Release.arch }}.tar.gz"
+                  path: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
             tiup:
