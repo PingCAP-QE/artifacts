@@ -111,6 +111,7 @@ components:
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
+            - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -474,7 +475,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         artifactory:
@@ -486,12 +487,21 @@ components:
             - "{{ .Git.ref }}"
         steps:
           release:
-            - script: |
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+            - os: darwin
+              script: |
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
+            - os: linux
+              script: |
                 # Create new build script to take advantage of ccache
                 mkdir -p build
                 cp -r release-centos7-llvm/scripts build/
                 sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
-            - script: |
+            - os: linux
+              script: |
                 # Build with ccache tool
                 mkdir -p /usr/lib64/ccache/bin/
                 ln -s $(which ccache) /usr/lib64/ccache/bin/clang
@@ -507,12 +517,17 @@ components:
 
                 # debug it.
                 ccache -s
+            - os: linux
+              description: 
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: tiflash/
                 src:
-                  path: release-centos7-llvm/tiflash/
+                  path: outputs/tiflash/
             tiup:
               description: The TiFlash Columnar Storage Engine
               entrypoint: tiflash/tiflash
@@ -524,7 +539,7 @@ components:
             files:
               - name: tiflash/
                 src:
-                  path: release-centos7-llvm/tiflash/
+                  path: outputs/tiflash/
   tidb-ctl:
     desc: tidb ctl component tarball
     git:
