@@ -10,25 +10,25 @@ main() {
     mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
 
-    # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
     if $need_build; then
-{{- range .steps }}
-{{ .script | indent 8 }}
-{{- end }}
+      build_binaries
     fi
-    # <<<<<<<<<<<<<<<< build steps <<<<<<<<<<<<<<<<
 
+    build_and_push_images
+}
+
+build_and_push_images() {
     ################# build and push image ################
     tag="{{ index .artifactory.tags 0 }}-{{ .profile }}-{{ .arch }}"
-{{- range (.artifacts | jq `map(select(.type == "image"))`) }}
+{{ range (.artifacts | jq `map(select(.type == "image"))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
     destination="{{ .artifactory.repo  }}:$tag"
     kaniko_executor_global_options=""
 
-  {{- if has . "context" }}
+    {{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
     $kaniko_executor $kaniko_executor_global_options --context={{ .context }} --dockerfile={{ .dockerfile }} --destination=${destination}
-  {{- else }}
+    {{- else }}
 
     # Prepare build context for image building.
     echo "Prepare build context for image: $destination ..."
@@ -83,7 +83,7 @@ main() {
     {{- end }}
     {{- end }}
     {{- end }}
-
+    
     ## build and push
     dockerfile="{{ .dockerfile }}"
     # get dockerfile from url if the `.dockerfile` value is a http url.
@@ -96,11 +96,22 @@ main() {
 
     $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile" --destination=${destination}
     rm -rf $archive_dir
-  {{- end }}
+    {{- end }}
 
     echo "Pushed image: $destination"
     # <<<<<<<<<<<<<<<< image: {{ .name }} <<<<<<<<<<<<<<<<
-{{- end }}
+{{ end }}
+    # All done.
+}
+
+# >>>>>>>>>>>>>>>> build binaries steps >>>>>>>>>>>>>>>>
+build_binaries() {
+  {{- $root := . -}}
+  {{- range .steps }}
+  {{- if or (not (has . "os")) (eq .os $root.os) }}
+{{ .script | indent 4 }}
+  {{- end }}
+  {{- end }}
 }
 
 main "$@"

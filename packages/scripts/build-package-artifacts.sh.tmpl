@@ -65,8 +65,11 @@ function print_help() {
 
 # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
 function build() {
+    {{- $root := . -}}
     {{- range .steps }}
-    {{ .script | indent 4 }}
+    {{- if or (not (has . "os")) (eq .os $root.os) }}
+{{ .script | indent 4 }}
+    {{- end }}
     {{- end }}
 }
 

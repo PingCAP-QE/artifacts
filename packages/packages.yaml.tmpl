@@ -102,9 +102,7 @@ components:
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
-                ROCKSDB_SYS_STATIC=1 make dist_release
-            - os: darwin
-              script: |
+            - script: |
                 ROCKSDB_SYS_STATIC=1 make dist_release
           debug:
             - os: linux
@@ -154,7 +152,7 @@ components:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
           if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         artifactory:
@@ -166,7 +164,26 @@ components:
             - "{{ .Git.ref }}"
         steps:
           release:
-            - script: make cdc dm-master-with-webui dm-worker dmctl dm-syncer
+            - os: darwin
+              description: install nodejs toolchain.
+              script: |
+                NODE_VERSION="16.11.12"
+                NVM_VERSION=v0.39.5
+                NVM_DIR=/usr/local/nvm
+                mkdir -p $NVM_DIR
+
+                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash
+                fi
+                . $NVM_DIR/nvm.sh
+                nvm install ${NODE_VERSION}
+                nvm use v${NODE_VERSION}
+                nvm alias default v${NODE_VERSION}
+
+                node --version && npm --version
+                npm install -g yarn
+            - script: |
+                make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
           - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
