@@ -748,7 +748,7 @@ components:
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: Publish route for v0.5.0 and newer versions.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=0.5.0-0"
