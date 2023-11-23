@@ -740,6 +740,35 @@ components:
               - name: ng-monitoring-server
                 src:
                   path: bin/ng-monitoring-server
+  advanced-statefulset:
+    desc:
+    git:
+      url: https://github.com/pingcap/advanced-statefulset.git
+      ref: '{{ .Git.ref | default "master" }}'
+      sha: '{{ .Git.sha | default "" }}'
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: Publish route for v0.5.0 and newer versions.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=0.5.0-0"
+          if: {{ semver.MatchConstraint ">=0.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64]
+        profile: [release]
+        artifactory:
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/advanced-statefulset
+            context: . # build under git repo.
+            dockerfile: Dockerfile
   ctl:
     desc: ctl components
     version: {{ .Release.version }} # segment version.
