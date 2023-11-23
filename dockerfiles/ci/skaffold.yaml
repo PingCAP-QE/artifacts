@@ -13,12 +13,8 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v{{ .DATE }}-{{ .SHA }}"
+      template: "{{ .SHA }}"
       components:
-        - name: DATE
-          dateTime:
-            format: "20060102"
-            timezone: "UTC"
         - name: SHA
           gitCommit:
             variant: AbbrevCommitSha
@@ -51,7 +47,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.21"
+        value: "{{ .SHA }}-go1.21"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -61,7 +57,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.20"
+        value: "{{ .SHA }}-go1.20"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -71,7 +67,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.19"
+        value: "{{ .SHA }}-go1.19"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -91,12 +87,8 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v{{ .DATE }}-{{ .SHA }}"
+      template: "{{ .SHA }}"
       components:
-        - name: DATE
-          dateTime:
-            format: "20060102"
-            timezone: "UTC"
         - name: SHA
           gitCommit:
             variant: AbbrevCommitSha
@@ -129,7 +121,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.21"
+        value: "{{ .SHA }}-go1.21"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -139,7 +131,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.20"
+        value: "{{ .SHA }}-go1.20"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -149,7 +141,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "v{{ .DATE }}-{{ .SHA }}-go1.19"
+        value: "{{ .SHA }}-go1.19"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value:
@@ -169,12 +161,8 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v{{ .DATE }}-{{ .SHA }}"
+      template: "{{ .SHA }}"
       components:
-        - name: DATE
-          dateTime:
-            format: "20060102"
-            timezone: "UTC"
         - name: SHA
           gitCommit:
             variant: AbbrevCommitSha
