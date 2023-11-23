@@ -19,7 +19,7 @@ main() {
 
 build_and_push_images() {
     ################# build and push image ################
-    tag="{{ index .artifactory.tags 0 }}-{{ .profile }}-{{ .arch }}"
+    tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
 {{ range (.artifacts | jq `map(select(.type == "image"))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
     destination="{{ .artifactory.repo  }}:$tag"
@@ -111,6 +111,7 @@ build_binaries() {
 {{ .script | indent 4 }}
   {{- end }}
   {{- end }}
+  echo "building finished."
 }
 
 main "$@"
