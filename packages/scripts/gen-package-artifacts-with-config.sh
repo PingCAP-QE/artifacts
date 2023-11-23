@@ -17,11 +17,11 @@ function main() {
 
     # prepare template file's context.
     : >release-context.yaml
-    yq -i ".Release.os=\"$os\"" release-context.yaml
-    yq -i ".Release.arch=\"$arch\"" release-context.yaml
-    yq -i ".Release.version=\"$version\"" release-context.yaml
-    yq -i ".Git.ref=\"$git_ref\"" release-context.yaml
-    yq -i ".Git.sha=\"$git_sha\"" release-context.yaml
+    yq -i ".Release.os = \"$os\"" release-context.yaml
+    yq -i ".Release.arch = \"$arch\"" release-context.yaml
+    yq -i ".Release.version = \"$version\"" release-context.yaml
+    yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
+    yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
 
@@ -41,20 +41,26 @@ function main() {
     fi
 
     if yq -e 'length == 0' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for arch: $arch, version: $version ."
+        echo "No package routes matched for component: $component, arch: $arch, version: $version ."
         exit 0
     fi
 
     # generate package build script
     yq ".[0]" release-package-routes.yaml >release-package.yaml
-    yq -i ".os=\"$os\"" release-package.yaml
-    yq -i ".arch=\"$arch\"" release-package.yaml
-    yq -i ".profile=\"$profile\"" release-package.yaml
-    yq -i ".steps=.steps[.profile]" release-package.yaml
+    yq -i ".os = \"$os\"" release-package.yaml
+    yq -i ".arch = \"$arch\"" release-package.yaml
+    yq -i ".profile = \"$profile\"" release-package.yaml
+    yq -i ".steps = .steps[.profile]" release-package.yaml
+    yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-package.yaml
+    yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-package.yaml
     yq -i '.artifacts = (.artifacts | map(select(.type == "file" or .type == null)))' release-package.yaml
 
-    gomplate --context .=release-package.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
+    if yq -e '.artifacts | length == 0' release-package.yaml >/dev/null 2>&1; then
+        echo "No artifacts should be built for component: $component, arch: $arch, version: $version ."
+        exit 0
+    fi
 
+    gomplate --context .=release-package.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
     echo "Generated shell script: $out_file"
 }
 

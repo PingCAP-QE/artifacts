@@ -16,9 +16,11 @@ function main() {
     if $need_package; then
         archive "${release_ws}"
     fi
+{{- if has .artifactory "repo" }}
     if $need_push; then
         push_files "${release_ws}"
     fi
+{{- end }}
 }
 
 function parse_arguments() {
@@ -146,6 +148,7 @@ function archive() {
     {{- end }}
 }
 
+{{- if has .artifactory "repo" }}
 function push_files() {
     local release_ws="$1"
 
@@ -162,6 +165,7 @@ function push_files() {
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
     popd
 }
+{{- end }}
 
 ##############################################################################
 ###### Call the main function with the arguments passed to the script ########
