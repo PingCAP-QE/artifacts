@@ -21,14 +21,10 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        module: [base, release-utils]
+        module: [base]
         builder-profile: [local-docker]
         go-profile: [go-1.21, go-1.20, go-1.19]
-        exclude:
-          - module: release-utils
-            go-profile: go-1.20
-          - module: release-utils
-            go-profile: go-1.19
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

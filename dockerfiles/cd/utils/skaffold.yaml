@@ -1,0 +1,44 @@
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: utils
+build:
+  artifacts:
+    - image: release
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: release/Dockerfile
+        cache: {}
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: AbbrevCommitSha
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net-ee
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+        tryImportMissing: true
+    patches:
+      - op: move
+        from: /build/artifacts/0/kaniko
+        path: /build/artifacts/0/docker
