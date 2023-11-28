@@ -1,12 +1,12 @@
-name: Pull test for CI base images
+name: Pull test for CD utils images
 on:
   pull_request:
     branches:
       - main
     paths:
-      - "dockerfiles/ci/base/**/Dockerfile"
-      - "dockerfiles/ci/base/**/*.Dockerfile"
-      - "dockerfiles/ci/skaffold.yaml"
+      - "dockerfiles/cd/utils/**/Dockerfile"
+      - "dockerfiles/cd/utils/**/*.Dockerfile"
+      - "dockerfiles/cd/utils/skaffold.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -24,10 +24,9 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        module: [base]
-        platform: [linux/amd64, linux/arm64]
+        module: [utils]
         builder-profile: [local-docker]
-        go-profile: [go-1.21, go-1.20, go-1.19]
+        platform: [linux/amd64, linux/arm64]
 
     steps:
       - name: Checkout sources
@@ -53,24 +52,14 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.8.0/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
-      - name: Cache layers
-        uses: actions/cache@v3
-        with:
-          path: "~/.skaffold/cache"
-          key: skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
-          restore-keys: |
-            skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/${{ matrix.go-profile }}-
-            skaffold/${{ matrix.platform }}/ci/${{ matrix.module }}/
-            skaffold/${{ matrix.platform }}/ci/
-
       - name: Build images
-        working-directory: dockerfiles/ci
+        working-directory: dockerfiles/cd/utils
         run: |
           skaffold build \
             --build-concurrency 1 \
             --cache-artifacts \
-            --default-repo ghcr.io/pingcap-qe/ci \
+            --default-repo ghcr.io/pingcap-qe/cd/utils \
             --module ${{ matrix.module }} \
             --platform ${{ matrix.platform }} \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
+            --profile ${{ matrix.builder-profile }} \
             --push=false
