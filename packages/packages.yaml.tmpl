@@ -754,7 +754,7 @@ components:
           constraints: ">=0.5.0-0"
           if: {{ semver.MatchConstraint ">=0.5.0-0" .Release.version }}
         os: [linux]
-        arch: [amd64]
+        arch: [amd64, arm64]
         profile: [release]
         artifactory:
           tags:
