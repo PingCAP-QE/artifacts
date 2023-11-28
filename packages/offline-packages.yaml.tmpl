@@ -11,7 +11,7 @@ artifacts:
         semver:
           constraint: ">=7.5.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          if: {{ semver.MatchConstraint ">=7.5.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
@@ -112,7 +112,7 @@ artifacts:
         semver:
           constraint: ">=7.1.0-0 <7.5.0-0"
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          if: {{ semver.MatchConstraint ">=7.1.0-0 <7.5.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0 <7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:

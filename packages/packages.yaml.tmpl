@@ -11,7 +11,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -83,7 +83,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -152,7 +152,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -281,7 +281,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -319,7 +319,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -434,7 +434,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -474,7 +474,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -552,7 +552,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -584,7 +584,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -657,7 +657,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=1.5.0-0"
-          if: {{ semver.MatchConstraint ">=1.5.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -713,7 +713,7 @@ components:
       - description: interpret versions according to semantic version spec.
         semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -752,7 +752,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=0.5.0-0"
-          if: {{ semver.MatchConstraint ">=0.5.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -777,7 +777,7 @@ components:
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
           constraints: ">=7.1.0-0"
-          if: {{ semver.MatchConstraint ">=7.1.0-0" .Release.version }}
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
