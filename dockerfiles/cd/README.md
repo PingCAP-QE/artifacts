@@ -1,7 +1,7 @@
-Multi stages dockerfiles for releasing TiDB community images.
+Dockerfiles for releasing TiDB community images.
 ===
 
-> We using [just](https://github.com/casey/just) tool to group the shell steps to debug the image building.
+> We use the [just](https://github.com/casey/just) tool to group the shell steps to debug the image building.
 
 **Attention**: currently they are only tested on linux/x86_64 platform.
 
@@ -20,7 +20,7 @@ branch=master # or other branch
 
 [ -e ../${component} ] || git clone ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
-docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
+docker build -t ${component} -f dockerfiles/cd/builders/${component}/Dockerfile ../${component}
 ```
 
 ### System Requirement
@@ -69,7 +69,7 @@ branch=master # or other branch
 
 [ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
-docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
+docker build -t ${component} -f dockerfiles/cd/builders/${component}/Dockerfile ../${component}
 ```
 
 ### System Requirement
@@ -100,7 +100,7 @@ branch=master # or other branch
 
 [ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
-docker build -t ${component} -f dockerfiles/cd/tikv/${component}/Dockerfile ../${component}
+docker build -t ${component} -f dockerfiles/cd/builders/${component}/Dockerfile ../${component}
 ```
 
 ### System Requirement
@@ -133,7 +133,7 @@ branch=master # or other branch
 
 [ -e ../${component} ] || git clone --recurse-submodules ${git_url} --branch=${branch} ../${component}
 ([ -e ../${component}/.dockerignore ] && rm ../${component}/.dockerignore) || true # make step depended on git metadata.
-docker build -t ${component} -f dockerfiles-multi-stages/${component}/Dockerfile ../${component}
+docker build -t ${component} -f dockerfiles/cd/builders/${component}/Dockerfile ../${component}
 ```
 
 ### System Requirement

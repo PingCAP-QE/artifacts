@@ -4,9 +4,9 @@ on:
     branches:
       - main
     paths:
-      - "dockerfiles/cd/**/Dockerfile"
-      - "dockerfiles/cd/**/*.Dockerfile"
-      - "dockerfiles/cd/skaffold.yaml"
+      - "dockerfiles/cd/builders/**/Dockerfile"
+      - "dockerfiles/cd/builders/**/*.Dockerfile"
+      - "dockerfiles/cd/builders/skaffold.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -68,7 +68,7 @@ jobs:
             skaffold/${{ matrix.platform }}/cd/${{ matrix.module }}/
 
       - name: Build images
-        working-directory: dockerfiles/cd
+        working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
             --build-concurrency 1 \
