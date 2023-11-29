@@ -18,7 +18,7 @@ ENV PATH /root/.cargo/bin:$PATH
 
 ##### install tools: bazelisk, yq, oras, codecov, gradle, apache-maven
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
-ARG BAZELISK_VERSION=v1.18.0
+ARG BAZELISK_VERSION=v1.19.0
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
