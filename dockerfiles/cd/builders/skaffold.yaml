@@ -9,19 +9,19 @@ build:
     - image: tidb
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: pingcap/tidb/Dockerfile
+        dockerfile: tidb/Dockerfile
         cache: {}
         target: builder
     - image: tiflow
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: pingcap/tiflow/Dockerfile
+        dockerfile: tiflow/Dockerfile
         cache: {}
         target: builder
     - image: pd
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: tikv/pd/Dockerfile
+        dockerfile: pd/Dockerfile
         cache: {}
         target: builder
   tagPolicy:
@@ -111,13 +111,13 @@ build:
     - image: tiflash
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: pingcap/tiflash/Dockerfile
+        dockerfile: tiflash/Dockerfile
         cache: {}
         target: builder  
     - image: tikv
       platforms: [linux/amd64, linux/arm64]
       kaniko:
-        dockerfile: tikv/tikv/Dockerfile
+        dockerfile: tikv/Dockerfile
         cache: {}
         target: builder
   tagPolicy:

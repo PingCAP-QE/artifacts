@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "dockerfiles/cd/**/Dockerfile"
-      - "dockerfiles/cd/**/*.Dockerfile"
-      - "dockerfiles/cd/skaffold.yaml"
+      - "dockerfiles/cd/builders/**/Dockerfile"
+      - "dockerfiles/cd/builders/**/*.Dockerfile"
+      - "dockerfiles/cd/builders/skaffold.yaml"
 
 jobs:
   skaffold:
@@ -64,7 +64,7 @@ jobs:
             skaffold/cd/${{ matrix.module }}/
 
       - name: Publish images
-        working-directory: dockerfiles/cd
+        working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
             --build-concurrency 1 \
