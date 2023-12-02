@@ -28,7 +28,7 @@ FROM builder-cdc as builder-dm
 
 # install nodejs toolchain
 # renovate: datasource=docker depName=node
-ARG NODE_VERSION=16.20.2
+ARG NODE_VERSION=21.3.0
 # renovate: datasource=github-releases depName=nvm-sh/nvm
 ARG NVM_VERSION=v0.39.5
 ARG NVM_DIR=/usr/local/nvm
