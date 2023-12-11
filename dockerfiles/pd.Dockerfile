@@ -1,4 +1,4 @@
-FROM hub.pingcap.net/bases/pd-base:v1.7.1
+FROM hub.pingcap.net/bases/pd-base:v1.8.0
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
 COPY pd-recover /pd-recover
