@@ -8,6 +8,7 @@ function main() {
     local need_build="false" # true | false
     local need_package="false" # true | false
     local need_push="false" # true | false
+    local push_result_save_file="result.yaml"
     parse_arguments "$@"
 
     if $need_build; then
@@ -19,16 +20,20 @@ function main() {
 {{- if has .artifactory "repo" }}
     if $need_push; then
         push_files "${release_ws}"
+        write_push_results "$push_result_save_file"
     fi
 {{- end }}
 }
 
 function parse_arguments() {
-  while getopts ":w:abph" opt; do
+  while getopts ":wo:aboph" opt; do
     case ${opt} in
       w)
         release_ws=${OPTARG}
         ;;
+      o)
+        result_path=${OPTARG}
+        ;;        
       a)
         need_package=true
         ;;
@@ -56,12 +61,13 @@ function parse_arguments() {
 }
 
 function print_help() {
-  echo "Usage: ./your_script.sh [-w RELEASE_WS] [-b] [-h]"
+  echo "Usage: ./your_script.sh [-w RELEASE_WS] [-o RESULT_PATH] [-b] [-h]"
   echo "Options:"
-  echo "  -w RELEASE_WS   Set the release workspace path (default: /path/to/release/ws)"
+  echo "  -w RELEASE_WS   Set the release workspace path (default: build)"
   echo "  -b              Perform a build (default: false)"
   echo "  -a              Perform a package tarballs (default: false)"
   echo "  -p              Perform a push (default: false)"
+  echo "  -o RESULT_PATH  Set the result yaml path (default: result.yaml)"
   echo "  -h              Show this help message"
 }
 
@@ -164,6 +170,29 @@ function push_files() {
         oras push --artifact-type application/gzip ${destination}
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
     popd
+}
+
+function write_push_results() {
+    local result_file="$1"
+    local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
+    local destination="{{ .artifactory.repo  }}:$tag"
+
+    # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
+    # Login steps:
+    #   local registry=$(echo "${destination}" | cut -d/ -f)
+    #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
+    digest="$(oras discover "${destination}" --distribution-spec v1.1-referrers-tag -o tree | cut -d@ -f2)"
+   
+    cat <<EOF > "$result_file"
+oci:
+  repo: {{ .artifactory.repo  }}
+  tag: "$tag"
+  digest: "$digest"
+files:
+  {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
+  {{ printf "- %s" .name }}
+  {{- end }}
+EOF
 }
 {{- end }}
 

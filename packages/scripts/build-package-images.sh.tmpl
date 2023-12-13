@@ -4,20 +4,79 @@
 set -exo pipefail
 
 main() {
-    release_ws="$1"
-    need_build="${2:-false}" # true or false
-    kaniko_executor="${3:-/kaniko/executor}"
-    mkdir -p ${release_ws}
-    release_ws=$(realpath $release_ws)
+  parse_arguments "$@"
 
-    if $need_build; then
-      build_binaries
-    fi
+  # Access variables directly within the main function
+  mkdir -p "${RELEASE_WS}"
+  RELEASE_WS=$(realpath "${RELEASE_WS}")
 
-    build_and_push_images
+  if [ "$NEED_BUILD" = "true" ]; then
+    build_binaries
+  fi
+
+  build_and_push_images "${RELEASE_WS}" "${PUSH_RESULT_SAVE_FILE}"
+}
+
+parse_arguments() {
+  RELEASE_WS="build"
+  NEED_BUILD="false" # Default value is false
+  KANIKO_EXECUTOR="/kaniko/executor"
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      -w)
+        RELEASE_WS="$2"
+        shift 2
+        ;;
+      -b)
+        NEED_BUILD="true"
+        shift
+        ;;
+      -k)
+        KANIKO_EXECUTOR="$2"
+        shift 2
+        ;;
+      -o)
+        PUSH_RESULT_SAVE_FILE="$2"
+        shift 2
+        ;;        
+      -h)
+        print_help
+        exit 0
+        ;;
+      *)
+        echo "Invalid option: $1" 1>&2
+        exit 1
+        ;;
+    esac
+  done
+}
+
+print_help() {
+  echo "Usage: script_name [-w release_ws] [-b] [-k kaniko_executor]"
+  echo "Options:"
+  echo "  -w release_ws       Set the release workspace (default: 'build')"
+  echo "  -o result_path      Set the result path (default: 'result-images.yaml')"
+  echo "  -b                  Enable building"
+  echo "  -k kaniko_executor  Set the Kaniko executor path (default: '/kaniko/executor')"
+  echo "  -h                  Print this help message"
+}
+
+# >>>>>>>>>>>>>>>> build binaries steps >>>>>>>>>>>>>>>>
+build_binaries() {
+  {{- $root := . -}}
+  {{- range .steps }}
+  {{- if or (not (has . "os")) (eq .os $root.os) }}
+{{ .script | indent 4 }}
+  {{- end }}
+  {{- end }}
+  echo "building finished."
 }
 
 build_and_push_images() {
+    release_ws="$1"
+    result_file="$2"
+
     ################# build and push image ################
     tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
 {{ range (.artifacts | jq `map(select(.type == "image"))`) }}
@@ -93,25 +152,39 @@ build_and_push_images() {
     fi
     dockerfile="$(realpath $dockerfile)"
 
-    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile" --destination=${destination}
+    digest_file="${archive_dir}/digest.txt"
+    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile" --destination=${destination} --digest-file="${digest_file}"
+    # Save digest file path for later use
+    cat "$digest_file" >> "$release_ws/digests.txt"
     rm -rf $archive_dir
     {{- end }}
 
     echo "Pushed image: $destination"
     # <<<<<<<<<<<<<<<< image: {{ .name }} <<<<<<<<<<<<<<<<
 {{ end }}
+    # All pushed.
+
+    # Write results to file.
+    write_push_results "$result_file" "$release_ws/digests.txt"
+
     # All done.
 }
 
-# >>>>>>>>>>>>>>>> build binaries steps >>>>>>>>>>>>>>>>
-build_binaries() {
-  {{- $root := . -}}
-  {{- range .steps }}
-  {{- if or (not (has . "os")) (eq .os $root.os) }}
-{{ .script | indent 4 }}
-  {{- end }}
-  {{- end }}
-  echo "building finished."
+write_push_results() {
+    result_file="$1"
+    input_disgests_file="$2"
+
+    tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
+
+    cat <<EOF > "$result_file"
+images:
+{{- range (.artifacts | jq `map(select(.type == "image"))`) }}
+- repo: {{ .artifactory.repo  }}
+  url: "{{ .artifactory.repo  }}:$tag"
+  tag: "$tag"
+  digest: '$(sed -n "$((i++))p" $input_disgests_file)'
+{{- end }}
+EOF
 }
 
 main "$@"
