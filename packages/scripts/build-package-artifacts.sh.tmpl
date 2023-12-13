@@ -8,7 +8,7 @@ function main() {
     local need_build="false" # true | false
     local need_package="false" # true | false
     local need_push="false" # true | false
-    local push_result_save_file="result.yaml"
+    local result_path="result.yaml"
     parse_arguments "$@"
 
     if $need_build; then
@@ -20,13 +20,13 @@ function main() {
 {{- if has .artifactory "repo" }}
     if $need_push; then
         push_files "${release_ws}"
-        write_push_results "$push_result_save_file"
+        write_push_results "$result_path"
     fi
 {{- end }}
 }
 
 function parse_arguments() {
-  while getopts ":wo:aboph" opt; do
+  while getopts ":w:o:abph" opt; do
     case ${opt} in
       w)
         release_ws=${OPTARG}
@@ -83,7 +83,6 @@ function build() {
 
 function archive() {
     local release_ws="$1"
-    local need_build="$2" # true or false
     mkdir -p ${release_ws}
     release_ws=$(realpath $release_ws)
 
