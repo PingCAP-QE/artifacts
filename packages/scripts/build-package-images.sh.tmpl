@@ -14,7 +14,7 @@ main() {
     build_binaries
   fi
 
-  build_and_push_images "${RELEASE_WS}" "${PUSH_RESULT_SAVE_FILE}"
+  build_and_push_images "${RELEASE_WS}" "${PUSH_RESULT_SAVE_FILE}" "${KANIKO_EXECUTOR}"
 }
 
 parse_arguments() {
@@ -76,6 +76,7 @@ build_binaries() {
 build_and_push_images() {
     release_ws="$1"
     result_file="$2"
+    kaniko_executor="$3"
 
     ################# build and push image ################
     tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
