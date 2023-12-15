@@ -1,4 +1,4 @@
-FROM centos:7 as builder
+FROM centos:7.9.2009 as builder
 
 RUN yum -y update
 RUN yum -y groupinstall "Development Tools"

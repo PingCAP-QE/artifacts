@@ -1,4 +1,4 @@
-FROM rockylinux:9 as builder
+FROM rockylinux:9.3.20231119 as builder
 
 RUN dnf install -y openssl-devel
 
