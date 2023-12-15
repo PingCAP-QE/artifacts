@@ -24,6 +24,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
+        module: [default, fips]
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
 
@@ -66,6 +67,7 @@ jobs:
             --build-concurrency 1 \
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/bases \
+            --module ${{ matrix.module }} \
             --platform ${{ matrix.platform }} \
             --profile ${{ matrix.builder-profile }} \
             --push=false

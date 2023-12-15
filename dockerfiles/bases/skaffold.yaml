@@ -1,6 +1,8 @@
 # Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
 apiVersion: skaffold/v4beta6
 kind: Config
+metadata:
+  name: default
 build:
   artifacts:
     - image: pingcap-base      
@@ -102,3 +104,46 @@ profiles:
       - op: move
         from: /build/artifacts/6/kaniko
         path: /build/artifacts/6/docker
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: fips
+build:
+  artifacts:
+    - image: tikv-base
+      platforms: [linux/amd64, linux/arm64]
+      requires:
+        - image: pingcap-base
+          alias: PINGCAP_BASE
+      kaniko:
+        dockerfile: tikv-base/fips.Dockerfile
+        cache: {}
+  tagPolicy:
+    customTemplate:
+      template: "v1.8.0-fips"
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net
+    resources:
+      requests:
+        cpu: "1"
+        memory: 4Gi
+      limits:
+        cpu: "2"
+        memory: 8Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true        
+        concurrency: 0
+        tryImportMissing: true
+    patches:
+      - op: move
+        from: /build/artifacts/0/kaniko
+        path: /build/artifacts/0/docker
