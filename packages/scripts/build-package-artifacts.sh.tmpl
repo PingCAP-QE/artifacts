@@ -169,6 +169,13 @@ function push_files() {
         oras push --artifact-type application/gzip ${destination}
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
     popd
+
+    {{- $tag_suffix := printf "-%s_%s_%s" .profile .os .arch -}}
+    {{ $more_tags := (.artifactory.tags | jq `.[1:]`) }}
+    {{ if gt (len $more_tags) 0 }}
+    # add other tags.
+    oras tag "${destination}" {{ range $more_tags }}{{ printf " %s%s" . $tag_suffix }}{{ end }}
+    {{- end }}
 }
 
 function write_push_results() {
