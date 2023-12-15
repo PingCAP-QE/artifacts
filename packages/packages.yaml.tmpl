@@ -1085,6 +1085,7 @@ components:
         profile: [fips]
         steps:
           fips:
+          # ref: npm cache is important
             - script: ENABLE_FIPS=1 make package
         artifacts:
           - name: fips container image
