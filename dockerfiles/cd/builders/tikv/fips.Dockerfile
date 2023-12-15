@@ -16,15 +16,11 @@ RUN dnf install -y \
       libstdc++-static && \
     dnf clean all
 
-# Install protoc
-RUN case $(uname -m) in \ 
-		x86_64) url='https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip';; \
-		arm64|aarch64) url='https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-aarch_64.zip';; \
-		*) exit 1;; \
-	esac; \
-	curl -o protoc.zip -L $url && \
-	unzip -d /usr/local protoc.zip && \
-	rm protoc.zip;
+# install protoc.
+# renovate: datasource=github-release depName=protocolbuffers/protobuf
+ARG PROTOBUF_VER=v3.15.8
+RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
+    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
 # Install Rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain none -y
