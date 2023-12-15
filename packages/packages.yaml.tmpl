@@ -27,6 +27,8 @@ components:
             - script: make build
           debug:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
+          fips:
+            - script: ENABLE_FIPS=1 make build
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -50,6 +52,21 @@ components:
               entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/pd/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
               - name: pd-recover
                 src:
                   path: bin/pd-recover
@@ -113,6 +130,8 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
+          fips:
+            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -133,6 +152,19 @@ components:
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tikv.Dockerfile
+            files: # prepare for context
+              - name: tikv-server
+                src:
+                  path: bin/tikv-server
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/tikv/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
+            base_image: "hub.pingcap.net/bases/tikv-base:v1-fips"
             files: # prepare for context
               - name: tikv-server
                 src:
@@ -339,6 +371,8 @@ components:
                 make failpoint-enable
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
                 make failpoint-disable
+          fips:
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling
         artifacts:
           - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -727,6 +761,8 @@ components:
         steps:
           release:
             - script: make default
+          fips:
+            - script:ENABLE_FIPS=1 make default
         artifacts:
           - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
