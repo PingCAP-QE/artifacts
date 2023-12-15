@@ -107,19 +107,19 @@ kind: Config
 metadata:
   name: builder-others
 build:
-  artifacts:  
-    - image: tiflash
-      platforms: [linux/amd64, linux/arm64]
-      kaniko:
-        dockerfile: tiflash/Dockerfile
-        cache: {}
-        target: builder  
+  artifacts:
     - image: tikv
       platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: tikv/Dockerfile
         cache: {}
         target: builder
+    # - image: tiflash
+    #   platforms: [linux/amd64, linux/arm64]
+    #   kaniko:
+    #     dockerfile: tiflash/Dockerfile
+    #     cache: {}
+    #     target: builder  
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
@@ -150,4 +150,47 @@ profiles:
         tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
-      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+      # - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder-others-fips
+build:
+  artifacts:
+    - image: tikv
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tikv/fips.Dockerfile
+        cache: {}
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}-fips"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: AbbrevCommitSha
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net-ee
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+        tryImportMissing: true
+    patches:
+      - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }

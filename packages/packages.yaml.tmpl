@@ -71,6 +71,40 @@ components:
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/tikv/pd/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make build
+        artifacts:
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/pd/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
   tikv:
     desc: tikv components tarball
     git:
@@ -133,6 +167,37 @@ components:
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tikv.Dockerfile
+            files: # prepare for context
+              - name: tikv-server
+                src:
+                  path: bin/tikv-server
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/tikv/tikv/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
+        artifacts:
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/tikv/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv-fips.Dockerfile
             files: # prepare for context
               - name: tikv-server
                 src:
@@ -269,6 +334,35 @@ components:
               - name: dmctl
                 src:
                   path: bin/dmctl
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tiflow/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: |
+                ENABLE_FIPS=1 make build
+        artifacts:
+          - name: fips container image - cdc
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflow/images/cdc
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ticdc.Dockerfile
+            files: # context files
+              - name: cdc
+                src:
+                  path: bin/cdc
   tiflow-operator:
     desc: tiflow operator components tarball
     git:
@@ -422,6 +516,43 @@ components:
               - name: tidb-lightning-ctl
                 src:
                   path: bin/tidb-lightning-ctl
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling
+        artifacts:
+          - name: fips container image - tidb server
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb.Dockerfile
+            files: # prepare for context
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+          - name: fips container image - br tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/br
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/br.Dockerfile
+            files: # prepare for context
+              - name: br
+                src:
+                  path: bin/br
   tidb-tools:
     desc: tidb tools component tarball
     git:
@@ -702,6 +833,55 @@ components:
               repo: hub.pingcap.net/pingcap/tidb-opreator/image
             context: . # build under git repo.
             dockerfile: images/tidb-operator/Dockerfile
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=1.5.0-0"
+          if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-opreator/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make build
+        artifacts:
+          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:  # output files.
+              - name: tidb-scheduler
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - name: tidb-discovery
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - name: tidb-controller-manager
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - name: tidb-admission-webhook
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
+          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-backup-manager
+                src:
+                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
+          - name: "br-federation-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: br-federation-manager
+                src:
+                  path: images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-opreator/image
+            context: . # build under git repo.
+            dockerfile: images/tidb-operator/Dockerfile
   ng-monitoring:
     desc: ng-monitoring component tarball
     git:
@@ -734,6 +914,31 @@ components:
                 src:
                   path: bin/ng-monitoring-server
           - name: container image
+            type: image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ng-monitoring/Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+      - description: interpret versions according to semantic version spec.
+        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        artifactory:
+          repo: hub.pingcap.net/pingcap/ng-monitoring/package
+          tags:
+            {{- if .Git.sha }}
+            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            {{- end }}
+            - "{{ .Git.ref }}"
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make default
+        artifacts:
+          - name: fips container image
             type: image
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ng-monitoring/Dockerfile
             files:
@@ -848,3 +1053,33 @@ components:
             tiup:
               description: TiDB controller suite
               entrypoint: ctl
+  tidb-dashboard:
+    desc: ''
+    git:
+      url: https://github.com/pingcap/tidb-dashboard.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6-0"
+          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        steps:
+          fips:
+          # ref: npm cache is important
+            - script: ENABLE_FIPS=1 make package
+        artifacts:
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/images/tidb-dashboard
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-dashboard.Dockerfile
+            files: # prepare for context
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard

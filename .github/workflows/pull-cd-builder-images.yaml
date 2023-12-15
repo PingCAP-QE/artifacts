@@ -22,9 +22,8 @@ jobs:
       packages: write
 
     strategy:
-      max-parallel: 1
       matrix:
-        module: [builder-go, builder-others]
+        module: [builder-go, builder-others, builder-others-fips]
         go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
@@ -33,7 +32,10 @@ jobs:
             go-profile: go-1.20
           - module: builder-others
             go-profile: go-1.19
-
+          - module: builder-others-fips
+            go-profile: go-1.20
+          - module: builder-others-fips
+            go-profile: go-1.19
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

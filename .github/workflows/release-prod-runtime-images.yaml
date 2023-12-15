@@ -19,8 +19,8 @@ jobs:
       packages: write
 
     strategy:
-      max-parallel: 1
       matrix:
+        module: [default, fips]
         builder-profile: [local-docker]
 
     steps:
@@ -62,4 +62,5 @@ jobs:
             --build-concurrency 1 \
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/bases \
+            --module ${{ matrix.module }} \
             --profile ${{ matrix.builder-profile }}
