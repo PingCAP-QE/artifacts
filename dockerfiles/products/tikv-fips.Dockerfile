@@ -1,4 +1,4 @@
-ARG BASE_IMG=hub.pingcap.net/bases/tikv-base:v1.8.0s
+ARG BASE_IMG=hub.pingcap.net/bases/tikv-base:v1.8.0
 FROM $BASE_IMG
 COPY tikv-server /tikv-server
 COPY tikv-ctl /tikv-ctl
