@@ -22,7 +22,6 @@ jobs:
       packages: write
 
     strategy:
-      max-parallel: 1
       matrix:
         module: [utils]
         builder-profile: [local-docker]
