@@ -1,4 +1,4 @@
-name: Release product base images
+name: Publish product base images
 on:
   workflow_dispatch:
   push:
