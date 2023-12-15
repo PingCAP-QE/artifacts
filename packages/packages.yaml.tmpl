@@ -74,8 +74,8 @@ components:
       - description: interpret versions according to semantic version spec.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.0-fips"
-          if: {{ semver.CheckConstraint ">=6.5.0-fips" .Release.version }}
+          constraints: ">=6.5.6"
+          if: {{ semver.CheckConstraint ">=6.5.6" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [fips]
@@ -190,7 +190,7 @@ components:
       - description: interpret versions according to semantic version spec.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.0-fips"
+          constraints: ">=6.5.6"
           if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
@@ -351,8 +351,8 @@ components:
       - description: interpret versions according to semantic version spec.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.0-fips"
-          if: {{ semver.CheckConstraint ">=6.5.0-fips" .Release.version }}
+          constraints: ">=6.5.6"
+          if: {{ semver.CheckConstraint ">=6.5.6" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -533,8 +533,8 @@ components:
       - description: interpret versions according to semantic version spec.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.0-fips"
-          if: {{ semver.CheckConstraint ">=6.5.0-fips" .Release.version }}
+          constraints: ">=6.5.6"
+          if: {{ semver.CheckConstraint ">=6.5.6" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -936,8 +936,8 @@ components:
                   path: bin/ng-monitoring-server
       - description: interpret versions according to semantic version spec.
         semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">=6.5.0-fips"
-          if: {{ semver.CheckConstraint ">=6.5.0-fips" .Release.version }}
+          constraints: ">=6.5.6"
+          if: {{ semver.CheckConstraint ">=6.5.6" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -1067,3 +1067,32 @@ components:
             tiup:
               description: TiDB controller suite
               entrypoint: ctl
+  tidb-dashboard:
+    desc: ''
+    git:
+      url: https://github.com/pingcap/tidb-dashboard.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    routers: # match once.
+      - description: interpret versions according to semantic version spec.
+        semver:
+          # ref: https://github.com/Masterminds/semver#checking-version-constraints
+          constraints: ">=6.5.6"
+          if: {{ semver.CheckConstraint ">=6.5.6" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make package
+        artifacts:
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/images/tidb-dashboard
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-dashboard.Dockerfile
+            files: # prepare for context
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
