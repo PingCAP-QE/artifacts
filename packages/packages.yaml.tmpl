@@ -174,19 +174,6 @@ components:
               - name: tikv-ctl
                 src:
                   path: bin/tikv-ctl
-          - name: fips container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            base_image: "hub.pingcap.net/bases/tikv-base:v1-fips"
-            files: # prepare for context
-              - name: tikv-server
-                src:
-                  path: bin/tikv-server
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
       - description: interpret versions according to semantic version spec.
         semver:
           # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -210,8 +197,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            base_image: "hub.pingcap.net/bases/tikv-base:v1-fips"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv-fips.Dockerfile
             files: # prepare for context
               - name: tikv-server
                 src:
