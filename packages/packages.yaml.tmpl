@@ -19,9 +19,9 @@ components:
           repo: hub.pingcap.net/tikv/pd/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -83,9 +83,9 @@ components:
           repo: hub.pingcap.net/tikv/pd/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: ENABLE_FIPS=1 make build
@@ -125,9 +125,9 @@ components:
           repo: hub.pingcap.net/tikv/tikv/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - os: linux
@@ -186,9 +186,9 @@ components:
           repo: hub.pingcap.net/tikv/tikv/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
@@ -225,9 +225,9 @@ components:
           repo: hub.pingcap.net/pingcap/tiflow/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - os: darwin
@@ -346,9 +346,9 @@ components:
           repo: hub.pingcap.net/pingcap/tiflow/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: |
@@ -383,9 +383,9 @@ components:
           repo: hub.pingcap.net/pingcap/tiflow-operator/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: go build -o manager
@@ -421,9 +421,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: |
@@ -528,9 +528,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: ENABLE_FIPS=1 make server build_tools build_dumpling
@@ -573,9 +573,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb-tools/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -613,9 +613,9 @@ components:
           repo: hub.pingcap.net/pingcap/tiflash/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - os: darwin
@@ -691,9 +691,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb-ctl/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: go build
@@ -723,9 +723,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb-binlog/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -796,9 +796,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb-opreator/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -845,9 +845,9 @@ components:
           repo: hub.pingcap.net/pingcap/tidb-opreator/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: ENABLE_FIPS=1 make build
@@ -901,9 +901,9 @@ components:
           repo: hub.pingcap.net/pingcap/ng-monitoring/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make default
@@ -931,9 +931,9 @@ components:
           repo: hub.pingcap.net/pingcap/ng-monitoring/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           fips:
             - script: ENABLE_FIPS=1 make default
@@ -964,9 +964,9 @@ components:
         artifactory:
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         artifacts:
           - name: container image
             type: image
@@ -990,9 +990,9 @@ components:
           repo: hub.pingcap.net/pingcap/ctl/package
           tags:
             {{- if .Git.sha }}
-            - "{{ .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
-            - "{{ .Git.ref }}"
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         artifacts:
           - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:

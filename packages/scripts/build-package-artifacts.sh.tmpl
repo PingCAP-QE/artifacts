@@ -153,7 +153,7 @@ function archive() {
     {{- end }}
 }
 
-{{- if has .artifactory "repo" }}
+{{ if has .artifactory "repo" -}}
 function push_files() {
     local release_ws="$1"
 
