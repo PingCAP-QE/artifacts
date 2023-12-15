@@ -27,9 +27,8 @@ function main() {
 
     # filter by os and arch and release version.
     yq ".components[\"${component}\"].routers | map(select(
-            .semver.if
-            and
-            ([\"$os\"] - .os | length == 0)
+            .if
+            and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
             and ([\"$profile\"] - .profile | length == 0)
         ))" release-packages.yaml >release-package-routes.yaml
