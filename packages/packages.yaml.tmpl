@@ -8,10 +8,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -60,7 +58,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/pd/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -72,10 +70,8 @@ components:
                 src:
                   path: bin/pd-ctl
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -94,7 +90,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/pd/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -114,10 +110,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -166,7 +160,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tikv.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             files: # prepare for context
               - name: tikv-server
                 src:
@@ -175,10 +169,8 @@ components:
                 src:
                   path: bin/tikv-ctl
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -214,10 +206,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -314,7 +304,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflow/images/cdc
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ticdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -323,7 +313,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflow/images/dm
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/dm.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -335,10 +325,8 @@ components:
                 src:
                   path: bin/dmctl
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -358,7 +346,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflow/images/cdc
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ticdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -372,10 +360,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -410,10 +396,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -481,7 +465,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -490,7 +474,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/br
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/br.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -499,7 +483,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/dumpling
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/dumpling.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -508,7 +492,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-lightning.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -517,10 +501,8 @@ components:
                 src:
                   path: bin/tidb-lightning-ctl
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -539,7 +521,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -548,7 +530,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/br
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/br.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -562,10 +544,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -589,7 +569,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb-tools/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-tools.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -602,10 +582,8 @@ components:
       sha: {{ .Git.sha | default "" }}
     routers:
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -666,7 +644,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tiflash/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tiflash.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -680,10 +658,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -712,10 +688,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -762,7 +736,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb-binlog/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-binlog.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
             files: # context files
               - name: pump
                 src:
@@ -785,10 +759,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=1.5.0-0"
-          if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -802,53 +774,6 @@ components:
         steps:
           release:
             - script: make build
-        artifacts:
-          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:  # output files.
-              - name: tidb-scheduler
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
-              - name: tidb-discovery
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
-              - name: tidb-controller-manager
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
-              - name: tidb-admission-webhook
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
-          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tidb-backup-manager
-                src:
-                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
-          - name: "br-federation-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: br-federation-manager
-                src:
-                  path: images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-opreator/image
-            context: . # build under git repo.
-            dockerfile: images/tidb-operator/Dockerfile
-      - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=1.5.0-0"
-          if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-opreator/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-        steps:
           fips:
             - script: ENABLE_FIPS=1 make build
         artifacts:
@@ -891,9 +816,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -915,15 +839,14 @@ components:
                   path: bin/ng-monitoring-server
           - name: container image
             type: image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ng-monitoring/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
                   path: bin/ng-monitoring-server
       - description: interpret versions according to semantic version spec.
-        semver: # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -940,7 +863,7 @@ components:
         artifacts:
           - name: fips container image
             type: image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/ng-monitoring/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -954,10 +877,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: Publish route for v0.5.0 and newer versions.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=0.5.0-0"
-          if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -979,10 +900,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=7.1.0-0"
-          if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -1062,10 +981,8 @@ components:
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
-        semver:
-          # ref: https://github.com/Masterminds/semver#checking-version-constraints
-          constraints: ">=6.5.6-0"
-          if: {{ semver.CheckConstraint ">=6.5.6-0" .Release.version }}
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -1077,8 +994,8 @@ components:
           - name: fips container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-dashboard/images/tidb-dashboard
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/tidb-dashboard.Dockerfile
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:

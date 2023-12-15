@@ -21,9 +21,8 @@ function config_driven() {
 
     # filter by os and arch and release version.
     yq ".artifacts.${edition}.routers | map(select(
-            .semver.if
-            and
-            ([\"$os\"] - .os | length == 0)
+            .if
+            and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
         ))" release-offline-packages.yaml >release-offline-packages-routes.yaml
 
