@@ -189,6 +189,20 @@ components:
           fips:
             - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tikv-server
+                src:
+                  path: bin/tikv-server
+            tiup:
+              description: >-
+                Distributed transactional key-value database, originally created to complement TiDB.
+              entrypoint: tikv-server
+          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
           - name: fips container image
             type: image
             artifactory:
