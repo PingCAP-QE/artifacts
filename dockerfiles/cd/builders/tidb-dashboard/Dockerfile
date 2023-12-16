@@ -1,27 +1,44 @@
+# build requires:
+#   - docker >= v20.10
+#
+# build steps:
+#   - git clone https://github.com/pingcap/tidb.git tidb 
+#   - rm tidb/.dockerignore # make step depended on git metadata.
+#   - docker build -t tidb -f Dockerfile ./tidb
+
+########### stage: Builder
 FROM centos:7.9.2009 as builder
 
-RUN yum -y update
-RUN yum -y groupinstall "Development Tools"
+# install packages.
+RUN yum -y update && \
+    yum -y groupinstall "Development Tools" && \
+    yum -y install java-11-openjdk && \
+    yum clean all
 
-# Install golang.
-ENV PATH /usr/local/go/bin:$PATH
-RUN export ARCH=$(arch | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \\
-    export GO_VERSION=1.19.5 && \\
-    curl -OL https://golang.org/dl/go$GO_VERSION.linux-$ARCH.tar.gz && \\
-    tar -C /usr/local/ -xzf go$GO_VERSION.linux-$ARCH.tar.gz && \\
-    rm -f go$GO_VERSION.linux-$ARCH.tar.gz
-ENV GOROOT /usr/local/go
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:$PATH
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+# install golang toolchain
+# renovate: datasource=docker depName=golang
+ARG GOLANG_VERSION=1.19.5
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
+ENV PATH /usr/local/go/bin/:$PATH
+LABEL go-version="${GOLANG_VERSION}"
 
 # Install nodejs.
 RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
-RUN yum -y install nodejs
+RUN yum -y install nodejs && yum clean all
 RUN npm install -g pnpm@7.30.5
 
-# Install java.
-RUN yum -y install java-11-openjdk
+########### stage: Buiding
+FROM builder as building
+COPY . /ws
+ARG GOPROXY
+RUN GOPROXY=${GOPROXY} make package -C /ws
+RUN /ws/bin/tidb-dashboard -V
 
-RUN mkdir -p /go/src/github.com/pingcap/tidb-dashboard/ui
-WORKDIR /go/src/github.com/pingcap/tidb-dashboard
+########### stage: Final image
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.8.0
+
+COPY --from=building /ws/bin/tidb-dashboard /tidb-dashboard
+
+EXPOSE 12333
+ENTRYPOINT ["/tidb-dashboard"]

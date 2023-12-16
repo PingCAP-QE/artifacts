@@ -119,7 +119,13 @@ build:
     #   kaniko:
     #     dockerfile: tiflash/Dockerfile
     #     cache: {}
-    #     target: builder  
+    #     target: builder
+    - image: tidb-dashboard
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tidb-dashboard/Dockerfile
+        cache: {}
+        target: builder
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
@@ -134,12 +140,9 @@ build:
     dockerConfig:
       secretName: hub-pingcap-net-ee
     resources:
-      requests:
-        cpu: "1"
-        memory: 2Gi
       limits:
-        cpu: "2"
-        memory: 4Gi
+        cpu: "8"
+        memory: 32Gi
 profiles:
   - name: local-docker
     build:
@@ -150,7 +153,8 @@ profiles:
         tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
-      # - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+      # - { op: move, from: /build/artifacts/2/kaniko, path: /build/artifacts/2/docker }
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
