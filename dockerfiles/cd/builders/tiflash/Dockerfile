@@ -13,12 +13,13 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_VER=v7.4.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
+    TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \
     curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
-    tar -zxf tiflash.tar.gz "tiflash-${TIFLASH_VER#?}/release-centos7-llvm/dockerfiles/misc" && \
-    pushd "tiflash-${TIFLASH_VER#?}/release-centos7-llvm/dockerfiles/misc" && \
+    tar -zxf tiflash.tar.gz "$TAR_DIR/release-centos7-llvm/dockerfiles/misc" && \
+    pushd "$TAR_DIR/release-centos7-llvm/dockerfiles/misc" && \
     chmod +x * && ./${FILE} && \
     popd && \
-    rm -rf tiflash.tar.gz "tiflash-${TIFLASH_VER#?}"
+    rm -rf tiflash.tar.gz "$TAR_DIR"
 
 ENV PATH="/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin"
 ENV CC=clang
