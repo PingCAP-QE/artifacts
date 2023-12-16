@@ -82,20 +82,24 @@ build_and_push_images() {
     tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
 {{ range (.artifacts | jq `map(select(.type == "image"))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
+    archive_dir="$release_ws/tmp-$(date +%s)"
+    mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo  }}:$tag"
-    kaniko_executor_global_options=""
+    digest_file="${archive_dir}/digest.txt"
+    kaniko_executor_global_options="--destination=${destination} --digest-file=${digest_file}"
+    {{- if has . "build_args" }}
+    {{- range .build_args }}
+    kaniko_executor_global_options="$kaniko_executor_global_options --build-arg {{.}}"
+    {{- end }}
+    {{- end }}
 
-    {{- if has . "context" }}
+{{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
-    $kaniko_executor $kaniko_executor_global_options --context={{ .context }} --dockerfile={{ .dockerfile }} --destination=${destination}
-    {{- else }}
+    $kaniko_executor $kaniko_executor_global_options --context {{ .context }} --dockerfile {{ .dockerfile }}
+{{- else }}
 
     # Prepare build context for image building.
     echo "Prepare build context for image: $destination ..."
-    archive_dir="$release_ws/tmp-$(date +%s)"
-    mkdir -p "$archive_dir"
-
-
     {{- $files := (.files | jq `map(select(.if != false ))`) -}}
     {{- $localFiles := ($files | jq `map(select(.src.type == "local" or .src.type == null))`) -}}
     {{- $ociFiles := $files | jq `map(select(.src.type == "oci"))` -}}
@@ -153,13 +157,12 @@ build_and_push_images() {
     fi
     dockerfile="$(realpath $dockerfile)"
 
-    digest_file="${archive_dir}/digest.txt"
-    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile" --destination=${destination} --digest-file="${digest_file}"
+    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile"
+{{- end }}
+
     # Save digest file path for later use
     cat "$digest_file" >> "$release_ws/digests.txt"
     rm -rf $archive_dir
-    {{- end }}
-
     echo "Pushed image: $destination"
     # <<<<<<<<<<<<<<<< image: {{ .name }} <<<<<<<<<<<<<<<<
 {{ end }}

@@ -25,6 +25,7 @@ function main() {
     yq -i ".Release.os = \"$os\"" release-context.yaml
     yq -i ".Release.arch = \"$arch\"" release-context.yaml
     yq -i ".Release.version = \"$version\"" release-context.yaml
+    yq -i ".Release.profile = \"$profile\"" release-context.yaml
     yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
     yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
 
@@ -45,7 +46,7 @@ function main() {
     fi
 
     if yq -e 'length == 0' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for component: $component, arch: $arch, version: $version ."
+        echo "No package routes matched for the target(component: $component, arch: $arch, profile: $profile, version: $version)."
         exit 0
     fi
 
@@ -57,6 +58,7 @@ function main() {
     yq -i ".steps = .steps[.profile]" release-package.yaml
     yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-package.yaml
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-package.yaml
+    yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-package.yaml
     yq -i '.artifacts = (.artifacts | map(select(.type == "image")))' release-package.yaml
     yq -i ".artifacts[] |= (with(select((.context == null) and (.dockerfile | test(\"^http(s)?://\") | false)); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-package.yaml
 
