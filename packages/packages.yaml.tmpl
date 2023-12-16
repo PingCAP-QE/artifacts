@@ -20,6 +20,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
         steps:
           release:
             - script: make build
@@ -82,6 +83,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
         steps:
           fips:
             - script: ENABLE_FIPS=1 make build
@@ -122,6 +124,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
         steps:
           release:
             - os: linux
@@ -181,6 +184,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
         steps:
           fips:
             - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
@@ -189,7 +193,11 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv-fips.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
+            {{- if eq .Release.profile "fips" }}
+            build_args:
+              - BASE_IMG=hub.pingcap.net/bases/tikv-base:v1.8.0-fips
+            {{- end }}
             files: # prepare for context
               - name: tikv-server
                 src:
@@ -218,6 +226,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
         steps:
           release:
             - os: darwin
@@ -337,6 +346,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
         steps:
           fips:
             - script: |
@@ -408,6 +418,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
         steps:
           release:
             - script: |
@@ -513,6 +524,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
         steps:
           fips:
             - script: ENABLE_FIPS=1 make server build_tools build_dumpling
@@ -594,6 +606,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
         steps:
           release:
             - os: darwin
@@ -897,6 +910,10 @@ components:
             dockerfile: Dockerfile
   ctl:
     desc: ctl components
+    git:
+      - url: https://github.com/pingcap/tidb.git
+        ref: {{ .Git.ref | default "master" }}
+      - url: others
     version: {{ .Release.version }} # segment version.
     routers: # match once.
       - description: interpret versions according to semantic version spec.
