@@ -184,7 +184,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-        builder: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
+        builder: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
         steps:
           fips:
             - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
