@@ -30,7 +30,7 @@ build:
       components:
         - name: SHA
           gitCommit:
-            variant: AbbrevCommitSha
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -126,13 +126,6 @@ build:
         dockerfile: tidb-dashboard/Dockerfile
         cache: {}
         target: builder
-  tagPolicy:
-    customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: AbbrevCommitSha
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -174,7 +167,7 @@ build:
       components:
         - name: SHA
           gitCommit:
-            variant: AbbrevCommitSha
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false

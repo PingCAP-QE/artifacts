@@ -10,13 +10,6 @@ build:
       kaniko:
         dockerfile: release/Dockerfile
         cache: {}
-  tagPolicy:
-    customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: AbbrevCommitSha
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false

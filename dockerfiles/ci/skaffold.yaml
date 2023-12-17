@@ -17,7 +17,7 @@ build:
       components:
         - name: SHA
           gitCommit:
-            variant: AbbrevCommitSha
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -91,7 +91,7 @@ build:
       components:
         - name: SHA
           gitCommit:
-            variant: AbbrevCommitSha
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
