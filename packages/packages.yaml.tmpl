@@ -210,7 +210,7 @@ components:
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             {{- if eq .Release.profile "fips" }}
             build_args:
-              - BASE_IMG=hub.pingcap.net/bases/tikv-base:v1.8.0-fips
+              - BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0-fips
             {{- end }}
             files: # prepare for context
               - name: tikv-server
