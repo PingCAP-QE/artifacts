@@ -144,3 +144,43 @@ profiles:
       - op: move
         from: /build/artifacts/0/kaniko
         path: /build/artifacts/0/docker
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: release-6-5
+build:
+  artifacts:
+    - image: tidb-base
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tidb-base/release-6.5.Dockerfile
+        cache: {}
+  tagPolicy:
+    customTemplate:
+      template: "v1.8.0-release-6.5"
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net
+    resources:
+      requests:
+        cpu: "1"
+        memory: 4Gi
+      limits:
+        cpu: "2"
+        memory: 8Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true        
+        concurrency: 0
+        tryImportMissing: true
+    patches:
+      - op: move
+        from: /build/artifacts/0/kaniko
+        path: /build/artifacts/0/docker
