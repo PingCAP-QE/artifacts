@@ -88,6 +88,16 @@ components:
           fips:
             - script: ENABLE_FIPS=1 make build
         artifacts:
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+            tiup: # will publish to tiup.
+              description: >-
+                PD is the abbreviation for Placement Driver.
+                It is used to manage and schedule the TiKV cluster.
+              entrypoint: pd-server
           - name: fips container image
             type: image
             artifactory:
@@ -366,6 +376,15 @@ components:
             - script: |
                 ENABLE_FIPS=1 make build
         artifacts:
+          - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: cdc
+                src:
+                  path: bin/cdc
+            tiup:
+              description: >-
+                CDC is a change data capture tool for TiDB
+              entrypoint: cdc
           - name: fips container image - cdc
             type: image
             artifactory:
@@ -543,6 +562,25 @@ components:
           fips:
             - script: ENABLE_FIPS=1 make server build_tools build_dumpling
         artifacts:
+          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+            tiup:
+              description: >
+                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+              entrypoint: tidb-server
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: br
+                src:
+                  path: bin/br
+            tiup:
+              description: >-
+                TiDB/TiKV cluster backup restore tool.
+              standalone: true
+              entrypoint: br
           - name: fips container image - tidb server
             type: image
             artifactory:
@@ -888,6 +926,11 @@ components:
           fips:
             - script: ENABLE_FIPS=1 make default
         artifacts:
+          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
           - name: fips container image
             type: image
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
@@ -1022,6 +1065,14 @@ components:
           # ref: npm cache is important
             - script: ENABLE_FIPS=1 make package
         artifacts:
+          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
+            tiup:
+              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
+              entrypoint: tidb-dashboard
           - name: fips container image
             type: image
             artifactory:
