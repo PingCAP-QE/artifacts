@@ -26,16 +26,16 @@ LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: Buiding
 FROM builder as building
-COPY . /tidb
+COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make server -C /tidb
-RUN /tidb/bin/tidb-server -V
+RUN GOPROXY=${GOPROXY} make default -C /ws
+RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.8.0
+FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.8.0
 
-COPY --from=building /tidb/bin/tidb-server /tidb-server
+COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 
 WORKDIR /
-EXPOSE 4000
-ENTRYPOINT ["/tidb-server"]
+EXPOSE 12020
+ENTRYPOINT ["/ng-monitoring-server"]
