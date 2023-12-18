@@ -1088,6 +1088,13 @@ components:
           release:
             - script: make package
         builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+            {{- end }}
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}                
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1116,6 +1123,13 @@ components:
           fips:
             - script: ENABLE_FIPS=1 make package
         builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
+        artifactory:
+          repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+          tags:
+            {{- if .Git.sha }}
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+            {{- end }}
+            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}          
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
