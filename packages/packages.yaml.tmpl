@@ -98,6 +98,24 @@ components:
                 PD is the abbreviation for Placement Driver.
                 It is used to manage and schedule the TiKV cluster.
               entrypoint: pd-server
+          - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+            tiup:
+              description: >-
+                PD Recover is a disaster recovery tool of PD, used to recover
+                the PD cluster which cannot start or provide services normally.
+              entrypoint: pd-recover
+          - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl        
           - name: fips container image
             type: image
             artifactory:
