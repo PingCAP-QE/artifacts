@@ -1072,16 +1072,16 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: starts from v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [fips]
+        profile: [release]
         steps:
-          fips:
-          # ref: npm cache is important
-            - script: ENABLE_FIPS=1 make package
+          release:
+            - script: make package
+        builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1091,7 +1091,35 @@ components:
             tiup:
               description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
               entrypoint: tidb-dashboard
-          - name: fips container image
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+            files: # prepare for context
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard    
+      - description: ">= 6.5.6 and < 6.6.0"
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make package
+        builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
+        artifacts:
+          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
+            tiup:
+              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
+              entrypoint: tidb-dashboard
+          - name: container image
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb-dashboard/image
