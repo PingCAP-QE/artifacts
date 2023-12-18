@@ -10,47 +10,62 @@ jobs:
   test-packages-cfg:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
 
-    - name: Test => Get builder
-      run: |
-        for cm in tidb tiflow tiflash tikv pd; do
-          for os in linux darwin; do
-            for ac in amd64 arm64; do
-              for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-                for profile in release; do
-                  ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+      - name: Install tools
+        run: |
+          git clone https://github.com/hairyhenderson/gomplate
+          cd gomplate
+          GOBIN=/usr/local/bin go install ./cmd/gomplate
+          rm -rf gomplate
+          gomplate --version
+          yq --version
+          jq --version
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Test => Get builder
+        run: |
+          for cm in tidb tiflow tiflash tikv pd; do
+            for os in linux darwin; do
+              for ac in amd64 arm64; do
+                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+                  for profile in release; do
+                    ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+                  done
                 done
               done
             done
           done
-        done
 
-    - name: Test => gen package artifacts script
-      run: |
-        for cm in tidb tiflow tiflash tikv pd; do
-          for os in linux darwin; do
-            for ac in amd64 arm64; do
-              for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-                for profile in release; do
-                  ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+      - name: Test => gen package artifacts script
+        run: |
+          for cm in tidb tiflow tiflash tikv pd; do
+            for os in linux darwin; do
+              for ac in amd64 arm64; do
+                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+                  for profile in release; do
+                    ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                  done
                 done
               done
             done
           done
-        done
 
-    - name: Test => gen package images script
-      run: |
-        for cm in tidb tiflow tiflash tikv pd; do
-          for os in linux darwin; do
-            for ac in amd64 arm64; do
-              for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-                for profile in release; do
-                  ./packages/scripts/gen-package-images-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+      - name: Test => gen package images script
+        run: |
+          for cm in tidb tiflow tiflash tikv pd; do
+            for os in linux darwin; do
+              for ac in amd64 arm64; do
+                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+                  for profile in release; do
+                    ./packages/scripts/gen-package-images-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                  done
                 done
               done
             done
           done
-        done
