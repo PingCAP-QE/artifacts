@@ -115,7 +115,7 @@ components:
                   path: bin/pd-recover
               - name: pd-ctl
                 src:
-                  path: bin/pd-ctl        
+                  path: bin/pd-ctl
           - name: fips container image
             type: image
             artifactory:
@@ -911,6 +911,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
         steps:
           release:
             - script: make default
@@ -940,6 +941,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
         steps:
           fips:
             - script: ENABLE_FIPS=1 make default
@@ -1099,7 +1101,7 @@ components:
             files: # prepare for context
               - name: tidb-dashboard
                 src:
-                  path: bin/tidb-dashboard    
+                  path: bin/tidb-dashboard
       - description: ">= 6.5.6 and < 6.6.0"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
