@@ -24,6 +24,12 @@ build:
         dockerfile: pd/Dockerfile
         cache: {}
         target: builder
+    - image: ng-monitoring
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: ng-monitoring/Dockerfile
+        cache: {}
+        target: builder
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
@@ -53,6 +59,7 @@ profiles:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
       - { op: move, from: /build/artifacts/2/kaniko, path: /build/artifacts/2/docker }
+      - { op: move, from: /build/artifacts/3/kaniko, path: /build/artifacts/3/docker }
   - name: go-1.21
     patches:
       - op: replace
@@ -69,6 +76,9 @@ profiles:
       - op: add
         path: /build/artifacts/2/kaniko/buildArgs
         value: *value-go1-21
+      - op: add
+        path: /build/artifacts/3/kaniko/buildArgs
+        value: *value-go1-21
   - name: go-1.20
     patches:
       - op: replace
@@ -81,10 +91,13 @@ profiles:
           GOLANG_VERSION: 1.20.10
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
-        value: &value-go1-20
+        value: *value-go1-20
       - op: add
         path: /build/artifacts/2/kaniko/buildArgs
-        value: &value-go1-20
+        value: *value-go1-20
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: *value-go1-20
   - name: go-1.19
     patches:
       - op: replace
@@ -100,6 +113,9 @@ profiles:
         value: *value-go1-19
       - op: add
         path: /build/artifacts/2/kaniko/buildArgs
+        value: *value-go1-19
+      - op: add
+        path: /build/artifacts/3/kaniko/buildArgs
         value: *value-go1-19
 ---
 apiVersion: skaffold/v4beta6
