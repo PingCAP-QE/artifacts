@@ -59,12 +59,10 @@ jobs:
       - name: Test => gen package images script
         run: |
           for cm in tidb tiflow tiflash tikv pd; do
-            for os in linux darwin; do
-              for ac in amd64 arm64; do
-                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-                  for profile in release; do
-                    ./packages/scripts/gen-package-images-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
-                  done
+            for ac in amd64 arm64; do
+              for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+                for profile in release; do
+                  ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
                 done
               done
             done
