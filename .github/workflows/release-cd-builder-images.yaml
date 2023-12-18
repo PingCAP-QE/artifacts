@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [builder-go, builder-others, builder-others-fips]
+        module: [builder-go, builder-others, builder-others-fips, builder-others-slow]
         go-profile: [go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
         exclude:
@@ -32,9 +32,16 @@ jobs:
             go-profile: go-1.20
           - module: builder-others-fips
             go-profile: go-1.19
+          - module: builder-others-slow
+            go-profile: go-1.20
+          - module: builder-others-slow
+            go-profile: go-1.19
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+          fetch-tags: 'true'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
