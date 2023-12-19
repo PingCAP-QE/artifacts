@@ -20,16 +20,16 @@ jobs:
           # install gomplate
           git clone https://github.com/hairyhenderson/gomplate && \
             pushd gomplate && \
-            GOBIN=/usr/local/bin go install ./cmd/gomplate && 
-            popd && 
+            GOBIN=/usr/local/bin go install ./cmd/gomplate &&
+            popd &&
             rm -rf gomplate && \
             gomplate --version
 
           # install shelldoc to check the README.md
           git clone https://github.com/endocode/shelldoc && \
             pushd shelldoc && \
-            GOBIN=/usr/local/bin go install ./cmd/shelldoc && 
-            popd && 
+            GOBIN=/usr/local/bin go install ./cmd/shelldoc &&
+            popd &&
             rm -rf shelldoc && \
 
           # we need yq and jq.
@@ -42,7 +42,7 @@ jobs:
       # - name: Verify the README.md
       #   run: |
       #     shelldoc run --shell `which bash` packages/README.md
-  
+
       - name: Test => Get builder
         run: |
           for cm in tidb tiflow tiflash tikv pd; do
@@ -53,6 +53,18 @@ jobs:
                     ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
                   done
                 done
+              done
+            done
+          done
+
+          ##### others that owns theirs non-unified versions #####
+          # tidb-operator
+          cm="tidb-operator"
+          os="linux"
+          for ac in amd64 arm64; do
+            for version in v1.5.0 v1.6.0; do
+              for profile in release; do
+                ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
               done
             done
           done
@@ -71,6 +83,18 @@ jobs:
             done
           done
 
+          ##### others that owns theirs non-unified versions #####
+          # tidb-operator
+          cm="tidb-operator"
+          os="linux"
+          for ac in amd64 arm64; do
+            for version in v1.5.0 v1.6.0; do
+              for profile in release; do
+                ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+              done
+            done
+          done
+
       - name: Test => gen package images script
         run: |
           for cm in tidb tiflow tiflash tikv pd; do
@@ -79,6 +103,18 @@ jobs:
                 for profile in release; do
                   ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
                 done
+              done
+            done
+          done
+
+          ##### others that owns theirs non-unified versions #####
+          # tidb-operator
+          cm="tidb-operator"
+          os="linux"
+          for ac in amd64 arm64; do
+            for version in v1.5.0 v1.6.0; do
+              for profile in release; do
+                ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
               done
             done
           done
