@@ -35,13 +35,13 @@ function main() {
 
     # fail when array length greater than 1.
     if yq -e 'length > 1' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "Error: wrong package config that make me matched more than 1 routes!"
+        echo "Error: wrong package config that make me matched more than 1 routes!" >&2
         exit 1
     fi
 
     if yq -e 'length == 0' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for the target($target_info)."
-        exit 0
+        echo "No package routes matched for the target($target_info)." >&2
+        exit 1
     fi
 
     # get the builder image.

@@ -45,10 +45,10 @@ jobs:
 
       - name: Test => Get builder
         run: |
-          for cm in tidb tiflow tiflash tikv pd; do
-            for os in linux darwin; do
-              for ac in amd64 arm64; do
-                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd; do
+              for os in linux darwin; do
+                for ac in amd64 arm64; do
                   for profile in release; do
                     ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
                   done
@@ -71,10 +71,10 @@ jobs:
 
       - name: Test => gen package artifacts script
         run: |
-          for cm in tidb tiflow tiflash tikv pd; do
-            for os in linux darwin; do
-              for ac in amd64 arm64; do
-                for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd; do
+              for os in linux darwin; do
+                for ac in amd64 arm64; do
                   for profile in release; do
                     ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
                   done
@@ -97,9 +97,9 @@ jobs:
 
       - name: Test => gen package images script
         run: |
-          for cm in tidb tiflow tiflash tikv pd; do
-            for ac in amd64 arm64; do
-              for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd; do
+              for ac in amd64 arm64; do
                 for profile in release; do
                   ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
                 done
@@ -111,8 +111,8 @@ jobs:
           # tidb-operator
           cm="tidb-operator"
           os="linux"
-          for ac in amd64 arm64; do
-            for version in v1.5.0 v1.6.0; do
+          for version in v1.6.0 v1.5.0; do
+            for ac in amd64 arm64; do
               for profile in release; do
                 ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
               done
