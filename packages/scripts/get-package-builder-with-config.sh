@@ -45,7 +45,7 @@ function main() {
     fi
 
     # get the builder image.
-    yq '.[0].builder' release-package-routes.yaml | tee $out_file
+    yq -e '.[0].builder' release-package-routes.yaml | tee $out_file
 }
 
 main "$@"
