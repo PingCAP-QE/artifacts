@@ -17,17 +17,32 @@ jobs:
 
       - name: Install tools
         run: |
-          git clone https://github.com/hairyhenderson/gomplate
-          cd gomplate
-          GOBIN=/usr/local/bin go install ./cmd/gomplate
-          rm -rf gomplate
-          gomplate --version
+          # install gomplate
+          git clone https://github.com/hairyhenderson/gomplate && \
+            pushd gomplate && \
+            GOBIN=/usr/local/bin go install ./cmd/gomplate && 
+            popd && 
+            rm -rf gomplate && \
+            gomplate --version
+
+          # install shelldoc to check the README.md
+          git clone https://github.com/endocode/shelldoc && \
+            pushd shelldoc && \
+            GOBIN=/usr/local/bin go install ./cmd/shelldoc && 
+            popd && 
+            rm -rf shelldoc && \
+
+          # we need yq and jq.
           yq --version
           jq --version
 
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # - name: Verify the README.md
+      #   run: |
+      #     shelldoc run --shell `which bash` packages/README.md
+  
       - name: Test => Get builder
         run: |
           for cm in tidb tiflow tiflash tikv pd; do
