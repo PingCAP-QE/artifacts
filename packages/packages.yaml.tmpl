@@ -977,7 +977,7 @@ components:
         if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [release]        
+        profile: [release]
         artifactory:
           tags:
             {{- if .Git.sha }}
