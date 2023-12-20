@@ -26,28 +26,30 @@ function main() {
     yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
+    yq ".components[\"${component}\"]" release-packages.yaml >release-package-config.yaml
 
     # filter by os and arch and release version.
-    yq ".components[\"${component}\"].routers | map(select(
+    yq -i ".routers |= map(select(
             .if
             and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
             and ([\"$profile\"] - .profile | length == 0)
-        ))" release-packages.yaml >release-package-routes.yaml
+        ))" release-package-config.yaml
+    yq -i '.routers[].artifactory = .artifactory' release-package-config.yaml
 
     # fail when array length greater than 1.
-    if yq -e 'length > 1' release-package-routes.yaml >/dev/null 2>&1; then
+    if yq -e '.routers | length > 1' release-package-config.yaml >/dev/null 2>&1; then
         echo "Error: wrong package config that make me matched more than 1 routes!"
         exit 1
     fi
 
-    if yq -e 'length == 0' release-package-routes.yaml >/dev/null 2>&1; then
+    if yq -e '.routers | length == 0' release-package-config.yaml >/dev/null 2>&1; then
         echo "No package routes matched for the target($target_info)."
         exit 0
     fi
 
     # generate package build script
-    yq ".[0]" release-package-routes.yaml >release-package.yaml
+    yq ".routers[0]" release-package-config.yaml >release-package.yaml
     yq -i ".os = \"$os\"" release-package.yaml
     yq -i ".arch = \"$arch\"" release-package.yaml
     yq -i ".profile = \"$profile\"" release-package.yaml
