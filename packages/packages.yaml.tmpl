@@ -860,6 +860,7 @@ components:
             - script: make build
           fips:
             - script: ENABLE_FIPS=1 make build
+        builder: ghcr.io/pingcap-qe/cd/utils/release:5d33328
         artifacts:
           - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:  # output files.
@@ -976,13 +977,14 @@ components:
         if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release]        
         artifactory:
           tags:
             {{- if .Git.sha }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builder: ghcr.io/pingcap-qe/cd/utils/release:5d33328
         artifacts:
           - name: container image
             type: image
