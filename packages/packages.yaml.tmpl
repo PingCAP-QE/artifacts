@@ -860,7 +860,7 @@ components:
             - script: make build
           fips:
             - script: ENABLE_FIPS=1 make build
-        builder: ghcr.io/pingcap-qe/cd/utils/release:5d33328
+        builder: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
         artifacts:
           - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:  # output files.
