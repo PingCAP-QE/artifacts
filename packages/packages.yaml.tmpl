@@ -984,7 +984,7 @@ components:
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
             {{- end }}
             - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-        builder: ghcr.io/pingcap-qe/cd/utils/release:5d33328
+        builder: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
         artifacts:
           - name: container image
             type: image
