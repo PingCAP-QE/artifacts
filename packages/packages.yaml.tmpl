@@ -15,12 +15,70 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">=7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
+      - if: {{ semver.CheckConstraint ">=7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">=6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.18
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: For range [6.1.0, 6.5.0)
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release, debug]
+        steps:
+          release:
+            - script: make build
+          debug:
+            - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
+        artifacts:
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+            tiup: # will publish to tiup.
+              description: >-
+                PD is the abbreviation for Placement Driver.
+                It is used to manage and schedule the TiKV cluster.
+              entrypoint: pd-server
+          - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+            tiup:
+              description: >-
+                PD Recover is a disaster recovery tool of PD, used to recover
+                the PD cluster which cannot start or provide services normally.
+              entrypoint: pd-recover
+          - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/tikv/pd/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+      - description: From v6.5.x
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">=6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -73,7 +131,7 @@ components:
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
-      - description: interpret versions according to semantic version spec.
+      - description: For FIPs in range [6.5.6, 6.6.0)
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -141,14 +199,14 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+      - if: {{ and (semver.CheckConstraint ">=6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">=6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -198,7 +256,7 @@ components:
               - name: tikv-ctl
                 src:
                   path: bin/tikv-ctl
-      - description: interpret versions according to semantic version spec.
+      - description: For FIPs in range [6.5.6, 6.6.0)
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -253,14 +311,18 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">=7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">=7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">=6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: From v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">=6.6.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -413,10 +475,11 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -450,18 +513,23 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+    builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
     routers: # match once.
-      - description: interpret versions according to semantic version spec.
+      - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        # fips profile only invalid in v6.5.x
+        if: {{ and (semver.CheckConstraint ">=6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug]
+        profile: [release, debug, fips]
         steps:
           release:
             - script: |
@@ -471,6 +539,8 @@ components:
                 make failpoint-enable
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
                 make failpoint-disable
+          fips:
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling                
         artifacts:
           - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -554,53 +624,6 @@ components:
               - name: tidb-lightning-ctl
                 src:
                   path: bin/tidb-lightning-ctl
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [fips]
-        steps:
-          fips:
-            - script: ENABLE_FIPS=1 make server build_tools build_dumpling
-        artifacts:
-          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tidb-server
-                src:
-                  path: bin/tidb-server
-            tiup:
-              description: >
-                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
-              entrypoint: tidb-server
-          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: br
-                src:
-                  path: bin/br
-            tiup:
-              description: >-
-                TiDB/TiKV cluster backup restore tool.
-              standalone: true
-              entrypoint: br
-          - name: fips container image - tidb server
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
-            files: # prepare for context
-              - name: tidb-server
-                src:
-                  path: bin/tidb-server
-          - name: fips container image - br tool
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/br
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
-            files: # prepare for context
-              - name: br
-                src:
-                  path: bin/br
   tidb-tools:
     desc: tidb tools component tarball
     git:
@@ -615,6 +638,8 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -894,14 +919,20 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.18
       - if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
-      - if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -928,7 +959,7 @@ components:
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [fips, release]
+        profile: [fips]
         steps:
           fips:
             - script: ENABLE_FIPS=1 make default
@@ -993,6 +1024,8 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints

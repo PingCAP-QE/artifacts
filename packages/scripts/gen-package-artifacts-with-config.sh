@@ -30,7 +30,7 @@ function main() {
 
     # filter routers by os and arch and release version.
     yq -i ".routers |= map(select(
-            .if
+            (.if == null or .if)
             and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
             and ([\"$profile\"] - .profile | length == 0)

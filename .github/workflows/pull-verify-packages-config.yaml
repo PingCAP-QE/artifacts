@@ -45,9 +45,8 @@ jobs:
 
       - name: Test => Get builder
         run: |
-          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-          for version in v7.5.0 v7.1.0; do
-            for cm in tidb tiflow tiflash tikv pd; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd ctl; do
               for os in linux darwin; do
                 for ac in amd64 arm64; do
                   for profile in release; do
@@ -70,11 +69,21 @@ jobs:
             done
           done
 
+          # advanced-statefulset
+          cm="advanced-statefulset"
+          os="linux"
+          for ac in amd64 arm64; do
+            for version in v0.5.0 v0.6.0; do
+              for profile in release; do
+                ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+              done
+            done
+          done
+
       - name: Test => gen package artifacts script
         run: |
-          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-          for version in v7.5.0 v7.1.0; do
-            for cm in tidb tiflow tiflash tikv pd; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd ctl; do
               for os in linux darwin; do
                 for ac in amd64 arm64; do
                   for profile in release; do
@@ -97,11 +106,21 @@ jobs:
             done
           done
 
+          # advanced-statefulset
+          cm="advanced-statefulset"
+          os="linux"
+          for ac in amd64 arm64; do
+            for version in v0.5.0 v0.6.0; do
+              for profile in release; do
+                ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+              done
+            done
+          done
+
       - name: Test => gen package images script
         run: |
-          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
-          for version in v7.5.0 v7.1.0; do
-            for cm in tidb tiflow tiflash tikv pd; do
+          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+            for cm in tidb tiflow tiflash tikv pd ctl; do
               for ac in amd64 arm64; do
                 for profile in release; do
                   ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
@@ -115,6 +134,17 @@ jobs:
           cm="tidb-operator"
           os="linux"
           for version in v1.6.0 v1.5.0; do
+            for ac in amd64 arm64; do
+              for profile in release; do
+                ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
+              done
+            done
+          done
+
+          # advanced-statefulset
+          cm="advanced-statefulset"
+          os="linux"
+          for version in v0.5.0 v0.6.0; do
             for ac in amd64 arm64; do
               for profile in release; do
                 ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
