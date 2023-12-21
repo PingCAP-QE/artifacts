@@ -7,6 +7,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/tikv/pd/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}    
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -14,13 +21,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
-        artifactory:
-          repo: hub.pingcap.net/tikv/pd/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
         steps:
           release:
@@ -77,13 +77,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/tikv/pd/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
         steps:
           fips:
@@ -139,6 +132,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/tikv/tikv/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}    
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -146,13 +146,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
-        artifactory:
-          repo: hub.pingcap.net/tikv/tikv/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
         steps:
           release:
@@ -206,13 +199,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/tikv/tikv/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
         steps:
           fips:
@@ -255,6 +241,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tiflow/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -262,13 +255,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tiflow/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
         steps:
           release:
@@ -382,13 +368,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tiflow/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
         steps:
           fips:
@@ -420,6 +399,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tiflow-operator/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -427,13 +413,7 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tiflow-operator/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        builders: # TODO: fill the builder.
         steps:
           release:
             - script: go build -o manager
@@ -456,6 +436,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -463,13 +450,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
         steps:
           release:
@@ -569,13 +549,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
         steps:
           fips:
@@ -625,6 +598,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-tools/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -632,13 +612,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-tools/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -663,6 +636,14 @@ components:
       url: https://github.com/pingcap/tiflash.git
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tiflash/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -670,13 +651,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tiflash/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
         steps:
           release:
@@ -740,6 +714,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-ctl/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -747,13 +728,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-ctl/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: go build
@@ -770,6 +744,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-binlog/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}    
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -777,13 +758,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-binlog/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         steps:
           release:
             - script: make build
@@ -841,6 +815,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-opreator/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -848,13 +829,7 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-opreator/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+
         steps:
           release:
             - script: make build
@@ -899,20 +874,20 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/ng-monitoring/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/ng-monitoring/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
         steps:
           release:
@@ -937,18 +912,13 @@ components:
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [fips]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/ng-monitoring/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        profile: [fips, release]
         builder: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
         steps:
           fips:
             - script: ENABLE_FIPS=1 make default
+          release:
+            - script: make default
         artifacts:
           - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -971,6 +941,12 @@ components:
       ref: '{{ .Git.ref | default "master" }}'
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: Publish route for v0.5.0 and newer versions.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -978,12 +954,6 @@ components:
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         builder: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
         artifacts:
           - name: container image
@@ -999,6 +969,13 @@ components:
         ref: {{ .Git.ref | default "master" }}
       - url: others
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/ctl/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -1006,13 +983,6 @@ components:
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
-        artifactory:
-          repo: hub.pingcap.net/pingcap/ctl/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         artifacts:
           - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -1080,6 +1050,13 @@ components:
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}   
     routers: # match once.
       - description: starts from v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
@@ -1091,13 +1068,6 @@ components:
           release:
             - script: make package
         builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-dashboard/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}                
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1125,14 +1095,7 @@ components:
         steps:
           fips:
             - script: ENABLE_FIPS=1 make package
-        builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
-        artifactory:
-          repo: hub.pingcap.net/pingcap/tidb-dashboard/package
-          tags:
-            {{- if .Git.sha }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-            {{- end }}
-            - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}          
+        builder: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb      
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.

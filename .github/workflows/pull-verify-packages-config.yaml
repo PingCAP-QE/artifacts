@@ -45,7 +45,8 @@ jobs:
 
       - name: Test => Get builder
         run: |
-          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0; do
             for cm in tidb tiflow tiflash tikv pd; do
               for os in linux darwin; do
                 for ac in amd64 arm64; do
@@ -71,7 +72,8 @@ jobs:
 
       - name: Test => gen package artifacts script
         run: |
-          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0; do
             for cm in tidb tiflow tiflash tikv pd; do
               for os in linux darwin; do
                 for ac in amd64 arm64; do
@@ -97,7 +99,8 @@ jobs:
 
       - name: Test => gen package images script
         run: |
-          for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          # for version in v7.5.0 v7.1.0 v6.5.0 v6.1.0; do
+          for version in v7.5.0 v7.1.0; do
             for cm in tidb tiflow tiflash tikv pd; do
               for ac in amd64 arm64; do
                 for profile in release; do

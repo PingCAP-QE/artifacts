@@ -17,7 +17,7 @@ function main() {
     if $need_package; then
         archive "${release_ws}"
     fi
-{{- if has .artifactory "repo" }}
+{{- if has .artifactory "package_repo" }}
     if $need_push; then
         push_files "${release_ws}"
         write_push_results "$result_path"
@@ -153,12 +153,12 @@ function archive() {
     {{- end }}
 }
 
-{{ if has .artifactory "repo" -}}
+{{ if has .artifactory "package_repo" -}}
 function push_files() {
     local release_ws="$1"
 
     local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.repo  }}:$tag"
+    local destination="{{ .artifactory.package_repo  }}:$tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:
@@ -181,7 +181,7 @@ function push_files() {
 function write_push_results() {
     local result_file="$1"
     local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.repo  }}:$tag"
+    local destination="{{ .artifactory.package_repo  }}:$tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:
@@ -191,7 +191,7 @@ function write_push_results() {
    
     cat <<EOF > "$result_file"
 oci:
-  repo: {{ .artifactory.repo  }}
+  repo: {{ .artifactory.package_repo  }}
   tag: "$tag"
   digest: "$digest"
 files:
