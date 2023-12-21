@@ -50,7 +50,7 @@ function main() {
 
     if yq -e '.routers | length == 0' release-package.yaml >/dev/null 2>&1; then
         echo "No package routes matched for the target($target_info)."
-        exit 0
+        exit 1
     fi
     yq ".routers[0]" release-package.yaml >release-router.yaml
 

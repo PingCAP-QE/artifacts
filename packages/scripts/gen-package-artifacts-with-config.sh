@@ -28,7 +28,7 @@ function main() {
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
     yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml
 
-    # filter by os and arch and release version.
+    # filter routers by os and arch and release version.
     yq -i ".routers |= map(select(
             .if
             and ([\"$os\"] - .os | length == 0)
@@ -42,10 +42,9 @@ function main() {
         echo "Error: wrong package config that make me matched more than 1 routes!"
         exit 1
     fi
-
     if yq -e '.routers | length == 0' release-package.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for the target($target_info)."
-        exit 0
+        echo "No package routes matched for the target($target_info)." >&2
+        exit 1
     fi
     yq ".routers[0]" release-package.yaml >release-router.yaml
 

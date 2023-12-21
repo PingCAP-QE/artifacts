@@ -24,28 +24,22 @@ function main() {
     yq -i '.Git.sha = ""' release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
+    yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml
 
-    # filter by os and arch and release version.
-    yq ".components[\"${component}\"].routers | map(select(
-            .if
-            and ([\"$os\"] - .os | length == 0)
-            and ([\"$arch\"] - .arch | length == 0)
-            and ([\"$profile\"] - .profile | length == 0)
-        ))" release-packages.yaml >release-package-routes.yaml
-
+    ###### filter builders #######
+    yq -i ".builders |= map(select( .if == null or .if ))" release-package.yaml
     # fail when array length greater than 1.
-    if yq -e 'length > 1' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "Error: wrong package config that make me matched more than 1 routes!" >&2
+    if yq -e '.builders | length > 1' release-package.yaml >/dev/null 2>&1; then
+        echo "Error: wrong package config that make me matched more than 1 builders!"
         exit 1
     fi
-
-    if yq -e 'length == 0' release-package-routes.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for the target($target_info)." >&2
+    if yq -e '.builders | length == 0' release-package.yaml >/dev/null 2>&1; then
+        echo "No package builder matched for the target($target_info)." >&2
         exit 1
     fi
 
     # get the builder image.
-    yq -e '.[0].builder' release-package-routes.yaml | tee $out_file
+    yq -e '.builders[0].image' release-package.yaml | tee $out_file
 }
 
 main "$@"
