@@ -1,4 +1,9 @@
 # See README.md
+# (~ 6.0] 使用 go1.18
+# [6.1~6.5) 使用 go1.19
+# [7.0 ~ 7.3] 使用 go 1.20
+# [7.4, ∞) 使用 go 1.21
+# [6.1 ~ 6.6] 使用 go 1.19
 components:
   pd:
     desc: pd server component tarball
@@ -15,11 +20,11 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">=7.4.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint ">=7.0.0-0, < 7.4.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.20
-      - if: {{ semver.CheckConstraint ">=6.1.0-0, < 7.0.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.18
@@ -78,7 +83,7 @@ components:
                   path: bin/pd-ctl
       - description: From v6.5.x
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=6.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -199,14 +204,14 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ and (semver.CheckConstraint ">=6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
+      - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
     routers: # match once.
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=6.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug]
@@ -311,18 +316,18 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">=7.4.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint ">=7.0.0-0, < 7.4.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.20
-      - if: {{ semver.CheckConstraint ">=6.1.0-0, < 7.0.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
     routers: # match once.
       - description: From v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=6.6.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -526,7 +531,7 @@ components:
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         # fips profile only invalid in v6.5.x
-        if: {{ and (semver.CheckConstraint ">=6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
+        if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug, fips]
@@ -643,7 +648,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -680,12 +685,12 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
-      - if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 6.5.0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
     routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -761,7 +766,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -791,7 +796,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -864,7 +869,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=1.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -994,12 +999,12 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
-      - if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
     routers: # match once.
       - description: Publish route for v0.5.0 and newer versions.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=0.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -1029,7 +1034,7 @@ components:
     routers: # match once.
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
