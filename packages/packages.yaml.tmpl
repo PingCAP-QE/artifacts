@@ -28,7 +28,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.18
-    routers: # match once.
+    routers:
       - description: For range [6.1.0, 6.5.0)
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0" .Release.version }}
@@ -208,7 +208,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
-    routers: # match once.
+    routers:
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -324,7 +324,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
-    routers: # match once.
+    routers:
       - description: From v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
@@ -482,7 +482,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         os: [linux]
@@ -527,11 +527,11 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
-    routers: # match once.
+    routers:
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         # fips profile only invalid in v6.5.x
-        if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
+        if: {{ or (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, debug, fips]
@@ -645,7 +645,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
@@ -763,7 +763,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
@@ -793,7 +793,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
@@ -866,7 +866,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
@@ -934,7 +934,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.18
       - if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -1001,7 +1001,7 @@ components:
     builders:
       - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers: # match once.
+    routers:
       - description: Publish route for v0.5.0 and newer versions.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
@@ -1031,7 +1031,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers: # match once.
+    routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
@@ -1115,7 +1115,7 @@ components:
     builders:
       - if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
-    routers: # match once.
+    routers:
       - description: starts from v6.6.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
