@@ -7,13 +7,14 @@ function test_get_builder() {
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local profile="release"
+    local script="./packages/scripts/get-package-builder-with-config.sh"
 
     for version in $versions; do
         for cm in $components; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+                    $script $cm $os $ac $version $profile
                 done
             done
         done
@@ -26,7 +27,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v1.5.0 v1.6.0; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+            $script $cm $os $ac $version $profile
         done
     done
 
@@ -36,7 +37,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/get-package-builder-with-config.sh $cm $os $ac $version $profile
+            $script $cm $os $ac $version $profile
         done
     done
 }
@@ -47,13 +48,14 @@ function test_gen_package_artifacts_script() {
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local profile="release"
+    local script="./packages/scripts/gen-package-artifacts-with-config.sh"
 
     for version in $versions; do
         for cm in $components; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                    $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
                 done
             done
         done
@@ -66,7 +68,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v1.5.0 v1.6.0; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
         done
     done
 
@@ -76,7 +78,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/gen-package-artifacts-with-config.sh $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
         done
     done
 }
@@ -86,12 +88,13 @@ function test_gen_package_images_script() {
     local components="tidb tiflow tiflash tikv pd ctl"
     local architectures="amd64 arm64"
     local profile="release"
+    local script="./packages/scripts/gen-package-images-with-config.sh"
 
     for version in $versions; do
         for cm in $components; do
             for ac in $architectures; do
                 echo "$cm $os $ac $version:"
-                ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
+                $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
             done
         done
     done
@@ -103,7 +106,7 @@ function test_gen_package_images_script() {
     for ac in $architectures; do
         for version in v1.6.0 v1.5.0; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
         done
     done
 
@@ -113,7 +116,7 @@ function test_gen_package_images_script() {
     for version in v0.5.0 v0.6.0; do
         for ac in $architectures; do
             echo "$cm $os $ac $version:"
-            ./packages/scripts/gen-package-images-with-config.sh $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
         done
     done
 }
