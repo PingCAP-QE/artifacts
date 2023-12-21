@@ -35,7 +35,7 @@ function main() {
 
     # filter by os and arch and release version.
     yq -i ".routers |= map(select(
-            .if
+            (.if == null or .if)
             and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
             and ([\"$profile\"] - .profile | length == 0)
@@ -50,7 +50,7 @@ function main() {
 
     if yq -e '.routers | length == 0' release-package.yaml >/dev/null 2>&1; then
         echo "No package routes matched for the target($target_info)."
-        exit 0
+        exit 1
     fi
     yq ".routers[0]" release-package.yaml >release-router.yaml
 
