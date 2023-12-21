@@ -26,7 +26,7 @@ function main() {
     yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
-    yq ".components[\"${component}\"]" release-packages.yaml >release-package-config.yaml
+    yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml
 
     # filter by os and arch and release version.
     yq -i ".routers |= map(select(
@@ -34,37 +34,37 @@ function main() {
             and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
             and ([\"$profile\"] - .profile | length == 0)
-        ))" release-package-config.yaml
-    yq -i '.routers[].artifactory = .artifactory' release-package-config.yaml
+        ))" release-package.yaml
+    yq -i '.routers[].artifactory = .artifactory' release-package.yaml
 
     # fail when array length greater than 1.
-    if yq -e '.routers | length > 1' release-package-config.yaml >/dev/null 2>&1; then
+    if yq -e '.routers | length > 1' release-package.yaml >/dev/null 2>&1; then
         echo "Error: wrong package config that make me matched more than 1 routes!"
         exit 1
     fi
 
-    if yq -e '.routers | length == 0' release-package-config.yaml >/dev/null 2>&1; then
+    if yq -e '.routers | length == 0' release-package.yaml >/dev/null 2>&1; then
         echo "No package routes matched for the target($target_info)."
         exit 0
     fi
+    yq ".routers[0]" release-package.yaml >release-router.yaml
 
     # generate package build script
-    yq ".routers[0]" release-package-config.yaml >release-package.yaml
-    yq -i ".os = \"$os\"" release-package.yaml
-    yq -i ".arch = \"$arch\"" release-package.yaml
-    yq -i ".profile = \"$profile\"" release-package.yaml
-    yq -i ".steps = .steps[.profile]" release-package.yaml
-    yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-package.yaml
-    yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-package.yaml
-    yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-package.yaml
-    yq -i '.artifacts = (.artifacts | map(select(.type == "file" or .type == null)))' release-package.yaml
+    yq -i ".os = \"$os\"" release-router.yaml
+    yq -i ".arch = \"$arch\"" release-router.yaml
+    yq -i ".profile = \"$profile\"" release-router.yaml
+    yq -i ".steps = .steps[.profile]" release-router.yaml
+    yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
+    yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml
+    yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-router.yaml
+    yq -i '.artifacts = (.artifacts | map(select(.type == "file" or .type == null)))' release-router.yaml
 
-    if yq -e '.artifacts | length == 0' release-package.yaml >/dev/null 2>&1; then
+    if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then
         echo "No artifacts should be built for target($target_info)."
         exit 0
     fi
 
-    gomplate --context .=release-package.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
+    gomplate --context .=release-router.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
     echo "Generated shell script: $out_file"
 }
 
