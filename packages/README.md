@@ -36,3 +36,7 @@ $ grep -oE "{{\s*\..*?}}" packages/offline-packages.yaml.tmpl | grep -oE "\.\w+(
 .Release.arch
 .Release.version
 ```
+
+## How to verify verifyl the template
+
+Please run `./packages/scripts/ci.sh` locally before commit.
