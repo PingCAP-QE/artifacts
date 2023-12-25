@@ -5,6 +5,196 @@
 # [7.4, ∞) 使用 go 1.21
 # [6.1 ~ 6.6] 使用 go 1.19
 components:
+  advanced-statefulset:
+    desc:
+    git:
+      url: https://github.com/pingcap/advanced-statefulset.git
+      ref: '{{ .Git.ref | default "master" }}'
+      sha: '{{ .Git.sha | default "" }}'
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
+    routers:
+      - description: Publish route for v0.5.0 and newer versions.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/advanced-statefulset
+            context: . # build under git repo.
+            dockerfile: Dockerfile
+  ctl:
+    desc: ctl components
+    git:
+      - url: https://github.com/pingcap/tidb.git
+        ref: {{ .Git.ref | default "master" }}
+      - url: others
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/ctl/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        artifacts:
+          - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: binlogctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}"
+                  path: "tidb-binlog-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: binlogctl
+              - name: cdc
+                src:
+                  type: oci
+                  url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
+                  path: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: cdc
+              - name: ctl
+                src:
+                  type: http
+                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: bin/tiup-ctl
+              - name: etcdctl
+                src:
+                  type: http
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
+              - name: pd-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
+                  path: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: pd-ctl
+              - name: tidb-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  path: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-ctl
+              - name: tikv-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
+                  path: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tikv-ctl
+              - name: tidb-lightning-ctl
+                src:
+                  type: oci
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  path: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+            tiup:
+              description: TiDB controller suite
+              entrypoint: ctl
+  ng-monitoring:
+    desc: ng-monitoring component tarball
+    git:
+      url: https://github.com/pingcap/ng-monitoring.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/ng-monitoring/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.18
+      - if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make default
+        artifacts:
+          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/ng-monitoring/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [fips]
+        steps:
+          fips:
+            - script: ENABLE_FIPS=1 make default
+          release:
+            - script: make default
+        artifacts:
+          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+          - name: fips container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/ng-monitoring/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+
   pd:
     desc: pd server component tarball
     git:
@@ -189,118 +379,483 @@ components:
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
-  tikv:
-    desc: tikv components tarball
+  tidb:
+    desc: tidb server component tarball
     git:
-      url: https://github.com/tikv/tikv.git
+      url: https://github.com/pingcap/tidb.git
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/tikv/tikv/package
+      package_repo: hub.pingcap.net/pingcap/tidb/package
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
-      - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
     routers:
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        # fips profile only invalid in v6.5.x
+        if: {{ or (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug]
+        profile: [release, debug, fips]
         steps:
           release:
-            - os: linux
-              script: |
-                source /opt/rh/devtoolset-8/enable
-                if [ "$(uname -m)" == "aarch64" ]; then
-                    export JEMALLOC_SYS_WITH_LG_PAGE=16
-                fi
             - script: |
-                ROCKSDB_SYS_STATIC=1 make dist_release
+                make server build_tools build_dumpling
           debug:
-            - os: linux
-              script: |
-                source /opt/rh/devtoolset-8/enable
-                if [ "$(uname -m)" == "aarch64" ]; then
-                    export JEMALLOC_SYS_WITH_LG_PAGE=16
-                fi
             - script: |
-                ROCKSDB_SYS_STATIC=1 make fail_release
+                make failpoint-enable
+                WITH_RACE=1 make server build_tools build_dumpling # failpoint
+                make failpoint-disable
+          fips:
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling                
         artifacts:
-          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: tikv-server
+              - name: tidb-server
                 src:
-                  path: bin/tikv-server
+                  path: bin/tidb-server
+            tiup:
+              description: >
+                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+              entrypoint: tidb-server
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: br
+                src:
+                  path: bin/br
             tiup:
               description: >-
-                Distributed transactional key-value database, originally created to complement TiDB.
-              entrypoint: tikv-server
-          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                TiDB/TiKV cluster backup restore tool.
+              standalone: true
+              entrypoint: br
+          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: tikv-ctl
+              - name: dumpling
                 src:
-                  path: bin/tikv-ctl
+                  path: bin/dumpling
+            tiup:
+              entrypoint: dumpling
+              description: >
+                Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
+          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+            tiup:
+              description: >-
+                TiDB Lightning is a tool used for fast full import of large amounts of data into a TiDB cluster
+              entrypoint: tidb-lightning
+              standalone: true
+          - name: container image - tidb server
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            files: # prepare for context
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+          - name: container image - br tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/br
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
+            files: # prepare for context
+              - name: br
+                src:
+                  path: bin/br
+          - name: container image - dumpling tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
+            files: # prepare for context
+              - name: dumpling
+                src:
+                  path: bin/dumpling
+          - name: container image - tidb-lightning
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
+            files: # prepare for context
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
+  tidb-tools:
+    desc: tidb tools component tarball
+    git:
+      url: https://github.com/pingcap/tidb-tools.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-tools/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+        artifacts:
+          - name: "tidb-tools-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: sync_diff_inspector
+                src:
+                  path: bin/sync_diff_inspector
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            files: # prepare for context
-              - name: tikv-server
+              repo: hub.pingcap.net/pingcap/tidb-tools/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
+            files:
+              - name: sync_diff_inspector
                 src:
-                  path: bin/tikv-server
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
-      - description: For FIPs in range [6.5.6, 6.6.0)
+                  path: bin/sync_diff_inspector
+  tidb-ctl:
+    desc: tidb ctl component tarball
+    git:
+      url: https://github.com/pingcap/tidb-ctl.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-ctl/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    routers:
+      - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: go build
+        artifacts:
+          - name: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-ctl
+                src:
+                  path: bin/tidb-ctl
+  tidb-binlog:
+    desc: tidb binlog component tarball
+    git:
+      url: https://github.com/pingcap/tidb-binlog.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-binlog/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+        artifacts:
+          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            not_tiup: true # docker only
+            files: # output files.
+              - name: pump
+                src:
+                  path: bin/pump
+              - name: drainer
+                src:
+                  path: bin/drainer
+              - name: reparo
+                src:
+                  path: bin/reparo
+              - name: arbiter
+                src:
+                  path: bin/arbiter
+              - name: binlogctl
+                src:
+                  path: bin/binlogctl
+          - name: "drainer-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: drainer
+                src:
+                  path: bin/drainer
+          - name: "pump-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: pump
+                src:
+                  path: bin/pump
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-binlog/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
+            files: # context files
+              - name: pump
+                src:
+                  path: bin/pump
+              - name: drainer
+                src:
+                  path: bin/drainer
+              - name: reparo
+                src:
+                  path: bin/drainer
+              - name: binlogctl
+                src:
+                  path: bin/binlogctl
+  tidb-operator:
+    desc: tidb opreator component tarball
+    git:
+      url: https://github.com/pingcap/tidb-opreator.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-opreator/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+          fips:
+            - script: ENABLE_FIPS=1 make build
+        artifacts:
+          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:  # output files.
+              - name: tidb-scheduler
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - name: tidb-discovery
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - name: tidb-controller-manager
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - name: tidb-admission-webhook
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
+          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-backup-manager
+                src:
+                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
+          - name: "br-federation-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: br-federation-manager
+                src:
+                  path: images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-opreator/image
+            context: . # build under git repo.
+            dockerfile: images/tidb-operator/Dockerfile
+  tidb-dashboard:
+    desc: ''
+    git:
+      url: https://github.com/pingcap/tidb-dashboard.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
+    routers:
+      - description: starts from v6.6.0
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make package
+        artifacts:
+          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
+            tiup:
+              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
+              entrypoint: tidb-dashboard
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+            files: # prepare for context
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
+      - description: ">= 6.5.x and < 6.6.0"
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint "~6.5.4-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
         steps:
           fips:
-            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
+            - script: ENABLE_FIPS=1 make package
         artifacts:
-          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tikv-server
+          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-dashboard
                 src:
-                  path: bin/tikv-server
+                  path: bin/tidb-dashboard
             tiup:
-              description: >-
-                Distributed transactional key-value database, originally created to complement TiDB.
-              entrypoint: tikv-server
-          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
-          - name: fips container image
+              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
+              entrypoint: tidb-dashboard
+          - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/tikv/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            {{- if eq .Release.profile "fips" }}
-            build_args:
-              - BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0-fips
-            {{- end }}
+              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
             files: # prepare for context
-              - name: tikv-server
+              - name: tidb-dashboard
                 src:
-                  path: bin/tikv-server
-              - name: tikv-ctl
+                  path: bin/tidb-dashboard
+  tiflash:
+    desc: tiflash components tarball
+    git:
+      url: https://github.com/pingcap/tiflash.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/tiflash/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
+    routers:
+      - description: interpret versions according to semantic version spec.
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+            - os: darwin
+              script: |
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
+            - os: linux
+              script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - os: linux
+              script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-release.sh
+
+                # debug it.
+                ccache -s
+            - os: linux
+              description: move the building targets outputs to the constant path.
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
+        artifacts:
+          - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tiflash/
                 src:
-                  path: bin/tikv-ctl
+                  path: outputs/tiflash/
+            tiup:
+              description: The TiFlash Columnar Storage Engine
+              entrypoint: tiflash/tiflash
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflash/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
+            files:
+              - name: tiflash/
+                src:
+                  path: outputs/tiflash/
   tiflow:
     desc: tiflow components tarball
     git:
@@ -505,462 +1060,79 @@ components:
               repo: hub.pingcap.net/pingcap/tiflow-operator/image
             context: . # just build under git repo folder.
             dockerfile: Dockerfile
-  tidb:
-    desc: tidb server component tarball
+  tikv:
+    desc: tikv components tarball
     git:
-      url: https://github.com/pingcap/tidb.git
+      url: https://github.com/tikv/tikv.git
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb/package
+      package_repo: hub.pingcap.net/tikv/tikv/package
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
-      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
+      - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
+      - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:77c2679-fips
     routers:
       - description: From 6.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        # fips profile only invalid in v6.5.x
-        if: {{ or (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug, fips]
+        profile: [release, debug]
         steps:
           release:
+            - os: linux
+              script: |
+                source /opt/rh/devtoolset-8/enable
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
             - script: |
-                make server build_tools build_dumpling
+                ROCKSDB_SYS_STATIC=1 make dist_release
           debug:
+            - os: linux
+              script: |
+                source /opt/rh/devtoolset-8/enable
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
             - script: |
-                make failpoint-enable
-                WITH_RACE=1 make server build_tools build_dumpling # failpoint
-                make failpoint-disable
-          fips:
-            - script: ENABLE_FIPS=1 make server build_tools build_dumpling                
+                ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
-          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: tidb-server
+              - name: tikv-server
                 src:
-                  path: bin/tidb-server
-            tiup:
-              description: >
-                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
-              entrypoint: tidb-server
-          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: br
-                src:
-                  path: bin/br
+                  path: bin/tikv-server
             tiup:
               description: >-
-                TiDB/TiKV cluster backup restore tool.
-              standalone: true
-              entrypoint: br
-          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                Distributed transactional key-value database, originally created to complement TiDB.
+              entrypoint: tikv-server
+          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: dumpling
+              - name: tikv-ctl
                 src:
-                  path: bin/dumpling
-            tiup:
-              entrypoint: dumpling
-              description: >
-                Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
-          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tidb-lightning-ctl
-                src:
-                  path: bin/tidb-lightning-ctl
-          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tidb-lightning
-                src:
-                  path: bin/tidb-lightning
-            tiup:
-              description: >-
-                TiDB Lightning is a tool used for fast full import of large amounts of data into a TiDB cluster
-              entrypoint: tidb-lightning
-              standalone: true
-          - name: container image - tidb server
+                  path: bin/tikv-ctl
+          - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+              repo: hub.pingcap.net/tikv/tikv/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             files: # prepare for context
-              - name: tidb-server
+              - name: tikv-server
                 src:
-                  path: bin/tidb-server
-          - name: container image - br tool
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/br
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
-            files: # prepare for context
-              - name: br
+                  path: bin/tikv-server
+              - name: tikv-ctl
                 src:
-                  path: bin/br
-          - name: container image - dumpling tool
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
-            files: # prepare for context
-              - name: dumpling
-                src:
-                  path: bin/dumpling
-          - name: container image - tidb-lightning
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
-            files: # prepare for context
-              - name: tidb-lightning
-                src:
-                  path: bin/tidb-lightning
-              - name: tidb-lightning-ctl
-                src:
-                  path: bin/tidb-lightning-ctl
-  tidb-tools:
-    desc: tidb tools component tarball
-    git:
-      url: https://github.com/pingcap/tidb-tools.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-tools/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: make build
-        artifacts:
-          - name: "tidb-tools-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: sync_diff_inspector
-                src:
-                  path: bin/sync_diff_inspector
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-tools/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
-            files:
-              - name: sync_diff_inspector
-                src:
-                  path: bin/sync_diff_inspector
-  tiflash:
-    desc: tiflash components tarball
-    git:
-      url: https://github.com/pingcap/tiflash.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/tiflash/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        os: [linux, darwin]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - os: darwin
-              script: |
-                ./release-darwin/build/build-release.sh
-            - os: darwin
-              script: |
-                mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
-            - os: linux
-              script: |
-                # Create new build script to take advantage of ccache
-                mkdir -p build
-                cp -r release-centos7-llvm/scripts build/
-                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
-            - os: linux
-              script: |
-                # Build with ccache tool
-                mkdir -p /usr/lib64/ccache/bin/
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
-
-                ccache -z
-
-                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
-                CC=clang \
-                CXX=clang++ \
-                LD=ld.lld \
-                build/scripts/build-release.sh
-
-                # debug it.
-                ccache -s
-            - os: linux
-              description: move the building targets outputs to the constant path.
-              script: |
-                mkdir outputs
-                mv release-centos7-llvm/tiflash outputs/tiflash
-        artifacts:
-          - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: tiflash/
-                src:
-                  path: outputs/tiflash/
-            tiup:
-              description: The TiFlash Columnar Storage Engine
-              entrypoint: tiflash/tiflash
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tiflash/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
-            files:
-              - name: tiflash/
-                src:
-                  path: outputs/tiflash/
-  tidb-ctl:
-    desc: tidb ctl component tarball
-    git:
-      url: https://github.com/pingcap/tidb-ctl.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-ctl/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: go build
-        artifacts:
-          - name: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: tidb-ctl
-                src:
-                  path: bin/tidb-ctl
-  tidb-binlog:
-    desc: tidb binlog component tarball
-    git:
-      url: https://github.com/pingcap/tidb-binlog.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-binlog/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: make build
-        artifacts:
-          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            not_tiup: true # docker only
-            files: # output files.
-              - name: pump
-                src:
-                  path: bin/pump
-              - name: drainer
-                src:
-                  path: bin/drainer
-              - name: reparo
-                src:
-                  path: bin/reparo
-              - name: arbiter
-                src:
-                  path: bin/arbiter
-              - name: binlogctl
-                src:
-                  path: bin/binlogctl
-          - name: "drainer-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: drainer
-                src:
-                  path: bin/drainer
-          - name: "pump-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: pump
-                src:
-                  path: bin/pump
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-binlog/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
-            files: # context files
-              - name: pump
-                src:
-                  path: bin/pump
-              - name: drainer
-                src:
-                  path: bin/drainer
-              - name: reparo
-                src:
-                  path: bin/drainer
-              - name: binlogctl
-                src:
-                  path: bin/binlogctl
-  tidb-operator:
-    desc: tidb opreator component tarball
-    git:
-      url: https://github.com/pingcap/tidb-opreator.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-opreator/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: make build
-          fips:
-            - script: ENABLE_FIPS=1 make build
-        artifacts:
-          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:  # output files.
-              - name: tidb-scheduler
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
-              - name: tidb-discovery
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
-              - name: tidb-controller-manager
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
-              - name: tidb-admission-webhook
-                src:
-                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
-          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: tidb-backup-manager
-                src:
-                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
-          - name: "br-federation-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: br-federation-manager
-                src:
-                  path: images/br-federation-manager/bin/{{ .Release.arch }}/br-federation-manager
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-opreator/image
-            context: . # build under git repo.
-            dockerfile: images/tidb-operator/Dockerfile
-  ng-monitoring:
-    desc: ng-monitoring component tarball
-    git:
-      url: https://github.com/pingcap/ng-monitoring.git
-      ref: {{ .Git.ref | default "master" }}
-      sha: {{ .Git.sha | default "" }}
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/ng-monitoring/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
-      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.20
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
-      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.18
-      - if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://carvel.dev/vendir/docs/v0.34.x/versions/
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: make default
-        artifacts:
-          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: ng-monitoring-server
-                src:
-                  path: bin/ng-monitoring-server
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/ng-monitoring/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
-            files:
-              - name: ng-monitoring-server
-                src:
-                  path: bin/ng-monitoring-server
-      - description: interpret versions according to semantic version spec.
+                  path: bin/tikv-ctl
+      - description: For FIPs in range [6.5.6, 6.6.0)
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -968,206 +1140,80 @@ components:
         profile: [fips]
         steps:
           fips:
-            - script: ENABLE_FIPS=1 make default
-          release:
-            - script: make default
+            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
-          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: ng-monitoring-server
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tikv-server
                 src:
-                  path: bin/ng-monitoring-server
+                  path: bin/tikv-server
+            tiup:
+              description: >-
+                Distributed transactional key-value database, originally created to complement TiDB.
+              entrypoint: tikv-server
+          - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tikv-ctl
+                src:
+                  path: bin/tikv-ctl
           - name: fips container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/ng-monitoring/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
-            files:
-              - name: ng-monitoring-server
+              repo: hub.pingcap.net/tikv/tikv/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
+            {{- if eq .Release.profile "fips" }}
+            build_args:
+              - BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0-fips
+            {{- end }}
+            files: # prepare for context
+              - name: tikv-server
                 src:
-                  path: bin/ng-monitoring-server
-  advanced-statefulset:
-    desc:
-    git:
-      url: https://github.com/pingcap/advanced-statefulset.git
-      ref: '{{ .Git.ref | default "master" }}'
-      sha: '{{ .Git.sha | default "" }}'
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers:
-      - description: Publish route for v0.5.0 and newer versions.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        artifacts:
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/advanced-statefulset
-            context: . # build under git repo.
-            dockerfile: Dockerfile
-  ctl:
-    desc: ctl components
-    git:
-      - url: https://github.com/pingcap/tidb.git
-        ref: {{ .Git.ref | default "master" }}
-      - url: others
-    version: {{ .Release.version }} # segment version.
-    artifactory:
-      package_repo: hub.pingcap.net/pingcap/ctl/package
-      tags:
-        {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
-        {{- end }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
-    routers:
-      - description: interpret versions according to semantic version spec.
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        os: [linux, darwin]
-        arch: [amd64, arm64]
-        profile: [release]
-        artifacts:
-          - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: binlogctl
-                src:
-                  type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}"
-                  path: "tidb-binlog-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: binlogctl
-              - name: cdc
-                src:
-                  type: oci
-                  url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
-                  path: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: cdc
-              - name: ctl
-                src:
-                  type: http
-                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: bin/tiup-ctl
-              - name: etcdctl
-                src:
-                  type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
-              - name: pd-ctl
-                src:
-                  type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
-                  path: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: pd-ctl
-              - name: tidb-ctl
-                src:
-                  type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: tidb-ctl
+                  path: bin/tikv-server
               - name: tikv-ctl
                 src:
-                  type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
-                  path: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: tikv-ctl
-              - name: tidb-lightning-ctl
-                src:
-                  type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-                  extract: true
-                  extract_inner_path: tidb-lightning-ctl
-            tiup:
-              description: TiDB controller suite
-              entrypoint: ctl
-  tidb-dashboard:
-    desc: ''
+                  path: bin/tikv-ctl
+  tiproxy:
+    desc: tiproxy components tarballs and images
     git:
-      url: https://github.com/pingcap/tidb-dashboard.git
-      ref: {{ .Git.ref | default "master" }}
+      url: https://github.com/pingcap/tiproxy.git
+      ref: {{ .Git.ref | default "main" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+      package_repo: hub.pingcap.net/pingcap/tiproxy/package
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
-    builders:
-      - if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
+    builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
+      - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (ne "fips" .Release.profile) }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
     routers:
-      - description: starts from v6.6.0
+      - description: From 0.1.2
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-        os: [linux]
+        if: {{ semver.CheckConstraint ">= 0.1.2-0" .Release.version }}
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
           release:
-            - script: make package
+            - script: make cmd
         artifacts:
-          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: tidb-dashboard
-                src:
-                  path: bin/tidb-dashboard
+          - name: "tiproxy-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiproxy, src: { path: bin/tiproxy } }
+              - { name: tiproxyctl, src: { path: bin/tiproxyctl } }
             tiup:
-              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
-              entrypoint: tidb-dashboard
+              description: >-
+                TiProxy is a database proxy that is based on TiDB.
+              entrypoint: tiproxy
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+              repo: hub.pingcap.net/pingcap/tiproxy/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiproxy/Dockerfile
             files: # prepare for context
-              - name: tidb-dashboard
-                src:
-                  path: bin/tidb-dashboard
-      - description: ">= 6.5.x and < 6.6.0"
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint "~6.5.4-0" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [fips]
-        steps:
-          fips:
-            - script: ENABLE_FIPS=1 make package
-        artifacts:
-          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: tidb-dashboard
-                src:
-                  path: bin/tidb-dashboard
-            tiup:
-              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
-              entrypoint: tidb-dashboard
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
-            files: # prepare for context
-              - name: tidb-dashboard
-                src:
-                  path: bin/tidb-dashboard
+              - { name: tiproxy, src: { path: bin/tiproxy } }
+              - { name: tiproxyctl, src: { path: bin/tiproxyctl } }
+              - { name: conf/, src: { path: conf/ } }

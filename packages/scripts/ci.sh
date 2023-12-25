@@ -40,6 +40,16 @@ function test_get_builder() {
             $script $cm $os $ac $version $profile
         done
     done
+
+    # tiproxy
+    local cm="tiproxy"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v0.1.2 v0.1.3; do
+            echo "$cm $os $ac $version:"
+            $script $cm $os $ac $version $profile
+        done
+    done
 }
 
 function test_gen_package_artifacts_script() {
@@ -81,6 +91,16 @@ function test_gen_package_artifacts_script() {
             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
         done
     done
+
+    # tiproxy
+    local cm="tiproxy"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v0.1.2 v0.1.3; do
+            echo "$cm $os $ac $version:"
+            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+        done
+    done
 }
 
 function test_gen_package_images_script() {
@@ -115,6 +135,16 @@ function test_gen_package_images_script() {
     local os="linux"
     for version in v0.5.0 v0.6.0; do
         for ac in $architectures; do
+            echo "$cm $os $ac $version:"
+            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+        done
+    done
+
+    # tiproxy
+    local cm="tiproxy"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
         done
