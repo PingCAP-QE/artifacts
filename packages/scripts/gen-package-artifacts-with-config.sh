@@ -52,6 +52,7 @@ function main() {
     yq -i ".os = \"$os\"" release-router.yaml
     yq -i ".arch = \"$arch\"" release-router.yaml
     yq -i ".profile = \"$profile\"" release-router.yaml
+    yq -i ".version = \"$version\"" release-router.yaml
     yq -i ".steps = .steps[.profile]" release-router.yaml
     yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml

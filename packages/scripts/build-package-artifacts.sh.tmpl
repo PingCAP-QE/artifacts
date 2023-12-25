@@ -33,7 +33,7 @@ function parse_arguments() {
         ;;
       o)
         result_path=${OPTARG}
-        ;;        
+        ;;
       a)
         need_package=true
         ;;
@@ -155,11 +155,31 @@ function archive() {
 }
 
 {{ if has .artifactory "package_repo" -}}
+function prepare_artifact_config() {
+    local save_file="$1"
+
+    :> "$save_file"
+    yq -p json -o json -i '.os = "{{ .os }}"' "$save_file"
+    yq -p json -o json -i '.architecture = "{{ .arch }}"' "$save_file"
+    yq -p json -o json -i '.profile = "{{ .profile }}"' "$save_file"
+    yq -p json -o json -i '.version = "{{ .version }}"' "$save_file"
+    yq -p json -o json -i '.tiup = []' "$save_file"
+
+    {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .tiup != null))`) }}
+    {{- with .tiup }}
+    yq -p json -o json -i '.tiup += {{ . | toJSON }}' "$save_file"
+    {{- end }}
+    yq -p json -o json -i '.tiup[-1].file = "{{ .name }}"' "$save_file"
+    {{- end }}
+}
+
 function push_files() {
     local release_ws="$1"
 
     local tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
     local destination="{{ .artifactory.package_repo  }}:$tag"
+
+    prepare_artifact_config "$release_ws/artifact-config.json"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:
@@ -167,7 +187,7 @@ function push_files() {
     #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
 
     pushd "$release_ws"
-        oras push --artifact-type application/gzip ${destination}
+        oras push --artifact-type application/gzip --config artifact-config.json ${destination}
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
@@ -190,7 +210,7 @@ function write_push_results() {
     #   local registry=$(echo "${destination}" | cut -d/ -f)
     #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
     digest="$(oras discover "${destination}" --distribution-spec v1.1-referrers-tag -o tree | cut -d@ -f2)"
-   
+
     cat <<EOF > "$result_file"
 oci:
   repo: {{ .artifactory.package_repo  }}

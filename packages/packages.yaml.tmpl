@@ -428,7 +428,7 @@ components:
                 src:
                   path: bin/tidb-server
             tiup:
-              description: >
+              description: >-
                 TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
               entrypoint: tidb-server
           - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -448,7 +448,7 @@ components:
                   path: bin/dumpling
             tiup:
               entrypoint: dumpling
-              description: >
+              description: >-
                 Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
           - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
