@@ -149,6 +149,7 @@ function archive() {
     popd
     rm -rf $archive_dir
     echo "$save_file"
+    sha256sum -b "$save_file" | cut -d ' ' -f1 > "$save_file.sha256"
     # <<<<<<<<<<<<<<<< file: {{ .name }} <<<<<<<<<<<<<<<<
     {{- end }}
 }
@@ -168,6 +169,7 @@ function push_files() {
     pushd "$release_ws"
         oras push --artifact-type application/gzip ${destination}
         {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
+        {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
 
     {{- $tag_suffix := printf "-%s_%s_%s" .profile .os .arch -}}
@@ -197,6 +199,7 @@ oci:
 files:
   {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
   {{ printf "- %s" .name }}
+  {{ printf "- %s.sha256" .name }}
   {{- end }}
 EOF
 }
