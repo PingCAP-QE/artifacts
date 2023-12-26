@@ -20,6 +20,17 @@ function test_get_builder() {
         done
     done
 
+    # tidb enterprise profile
+    local cm="tidb"
+    for version in $versions; do
+        for os in $operating_systems; do
+            for ac in $architectures; do
+                echo "$cm $os $ac $version:"
+                $script $cm $os $ac $version $profile
+            done
+        done
+    done
+
     ##### others that owns theirs non-unified versions #####
     # tidb-operator
     local cm="tidb-operator"
@@ -71,6 +82,17 @@ function test_gen_package_artifacts_script() {
         done
     done
 
+    # tidb enterprise profile
+    local cm="tidb"
+    for version in $versions; do
+        for os in $operating_systems; do
+            for ac in $architectures; do
+                echo "$cm $os $ac $version:"
+                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            done
+        done
+    done
+
     ##### others that owns theirs non-unified versions #####
     # tidb-operator
     local cm="tidb-operator"
@@ -116,6 +138,15 @@ function test_gen_package_images_script() {
                 echo "$cm $os $ac $version:"
                 $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
             done
+        done
+    done
+
+    # tidb enterprise profile
+    local cm="tidb"
+    for version in $versions; do
+        for ac in $architectures; do
+            echo "$cm $os $ac $version:"
+            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
         done
     done
 
