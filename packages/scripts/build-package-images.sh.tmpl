@@ -80,7 +80,7 @@ build_and_push_images() {
 
     ################# build and push image ################
     tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
-{{ range (.artifacts | jq `map(select(.type == "image"))`) }}
+{{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
     archive_dir="$release_ws/tmp-$(date +%s)"
     mkdir -p "$archive_dir"
@@ -182,7 +182,7 @@ write_push_results() {
 
     cat <<EOF > "$result_file"
 images:
-{{- range (.artifacts | jq `map(select(.type == "image"))`) }}
+{{- range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 - repo: {{ .artifactory.repo  }}
   url: "{{ .artifactory.repo  }}:$tag"
   tag: "$tag"

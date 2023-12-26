@@ -10,6 +10,13 @@ Central declarative congfigurations for artifacts delivering.
 - [yq]
 - jq
 
+## Profiles
+
+- `release`: community release profile.
+- `debug`: test or debug profile.
+- `enterprise`: enterprise release profile, it will not publish any tiup pkgs.
+- `fips`: fips feature release without enterprise plugins.
+
 ## For component binaries packages and container images
 
 Configuration template: [packages.yaml.tmpl](./packages.yaml.tmpl)

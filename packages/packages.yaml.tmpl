@@ -403,25 +403,57 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
     routers:
-      - description: From 6.1.0
+      - description: From 7.1.0
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         # fips profile only invalid in v6.5.x
-        if: {{ or (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug, fips]
+        profile: [release, debug, enterprise]
         steps:
           release:
             - script: |
                 make server build_tools build_dumpling
+          enterprise:
+            - script: |
+                TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
+            - script: |
+                # git checkout the enterprise-plugin code.
+                {{- if (.Git.ref | regexp.Match `^feature/release-[0-9]+\.[0-9]+`) }}
+                {{ $sv := semver.Semver .Release.version -}}
+                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                {{- else if (.Git.ref | default "master" | regexp.Match `^(master|main|feature/.*)`) }}
+                plugin_branch="master"
+                {{- else }}
+                {{ $sv := semver.Semver .Release.version -}}
+                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                {{- end }}
+                git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
+            - script: |
+                # go plugin audit
+                pushd ../enterprise-plugin/audit && go mod tidy &&  popd
+                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
+            - script: |
+                # go plugin whitelist
+                pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
+                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
           debug:
             - script: |
                 make failpoint-enable
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
                 make failpoint-disable
           fips:
-            - script: ENABLE_FIPS=1 make server build_tools build_dumpling                
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling
         artifacts:
+          - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - name: whitelist-1.so
+                src:
+                  path: bin/whitelist-1.so
+              - name: audit-1.so
+                src:
+                  path: bin/audit-1.so
           - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: tidb-server
@@ -469,11 +501,168 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+            {{- if eq .Release.profile "enterprise" }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
+            {{- else }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            {{- end }}
             files: # prepare for context
               - name: tidb-server
                 src:
                   path: bin/tidb-server
+              - name: audit-1.so
+                if: {{ eq "enterprise" .Release.profile }}
+                src:
+                  path: bin/audit-1.so
+              - name: whitelist-1.so
+                if: {{ eq "enterprise" .Release.profile }}
+                src:
+                  path: bin/whitelist-1.so
+          - name: container image - br tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/br
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
+            files: # prepare for context
+              - name: br
+                src:
+                  path: bin/br
+          - name: container image - dumpling tool
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
+            files: # prepare for context
+              - name: dumpling
+                src:
+                  path: bin/dumpling
+          - name: container image - tidb-lightning
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
+            files: # prepare for context
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
+      - description: From 6.1.0 until 7.0.x
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        # fips profile only invalid in v6.5.x
+        if: {{ or (semver.CheckConstraint ">= 6.1.0-0, < 7.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release, debug, fips, enterprise]
+        steps:
+          release:
+            - script: |
+                make server build_tools build_dumpling
+          enterprise:
+            - script: |
+                TIDB_EDITION=Enterprise make server build_tools build_dumpling
+            - script: |
+                # git checkout the enterprise-plugin code.
+                {{- if (.Git.ref | regexp.Match `^feature/release-[0-9]+\.[0-9]+`) }}
+                {{ $sv := semver.Semver .Release.version -}}
+                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                {{- else if (.Git.ref | default "master" | regexp.Match `^(master|main|feature/.*)`) }}
+                plugin_branch="master"
+                {{- else }}
+                {{ $sv := semver.Semver .Release.version -}}
+                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                {{- end }}
+                git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
+            - script: |
+                # go plugin audit
+                pushd ../enterprise-plugin/audit && go mod tidy &&  popd
+                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
+            - script: |
+                # go plugin whitelist
+                pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
+                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+          debug:
+            - script: |
+                make failpoint-enable
+                WITH_RACE=1 make server build_tools build_dumpling # failpoint
+                make failpoint-disable
+          fips:
+            - script: ENABLE_FIPS=1 make server build_tools build_dumpling
+        artifacts:
+          - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - name: whitelist-1.so
+                src:
+                  path: bin/whitelist-1.so
+              - name: audit-1.so
+                src:
+                  path: bin/audit-1.so
+          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+            tiup:
+              description: >-
+                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+              entrypoint: tidb-server
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: br
+                src:
+                  path: bin/br
+            tiup:
+              description: >-
+                TiDB/TiKV cluster backup restore tool.
+              standalone: true
+              entrypoint: br
+          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dumpling
+                src:
+                  path: bin/dumpling
+            tiup:
+              entrypoint: dumpling
+              description: >-
+                Dumpling is a CLI tool that helps you dump MySQL/TiDB data.
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-lightning-ctl
+                src:
+                  path: bin/tidb-lightning-ctl
+          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-lightning
+                src:
+                  path: bin/tidb-lightning
+            tiup:
+              description: >-
+                TiDB Lightning is a tool used for fast full import of large amounts of data into a TiDB cluster
+              entrypoint: tidb-lightning
+              standalone: true
+          - name: container image - tidb server
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+            {{- if eq .Release.profile "enterprise" }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            {{- end }}
+            files: # prepare for context
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+              - name: audit-1.so
+                if: {{ eq "enterprise" .Release.profile }}
+                src:
+                  path: bin/audit-1.so
+              - name: whitelist-1.so
+                if: {{ eq "enterprise" .Release.profile }}
+                src:
+                  path: bin/whitelist-1.so
           - name: container image - br tool
             type: image
             artifactory:
