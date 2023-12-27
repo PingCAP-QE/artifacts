@@ -87,7 +87,7 @@ function archive() {
     release_ws=$(realpath $release_ws)
 
     ################# create tarballs ################
-    {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
+    {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}
     # >>>>>>>>>>>>>>>> file: {{ .name }} >>>>>>>>>>>>>>>>
     echo "Start composing artifact: {{ .name }} ..."
     local archive_dir="$release_ws/$(uuidgen)"
@@ -102,7 +102,7 @@ function archive() {
     ## local files
     {{- range $localFiles }}
     # - {{ .name }}
-    mkdir -p $(dirname ${archive_dir}/{{ .name }})
+    mkdir -p "$(dirname ${archive_dir}/{{ .name }})"
     {{- if has .src "extract" }}
     tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
     mv {{ default "" .src.extract_inner_path }} ${archive_dir}/{{ .name }}
@@ -165,11 +165,13 @@ function prepare_artifact_config() {
     yq -p json -o json -i '.version = "{{ .version }}"' "$save_file"
     yq -p json -o json -i '.tiup = []' "$save_file"
 
-    {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .tiup != null))`) }}
+    {{- if eq .profile "release" }}
+    {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}
     {{- with .tiup }}
     yq -p json -o json -i '.tiup += {{ . | toJSON }}' "$save_file"
     {{- end }}
     yq -p json -o json -i '.tiup[-1].file = "{{ .name }}"' "$save_file"
+    {{- end }}
     {{- end }}
 }
 
@@ -188,8 +190,8 @@ function push_files() {
 
     pushd "$release_ws"
         oras push --artifact-type application/gzip --config artifact-config.json ${destination}
-        {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s" .name }}{{- end }}
-        {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}{{ printf " %s.sha256" .name }}{{- end }}
+        {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s" .name }}{{- end }}
+        {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
 
     {{- $tag_suffix := printf "-%s_%s_%s" .profile .os .arch -}}
@@ -217,7 +219,7 @@ oci:
   tag: "$tag"
   digest: "$digest"
 files:
-  {{- range (.artifacts | jq `map(select(.type == "file" or .type == null))`) }}
+  {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}
   {{ printf "- %s" .name }}
   {{ printf "- %s.sha256" .name }}
   {{- end }}
