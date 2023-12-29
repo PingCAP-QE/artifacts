@@ -1,18 +1,20 @@
 # See README.md
-artifactory:
-  repo: hub.pingcap.net/pingcap/offline-package
-  tags:
-    - "{{ .Release.version }}"
-artifacts:
+
+editions:
   community:
     desc: community offline package
     version: "{{ .Release.version }}" # segment version.
-    routers: # match once.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/offline-package
+      tags:
+        - "{{ .Release.version }}-community"
+    routers:
       - description: "Started from v7.5.0 to latest"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">=7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
+        profile: [community]
         artifacts:
           - name: "tidb-community-server-{{ .Release.version }}-linux-{{ .Release.arch }}"
             desc: community offline server package
@@ -218,3 +220,7 @@ artifacts:
                   extract_inner_path: "mydumper-linux-{{ .Release.arch }}/bin/mydumper"
   enterprise:
     TODO: true
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/offline-package
+      tags:
+        - "{{ .Release.version }}-enterprise"

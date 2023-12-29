@@ -182,6 +182,25 @@ function test_gen_package_images_script() {
     done
 }
 
+function test_gen_offline_package_artifacts_script() {
+    local versions="v7.5.0 v7.1.0"
+    local operating_systems="linux"
+    local architectures="amd64 arm64"
+    local editions="community"
+    local script="./packages/scripts/gen-package-offline-package-with-config.sh"
+
+    for version in $versions; do
+        for os in $operating_systems; do
+            for ac in $architectures; do
+                for edition in $editions; do
+                    echo "$os $ac $version $edition:"
+                    $script $os $ac $version $edition
+                done
+            done
+        done
+    done
+}
+
 function main() {
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
     test_get_builder
@@ -194,6 +213,10 @@ function main() {
     echo ">>>>>>>> test_gen_package_images_script >>>>>>>>>>"
     test_gen_package_images_script
     echo "<<<<<<<< test_gen_package_images_script <<<<<<<<<<"
+
+    echo ">>>> test_gen_offline_package_artifacts_script >>>"
+    test_gen_offline_package_artifacts_script
+    echo "<<<< test_gen_offline_package_artifacts_script <<<"
 }
 
 main "$@"
