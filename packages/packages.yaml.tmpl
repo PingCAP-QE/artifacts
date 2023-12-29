@@ -1104,6 +1104,10 @@ components:
               - name: cdc
                 src:
                   path: bin/cdc
+            tiup:
+              description: >-
+                CDC is a change data capture tool for TiDB
+              entrypoint: cdc
           - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: dm-master/dm-master
