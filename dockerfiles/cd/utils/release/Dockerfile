@@ -21,3 +21,9 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.3 /etc/ssl/certs/ca-certificates
 COPY --from=mplatform/manifest-tool:alpine-v2.1.3 --chown=0:0 /usr/bin/docker-credential-gcloud     /usr/local/bin/docker-credential-gcloud
 COPY --from=mplatform/manifest-tool:alpine-v2.1.3 --chown=0:0 /usr/bin/docker-credential-ecr-login  /usr/local/bin/docker-credential-ecr-login
 COPY --from=mplatform/manifest-tool:alpine-v2.1.3 --chown=0:0 /usr/bin/docker-credential-acr-env    /usr/local/bin/docker-credential-acr-env
+
+# install tools: k3sutil
+ARG KS3UTIL_VER=2.4.2
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget https://ks3util-version-update.ks3-cn-beijing.ksyuncs.com/${KS3UTIL_VER}/ks3util-${OS}-${ARCH} -O /usr/local/bin/ks3util && \
+    chmod a+x /usr/local/bin/ks3util
