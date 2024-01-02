@@ -10,6 +10,11 @@ build:
       kaniko:
         dockerfile: release/Dockerfile
         cache: {}
+    - image: ks3util
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: ks3util/Dockerfile
+        cache: {}        
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -35,3 +40,6 @@ profiles:
       - op: move
         from: /build/artifacts/0/kaniko
         path: /build/artifacts/0/docker
+      - op: move
+        from: /build/artifacts/1/kaniko
+        path: /build/artifacts/1/docker
