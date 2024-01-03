@@ -118,6 +118,48 @@ components:
             tiup:
               description: TiDB controller suite
               entrypoint: ctl
+  monitoring:
+    desc:
+    git:
+      url: https://github.com/pingcap/monitoring.git
+      ref: '{{ .Git.ref | default "master" }}'
+      sha: '{{ .Git.sha | default "" }}'
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/monitoring/package
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
+    routers:
+      - description: For range [6.1.0, )
+        # ref: https://github.com/Masterminds/semver#checking-version-constraints
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: >-
+              go build -o pull-monitoring cmd/monitoring.go
+              ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name  --token=$GHTOKEN
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/monitoring/image
+            context: monitor-snapshot/{{ .Git.ref }}/operator/
+
   ng-monitoring:
     desc: ng-monitoring component tarball
     git:
