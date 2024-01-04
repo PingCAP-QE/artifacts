@@ -151,8 +151,7 @@ components:
         steps:
           release:
             - script: >-
-                go build -o pull-monitoring cmd/monitoring.go
-                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }}
+                go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
         artifacts:
           - name: container image
             type: image
