@@ -152,7 +152,7 @@ components:
           release:
             - script: >-
                 go build -o pull-monitoring cmd/monitoring.go
-                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name  --token=$GHTOKEN
+                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name
         artifacts:
           - name: container image
             type: image
