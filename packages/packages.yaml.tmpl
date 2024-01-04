@@ -1159,10 +1159,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-master/scripts/DM-Monitor-Professional.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Professional.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
               - name: dm-master/scripts/DM-Monitor-Standard.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Standard.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
             tiup:
               description: >-
                 dm-master component of Data Migration Platform.
@@ -1177,10 +1177,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-worker/scripts/DM-Monitor-Professional.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Professional.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
               - name: dm-worker/scripts/DM-Monitor-Standard.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Standard.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
             tiup:
               description: >-
                 dm-worker component of Data Migration Platform.
@@ -1195,10 +1195,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dmctl/scripts/DM-Monitor-Professional.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Professional.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
               - name: dmctl/scripts/DM-Monitor-Standard.json
                 src:
-                  path: metrics/grafana/DM-Monitor-Standard.json
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
             tiup:
               description: >-
                 dmctl component of Data Migration Platform.
