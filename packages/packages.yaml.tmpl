@@ -152,7 +152,7 @@ components:
           release:
             - script: >-
                 go build -o pull-monitoring cmd/monitoring.go
-                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name
+                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }}
         artifacts:
           - name: container image
             type: image
@@ -160,7 +160,6 @@ components:
               repo: hub.pingcap.net/pingcap/monitoring/image
             context: monitor-snapshot/{{ .Git.ref }}/operator/
             dockerfile: Dockerfile
-
   ng-monitoring:
     desc: ng-monitoring component tarball
     git:
