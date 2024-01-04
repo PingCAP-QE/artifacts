@@ -151,14 +151,15 @@ components:
         steps:
           release:
             - script: >-
-              go build -o pull-monitoring cmd/monitoring.go
-              ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name  --token=$GHTOKEN
+                go build -o pull-monitoring cmd/monitoring.go
+                ./pull-monitoring --config=monitoring.yaml --tag={{ .Git.ref }} branch name  --token=$GHTOKEN
         artifacts:
           - name: container image
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/monitoring/image
             context: monitor-snapshot/{{ .Git.ref }}/operator/
+            dockerfile: Dockerfile
 
   ng-monitoring:
     desc: ng-monitoring component tarball
