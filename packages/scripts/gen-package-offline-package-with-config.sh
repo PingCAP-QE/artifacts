@@ -10,6 +10,8 @@ function main() {
     local version=$3
     local edition="${4:-community}"
     local template_file="${5:-${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl}"
+    local out_file="${6:-${RELEASE_SCRIPTS_DIR}/compose-offline-packages-artifacts.sh}"
+
     local target_info="os: $os, arch: $arch, version: $version, edition: $edition"
 
     # prepare template file's context.
@@ -52,11 +54,10 @@ function main() {
         exit 1
     fi
 
-    gomplate --context .=release-router.yaml \
-        -f $RELEASE_SCRIPTS_DIR/compose-offline-packages-artifacts.sh.tmpl \
-        --chmod "755" \
-        --out $RELEASE_SCRIPTS_DIR/compose-offline-packages-artifacts.sh
+    template_script="$RELEASE_SCRIPTS_DIR/compose-offline-packages-artifacts.sh.tmpl"
+    gomplate --context .=release-router.yaml -f "$template_script" --chmod "755" --out "$out_file"
 
+    echo "✅ Generated shell script: $out_file"
 }
 
 function install_tiup_tool() {

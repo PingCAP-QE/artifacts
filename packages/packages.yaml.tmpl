@@ -898,7 +898,7 @@ components:
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release, fips]
         steps:
           release:
             - script: make build

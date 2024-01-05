@@ -39,11 +39,11 @@ function main() {
 
     # fail when array length greater than 1.
     if yq -e '.routers | length > 1' release-package.yaml >/dev/null 2>&1; then
-        echo "Error: wrong package config that make me matched more than 1 routes!"
+        echo "❌ Error: wrong package config that make me matched more than 1 routes!"
         exit 1
     fi
     if yq -e '.routers | length == 0' release-package.yaml >/dev/null 2>&1; then
-        echo "No package routes matched for the target($target_info)." >&2
+        echo "❌ No package routes matched for the target($target_info)." >&2
         exit 1
     fi
     yq ".routers[0]" release-package.yaml >release-router.yaml
@@ -60,12 +60,12 @@ function main() {
     yq -i '.artifacts = (.artifacts | map(select(.type == "file" or .type == null)))' release-router.yaml
 
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then
-        echo "No artifacts should be built for target($target_info)."
+        echo "🤷 No artifacts should be built for target($target_info)."
         exit 0
     fi
 
     gomplate --context .=release-router.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
-    echo "Generated shell script: $out_file"
+    echo "✅ Generated shell script: $out_file"
 }
 
 main "$@"
