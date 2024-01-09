@@ -84,7 +84,7 @@ components:
               - name: etcdctl
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
               - name: pd-ctl
@@ -753,13 +753,13 @@ components:
     routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
+        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
           release:
-            - script: make build
+            - script: make sync_diff_inspector
         artifacts:
           - name: "tidb-tools-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -819,11 +819,20 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
     routers:
       - description: interpret versions according to semantic version spec.
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
+        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
@@ -853,11 +862,17 @@ components:
               - name: drainer
                 src:
                   path: bin/drainer
+            tiup:
+              description: The drainer componet of TiDB binlog service
+              entrypoint: drainer
           - name: "pump-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pump
                 src:
                   path: bin/pump
+            tiup:
+              description: The pump componet of TiDB binlog service
+              entrypoint: pump
           - name: container image
             type: image
             artifactory:
