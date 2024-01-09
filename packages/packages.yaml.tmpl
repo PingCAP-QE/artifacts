@@ -84,7 +84,7 @@ components:
               - name: etcdctl
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
               - name: pd-ctl
