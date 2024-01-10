@@ -11,7 +11,7 @@ FROM centos:7.9.2009 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 
 # renovate: datasource=github-tags depName=pingcap/tiflash
-ARG TIFLASH_VER=v7.4.0
+ARG TIFLASH_VER=v7.5.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
     TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \
     curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
