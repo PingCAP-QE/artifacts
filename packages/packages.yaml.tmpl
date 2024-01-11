@@ -152,7 +152,7 @@ components:
               repo: hub.pingcap.net/pingcap/monitoring/image
             context: monitor-snapshot/{{ .Git.ref }}/operator/
             dockerfile: Dockerfile
-          - name: grafana tiup package
+          - name: grafana
             files: # output files.
               - name: .
                 src:
