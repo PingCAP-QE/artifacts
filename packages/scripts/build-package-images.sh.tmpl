@@ -79,7 +79,7 @@ build_and_push_images() {
     kaniko_executor="$3"
 
     ################# build and push image ################
-    tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
+    tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
 {{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
     archive_dir="$release_ws/tmp-$(date +%s)"
@@ -178,7 +178,7 @@ write_push_results() {
     result_file="$1"
     input_disgests_file="$2"
 
-    tag="{{ index .artifactory.tags 0 }}-{{ .profile }}_{{ .os }}_{{ .arch }}"
+    tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
 
     cat <<EOF > "$result_file"
 images:
