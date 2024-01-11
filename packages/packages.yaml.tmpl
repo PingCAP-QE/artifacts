@@ -174,12 +174,10 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.18
-      - if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-14-g77d0cd2-go1.21
     routers:
       - description: Started from v5.3.0
         if: {{ semver.CheckConstraint ">= 5.3.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
