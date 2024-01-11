@@ -16,7 +16,7 @@ editions:
         arch: [amd64, arm64]
         profile: [community]
         artifacts:
-          - name: "tidb-community-server-{{ .Release.version }}-linux-{{ .Release.arch }}"
+          - name: "tidb-community-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: community offline server package
             components:
               - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
@@ -36,7 +36,7 @@ editions:
               - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
-          - name: "tidb-community-toolkit-{{ .Release.version }}-linux-{{ .Release.arch }}"
+          - name: "tidb-community-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: community offline toolkit package
             components:
               - { name: tiup, src: { type: tiup-clone, version: latest } }
@@ -71,35 +71,35 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}"
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-*-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}"
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-*-linux-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -115,7 +115,7 @@ editions:
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
-          - name: "tidb-community-server-{{ .Release.version }}-linux-{{ .Release.arch }}"
+          - name: "tidb-community-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: community offline server package
             components:
               - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
@@ -135,7 +135,7 @@ editions:
               - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
-          - name: "tidb-community-toolkit-{{ .Release.version }}-linux-{{ .Release.arch }}"
+          - name: "tidb-community-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: community offline toolkit package
             components:
               - { name: tikv-importer, src: {type: tiup-clone, version: v4.0.2 } }
@@ -173,36 +173,36 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
-                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "binaries-*.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
-                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "binaries-*.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}"
-                  path: "binaries-*-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "binaries-*.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}"
-                  path: "tidb-lightning-ctl-*-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-lightning-ctl-*.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}"
-                  path: "tidb-tools-*-linux-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-tools-*.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
@@ -210,14 +210,14 @@ editions:
                   type: http
                   url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "etcd-v3.4.21-linux-{{ .Release.arch }}/etcdctl"
+                  extract_inner_path: "etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
                 if: {{ eq .Release.arch "amd64" }}
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-linux-{{ .Release.arch }}.tar.gz"
+                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "mydumper-linux-{{ .Release.arch }}/bin/mydumper"
+                  extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
   enterprise:
     TODO: true
     artifactory:
