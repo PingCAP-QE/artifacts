@@ -207,7 +207,7 @@ components:
                   {{- else }}
                   url: https://download.pingcap.org/prometheus-2.27.1.{{ .Release.os }}-{{ .Release.arch }}.tar.gz
                   extract_inner_path: prometheus-2.27.1.{{ .Release.os }}-{{ .Release.arch }}
-                  {{ end }}
+                  {{- end }}
                   extract: true
               - name: prometheus/tidb.rules.yml
                 src:
