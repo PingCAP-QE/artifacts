@@ -201,9 +201,14 @@ components:
               - name: prometheus # must be first.
                 src:
                   type: http
-                  url: https://download.pingcap.org/prometheus-{{ if and (eq .Release.os "darwin") (eq .Release.arch "arm64") }}2.28.1{{ else }}2.27.1{{ end }}.{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+                  {{- if and (eq .Release.os "darwin") (eq .Release.arch "arm64") }}
+                  url: https://download.pingcap.org/prometheus-2.28.1.{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+                  extract_inner_path: prometheus-2.28.1.{{ .Release.os }}-{{ .Release.arch }}
+                  {{ else }}
+                  url: https://download.pingcap.org/prometheus-2.27.1.{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+                  extract_inner_path: prometheus-2.27.1.{{ .Release.os }}-{{ .Release.arch }}
+                  {{ end }}
                   extract: true
-                  extract_inner_path: prometheus-{{ if and (eq .Release.os "darwin") (eq .Release.arch "arm64") }}2.28.1{{ else }}2.27.1{{ end }}.{{ .Release.os }}-{{ .Release.arch }}
               - name: prometheus/tidb.rules.yml
                 src:
                   type: http
