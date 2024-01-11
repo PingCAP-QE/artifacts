@@ -104,8 +104,10 @@ function archive() {
     # - {{ .name }}
     mkdir -p "$(dirname ${archive_dir}/{{ .name }})"
     {{- if has .src "extract" }}
-    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
-    mv {{ default "" .src.extract_inner_path }} ${archive_dir}/{{ .name }}
+    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
+    mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
+      {{- end }}
     {{- else }}
     cp -r {{ .src.path }} ${archive_dir}/{{ .name }}
     {{- end }}
@@ -119,8 +121,10 @@ function archive() {
     oras pull {{ .src.url }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
-    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
-    mv {{ default "" .src.extract_inner_path }} {{ .name }}
+    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
+    mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
+      {{- end }}
     {{- else }}
     cp -r {{ .src.path }} ${archive_dir}/{{ .name }}
     {{- end }}
@@ -134,9 +138,12 @@ function archive() {
     wget {{ .src.url }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
-    tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+    tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
+    mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
+      {{- end }}
     {{- else }}
-    cp -r {{ .src.path }} ${archive_dir}/{{ .name }}
+    cp -r {{ path.Base .src.url }} ${archive_dir}/{{ .name }}
     {{- end }}
     {{- end }}
     {{- end }}
