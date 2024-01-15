@@ -135,8 +135,30 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
     routers:
+      - description: For range [7.1.0, )
+        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: >-
+                go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
+                make output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/monitoring/image
+            context: monitor-snapshot/{{ .Git.ref }}/operator/
+            dockerfile: Dockerfile
+          - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            src: { path: "output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz" }
+            tiup:
+              description: Grafana is the open source analytics & monitoring solution for every database
+              entrypoint: bin/grafana-server
       - description: For range [6.1.0, )
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0 <7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
