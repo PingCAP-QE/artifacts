@@ -152,13 +152,8 @@ components:
               repo: hub.pingcap.net/pingcap/monitoring/image
             context: monitor-snapshot/{{ .Git.ref }}/operator/
             dockerfile: Dockerfile
-          - name: grafana
-            files: # output files.
-              - name: .
-                src:
-                  path: output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz
-                  extract: true
-                  extract_inner_path: .
+          - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            src: { path: "output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz" }
             tiup:
               description: Grafana is the open source analytics & monitoring solution for every database
               entrypoint: bin/grafana-server
