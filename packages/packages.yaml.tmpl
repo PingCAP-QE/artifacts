@@ -143,7 +143,6 @@ components:
         steps:
           release:
             - script: |-
-                go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 TARGET={{ .Git.ref }} TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }} make output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz
         artifacts:
           - name: container image
