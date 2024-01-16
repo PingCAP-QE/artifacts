@@ -142,7 +142,7 @@ components:
         profile: [release]
         steps:
           release:
-            - script: >-
+            - script: |-
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz
         artifacts:
