@@ -143,7 +143,9 @@ components:
         steps:
           release:
             - script: |-
-                TARGET={{ .Git.ref }} TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }} make output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+                export TARGET={{ .Git.ref }}
+                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
+                make grafana_without_pull
         artifacts:
           - name: container image
             type: image
