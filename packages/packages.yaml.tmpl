@@ -126,14 +126,7 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
-      - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
-      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.20
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.19
-      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.18
+      - image: golang:1.21.6
     routers:
       - description: For range [7.1.0, )
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
