@@ -6,6 +6,7 @@ FROM golang:${GOLANG_VERSION}
 LABEL go-version "${GOLANG_VERSION}"
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "CI Base image for building/testing"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN apt-get update && \

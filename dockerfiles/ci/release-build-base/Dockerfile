@@ -4,6 +4,7 @@ FROM centos:7.9.2009
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "CD Base image for building"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN yum update --nogpgcheck -y && \

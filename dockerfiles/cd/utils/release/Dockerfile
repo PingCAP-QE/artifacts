@@ -6,6 +6,7 @@ FROM alpine:3.19.0
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "utils image for CD release"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install tools: bash, git, jq, yq, goemplate
 # RUN apk add --no-cache bash git jq yq gomplate

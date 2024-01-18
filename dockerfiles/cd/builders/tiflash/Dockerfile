@@ -9,6 +9,8 @@
 FROM centos:7.9.2009 as builder
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for tiflash"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_VER=v7.5.0
