@@ -14,6 +14,7 @@ RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
+    yum install -y wget && \
     yum clean all
 
 # install golang toolchain
