@@ -52,7 +52,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Cache layers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: "~/.skaffold/cache"
           key: skaffold/${{ matrix.platform }}/prod-bases-${{ github.sha }}
