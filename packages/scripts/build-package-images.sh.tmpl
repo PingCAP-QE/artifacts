@@ -104,29 +104,13 @@ build_and_push_images() {
     {{- $localFiles := ($files | jq `map(select(.src.type == "local" or .src.type == null))`) -}}
     {{- $ociFiles := $files | jq `map(select(.src.type == "oci"))` -}}
     {{- $httpFiles := $files | jq `map(select(.src.type == "http"))` -}}
+    {{ test.Assert "Can not pull oci artifacts in kaniko container" (eq (len $ociFiles) 0) }}
 
     {{- if gt (len $localFiles) 0 }}
     ## local files
     {{- range $localFiles }}
     # - {{ .name }}
     mkdir -p "$(dirname ${archive_dir}/{{ .name }})"
-    {{- if has .src "extract" }}
-    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
-      {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
-    mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
-      {{- end }}
-    {{- else }}
-    cp -r {{ .src.path }} ${archive_dir}/{{ .name }}
-    {{- end }}
-    {{- end }}
-    {{- end }}
-
-    {{- if gt (len $ociFiles) 0 }}
-    ## compose files from OCI repositories.
-    {{- range $ociFiles }}
-    # {{ .name }}
-    oras pull {{ .src.url }}
-    mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
     tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
       {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
