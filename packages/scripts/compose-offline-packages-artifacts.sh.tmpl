@@ -56,6 +56,20 @@ function print_help() {
   echo "  -h              Show this help message"
 }
 
+function fetch_file_from_oci_artifact() {
+    local destination="$1"
+    local to_match_file="$2"
+    local repo="$(echo $destination | cut -d ':' -f 1)"
+
+    # get the file blob digest.
+    oras manifest fetch $destination | yq --prettyPrint ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
+
+    # download file
+    file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
+    blob="$repo@$(yq .digest blob.yaml)"
+    oras blob fetch --output $file $blob
+}
+
 function compose() {
 {{- range $i, $artifact := .artifacts }}
     echo "🚀 Start composing {{ .name }} package"
@@ -98,7 +112,7 @@ function compose_artifact{{ $i }}() {
     ## pull tarballs from oci registry and publish to local tiup mirror.
     {{- range ($components | jq `map(select(.src.type == "oci"))`) }}
     # {{ .name }}
-    oras pull {{ .src.url }}
+    fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}"
     {{- if has .src "extract" }}
     tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
     {{- else if has . "publish" }}
