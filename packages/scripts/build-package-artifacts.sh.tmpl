@@ -93,6 +93,7 @@ function fetch_file_from_oci_artifact() {
     file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
     blob="$repo@$(yq .digest blob.yaml)"
     oras blob fetch --output $file $blob
+    echo "$file"
 }
 
 function archive() {
@@ -142,15 +143,15 @@ function archive() {
     ## compose files from OCI repositories.
     {{- range $ociFiles }}
     # {{ .name }}
-    fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}"
+    tarball_file=$(fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}")
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
-    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+    tar -zxvf $tarball_file --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
       {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
     mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
       {{- end }}
     {{- else }}
-    cp -r {{ .src.path }} ${archive_dir}/{{ .name }}
+    cp -r $tarball_file ${archive_dir}/{{ .name }}
     {{- end }}
     {{- end }}
     {{- end }}

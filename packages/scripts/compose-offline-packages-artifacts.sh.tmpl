@@ -68,6 +68,7 @@ function fetch_file_from_oci_artifact() {
     file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
     blob="$repo@$(yq .digest blob.yaml)"
     oras blob fetch --output $file $blob
+    echo "$file"
 }
 
 function compose() {
@@ -112,13 +113,13 @@ function compose_artifact{{ $i }}() {
     ## pull tarballs from oci registry and publish to local tiup mirror.
     {{- range ($components | jq `map(select(.src.type == "oci"))`) }}
     # {{ .name }}
-    fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}"
+    tarball_file=$(fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}")
     {{- if has .src "extract" }}
-    tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+    tar -zxvf $tarball_file --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
     {{- else if has . "publish" }}
-    tiup mirror publish {{ default .name .publish.name }} $version {{ .src.path }} {{ .publish.entrypoint }} ${tiup_publish_options}
+    tiup mirror publish {{ default .name .publish.name }} $version $tarball_file {{ .publish.entrypoint }} ${tiup_publish_options}
     {{- else }}        
-    mv {{ .src.path }} $archive_dir
+    mv $tarball_file $archive_dir
     {{- end }}
     {{- end }}
 
