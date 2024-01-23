@@ -89,7 +89,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # go template tool
 # renovate: datasource=docker depName=hairyhenderson/gomplate
-COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:v3.11.7 /gomplate /usr/local/bin/gomplate
 
 # Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
