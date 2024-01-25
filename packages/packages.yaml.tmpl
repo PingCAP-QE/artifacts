@@ -57,21 +57,21 @@ components:
               - name: binlogctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}"
-                  path: "tidb-binlog-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-binlog-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: cdc
                 src:
                   type: oci
-                  url: "hub.pingcap.net//tiflow/package:{{ .Git.ref }}"
-                  path: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tiflow/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "cdc-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: cdc
               - name: ctl
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/tiup/releases/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/pingcap/tiup/releases/download/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: bin/tiup-ctl
               - name: etcdctl
@@ -83,29 +83,29 @@ components:
               - name: pd-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}"
-                  path: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "pd-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: pd-ctl
               - name: tidb-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/pingcap/tidb-ctl/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-ctl
               - name: tikv-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}"
-                  path: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tikv-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tikv-ctl
               - name: tidb-lightning-ctl
                 src:
                   type: oci
                   url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
-                  path: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  path: "tidb-lightning-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
             tiup:
