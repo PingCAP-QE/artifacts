@@ -1364,6 +1364,14 @@ components:
               - name: dmctl
                 src:
                   path: bin/dmctl
+          - name: container image - tiflow-engine
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/tiflow/images/tiflow
+            context: . # just build under git repo folder.
+            dockerfile: deployments/engine/docker/Dockerfile
+            build_args:
+              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
       - description: interpret versions according to semantic version spec.
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
