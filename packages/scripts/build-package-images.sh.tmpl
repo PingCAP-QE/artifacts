@@ -86,7 +86,7 @@ build_and_push_images() {
     mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo  }}:$tag"
     digest_file="${archive_dir}/digest.txt"
-    kaniko_executor_global_options="--cleanup and --cache=false --destination=${destination} --digest-file=${digest_file}"
+    kaniko_executor_global_options="--cleanup --cache=false --destination=${destination} --digest-file=${digest_file}"
     {{- if has . "build_args" }}
     {{- range .build_args }}
     kaniko_executor_global_options="$kaniko_executor_global_options --build-arg {{.}}"
