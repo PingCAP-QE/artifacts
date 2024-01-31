@@ -41,6 +41,15 @@ function test_get_builder() {
             $script $cm $os $ac $version $profile
         done
     done
+     # tiflow-operator
+    local cm="tiflow-operator"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v6.4.0-20221102-1667359250 v20221018; do
+            echo "$cm $os $ac $version:"
+            $script $cm $os $ac $version $profile
+        done
+    done
 
     # advanced-statefulset
     local cm="advanced-statefulset"
@@ -104,6 +113,16 @@ function test_gen_package_artifacts_script() {
         done
     done
 
+    # tiflow-operator
+    local cm="tiflow-operator"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v6.4.0-20221102-1667359250 v20221018; do
+            echo "$cm $os $ac $version:"
+            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+        done
+    done
+
     # advanced-statefulset
     local cm="advanced-statefulset"
     local os="linux"
@@ -156,6 +175,15 @@ function test_gen_package_images_script() {
     local os="linux"
     for ac in $architectures; do
         for version in v1.6.0 v1.5.0; do
+            echo "$cm $os $ac $version:"
+            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+        done
+    done
+    # tiflow-operator
+    local cm="tiflow-operator"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
         done
