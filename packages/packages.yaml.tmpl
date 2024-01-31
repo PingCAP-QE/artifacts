@@ -1415,22 +1415,16 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.18
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-14-g77d0cd2
     routers:
       - description: interpret versions according to semantic version spec.
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
-        builders: # TODO: fill the builder.
         steps:
           release:
-            - script: go build -o manager
+            - script: "echo skip"
         artifacts:
-          - name: "tiflow-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: manager
-                src:
-                  path: manager
           - name: container image
             type: image
             artifactory:
