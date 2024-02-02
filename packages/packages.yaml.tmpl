@@ -608,6 +608,9 @@ components:
                 # go plugin whitelist
                 pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+          enterprise-without-plugins:
+            - script: |
+                TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling                
           debug:
             - script: |
                 make failpoint-enable
