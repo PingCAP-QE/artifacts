@@ -1,0 +1,16 @@
+image_copy_rules:
+  hub.pingcap.net/pingcap/tidb/images/tidb-server: # source repository
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories: # full repo url
+        - docker.io/pingcap/tidb
+      constant_tags: [master, nightly] # override dest tags.
+    - tags_regex: [^latest$]
+      dest_repositories: # full repo url
+        - docker.io/pingcap/tidb
+  hub.pingcap.net/pingcap/tiproxy/image:
+    - tags_regex:
+        - ^v\d+\.\d+\.\d
+        - ^(main|master)(-.+)?$
+      dest_repositories:
+        - docker.io/pingcap/tiproxy
