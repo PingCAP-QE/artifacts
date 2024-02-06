@@ -6,10 +6,96 @@ image_copy_rules:
       dest_repositories: # full repo url
         - docker.io/pingcap/tidb
       constant_tags: [nightly] # add new tags.
-    - description: publish latest image
-      tags_regex: [^latest$]
-      dest_repositories: # full repo url
-        - docker.io/pingcap/tidb
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb
+  hub.pingcap.net/pingcap/tidb/images/br:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/br
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/br
+  hub.pingcap.net/pingcap/tidb/images/lightning:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tidb-lightning
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-lightning
+  hub.pingcap.net/pingcap/tidb/images/dumpling:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/dumpling
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/dumpling
+  hub.pingcap.net/pingcap/tiflow/images/cdc:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/ticdc
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/ticdc
+  hub.pingcap.net/pingcap/tiflow/images/dm:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/dm
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/dm
+  hub.pingcap.net/pingcap/tiflow/images/tiflow:
+    - description: delivery the trunk branch extractly images.
+      tags_regex:
+        - ^master-[0-9a-f]+$
+      dest_repositories:
+        - gcr.io/pingcap-public/tidbcloud/tiflow
+    - description: delivery the trunk branch images.
+      tags_regex:
+        - ^master$
+      dest_repositories:
+        - gcr.io/pingcap-public/tidbcloud/tiflow
+      constant_tags: [latest]
+  hub.pingcap.net/pingcap/tiflash/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tiflash
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tiflash
   hub.pingcap.net/pingcap/tiproxy/image:
     - description: publish trunk and version images.
       tags_regex:
@@ -17,3 +103,93 @@ image_copy_rules:
         - ^(main|master)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/tiproxy
+  hub.pingcap.net/pingcap/monitoring/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tidb-monitor-initializer
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-monitor-initializer
+  hub.pingcap.net/pingcap/ng-monitoring/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/ng-monitoring
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/ng-monitoring
+  hub.pingcap.net/pingcap/tidb-tools/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tidb-tools
+      constant_tags: [nightly]
+  hub.pingcap.net/pingcap/tidb-binlog/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tidb-binlog
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-binlog
+  hub.pingcap.net/tikv/tikv/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tikv
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tikv
+  hub.pingcap.net/tikv/pd/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/pd
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/pd
+  hub.pingcap.net/pingcap/tiflow-operator/image:
+    - description: delivery the trunk branch extractly images.
+      tags_regex:
+        - ^master-[0-9a-f]+$
+      dest_repositories:
+        - gcr.io/pingcap-public/tidbcloud/tiflow-operator
+    - description: delivery the trunk branch images.
+      tags_regex:
+        - ^master$
+      dest_repositories:
+        - gcr.io/pingcap-public/tidbcloud/tiflow-operator
+      constant_tags: [latest]
+  hub.pingcap.net/pingcap/tidb-dashboard/image:
+    - description: delivery the trunk branch images.
+      tags_regex: [^master$]
+      dest_repositories:
+        - docker.io/pingcap/tidb-dashboard
+      constant_tags: [nightly]
+    - description: delivery the release branch images.
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-dashboard
