@@ -922,7 +922,7 @@ components:
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
     builders:
-      # BUG: tidb-tools has not release branches and all tags taged on master branch.
+      # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
     routers:
       - description: interpret versions according to semantic version spec.
