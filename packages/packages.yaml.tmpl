@@ -921,21 +921,23 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+    builders:
+      # BUG: tidb-ctl has not release branches and all tags taged on master branch.
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
     routers:
       - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
           release:
-            - script: go build
+            - script: make
         artifacts:
           - name: "tidb-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: tidb-ctl
                 src:
-                  path: bin/tidb-ctl
+                  path: tidb-ctl
   tidb-binlog:
     desc: tidb binlog component tarball
     git:
