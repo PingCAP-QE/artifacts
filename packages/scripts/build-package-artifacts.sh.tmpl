@@ -91,7 +91,7 @@ function fetch_file_from_oci_artifact() {
     local repo="$(echo $destination | cut -d ':' -f 1)"
 
     # get the file blob digest.
-    oras manifest fetch $destination | yq --prettyPrint ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
+    oras manifest fetch $destination | yq -e --prettyPrint ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
 
     # download file
     file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
@@ -231,9 +231,13 @@ function push_files() {
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
 
+    {{- $tag_suffix := printf "_%s_%s"  .os .arch -}}
+    {{- if ne .profile "release" }}
     {{- $tag_suffix := printf "-%s_%s_%s" .profile .os .arch -}}
-    {{ $more_tags := (.artifactory.tags | jq `.[1:]`) }}
-    {{ if gt (len $more_tags) 0 }}
+    {{- end }}
+
+    {{- $more_tags := (.artifactory.tags | jq `.[1:]`) -}}
+    {{- if gt (len $more_tags) 0 }}
     # add other tags.
     oras tag "${destination}" {{ range $more_tags }}{{ printf " %s%s" . $tag_suffix }}{{ end }}
     {{- end }}
