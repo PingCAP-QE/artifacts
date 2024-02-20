@@ -74,10 +74,14 @@ function print_help() {
 # >>>>>>>>>>>>>>>> build steps >>>>>>>>>>>>>>>>
 function build() {
     {{- $root := . -}}
-    {{- range .steps }}
+    {{- if .steps }}{{- range .steps }}
     {{- if or (not (has . "os")) (eq .os $root.os) }}
 {{ .script | indent 4 }}
     {{- end }}
+    {{- end }}
+    echo "building finished."
+    {{- else }}
+    echo "🏃 Skip: no build steps."
     {{- end }}
 }
 
