@@ -57,7 +57,7 @@ components:
               - name: binlogctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/pacakge:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-binlog-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
