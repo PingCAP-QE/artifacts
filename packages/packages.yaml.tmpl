@@ -58,7 +58,7 @@ components:
                 src:
                   type: oci
                   url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
-                  path: "tidb-binlog-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: cdc
@@ -104,7 +104,7 @@ components:
               - name: tidb-lightning-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}"
+                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
