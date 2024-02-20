@@ -41,7 +41,7 @@ $ grep -oE "{{\s*\..*?}}" packages/packages.yaml.tmpl | grep -oE "\.\w+(\.\w+)*"
 .Release.version
 ```
 
-## For offline deploy pacakges
+## For offline deploy packages
 
 ### Required context
 
