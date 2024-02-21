@@ -9,8 +9,10 @@ LABEL org.opencontainers.image.description "utils image for CD release"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install tools: bash, git, jq, yq, goemplate
-# RUN apk add --no-cache bash git jq yq gomplate
-RUN apk add --no-cache bash git jq yq
+# RUN apk add --no-cache bash git jq yq uuidgen gomplate
+RUN apk add --no-cache bash git jq yq uuidgen
+
+# install gomplate
 COPY --from=gomplate_builder --chown=0:0 /usr/local/bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
