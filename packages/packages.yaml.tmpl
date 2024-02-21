@@ -191,6 +191,86 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.19
     routers:
+      - description: Started from v8.0.0
+        if: {{ semver.CheckConstraint ">= 8.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make default
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: hub.pingcap.net/pingcap/ng-monitoring/image
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+          - name: "prometheus-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+              - name: prometheus # must be first.
+                src:
+                  type: http
+                  url: https://github.com/prometheus/prometheus/releases/download/v2.49.1/prometheus-2.49.1.{{ .Release.os }}-{{ .Release.arch }}.tar.gz
+                  extract_inner_path: prometheus-2.49.1.{{ .Release.os }}-{{ .Release.arch }}
+                  extract: true
+              - name: prometheus/tidb.rules.yml
+                src:
+                  type: http
+                  url: 'https://raw.githubusercontent.com/pingcap/tidb/{{ .Git.ref }}/pkg/metrics/alertmanager/tidb.rules.yml'
+              - name: prometheus/pd.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/pd/{{ .Git.ref }}/metrics/alertmanager/pd.rules.yml"
+              - name: prometheus/tikv.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/tikv/tikv/{{ .Git.ref }}/metrics/alertmanager/tikv.rules.yml"
+              - name: prometheus/tikv.accelerate.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/tikv/tikv/{{ .Git.ref }}/metrics/alertmanager/tikv.accelerate.rules.yml"
+              - name: prometheus/binlog.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/tidb-binlog/{{ .Git.ref }}/metrics/alertmanager/binlog.rules.yml"
+              - name: prometheus/ticdc.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/tiflow/{{ .Git.ref }}/metrics/alertmanager/ticdc.rules.yml"
+              - name: prometheus/tiflash.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/tiflash/{{ .Git.ref }}/metrics/alertmanager/tiflash.rules.yml"
+              - name: prometheus/lightning.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/tidb/{{ .Git.ref }}/br/metrics/alertmanager/lightning.rules.yml"
+              - name: prometheus/blacker.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/blacker.rules.yml"
+              - name: prometheus/bypass.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/bypass.rules.yml"
+              - name: prometheus/kafka.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/kafka.rules.yml"
+              - name: prometheus/node.rules.yml
+                src:
+                  type: http
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/node.rules.yml"
+            tiup:
+              description: The Prometheus monitoring system and time series database
+              entrypoint: prometheus/prometheus
       - description: Started from v5.3.0
         if: {{ semver.CheckConstraint ">= 5.3.0-0" .Release.version }}
         os: [linux, darwin]
@@ -344,7 +424,7 @@ components:
             tiup:
               description: The Prometheus monitoring system and time series database
               entrypoint: prometheus/prometheus
-      - description: interpret versions according to semantic version spec.
+      - description: For v6.5.6 to v6.5.x fips profile
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
