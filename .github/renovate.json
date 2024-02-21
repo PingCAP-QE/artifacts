@@ -3,6 +3,18 @@
   "extends": [
     "config:base"
   ],
+  "separateMinorPatch": true,
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ],
+      "labels": [
+        "help wanted"
+      ]
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
