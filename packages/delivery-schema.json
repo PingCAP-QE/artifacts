@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "image_copy_rules": {
+            "type": "object",
+            "patternProperties": {
+                "^hub.pingcap.net/(pingcap|tikv)": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "description": {
+                                "type": "string"
+                            },
+                            "tags_regex": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "dest_repositories": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "format": "hostname"
+                                },
+                                "minItems": 1
+                            },
+                            "constant_tags": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "required": [
+                            "description",
+                            "tags_regex",
+                            "dest_repositories"
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
