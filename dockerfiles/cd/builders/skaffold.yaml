@@ -60,6 +60,25 @@ profiles:
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
       - { op: move, from: /build/artifacts/2/kaniko, path: /build/artifacts/2/docker }
       - { op: move, from: /build/artifacts/3/kaniko, path: /build/artifacts/3/docker }
+  - name: go-1.22
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.22"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-22
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.22.0
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-22
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: *value-go1-22
+      - op: add
+        path: /build/artifacts/3/kaniko/buildArgs
+        value: *value-go1-22
   - name: go-1.21
     patches:
       - op: replace
