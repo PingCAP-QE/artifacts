@@ -77,7 +77,16 @@ components:
               - name: etcdctl
                 src:
                   type: http
+                  {{- if eq .Release.os "darwin" }}
+                  # ${FILE_SERVER_URL}/download/pingcap/etcd-${ETCDCTL_VERSION}-${os}-${arch}.tar.gz
+                  # Notice: it only support darwin arm64 platform from [v3.5.5](https://github.com/etcd-io/etcd/releases/tag/v3.5.5) in office artifacts.
+                  # When we upgrade to 3.5.x, we should replace it with the following url:
+                  # "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.zip"
+                  # Also we need support extract from zip archive.
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"                  
+                  {{- else }}
                   url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  {{- end }}
                   extract: true
                   extract_inner_path: etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
               - name: pd-ctl
