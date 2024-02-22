@@ -681,14 +681,14 @@ components:
                 # git checkout the enterprise-plugin code.
                 {{- if (.Git.ref | regexp.Match `^feature/release-[0-9]+\.[0-9]+`) }}
                 {{ $sv := semver.Semver .Release.version -}}
-                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                # plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
                 {{- else if (.Git.ref | default "master" | regexp.Match `^(master|main|feature/.*)`) }}
-                plugin_branch="master"
+                # plugin_branch="master"
                 {{- else }}
                 {{ $sv := semver.Semver .Release.version -}}
-                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                # plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
                 {{- end }}
-                git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
+                # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
                 # go plugin audit
                 pushd ../enterprise-plugin/audit && go mod tidy &&  popd
@@ -828,14 +828,14 @@ components:
                 # git checkout the enterprise-plugin code.
                 {{- if (.Git.ref | regexp.Match `^feature/release-[0-9]+\.[0-9]+`) }}
                 {{ $sv := semver.Semver .Release.version -}}
-                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                # plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
                 {{- else if (.Git.ref | default "master" | regexp.Match `^(master|main|feature/.*)`) }}
-                plugin_branch="master"
+                # plugin_branch="master"
                 {{- else }}
                 {{ $sv := semver.Semver .Release.version -}}
-                plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
+                # plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
                 {{- end }}
-                git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
+                # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
                 # go plugin audit
                 pushd ../enterprise-plugin/audit && go mod tidy &&  popd
