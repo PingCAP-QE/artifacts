@@ -83,7 +83,7 @@ components:
                   # When we upgrade to 3.5.x, we should replace it with the following url:
                   # "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.zip"
                   # Also we need support extract from zip archive.
-                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"                  
+                  url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   {{- else }}
                   url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   {{- end }}
@@ -261,22 +261,27 @@ components:
                 src:
                   type: http
                   url: "https://raw.githubusercontent.com/pingcap/tidb/{{ .Git.ref }}/br/metrics/alertmanager/lightning.rules.yml"
+              - name: prometheus/tiproxy.rules.yml
+                src:
+                  type: http
+                  # TODO: support building from tag.
+                  url: https://raw.githubusercontent.com/pingcap/monitoring/{{ .Git.ref }}/monitor-snapshot/{{ .Git.ref }}/operator/rules/tiproxy.rules.yml
               - name: prometheus/blacker.rules.yml
                 src:
                   type: http
-                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/blacker.rules.yml"
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/{{ .Git.ref }}/platform-monitoring/ansible/rule/blacker.rules.yml"
               - name: prometheus/bypass.rules.yml
                 src:
                   type: http
-                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/bypass.rules.yml"
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/{{ .Git.ref }}/platform-monitoring/ansible/rule/bypass.rules.yml"
               - name: prometheus/kafka.rules.yml
                 src:
                   type: http
-                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/kafka.rules.yml"
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/{{ .Git.ref }}/platform-monitoring/ansible/rule/kafka.rules.yml"
               - name: prometheus/node.rules.yml
                 src:
                   type: http
-                  url: "https://raw.githubusercontent.com/pingcap/monitoring/master/platform-monitoring/ansible/rule/node.rules.yml"
+                  url: "https://raw.githubusercontent.com/pingcap/monitoring/{{ .Git.ref }}/platform-monitoring/ansible/rule/node.rules.yml"
             tiup:
               description: The Prometheus monitoring system and time series database
               entrypoint: prometheus/prometheus
@@ -699,7 +704,7 @@ components:
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
           enterprise-without-plugins:
             - script: |
-                TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling                
+                TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
           debug:
             - script: |
                 make failpoint-enable
