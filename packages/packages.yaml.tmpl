@@ -285,8 +285,8 @@ components:
             tiup:
               description: The Prometheus monitoring system and time series database
               entrypoint: prometheus/prometheus
-      - description: Started from v5.3.0
-        if: {{ semver.CheckConstraint ">= 5.3.0-0" .Release.version }}
+      - description: Started from v5.3.0, until v8.0.0
+        if: {{ semver.CheckConstraint ">= 5.3.0-0, < 8.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
