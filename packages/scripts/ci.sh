@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function test_get_builder() {
-    local versions="v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
@@ -41,7 +41,7 @@ function test_get_builder() {
             $script $cm $os $ac $version $profile
         done
     done
-     # tiflow-operator
+    # tiflow-operator
     local cm="tiflow-operator"
     local os="linux"
     for ac in $architectures; do
@@ -73,7 +73,7 @@ function test_get_builder() {
 }
 
 function test_gen_package_artifacts_script() {
-    local versions="v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
@@ -86,6 +86,7 @@ function test_gen_package_artifacts_script() {
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
                     $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                    shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
         done
@@ -98,6 +99,7 @@ function test_gen_package_artifacts_script() {
             for ac in $architectures; do
                 echo "$cm $os $ac $version:"
                 $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                shellcheck -S error packages/scripts/build-package-artifacts.sh
             done
         done
     done
@@ -110,6 +112,7 @@ function test_gen_package_artifacts_script() {
         for version in v1.5.0 v1.6.0; do
             echo "$cm $os $ac $version:"
             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
 
@@ -120,6 +123,7 @@ function test_gen_package_artifacts_script() {
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
 
@@ -130,6 +134,7 @@ function test_gen_package_artifacts_script() {
         for version in v0.5.0 v0.6.0; do
             echo "$cm $os $ac $version:"
             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
 
@@ -140,12 +145,13 @@ function test_gen_package_artifacts_script() {
         for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
 }
 
 function test_gen_package_images_script() {
-    local versions="v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local architectures="amd64 arm64"
     local profile="release"
@@ -156,6 +162,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo "$cm $os $ac $version:"
                 $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+                shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
     done
@@ -166,6 +173,7 @@ function test_gen_package_images_script() {
         for ac in $architectures; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
 
@@ -177,6 +185,7 @@ function test_gen_package_images_script() {
         for version in v1.6.0 v1.5.0; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
     # tiflow-operator
@@ -186,6 +195,7 @@ function test_gen_package_images_script() {
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
 
@@ -196,6 +206,7 @@ function test_gen_package_images_script() {
         for ac in $architectures; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
 
@@ -206,12 +217,13 @@ function test_gen_package_images_script() {
         for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
             $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
 }
 
 function test_gen_offline_package_artifacts_script() {
-    local versions="v7.5.0 v7.1.0"
+    local versions="v8.0.0 v7.5.0 v7.1.0"
     local operating_systems="linux"
     local architectures="amd64 arm64"
     local editions="community"
@@ -223,10 +235,18 @@ function test_gen_offline_package_artifacts_script() {
                 for edition in $editions; do
                     echo "$os $ac $version $edition:"
                     $script $os $ac $version $edition
+                    shellcheck -S error packages/scripts/compose-offline-packages-artifacts.sh
                 done
             done
         done
     done
+}
+
+function pre_checks() {
+    which shellcheck || (
+        echo "The script need 'shellcheck' tool, please install it!"
+        exit 1
+    )
 }
 
 function main() {

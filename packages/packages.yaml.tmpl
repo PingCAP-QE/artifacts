@@ -163,11 +163,11 @@ components:
               description: Grafana is the open source analytics & monitoring solution for every database
               entrypoint: bin/grafana-server
           - name: "prometheus-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
+            files:
               - name: ng-monitoring-server
                 src:
                   path: ng-monitoring/bin/ng-monitoring-server
-              - name: prometheus # must be first.
+              - name: prometheus
                 src:
                   path: output/prometheus
             tiup:
@@ -180,9 +180,10 @@ components:
         profile: [release]
         steps:
           release:
-            - script: >-
+            - script: |-
                 export TARGET={{ .Git.ref }}
-                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}            
+                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
+                # TODO(lijie0123): please backport to 6.x LTS versions.
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make default -C ng-monitoring
                 make output/prometheus
@@ -213,7 +214,7 @@ components:
           release:
             - script: |-
                 export TARGET={{ .Git.ref }}
-                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}                
+                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make default -C ng-monitoring
                 make output/prometheus
@@ -238,7 +239,7 @@ components:
           release:
             - script: |-
                 export TARGET={{ .Git.ref }}
-                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}                
+                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make output/prometheus
         artifacts:
