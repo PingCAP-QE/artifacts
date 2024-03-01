@@ -86,6 +86,7 @@ build_and_push_images() {
     mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo  }}:$tag"
     digest_file="${archive_dir}/digest.txt"
+    export KANIKO_REGISTRY_MIRROR='registry-mirror.pingcap.net'
     kaniko_executor_global_options="--cleanup --cache=false --destination=${destination} --digest-file=${digest_file}"
     {{- if has . "build_args" }}
     {{- range .build_args }}
