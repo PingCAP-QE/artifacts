@@ -315,10 +315,12 @@ components:
         if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug]
+        profile: [release, enterprise, debug]
         steps:
           release:
             - script: make build
+          enterprise:
+            - script: PD_EDITION=Enterprise make build
           debug:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
@@ -366,10 +368,12 @@ components:
         if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug]
+        profile: [release, enterprise, debug]
         steps:
           release:
             - script: make build
+          enterprise:
+            - script: PD_EDITION=Enterprise make build
           debug:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
@@ -1090,9 +1094,46 @@ components:
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release, enterprise]
         steps:
           release:
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+            - os: darwin
+              script: |
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
+            - os: linux
+              script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - os: linux
+              script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-release.sh
+
+                # debug it.
+                ccache -s
+            - os: linux
+              description: move the building targets outputs to the constant path.
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
+          enterprise:
+            - script: export TIFLASH_EDITION=Enterprise
             - os: darwin
               script: |
                 ./release-darwin/build/build-release.sh
@@ -1377,7 +1418,7 @@ components:
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug]
+        profile: [release, enterprise, debug]
         steps:
           release:
             - os: linux
@@ -1388,6 +1429,15 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make dist_release
+          enterprise:
+            - os: linux
+              script: |
+                source /opt/rh/devtoolset-8/enable
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+            - script: |
+                TIKV_EDITION=Enterprise ROCKSDB_SYS_STATIC=1 make dist_release
           debug:
             - os: linux
               script: |
