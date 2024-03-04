@@ -137,8 +137,8 @@ components:
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - image: golang:1.21.6
     routers:
-      - description: For range [7.1.0, )
-        if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
+      - description: For range [6.1.0, )
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -168,38 +168,6 @@ components:
                 src:
                   path: ng-monitoring/bin/ng-monitoring-server
               - name: prometheus
-                src:
-                  path: output/prometheus
-            tiup:
-              description: The Prometheus monitoring system and time series database
-              entrypoint: prometheus/prometheus
-      - description: For range [6.1.0, )
-        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.1.0-0" .Release.version }}
-        os: [linux, darwin]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: |-
-                export TARGET={{ .Git.ref }}
-                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
-                # TODO(lijie0123): please backport to 6.x LTS versions.
-                go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
-                make default -C ng-monitoring
-                make output/prometheus
-        artifacts:
-          - name: container image
-            type: image
-            artifactory:
-              repo: hub.pingcap.net/pingcap/monitoring/image
-            context: monitor-snapshot/{{ .Git.ref }}/operator/
-            dockerfile: Dockerfile
-          - name: "prometheus-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files: # output files.
-              - name: ng-monitoring-server
-                src:
-                  path: ng-monitoring/bin/ng-monitoring-server
-              - name: prometheus # must be first.
                 src:
                   path: output/prometheus
             tiup:

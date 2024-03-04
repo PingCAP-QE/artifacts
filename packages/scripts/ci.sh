@@ -250,6 +250,8 @@ function pre_checks() {
 }
 
 function main() {
+    pre_checks
+
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
     test_get_builder
     echo "<<<<<<<< test_get_builder <<<<<<<<<<<<<<<<<<<<<<<<"
