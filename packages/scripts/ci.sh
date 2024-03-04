@@ -93,13 +93,12 @@ function test_gen_package_artifacts_script() {
     done
 
     # enterprise profile
-    local profile="enterprise"
     for version in $versions; do
         for cm in tidb tikv pd tiflash; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                    $script $cm $os $ac $version enterprise branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -107,13 +106,12 @@ function test_gen_package_artifacts_script() {
     done
 
     # debug profile
-    local profile="debug"
     for version in $versions; do
         for cm in pd tidb tikv; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                    $script $cm $os $ac $version debug branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
