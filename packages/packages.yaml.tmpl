@@ -1437,7 +1437,7 @@ components:
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
             - script: |
-                TIDB_EDITION=Enterprise ROCKSDB_SYS_STATIC=1 make dist_release
+                TIKV_EDITION=Enterprise ROCKSDB_SYS_STATIC=1 make dist_release
           debug:
             - os: linux
               script: |
