@@ -373,7 +373,7 @@ components:
           release:
             - script: make build
           enterprise:
-            - script: TIDB_EDITION=Enterprise make build
+            - script: PD_EDITION=Enterprise make build
           debug:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
