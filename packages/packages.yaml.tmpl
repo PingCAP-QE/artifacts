@@ -144,8 +144,8 @@ components:
         profile: [release]
         steps:
           release:
-            - script: |-
-                export TARGET={{ .Git.ref }}
+            - script: |-                
+                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 make grafana_without_pull
                 make default -C ng-monitoring
@@ -181,7 +181,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ .Git.ref }}
+                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make default -C ng-monitoring
@@ -206,7 +206,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ .Git.ref }}
+                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make output/prometheus
