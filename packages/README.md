@@ -14,8 +14,8 @@ Central declarative congfigurations for artifacts delivering.
 ## Profiles
 
 - `release`: community release profile.
-- `debug`: test or debug profile.
 - `enterprise`: enterprise release profile, it will not publish any tiup pkgs.
+- `failpoint`: enable failpoint switch on community profile.
 - `fips`: fips feature release without enterprise plugins.
 
 ## For component binaries packages and container images

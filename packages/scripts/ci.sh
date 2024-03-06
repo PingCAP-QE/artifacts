@@ -105,13 +105,13 @@ function test_gen_package_artifacts_script() {
         done
     done
 
-    # debug profile
+    # failpoint profile
     for version in $versions; do
         for cm in pd tidb tikv; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version debug branch-xxx 123456789abcdef
+                    $script $cm $os $ac $version failpoint branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
