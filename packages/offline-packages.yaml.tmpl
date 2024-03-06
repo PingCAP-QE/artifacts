@@ -106,9 +106,9 @@ editions:
               - name: etcdctl	# New in v6.0.0
                 src:
                   type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
+                  extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.1.0 until v7.5"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">=7.1.0-0, <7.5.0-0" .Release.version }}
@@ -208,9 +208,9 @@ editions:
               - name: etcdctl	# New in v6.0.0
                 src:
                   type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.21/etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
-                  extract_inner_path: "etcd-v3.4.21-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
+                  extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
                 if: {{ eq .Release.arch "amd64" }}
                 src:
