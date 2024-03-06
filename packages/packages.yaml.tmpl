@@ -322,13 +322,13 @@ components:
         if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, debug]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
             - script: make build
           enterprise:
             - script: PD_EDITION=Enterprise make build
-          debug:
+          failpoint:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -375,13 +375,13 @@ components:
         if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, debug]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
             - script: make build
           enterprise:
             - script: PD_EDITION=Enterprise make build
-          debug:
+          failpoint:
             - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -508,7 +508,7 @@ components:
         if: {{ semver.CheckConstraint ">= 7.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug, enterprise, enterprise-without-plugins]
+        profile: [release, enterprise, enterprise-without-plugins, failpoint]
         steps:
           release:
             - script: |
@@ -539,7 +539,7 @@ components:
           enterprise-without-plugins:
             - script: |
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
-          debug:
+          failpoint:
             - script: |
                 make failpoint-enable
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
@@ -655,7 +655,7 @@ components:
         if: {{ or (semver.CheckConstraint ">= 6.1.0-0, < 7.1.0-0" .Release.version) (and (semver.CheckConstraint "~6.5.0-0" .Release.version)) (eq "fips" .Release.profile) }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, debug, fips, enterprise]
+        profile: [release, failpoint, fips, enterprise]
         steps:
           release:
             - script: |
@@ -683,7 +683,7 @@ components:
                 # go plugin whitelist
                 pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
-          debug:
+          failpoint:
             - script: |
                 make failpoint-enable
                 WITH_RACE=1 make server build_tools build_dumpling # failpoint
@@ -1425,7 +1425,7 @@ components:
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, debug]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
             - os: linux
@@ -1445,7 +1445,7 @@ components:
                 fi
             - script: |
                 TIKV_EDITION=Enterprise ROCKSDB_SYS_STATIC=1 make dist_release
-          debug:
+          failpoint:
             - os: linux
               script: |
                 source /opt/rh/devtoolset-8/enable
