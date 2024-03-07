@@ -1229,6 +1229,10 @@ components:
             - os: darwin
               description: install nodejs toolchain.
               script: |
+                echo "dddddd debug ddddddd"
+                printenv
+                echo "dddddd debug ddddddd"
+
                 NODE_VERSION="v16.20.2"
                 NVM_VERSION="v0.39.5"
                 NVM_DIR="$HOME/.nvm"
@@ -1244,6 +1248,10 @@ components:
 
                 node --version && npm --version
                 npm install -g yarn
+
+                echo "dddddd debug ddddddd"
+                printenv
+                echo "dddddd debug ddddddd"
             - script: |
                 make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
