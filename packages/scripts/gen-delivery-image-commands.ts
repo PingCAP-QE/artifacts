@@ -61,6 +61,7 @@ async function generateShellScript(
         ),
       );
       for (const constTag of constant_tags) {
+        console.log(`\tAdditional tag: ${constTag}`)
         await file.write(
           new TextEncoder().encode(
             `crane tag ${destRepo}:${tag} ${constTag}\n`,
@@ -68,7 +69,8 @@ async function generateShellScript(
         );
       }
       if (tag_regex_replace!=""){
-        let converted = tag.replace(new RegExp(tags_regex[0]), tag_regex_replace)
+        const converted = tag.replace(new RegExp(tags_regex[0]), tag_regex_replace)
+        console.log(`\tAdditional tag: ${converted}`)
         await file.write(
           new TextEncoder().encode(
             `crane tag ${destRepo}:${tag} ${converted}\n`,
