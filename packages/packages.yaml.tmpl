@@ -165,7 +165,7 @@ components:
             type: image
             artifactory:
               repo: hub.pingcap.net/pingcap/monitoring/image
-            context: monitor-snapshot/{{ .Git.ref }}/operator/
+            context: monitor-snapshot/{{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}/operator/
             dockerfile: Dockerfile
           - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             src: { path: "output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz" }
