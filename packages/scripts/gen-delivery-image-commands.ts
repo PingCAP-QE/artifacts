@@ -6,6 +6,7 @@ interface Rule {
   tags_regex: string[];
   dest_repositories: string[];
   constant_tags?: string[];
+  tag_regex_replace?: string
 }
 
 interface Config {
@@ -43,7 +44,7 @@ async function generateShellScript(
 
   // Loop through rules
   for (const rule of rules) {
-    const { description = "", dest_repositories, constant_tags = [] } = rule;
+    const { description = "", dest_repositories, constant_tags = [], tag_regex_replace = "", tags_regex=[] } = rule;
 
     console.log(
       `Matching rule found for image URL '${imageUrlWithTag}':`,
@@ -63,6 +64,14 @@ async function generateShellScript(
         await file.write(
           new TextEncoder().encode(
             `crane tag ${destRepo}:${tag} ${constTag}\n`,
+          ),
+        );
+      }
+      if (tag_regex_replace!=""){
+        let converted = tag.replace(new RegExp(tags_regex[0]), tag_regex_replace)
+        await file.write(
+          new TextEncoder().encode(
+            `crane tag ${destRepo}:${tag} ${converted}\n`,
           ),
         );
       }
