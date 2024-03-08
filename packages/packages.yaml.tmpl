@@ -13,6 +13,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-81-g3fc5aaa
@@ -43,6 +44,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-81-g3fc5aaa
     routers:
@@ -134,6 +136,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.21
@@ -240,6 +243,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.21
@@ -308,6 +312,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20231115-e1c4b43-go1.21
@@ -493,6 +498,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
@@ -808,6 +814,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
@@ -849,6 +856,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
@@ -880,6 +888,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
@@ -965,6 +974,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-81-g3fc5aaa
     routers:
@@ -1023,6 +1033,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20231216-9-g9f4fddb
@@ -1093,6 +1104,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
@@ -1208,6 +1220,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20231115-e1c4b43-go1.21
@@ -1384,6 +1397,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20231216-81-g3fc5aaa
     routers:
@@ -1415,6 +1429,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (ne "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20231116-e1c4b43
@@ -1534,6 +1549,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (ne "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20231115-e1c4b43-go1.21
