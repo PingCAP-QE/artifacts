@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 
 RELEASE_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
 PROJECT_ROOT_DIR=$(realpath "${RELEASE_SCRIPTS_DIR}/../..")
