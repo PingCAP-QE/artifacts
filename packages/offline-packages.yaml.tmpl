@@ -48,12 +48,8 @@ editions:
                 src: { type: tiup-clone, version: latest }
               - { name: bench, src: { type: tiup-clone, version: latest } }
               - { name: errdoc, src: { type: tiup-clone, version: latest } }
-              - name: dba
-                if: {{ eq .Release.arch "amd64" }}
-                src: { type: tiup-clone, version: latest }
-              - name: PCC
-                if: {{ eq .Release.arch "amd64" }}
-                src: { type: tiup-clone, version: latest }
+              - { name: dba, src: { type: tiup-clone, version: latest } }
+              - { name: PCC, src: { type: tiup-clone, version: latest } }
               - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
               - { name: server, src: { type: tiup-clone, version: latest } } # New in v6.2.0, it's tiup-server.
               - { name: pd-recover, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
@@ -150,12 +146,8 @@ editions:
                 src: { type: tiup-clone, version: latest }
               - { name: bench, src: { type: tiup-clone, version: latest } }
               - { name: errdoc, src: { type: tiup-clone, version: latest } }
-              - name: dba
-                if: {{ eq .Release.arch "amd64" }}
-                src: { type: tiup-clone, version: latest }
-              - name: PCC
-                if: {{ eq .Release.arch "amd64" }}
-                src: { type: tiup-clone, version: latest }
+              - {name: dba, src: { type: tiup-clone, version: latest } }
+              - {name: PCC, src: { type: tiup-clone, version: latest } }
               - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
               - { name: server, src: { type: tiup-clone, version: latest } } # New in v6.2.0, it's tiup-server.
               - { name: pd-recover, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
