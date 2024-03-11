@@ -272,6 +272,11 @@ components:
               - name: ng-monitoring-server
                 src:
                   path: bin/ng-monitoring-server
+          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
       - description: For v6.5.6 to v6.5.x fips profile
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -292,7 +297,7 @@ components:
               - name: ng-monitoring-server
                 src:
                   path: bin/ng-monitoring-server
-          - name: "ng-monitoring-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
               - name: ng-monitoring-server
                 src:
