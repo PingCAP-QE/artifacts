@@ -12,6 +12,12 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-enterprise
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tidb/images/br:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -24,6 +30,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/br
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/br-enterprise
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -33,6 +44,11 @@ image_copy_rules:
     - description: delivery the release branch images.
       tags_regex:
         - ^release-[0-9]+[.][0-9]+$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-lightning
+    - description: delivery the enterprise RC images.
+      tags_regex:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning
@@ -48,6 +64,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/dumpling
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/dumpling-enterprise
   hub.pingcap.net/pingcap/tiflow/images/cdc:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -60,6 +81,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/ticdc
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/ticdc-enterprise
   hub.pingcap.net/pingcap/tiflow/images/dm:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -72,6 +98,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/dm
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/dm-enterprise
   hub.pingcap.net/pingcap/tiflow/images/tiflow:
     - description: delivery the trunk branch extractly images.
       tags_regex:
@@ -96,6 +127,12 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tiflash
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+      dest_repositories:
+        - hub.pingcap.net/qa/tiflash-enterprise
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiproxy/image:
     - description: publish trunk and version images.
       tags_regex:
@@ -115,6 +152,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
   hub.pingcap.net/pingcap/ng-monitoring/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -127,6 +169,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/ng-monitoring
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/ng-monitoring-enterprise
   hub.pingcap.net/pingcap/tidb-tools/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -145,6 +192,11 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-binlog
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      dest_repositories:
+        - hub.pingcap.net/qa/tidb-binlog-enterprise
   hub.pingcap.net/tikv/tikv/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -157,6 +209,12 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tikv
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+      dest_repositories:
+        - hub.pingcap.net/qa/tikv-enterprise
+      tag_regex_replace: "$1"
   hub.pingcap.net/tikv/pd/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -169,6 +227,12 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/pd
+    - description: delivery the enterprise RC images.
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+      dest_repositories:
+        - hub.pingcap.net/qa/pd-enterprise
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiflow-operator/image:
     - description: delivery the trunk branch extractly images.
       tags_regex:
