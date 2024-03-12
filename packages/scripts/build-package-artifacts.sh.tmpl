@@ -196,18 +196,18 @@ function prepare_artifact_config() {
     local save_file="$1"
 
     :> "$save_file"
-    yq -p json -o json -i '.os = "{{ .os }}"' "$save_file"
-    yq -p json -o json -i '.architecture = "{{ .arch }}"' "$save_file"
-    yq -p json -o json -i '.profile = "{{ .profile }}"' "$save_file"
-    yq -p json -o json -i '.version = "{{ .version }}"' "$save_file"
-    yq -p json -o json -i '.tiup = []' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"    
+    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] = []' "$save_file"
 
     {{- if eq .profile "release" }}
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}
     {{- with .tiup }}
-    yq -p json -o json -i '.tiup += {{ . | toJSON }}' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] += {{ . | toJSON }}' "$save_file"
     {{- end }}
-    yq -p json -o json -i '.tiup[-1].file = "{{ .name }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"][-1].file = "{{ .name }}"' "$save_file"
     {{- end }}
     {{- end }}
 }

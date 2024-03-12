@@ -227,10 +227,10 @@ function prepare_artifact_config() {
     local save_file="$1"
 
     :> "$save_file"
-    yq -p json -o json -i '.os = "{{ .os }}"' "$save_file"
-    yq -p json -o json -i '.architecture = "{{ .arch }}"' "$save_file"
-    yq -p json -o json -i '.edition = "{{ .edition }}"' "$save_file"
-    yq -p json -o json -i '.version = "{{ .version }}"' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.edition"] = "{{ .edition }}"' "$save_file"
 }
 
 function push_files() {
