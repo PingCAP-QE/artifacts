@@ -14,10 +14,10 @@ image_copy_rules:
         - hub.pingcap.net/qa/tidb
     - description: delivery the enterprise RC images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9])+-enterprise-pre$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-enterprise
-      tag_regex_replace: "$1-pre"
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tidb/images/br:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -129,10 +129,10 @@ image_copy_rules:
         - hub.pingcap.net/qa/tiflash
     - description: delivery the enterprise RC images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9])+-enterprise-pre$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tiflash-enterprise
-      tag_regex_replace: "$1-pre"
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiproxy/image:
     - description: publish trunk and version images.
       tags_regex:
@@ -211,10 +211,10 @@ image_copy_rules:
         - hub.pingcap.net/qa/tikv
     - description: delivery the enterprise RC images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9])+-enterprise-pre$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tikv-enterprise
-      tag_regex_replace: "$1-pre"
+      tag_regex_replace: "$1"
   hub.pingcap.net/tikv/pd/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -229,10 +229,10 @@ image_copy_rules:
         - hub.pingcap.net/qa/pd
     - description: delivery the enterprise RC images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9])+-enterprise-pre$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/pd-enterprise
-      tag_regex_replace: "$1-pre"
+      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiflow-operator/image:
     - description: delivery the trunk branch extractly images.
       tags_regex:
