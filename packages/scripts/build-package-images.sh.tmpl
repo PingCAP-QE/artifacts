@@ -18,7 +18,7 @@ main() {
 
   if [ "$NEED_PUSH_IMAGE" = "true" ]; then
     digests_file="$RELEASE_WS/digests.txt"
-    build_and_push_images "${RELEASE_WS}" "$digests_file"  "${KANIKO_EXECUTOR}"
+    build_and_push_images "${RELEASE_WS}" "$digests_file" "${KANIKO_EXECUTOR}"
     write_push_results "${PUSH_RESULT_SAVE_FILE}" "$digests_file"
   fi
 
@@ -187,17 +187,17 @@ build_and_push_images() {
 {{- end }}
 
     # Save digest file path for later use
-    cat "$digest_file" >> "$digests_file"
-    rm -rf $archive_dir
+    awk 1 "$digest_file" >> "$digests_file"
     echo "Pushed image: $destination"
+    rm -rf $archive_dir
     # <<<<<<<<<<<<<<<< image: {{ .name }} <<<<<<<<<<<<<<<<
 {{ end }}
     # All pushed.
-
-    # Write results to file.
     echo "✅ Pushed digests recorded in file: $digests_file"
+    cat "$digests_file"
 }
 
+# Write results to file.
 write_push_results() {
     result_file="$1"
     input_disgests_file="$2"
@@ -206,11 +206,11 @@ write_push_results() {
 
     cat <<EOF > "$result_file"
 images:
-{{- range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
-- repo: {{ .artifactory.repo  }}
-  url: "{{ .artifactory.repo  }}:$tag"
+{{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
+- repo: {{ $image.artifactory.repo  }}
+  url: "{{ $image.artifactory.repo  }}:$tag"
   tag: "$tag"
-  digest: '$(sed -n "$((i++))p" $input_disgests_file)'
+  digest: '$(sed -n "{{ add $index 1 }}p" $input_disgests_file)'
 {{- end }}
 EOF
 }
