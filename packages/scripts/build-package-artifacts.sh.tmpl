@@ -214,7 +214,6 @@ function prepare_artifact_config() {
 
 function push_files() {
     local release_ws="$1"
-
     local tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
     local destination="{{ .artifactory.package_repo  }}:$tag"
 
