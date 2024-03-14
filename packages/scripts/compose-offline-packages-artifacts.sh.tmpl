@@ -237,7 +237,7 @@ function push_files() {
     local release_ws="$1"
 
     local tag="{{ index .artifactory.tags 0 }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.package_repo  }}:$tag"
+    local destination="{{ .artifactory.package_repo }}:$tag"
 
     prepare_artifact_config "$release_ws/artifact-config.json"
 
@@ -263,7 +263,7 @@ function push_files() {
 function write_push_results() {
     local result_file="$1"
     local tag="{{ index .artifactory.tags 0 }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.package_repo  }}:$tag"
+    local destination="{{ .artifactory.package_repo }}:$tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:
@@ -273,7 +273,7 @@ function write_push_results() {
 
     cat <<EOF > "$result_file"
 oci:
-  repo: {{ .artifactory.package_repo  }}
+  repo: {{ .artifactory.package_repo }}
   tag: "$tag"
   digest: "$digest"
 files:

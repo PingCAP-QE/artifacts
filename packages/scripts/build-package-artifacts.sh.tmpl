@@ -199,7 +199,7 @@ function prepare_artifact_config() {
     yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"    
+    yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] = []' "$save_file"
 
     {{- if eq .profile "release" }}
@@ -212,10 +212,20 @@ function prepare_artifact_config() {
     {{- end }}
 }
 
+{{- $tag_suffix := printf "_%s_%s"  .os .arch -}}
+{{- if ne .profile "release" }}
+{{- $tag_suffix = printf "-%s_%s_%s" .profile .os .arch -}}
+{{- end }}
+
+{{- $tags := coll.Slice }}
+{{- range $index, $tag := .artifactory.tags }}
+{{- $tags = append (printf "%s%s" $tag $tag_suffix) $tags }}
+{{- end }}
+
 function push_files() {
     local release_ws="$1"
-    local tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.package_repo  }}:$tag"
+    local tag="{{ index $tags 0 }}"
+    local destination="{{ .artifactory.package_repo }}:$tag"
 
     prepare_artifact_config "$release_ws/artifact-config.json"
 
@@ -223,29 +233,24 @@ function push_files() {
     # Login steps:
     #   local registry=$(echo "${destination}" | cut -d/ -f)
     #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
-
     pushd "$release_ws"
         oras push --artifact-type application/gzip --config artifact-config.json ${destination}
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s" .name }}{{- end }}
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
 
-    {{- $tag_suffix := printf "_%s_%s"  .os .arch -}}
-    {{- if ne .profile "release" }}
-    {{- $tag_suffix := printf "-%s_%s_%s" .profile .os .arch -}}
-    {{- end }}
 
-    {{- $more_tags := (.artifactory.tags | jq `.[1:]`) -}}
-    {{- if gt (len $more_tags) 0 }}
+    {{- if gt (len $tags) 1 }}
     # add other tags.
-    oras tag "${destination}" {{ range $more_tags }}{{ printf " %s%s" . $tag_suffix }}{{ end }}
+    oras tag {{ .artifactory.package_repo }}:{{ join $tags " " }}
     {{- end }}
 }
 
 function write_push_results() {
     local result_file="$1"
-    local tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
-    local destination="{{ .artifactory.package_repo  }}:$tag"
+    primary
+    local primary_tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
+    local destination="{{ .artifactory.package_repo }}:$primary_tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
     # Login steps:
@@ -255,8 +260,8 @@ function write_push_results() {
 
     cat <<EOF > "$result_file"
 oci:
-  repo: {{ .artifactory.package_repo  }}
-  tag: "$tag"
+  repo: {{ .artifactory.package_repo }}
+  tag: "$primary_tag"
   digest: "$digest"
 files:
   {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}
