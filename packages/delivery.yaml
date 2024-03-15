@@ -17,6 +17,7 @@ image_copy_rules:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-enterprise
+        - gcr.io/pingcap-public/dbaas/tidb
       tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tidb/images/br:
     - description: delivery the trunk branch images.
@@ -35,6 +36,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/br-enterprise
+        - gcr.io/pingcap-public/dbass/br
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -51,7 +53,8 @@ image_copy_rules:
       tags_regex:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-lightning
+        - hub.pingcap.net/qa/tidb-lightning-enterprise
+        - gcr.io/pingcap-public/dbass/tidb-lightning
   hub.pingcap.net/pingcap/tidb/images/dumpling:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -69,6 +72,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/dumpling-enterprise
+        - gcr.io/pingcap-public/dbass/dumpling
   hub.pingcap.net/pingcap/tiflow/images/cdc:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -86,6 +90,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/ticdc-enterprise
+        - gcr.io/pingcap-public/dbass/ticdc
   hub.pingcap.net/pingcap/tiflow/images/dm:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -103,6 +108,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/dm-enterprise
+        - gcr.io/pingcap-public/dbass/dm
   hub.pingcap.net/pingcap/tiflow/images/tiflow:
     - description: delivery the trunk branch extractly images.
       tags_regex:
@@ -132,6 +138,7 @@ image_copy_rules:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tiflash-enterprise
+        - gcr.io/pingcap-public/dbass/tiflash
       tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiproxy/image:
     - description: publish trunk and version images.
@@ -157,6 +164,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
+        - gcr.io/pingcap-public/dbass/tidb-monitor-initializer
   hub.pingcap.net/pingcap/ng-monitoring/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -174,6 +182,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/ng-monitoring-enterprise
+        - gcr.io/pingcap-public/dbass/ng-monitoring
   hub.pingcap.net/pingcap/tidb-tools/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -197,6 +206,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       dest_repositories:
         - hub.pingcap.net/qa/tidb-binlog-enterprise
+        - gcr.io/pingcap-public/dbass/tidb-binlog
   hub.pingcap.net/tikv/tikv/image:
     - description: delivery the trunk branch images.
       tags_regex: [^master$]
@@ -214,6 +224,7 @@ image_copy_rules:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/tikv-enterprise
+        - gcr.io/pingcap-public/dbass/tikv
       tag_regex_replace: "$1"
   hub.pingcap.net/tikv/pd/image:
     - description: delivery the trunk branch images.
@@ -232,6 +243,7 @@ image_copy_rules:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
       dest_repositories:
         - hub.pingcap.net/qa/pd-enterprise
+        - gcr.io/pingcap-public/dbass/pd
       tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiflow-operator/image:
     - description: delivery the trunk branch extractly images.
