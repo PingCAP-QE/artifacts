@@ -248,7 +248,6 @@ function push_files() {
 
 function write_push_results() {
     local result_file="$1"
-    primary
     local primary_tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
     local destination="{{ .artifactory.package_repo }}:$primary_tag"
 
