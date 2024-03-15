@@ -119,7 +119,7 @@ build_and_push_images() {
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
     archive_dir="$release_ws/tmp-$(date +%s)"
     mkdir -p "$archive_dir"
-    destination="{{ .artifactory.repo  }}:$tag"
+    destination="{{ .artifactory.repo }}:$tag"
     digest_file="${archive_dir}/digest.txt"
     kaniko_executor_global_options="--cleanup --cache=false --destination=${destination} --digest-file=${digest_file} --label net.pingcap.tibuild.new=yes"
     {{- if has . "build_args" }}
@@ -197,39 +197,38 @@ build_and_push_images() {
     cat "$digests_file"
 }
 
+{{- $tag_suffix := printf "_%s_%s" .os .arch }}
+{{- if ne .profile "release" }}
+{{- $tag_suffix = printf "-%s_%s_%s" .profile .os .arch }}
+{{- end }}
+
+{{- $tags := coll.Slice }}
+{{- range $index, $tag := .artifactory.tags }}
+{{- $tags = append (printf "%s%s" $tag $tag_suffix) $tags }}
+{{- end }}
+
 # Write results to file.
 write_push_results() {
     result_file="$1"
     input_disgests_file="$2"
 
-    tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
-
+    primary_tag="{{ index $tags 0 }}"
     cat <<EOF > "$result_file"
 images:
 {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
-- repo: {{ $image.artifactory.repo  }}
-  url: "{{ $image.artifactory.repo  }}:$tag"
-  tag: "$tag"
+- repo: {{ $image.artifactory.repo }}
+  url: "{{ $image.artifactory.repo }}:$primary_tag"
+  tag: "$primary_tag"
   digest: '$(sed -n "{{ add $index 1 }}p" $input_disgests_file)'
 {{- end }}
 EOF
 }
 
 add_more_tags() {
-    {{- $tag_suffix := printf "_%s_%s" .os .arch }}
-    {{- if ne .profile "release" }}
-    {{- $tag_suffix = printf "-%s_%s_%s" .profile .os .arch }}
-    {{- end }}
-
-    {{- $tags := coll.Slice }}
-    {{- range $index, $tag := .artifactory.tags }}
-    {{- $tags = append (printf "%s%s" $tag $tag_suffix) $tags }}
-    {{- end }}
-
     {{- if gt (len $tags) 1 }}
     # add other tags.
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
-    oras tag {{ $image.artifactory.repo  }}:{{ join $tags " " }}
+    oras tag {{ $image.artifactory.repo }}:{{ join $tags " " }}
     {{- end }}
     {{- else }}
     echo "🤷 No more tags need to be taged."
