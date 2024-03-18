@@ -10,6 +10,8 @@ image_copy_rules:
       tags_regex:
         - ^release-[0-9]+[.][0-9]+$
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+        - ^release-[0-9]+[.][0-9]+-failpoint$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
       dest_repositories:
         - hub.pingcap.net/qa/tidb
     - description: delivery the enterprise RC images.
@@ -217,6 +219,8 @@ image_copy_rules:
       tags_regex:
         - ^release-[0-9]+[.][0-9]+$
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+        - ^release-[0-9]+[.][0-9]+-failpoint$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
       dest_repositories:
         - hub.pingcap.net/qa/tikv
     - description: delivery the enterprise RC images.
@@ -236,6 +240,8 @@ image_copy_rules:
       tags_regex:
         - ^release-[0-9]+[.][0-9]+$
         - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+        - ^release-[0-9]+[.][0-9]+-failpoint$
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
       dest_repositories:
         - hub.pingcap.net/qa/pd
     - description: delivery the enterprise RC images.
