@@ -101,7 +101,7 @@ components:
               - name: tidb-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-ctl/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "hub.pingcap.net/pingcap/tidb-ctl/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-ctl
