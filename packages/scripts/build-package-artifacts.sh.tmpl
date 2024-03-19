@@ -200,6 +200,7 @@ function prepare_artifact_config() {
     yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.git-sha"] = "{{ .git.sha }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] = []' "$save_file"
 
     {{- if eq .profile "release" }}

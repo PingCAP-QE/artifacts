@@ -33,9 +33,9 @@ components:
   ctl:
     desc: ctl components
     git:
-      - url: https://github.com/pingcap/tidb.git
-        ref: {{ .Git.ref | default "master" }}
-      - url: others
+      url: https://github.com/pingcap/tidb.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
     artifactory:
       package_repo: hub.pingcap.net/pingcap/ctl/package
