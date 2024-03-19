@@ -1,6 +1,49 @@
 # See README.md
 
 editions:
+  dm:
+    desc: dm offline package
+    version: "{{ .Release.version }}" # segment version.
+    artifactory:
+      package_repo: hub.pingcap.net/pingcap/offline-package
+      tags:
+        - "{{ .Release.version }}-dm"
+    routers:
+      - description: "Started from v5.4.0 to latest"
+        if: {{ semver.CheckConstraint ">= 5.4.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [community]
+        artifacts:
+          - name: "tidb-dm-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: dm offline server package
+            components:
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } }
+              - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: dm-master, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-worker, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dmctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+      - description: "< v5.4.0"
+        if: {{ semver.CheckConstraint "< 5.4.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [community]
+        artifacts:
+          - name: "tidb-dm-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: dm offline server package
+            components:
+              - { name: alertmanager, src: { type: tiup-clone, version: v0.17.0 } }
+              - { name: grafana, src: { type: tiup-clone, version: v4.0.3 } }
+              - { name: prometheus, src: { type: tiup-clone, version: v4.0.3 } }
+              - { name: dm, src: { type: tiup-clone, version: v1.9.3 } } # it's tiup-dm pkg not dm.
+              - { name: tiup, src: { type: tiup-clone, version: v1.9.3 } }
+              - { name: dm-master, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-worker, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dmctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+
   community:
     desc: community offline package
     version: "{{ .Release.version }}" # segment version.
@@ -10,7 +53,6 @@ editions:
         - "{{ .Release.version }}-community"
     routers:
       - description: "Started from v7.5.0 to latest"
-        # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">=7.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
@@ -489,3 +531,4 @@ editions:
                   url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
+
