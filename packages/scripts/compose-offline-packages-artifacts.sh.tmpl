@@ -113,6 +113,7 @@ function compose() {
     echo "✅ All done."
 }
 
+{{- $tiup_mirror := .tiup_mirror }}
 {{ range $i, $artifact := .artifacts }}
 # Pre check before composing package: {{ $artifact.name }}"
 function pre_check_artifact{{ $i }}() {
@@ -124,7 +125,7 @@ function pre_check_artifact{{ $i }}() {
     {{ $components := .components | jq `map(select(.if != false ))` }}
     ## check online TiUP packages.
     {{- with ($components | jq `map(select(.src.type == "tiup-clone"))`) }}
-    tiup mirror set --reset
+    tiup mirror set {{ $tiup_mirror }}
     {{- range . }}
     echo -n "check tiup package: {{ .name }}@{{ .src.version }} in platform $os/$arch."
     {{- if eq .src.version "latest" }}
@@ -159,7 +160,7 @@ function compose_artifact{{ $i }}() {
     local version=$3
     local release_ws=$4
 
-    tiup mirror set --reset
+    tiup mirror set {{ $tiup_mirror }}
     local archive_dir="{{ .name }}"
     rm -rf "$archive_dir"
     mkdir -p "$archive_dir"

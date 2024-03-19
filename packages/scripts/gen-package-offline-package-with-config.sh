@@ -11,6 +11,7 @@ function main() {
     local edition="${4:-community}"
     local template_file="${5:-${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl}"
     local out_file="${6:-${RELEASE_SCRIPTS_DIR}/compose-offline-packages-artifacts.sh}"
+    local tiup_mirror="${7:---reset}"
 
     local target_info="os: $os, arch: $arch, version: $version, edition: $edition"
 
@@ -47,6 +48,7 @@ function main() {
     yq -i ".arch = \"$arch\"" release-router.yaml
     yq -i ".version = \"$version\"" release-router.yaml
     yq -i ".edition = \"$edition\"" release-router.yaml
+    yq -i ".tiup_mirror = \"$tiup_mirror\"" release-router.yaml
 
     yq -i '.artifacts |= map(select(.if == null or .if))' release-router.yaml
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then
