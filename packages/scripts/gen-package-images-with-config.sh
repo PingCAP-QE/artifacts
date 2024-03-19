@@ -52,7 +52,7 @@ function main() {
         echo "❌ No package routes matched for the target($target_info)."
         exit 1
     fi
-    yq ".routers[0]" release-package.yaml >release-router.yaml
+    yq ".routers[0].git = .git" release-package.yaml | yq ".routers[0]" >release-router.yaml
 
     # generate package build script
     yq -i ".os = \"$os\"" release-router.yaml

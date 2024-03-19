@@ -114,6 +114,7 @@ build_and_push_images() {
 
     ################# build and push image ################
     tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
+    kaniko_global_options="--cleanup --cache=false --label net.pingcap.tibuild.new=yes net.pingcap.tibuild.git-sha={{.git.sha}}"
     :> "$digests_file"
 {{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
@@ -121,16 +122,16 @@ build_and_push_images() {
     mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo }}:$tag"
     digest_file="${archive_dir}/digest.txt"
-    kaniko_executor_global_options="--cleanup --cache=false --destination=${destination} --digest-file=${digest_file} --label net.pingcap.tibuild.new=yes"
+    kaniko_options="$kaniko_global_options --destination=${destination} --digest-file=${digest_file}"
     {{- if has . "build_args" }}
     {{- range .build_args }}
-    kaniko_executor_global_options="$kaniko_executor_global_options --build-arg {{.}}"
+    kaniko_options="$kaniko_options --build-arg {{.}}"
     {{- end }}
     {{- end }}
 
 {{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
-    $kaniko_executor $kaniko_executor_global_options --context {{ .context }} --dockerfile {{ .dockerfile }}
+    $kaniko_executor $kaniko_options --context {{ .context }} --dockerfile {{ .dockerfile }}
 {{- else }}
 
     # Prepare build context for image building.
@@ -183,7 +184,7 @@ build_and_push_images() {
     fi
     dockerfile="$(realpath $dockerfile)"
 
-    $kaniko_executor $kaniko_executor_global_options --context="$archive_dir" --dockerfile="$dockerfile"
+    $kaniko_executor $kaniko_options --context="$archive_dir" --dockerfile="$dockerfile"
 {{- end }}
 
     # Save digest file path for later use
