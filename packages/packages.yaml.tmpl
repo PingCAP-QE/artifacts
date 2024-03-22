@@ -339,7 +339,7 @@ components:
           enterprise:
             - script: PD_EDITION=Enterprise make build
           failpoint:
-            - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
+            - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -392,7 +392,7 @@ components:
           enterprise:
             - script: PD_EDITION=Enterprise make build
           failpoint:
-            - script: WITH_RACE=1 make failpoint-enable build failpoint-disable
+            - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
