@@ -137,7 +137,8 @@ editions:
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  # version release on master branch.
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -235,7 +236,8 @@ editions:
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  # version release on master branch.
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-.*.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -380,7 +382,8 @@ editions:
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  # version release on master branch.
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -514,7 +517,8 @@ editions:
               - name: sync_diff_inspector # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  # version release on master branch.
+                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-.*.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
