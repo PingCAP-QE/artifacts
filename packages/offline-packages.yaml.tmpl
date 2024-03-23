@@ -323,7 +323,7 @@ editions:
               - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
-          - name: "tidb-community-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+          - name: "tidb-enterprise-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: enterprise offline toolkit package
             components:
               - { name: tiup, src: { type: tiup-clone, version: latest } }
@@ -399,7 +399,7 @@ editions:
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
-          - name: "tidb-community-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+          - name: "tidb-enterprise-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: enterprise offline server package
             components:
               - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
@@ -455,7 +455,7 @@ editions:
               - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
               - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
-          - name: "tidb-community-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+          - name: "tidb-enterprise-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: enterprise offline toolkit package
             components:
               - { name: tikv-importer, src: {type: tiup-clone, version: v4.0.2 } }

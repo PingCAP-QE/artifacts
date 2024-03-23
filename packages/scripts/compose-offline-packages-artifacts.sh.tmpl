@@ -226,8 +226,9 @@ function compose_artifact{{ $i }}() {
     mkdir -p "$release_ws"
     local save_file="$release_ws/$archive_dir.tar.gz"
     tar -zcvf "$save_file" $archive_dir
+    sha256sum -b "$save_file" | cut -d ' ' -f1 > "$save_file.sha256"
     rm -rf $archive_dir
-    echo "$save_file"
+    echo "sha256sum of '$save_file' is '$(cat $save_file.sha256)'"
 {{- end }}
 }
 {{ end }}
