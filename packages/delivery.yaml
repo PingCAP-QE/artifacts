@@ -55,6 +55,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb
         - docker.io/pingcap/tidb
+        - uhub.service.ucloud.cn/tidb
     - <<: *sync_ga_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tidb-enterprise
@@ -72,6 +73,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/br
         - docker.io/pingcap/br
+        - uhub.service.ucloud.cn/br
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/br-enterprise
@@ -92,6 +94,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning
         - docker.io/pingcap/tidb-lightning
+        - uhub.service.ucloud.cn/tidb-lightning
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning-enterprise
@@ -112,6 +115,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/dumpling
         - docker.io/pingcap/dumpling
+        - uhub.service.ucloud.cn/dumpling
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dumpling-enterprise
@@ -132,6 +136,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/ticdc
         - docker.io/pingcap/ticdc
+        - uhub.service.ucloud.cn/ticdc
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ticdc-enterprise
@@ -152,6 +157,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/dm
         - docker.io/pingcap/dm
+        - uhub.service.ucloud.cn/dm
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dm-enterprise
@@ -185,6 +191,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tiflash
         - docker.io/pingcap/tiflash
+        - uhub.service.ucloud.cn/pingcap/tiflash
     - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tiflash-enterprise
@@ -212,6 +219,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer
         - docker.io/pingcap/tidb-monitor-initializer
+        - uhub.service.ucloud.cn/pingcap/tidb-monitor-initializer
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
@@ -230,8 +238,9 @@ image_copy_rules:
         - hub.pingcap.net/qa/ng-monitoring
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/ng-monitoring      
+        - hub.pingcap.net/qa/ng-monitoring
         - docker.io/pingcap/ng-monitoring
+        - uhub.service.ucloud.cn/pingcap/ng-monitoring
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ng-monitoring-enterprise
@@ -255,6 +264,7 @@ image_copy_rules:
     - <<: *sync_ga_community
       dest_repositories:
         - docker.io/pingcap/tidb-binlog
+        - uhub.service.ucloud.cn/pingcap/tidb-binlog
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-binlog-enterprise
@@ -275,6 +285,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tikv
         - docker.io/pingcap/tikv
+        - uhub.service.ucloud.cn/pingcap/tikv
     - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tikv-enterprise
@@ -299,6 +310,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/pd
         - docker.io/pingcap/pd
+        - uhub.service.ucloud.cn/pingcap/pd
     - <<: *sync_ga_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/pd-enterprise
