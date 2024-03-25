@@ -38,7 +38,7 @@ definitions:
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
     description: delivery the community GA image to enterprise repos.
     tags_regex:
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+$
 image_copy_rules:
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_community

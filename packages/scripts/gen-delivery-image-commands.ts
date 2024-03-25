@@ -6,7 +6,7 @@ interface Rule {
   tags_regex: string[];
   dest_repositories: string[];
   constant_tags?: string[];
-  tag_regex_replace?: string
+  tag_regex_replace?: string;
 }
 
 interface Config {
@@ -32,6 +32,7 @@ async function generateShellScript(
   );
 
   if (rules.length === 0) {
+    console.info("🤷 No delivery rule matched.");
     return;
   }
 
@@ -44,7 +45,13 @@ async function generateShellScript(
 
   // Loop through rules
   for (const rule of rules) {
-    const { description = "", dest_repositories, constant_tags = [], tag_regex_replace = "", tags_regex=[] } = rule;
+    const {
+      description = "",
+      dest_repositories,
+      constant_tags = [],
+      tag_regex_replace = "",
+      tags_regex = [],
+    } = rule;
 
     console.log(
       `Matching rule found for image URL '${imageUrlWithTag}':`,
@@ -61,16 +68,19 @@ async function generateShellScript(
         ),
       );
       for (const constTag of constant_tags) {
-        console.log(`\tAdditional tag: ${constTag}`)
+        console.log(`\tAdditional tag: ${constTag}`);
         await file.write(
           new TextEncoder().encode(
             `crane tag ${destRepo}:${tag} ${constTag}\n`,
           ),
         );
       }
-      if (tag_regex_replace!=""){
-        const converted = tag.replace(new RegExp(tags_regex[0]), tag_regex_replace)
-        console.log(`\tAdditional tag: ${converted}`)
+      if (tag_regex_replace != "") {
+        const converted = tag.replace(
+          new RegExp(tags_regex[0]),
+          tag_regex_replace,
+        );
+        console.log(`\tAdditional tag: ${converted}`);
         await file.write(
           new TextEncoder().encode(
             `crane tag ${destRepo}:${tag} ${converted}\n`,
