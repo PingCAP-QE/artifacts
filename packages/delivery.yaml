@@ -4,49 +4,58 @@ definitions:
     description: delivery the trunk branch images.
     tags_regex: [^master$]
     constant_tags: [nightly] # add new tags.
+  sync_trunk_enterprise: &sync_trunk_enterprise {}
   sync_rc_community: &sync_rc_community
-  sync_ga_community: &sync_ga_community
-  sync_trunk_enterprise: &sync_trunk_enterprise
-    {}
+    description: delivery community images for release branches.
+    tags_regex:
+      - ^release-[0-9]+[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+  sync_rc_community_and_failpoint: &sync_rc_community_and_failpoint
+    description: delivery community and failpoint images for release branches.
+    tags_regex:
+      - ^release-[0-9]+[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      - ^release-[0-9]+[.][0-9]+-failpoint$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
   sync_rc_enterprise: &sync_rc_enterprise
-    {}
+    description: delivery the enterprise RC images.
+    tags_regex:
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+    tag_regex_replace: "$1"
+  sync_rc_community_to_enterprise_repo: &sync_rc_community_to_enterprise_repo
+    description: delivery the community image to enterprise repos.
+    tags_regex:
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+  sync_ga_community: &sync_ga_community
+    description: delivery community images for GA images.
+    tags_regex:
+      - ^v[0-9]+[.][0-9]+[.][0-9]+$
   sync_ga_enterprise: &sync_ga_enterprise
-    {}
-
+    description: delivery the enterprise GA images.
+    tags_regex:
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+)-enterprise$
+    tag_regex_replace: "$1"
 image_copy_rules:
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
-        - ^release-[0-9]+[.][0-9]+-failpoint$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
+    - <<: *sync_rc_community_and_failpoint
       dest_repositories:
         - hub.pingcap.net/qa/tidb
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+    - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tidb-enterprise
         - gcr.io/pingcap-public/dbaas/tidb
-      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tidb/images/br:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/br
       constant_tags: [nightly]
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/br
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/br-enterprise
         - gcr.io/pingcap-public/dbaas/br
@@ -54,15 +63,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-lightning
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-lightning
@@ -70,15 +74,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dumpling
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/dumpling
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dumpling-enterprise
         - gcr.io/pingcap-public/dbaas/dumpling
@@ -86,15 +85,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ticdc
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/ticdc
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
@@ -102,15 +96,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dm
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/dm
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dm-enterprise
         - gcr.io/pingcap-public/dbaas/dm
@@ -128,19 +117,13 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tiflash
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/tiflash
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+    - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tiflash-enterprise
         - gcr.io/pingcap-public/dbaas/tiflash
-      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiproxy/image:
     - description: publish trunk and version images.
       tags_regex:
@@ -152,15 +135,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-monitor-initializer
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-monitor-initializer
@@ -168,15 +146,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ng-monitoring
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/ng-monitoring
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ng-monitoring-enterprise
         - gcr.io/pingcap-public/dbaas/ng-monitoring
@@ -188,15 +161,10 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-binlog
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/tidb-binlog
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-binlog-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-binlog
@@ -204,40 +172,24 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tikv
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
-        - ^release-[0-9]+[.][0-9]+-failpoint$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
+    - <<: *sync_rc_community_and_failpoint
       dest_repositories:
         - hub.pingcap.net/qa/tikv
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+    - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tikv-enterprise
         - gcr.io/pingcap-public/dbaas/tikv
-      tag_regex_replace: "$1"
   hub.pingcap.net/tikv/pd/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/pd
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
-        - ^release-[0-9]+[.][0-9]+-failpoint$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre-failpoint$
+    - <<: *sync_rc_community_and_failpoint
       dest_repositories:
         - hub.pingcap.net/qa/pd
-    - description: delivery the enterprise RC images.
-      tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+    - <<: *sync_rc_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/pd-enterprise
         - gcr.io/pingcap-public/dbaas/pd
-      tag_regex_replace: "$1"
   hub.pingcap.net/pingcap/tiflow-operator/image:
     - description: delivery the trunk branch extractly images.
       tags_regex:
@@ -247,13 +199,11 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/tidbcloud/tiflow-operator
+      constant_tags: [latest]
   hub.pingcap.net/pingcap/tidb-dashboard/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-dashboard
-    - description: delivery the release branch images.
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+$
-        - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+    - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/tidb-dashboard
