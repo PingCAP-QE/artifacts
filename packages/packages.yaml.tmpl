@@ -968,12 +968,12 @@ components:
   tidb-operator:
     desc: tidb opreator component tarball
     git:
-      url: https://github.com/pingcap/tidb-opreator.git
+      url: https://github.com/pingcap/tidb-operator.git
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-opreator/package
+      package_repo: hub.pingcap.net/pingcap/tidb-operator/package
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1021,7 +1021,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-opreator/image
+              repo: hub.pingcap.net/pingcap/tidb-operator/image
             context: . # build under git repo.
             dockerfile: images/tidb-operator/Dockerfile
   tidb-dashboard:
