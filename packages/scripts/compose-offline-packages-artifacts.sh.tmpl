@@ -206,7 +206,7 @@ function compose_artifact{{ $i }}() {
     ## some pkgs need to re-publish
     {{- range ($components | jq `map(select(.src.type == "http"))`) }}
     # {{ .name }}
-    wget {{ .src.url }}
+    wget --tries=3 -c {{ .src.url }}
     {{- if has .src "extract" }}
     tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
     {{- else if has . "publish" }}

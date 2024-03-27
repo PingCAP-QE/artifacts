@@ -162,7 +162,7 @@ build_and_push_images() {
     ## compose files from http.
     {{- range $httpFiles }}
     # {{ .name }}
-    wget {{ .src.url }}
+    wget --tries=3 -c {{ .src.url }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
     tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
@@ -179,7 +179,7 @@ build_and_push_images() {
     # get dockerfile from url if the `.dockerfile` value is a http url.
     if [ "${dockerfile#https://}" != "$dockerfile" ] || [ "${dockerfile#http://}" != "$dockerfile" ]; then
         echo "URL starts with https:// or http://, now I will download it and save it into: '$archive_dir/Dockerfile'."
-        wget "$dockerfile" -O "$archive_dir/Dockerfile"
+        wget --tries=3 -c -O "$archive_dir/Dockerfile" "$dockerfile"
         dockerfile="$archive_dir/Dockerfile"
     fi
     dockerfile="$(realpath $dockerfile)"
