@@ -164,7 +164,7 @@ function archive() {
     ## compose files from http.
     {{- range $httpFiles }}
     # {{ .name }}
-    wget {{ .src.url }}
+    wget --tries=3 -c {{ .src.url }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
     tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
