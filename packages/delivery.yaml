@@ -55,7 +55,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb
         - docker.io/pingcap/tidb
-        - uhub.service.ucloud.cn/tidb
+        - uhub.service.ucloud.cn/pingcap/tidb
     - <<: *sync_ga_enterprise
       dest_repositories:
         - hub.pingcap.net/qa/tidb-enterprise
@@ -73,7 +73,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/br
         - docker.io/pingcap/br
-        - uhub.service.ucloud.cn/br
+        - uhub.service.ucloud.cn/pingcap/br
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/br-enterprise
@@ -94,7 +94,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning
         - docker.io/pingcap/tidb-lightning
-        - uhub.service.ucloud.cn/tidb-lightning
+        - uhub.service.ucloud.cn/pingcap/tidb-lightning
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/tidb-lightning-enterprise
@@ -115,7 +115,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/dumpling
         - docker.io/pingcap/dumpling
-        - uhub.service.ucloud.cn/dumpling
+        - uhub.service.ucloud.cn/pingcap/dumpling
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dumpling-enterprise
@@ -136,7 +136,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/ticdc
         - docker.io/pingcap/ticdc
-        - uhub.service.ucloud.cn/ticdc
+        - uhub.service.ucloud.cn/pingcap/ticdc
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ticdc-enterprise
@@ -157,7 +157,7 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/dm
         - docker.io/pingcap/dm
-        - uhub.service.ucloud.cn/dm
+        - uhub.service.ucloud.cn/pingcap/dm
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/dm-enterprise
