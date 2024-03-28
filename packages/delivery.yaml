@@ -340,3 +340,5 @@ image_copy_rules:
       dest_repositories:
         - hub.pingcap.net/qa/tidb-dashboard
         - docker.io/pingcap/tidb-dashboard
+        - uhub.service.ucloud.cn/pingcap/tidb-dashboard
+        - gcr.io/pingcap-public/dbaas/tidb-dashboard
