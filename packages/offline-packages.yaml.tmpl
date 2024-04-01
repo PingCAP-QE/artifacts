@@ -523,8 +523,9 @@ editions:
                   entrypoint: tidb-server
               - name: tikv
                 src:
-                  type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/tikv/optimization/v8.0.0/9f51dfed1f04224a746facfbd919ae8ebec639eb/centos7/ga-tikv-{{ .Release.os }}-{{ .Release.arch }}-enterprise.tar.gz"
+                  type: oci
+                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tikv-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tikv
                   description: >-
@@ -532,8 +533,9 @@ editions:
                   entrypoint: tikv-server
               - name: pd
                 src:
-                  type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/pd/optimization/v8.0.0/afa9e5d1daf198fcb3d9c4114a5db13db4416032/centos7/ga-pd-{{ .Release.os }}-{{ .Release.arch }}-enterprise.tar.gz"
+                  type: oci
+                  url: "hub.pingcap.net/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "pd-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: pd
                   description: >-
