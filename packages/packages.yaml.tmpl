@@ -400,7 +400,7 @@ components:
           release:
             - script: make build
           enterprise:
-            - script: PD_EDITION=Enterprise make build
+            - script: PD_EDITION=Enterprise make build tools
           failpoint:
             - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
@@ -440,8 +440,9 @@ components:
               - { name: pd-ctl, src: { path: bin/pd-ctl } }
               - { name: pd-heartbeat-bench, src: { path: bin/pd-heartbeat-bench } }
               - { name: pd-tso-bench, src: { path: bin/pd-tso-bench } }
-              - { name: regions-dump, src: { path: bin/pd-heartbeat-bench } }
+              - { name: regions-dump, src: { path: bin/regions-dump } }
               - { name: stores-dump, src: { path: bin/stores-dump } }
+              - { if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}, name: pd-api-bench, src: { path: bin/pd-api-bench } }
           - name: container image
             type: image
             artifactory:
