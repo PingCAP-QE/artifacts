@@ -145,7 +145,7 @@ components:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.19      
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20231216-52-ge64909c-go1.19
     routers:
       - description: For range [6.1.0, )
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -154,7 +154,7 @@ components:
         profile: [release]
         steps:
           release:
-            - script: |-                
+            - script: |-
                 export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 make grafana_without_pull
@@ -337,11 +337,12 @@ components:
           release:
             - script: make build
           enterprise:
-            - script: PD_EDITION=Enterprise make build
+            - script: PD_EDITION=Enterprise make build tools
           failpoint:
             - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
               - name: pd-server
                 src:
@@ -352,6 +353,7 @@ components:
                 It is used to manage and schedule the TiKV cluster.
               entrypoint: pd-server
           - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
             files:
               - name: pd-recover
                 src:
@@ -362,13 +364,21 @@ components:
                 the PD cluster which cannot start or provide services normally.
               entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
             files:
-              - name: pd-recover
-                src:
-                  path: bin/pd-recover
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-heartbeat-bench, src: { path: bin/pd-heartbeat-bench } }
+              - { name: pd-tso-bench, src: { path: bin/pd-tso-bench } }
+              - { name: regions-dump, src: { path: bin/pd-heartbeat-bench } }
+              - { name: stores-dump, src: { path: bin/stores-dump } }
           - name: container image
             type: image
             artifactory:
@@ -395,6 +405,7 @@ components:
             - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
               - name: pd-server
                 src:
@@ -405,6 +416,7 @@ components:
                 It is used to manage and schedule the TiKV cluster.
               entrypoint: pd-server
           - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
               - name: pd-recover
                 src:
@@ -415,13 +427,21 @@ components:
                 the PD cluster which cannot start or provide services normally.
               entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
-              - name: pd-recover
-                src:
-                  path: bin/pd-recover
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-heartbeat-bench, src: { path: bin/pd-heartbeat-bench } }
+              - { name: pd-tso-bench, src: { path: bin/pd-tso-bench } }
+              - { name: regions-dump, src: { path: bin/pd-heartbeat-bench } }
+              - { name: stores-dump, src: { path: bin/stores-dump } }
           - name: container image
             type: image
             artifactory:
@@ -451,11 +471,6 @@ components:
               - name: pd-server
                 src:
                   path: bin/pd-server
-            tiup: # will publish to tiup.
-              description: >-
-                PD is the abbreviation for Placement Driver.
-                It is used to manage and schedule the TiKV cluster.
-              entrypoint: pd-server
           - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: pd-recover
@@ -468,9 +483,6 @@ components:
               entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: pd-recover
-                src:
-                  path: bin/pd-recover
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
@@ -1476,31 +1488,34 @@ components:
                 ROCKSDB_SYS_STATIC=1 make fail_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
-              - name: tikv-server
-                src:
-                  path: bin/tikv-server
+              - { name: tikv-server, src: { path: bin/tikv-server } }
             tiup:
               description: >-
                 Distributed transactional key-value database, originally created to complement TiDB.
               entrypoint: tikv-server
           - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
             files:
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
+              - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - { name: tikv-server, src: { path: bin/tikv-server } }
+              - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
+            tiup:
+              description: >-
+                Distributed transactional key-value database, originally created to complement TiDB.
+              entrypoint: tikv-server
           - name: container image
             type: image
             artifactory:
               repo: hub.pingcap.net/tikv/tikv/image
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             files: # prepare for context
-              - name: tikv-server
-                src:
-                  path: bin/tikv-server
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
+              - { name: tikv-server, src: { path: bin/tikv-server } }
+              - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
       - description: For FIPs in range [6.5.6, 6.6.0)
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -1512,18 +1527,10 @@ components:
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: tikv-server
-                src:
-                  path: bin/tikv-server
-            tiup:
-              description: >-
-                Distributed transactional key-value database, originally created to complement TiDB.
-              entrypoint: tikv-server
+              - { name: tikv-server, src: { path: bin/tikv-server } }
           - name: "tikv-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
+              - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
           - name: fips container image
             type: image
             artifactory:
@@ -1534,12 +1541,8 @@ components:
               - BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0-fips
             {{- end }}
             files: # prepare for context
-              - name: tikv-server
-                src:
-                  path: bin/tikv-server
-              - name: tikv-ctl
-                src:
-                  path: bin/tikv-ctl
+              - { name: tikv-server, src: { path: bin/tikv-server } }
+              - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
   tiproxy:
     desc: tiproxy components tarballs and images
     git:
