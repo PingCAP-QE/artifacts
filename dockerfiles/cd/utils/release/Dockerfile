@@ -1,4 +1,4 @@
-FROM golang:1.21.8-alpine3.18 as gomplate_builder
+FROM golang:1.22.2-alpine3.19 as gomplate_builder
 
 RUN wget https://github.com/hairyhenderson/gomplate/archive/refs/heads/main.zip -O - | unzip - && cd gomplate-main && go build -o /usr/local/bin/gomplate ./cmd/gomplate
 
@@ -30,3 +30,10 @@ ARG KS3UTIL_VER=2.4.2
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget https://ks3util-version-update.ks3-cn-beijing.ksyuncs.com/${KS3UTIL_VER}/ks3util-${OS}-${ARCH} -O /usr/local/bin/ks3util && \
     chmod a+x /usr/local/bin/ks3util
+
+# install tools: tiup
+# renovate: datasource=github-release depName=pingcap/tiup
+ARG TIUP_VER=v1.14.1
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
+    chmod 755 /usr/local/bin/tiup
