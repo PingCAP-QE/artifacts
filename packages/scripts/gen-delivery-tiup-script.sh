@@ -35,6 +35,7 @@ fi
 # generate the publish script.
 cat <<EOF >"$out_script"
 #! /usr/bin/env bash
+set -eo pipefail
 
 # check the remote file after published.
 post_check() {
