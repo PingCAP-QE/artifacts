@@ -69,7 +69,7 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value: &value-go1-22
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.22.1
+          GOLANG_VERSION: 1.22.2
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
         value: *value-go1-22
