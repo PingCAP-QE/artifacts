@@ -12,6 +12,7 @@ function main() {
     local template_file="${5:-${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl}"
     local out_file="${6:-${RELEASE_SCRIPTS_DIR}/compose-offline-packages-artifacts.sh}"
     local tiup_mirror="${7:---reset}"
+    local registry="${8:-hub.pingcap.net}"
 
     local target_info="os: $os, arch: $arch, version: $version, edition: $edition"
 
@@ -21,6 +22,7 @@ function main() {
     yq -i ".Release.arch = \"$arch\"" release-context.yaml
     yq -i ".Release.version = \"$version\"" release-context.yaml
     yq -i ".Release.edition = \"$edition\"" release-context.yaml
+    yq -i ".Release.registry = \"$registry\"" release-context.yaml
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
     yq ".editions[\"${edition}\"]" release-packages.yaml >release-package.yaml
 

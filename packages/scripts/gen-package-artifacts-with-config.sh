@@ -14,6 +14,7 @@ function main() {
     local git_sha=$7
     local template_file="${8:-${PROJECT_ROOT_DIR}/packages/packages.yaml.tmpl}"
     local out_file="${9:-${RELEASE_SCRIPTS_DIR}/build-package-artifacts.sh}"
+    local registry="${10:-hub.pingcap.net}"
     local target_info="component: $component, os: $os, arch: $arch, version: $version, profile: $profile"
 
     # prepare template file's context.
@@ -22,6 +23,7 @@ function main() {
     yq -i ".Release.arch = \"$arch\"" release-context.yaml
     yq -i ".Release.version = \"$version\"" release-context.yaml
     yq -i ".Release.profile = \"$profile\"" release-context.yaml
+    yq -i ".Release.registry = \"$registry\"" release-context.yaml
     yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
     yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
 
