@@ -5,7 +5,7 @@ editions:
     desc: dm offline package
     version: "{{ .Release.version }}" # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/offline-package
+      package_repo: "{{ .Release.registry }}/pingcap/offline-package"
       tags:
         - "{{ .Release.version }}-dm"
     routers:
@@ -48,7 +48,7 @@ editions:
     desc: community offline package
     version: "{{ .Release.version }}" # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/offline-package
+      package_repo: "{{ .Release.registry }}/pingcap/offline-package"
       tags:
         - "{{ .Release.version }}-community"
     routers:
@@ -110,28 +110,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -139,7 +139,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -207,28 +207,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -236,7 +236,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -306,28 +306,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -335,7 +335,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-.*.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -354,7 +354,7 @@ editions:
                   extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
   enterprise:
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/offline-package
+      package_repo: "{{ .Release.registry }}/pingcap/offline-package"
       tags:
         - "{{ .Release.version }}-enterprise"
     routers:
@@ -382,7 +382,7 @@ editions:
               - name: tidb
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tidb
@@ -392,7 +392,7 @@ editions:
               - name: tikv
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tikv-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tikv
@@ -402,7 +402,7 @@ editions:
               - name: pd
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "pd-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: pd
@@ -412,7 +412,7 @@ editions:
               - name: tiflash
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tiflash-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tiflash
@@ -453,28 +453,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -482,7 +482,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -516,7 +516,7 @@ editions:
               - name: tidb
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tidb
@@ -526,7 +526,7 @@ editions:
               - name: tikv
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tikv-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tikv
@@ -536,7 +536,7 @@ editions:
               - name: pd
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "pd-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: pd
@@ -546,7 +546,7 @@ editions:
               - name: tiflash
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tiflash-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tiflash
@@ -587,28 +587,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -616,7 +616,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector
@@ -648,7 +648,7 @@ editions:
               - name: tidb
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tidb
@@ -658,7 +658,7 @@ editions:
               - name: tikv
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tikv-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tikv
@@ -668,7 +668,7 @@ editions:
               - name: pd
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "pd-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: pd
@@ -678,7 +678,7 @@ editions:
               - name: tiflash
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tiflash-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tiflash
@@ -722,28 +722,28 @@ editions:
               - name: binlogctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: reparo # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*.tar.gz"
                   extract: true
                   extract_inner_path: arbiter
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -751,7 +751,7 @@ editions:
                 src:
                   type: oci
                   # version release on master branch.
-                  url: "hub.pingcap.net/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-tools-.*.tar.gz"
                   extract: true
                   extract_inner_path: sync_diff_inspector

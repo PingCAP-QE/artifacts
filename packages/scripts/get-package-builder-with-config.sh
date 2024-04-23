@@ -20,6 +20,7 @@ function main() {
     yq -i ".Release.arch = \"$arch\"" release-context.yaml
     yq -i ".Release.version = \"$version\"" release-context.yaml
     yq -i ".Release.profile = \"$profile\"" release-context.yaml
+    yq -i '.Release.registry = "localhost"' release-context.yaml
     yq -i '.Git.ref = ""' release-context.yaml
     yq -i '.Git.sha = ""' release-context.yaml
 

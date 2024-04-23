@@ -27,7 +27,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/advanced-statefulset
+              repo: "{{ .Release.registry }}/pingcap/advanced-statefulset"
             context: . # build under git repo.
             dockerfile: Dockerfile
   ctl:
@@ -38,7 +38,7 @@ components:
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/ctl/package
+      package_repo: "{{ .Release.registry }}/pingcap/ctl/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -59,14 +59,14 @@ components:
               - name: binlogctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
               - name: cdc
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tiflow/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tiflow/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "cdc-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: cdc
@@ -94,28 +94,28 @@ components:
               - name: pd-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/pd/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "pd-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: pd-ctl
               - name: tidb-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb-ctl/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-ctl/package:master_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-ctl
               - name: tikv-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/tikv/tikv/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tikv-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tikv-ctl
               - name: tidb-lightning-ctl
                 src:
                   type: oci
-                  url: "hub.pingcap.net/pingcap/tidb/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -130,7 +130,7 @@ components:
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/monitoring/package
+      package_repo: "{{ .Release.registry }}/pingcap/monitoring/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -164,7 +164,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/monitoring/image
+              repo: "{{ .Release.registry }}/pingcap/monitoring/image"
             context: monitor-snapshot/{{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}/operator/
             dockerfile: Dockerfile
           - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -237,7 +237,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/ng-monitoring/package
+      package_repo: "{{ .Release.registry }}/pingcap/ng-monitoring/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -266,7 +266,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/ng-monitoring/image
+              repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
             files:
               - name: ng-monitoring-server
@@ -291,7 +291,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/ng-monitoring/image
+              repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
             files:
               - name: ng-monitoring-server
@@ -311,7 +311,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/tikv/pd/package
+      package_repo: "{{ .Release.registry }}/tikv/pd/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -382,7 +382,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/pd/image
+              repo: "{{ .Release.registry }}/tikv/pd/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
@@ -446,7 +446,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/pd/image
+              repo: "{{ .Release.registry }}/tikv/pd/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
@@ -490,7 +490,7 @@ components:
           - name: fips container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/pd/image
+              repo: "{{ .Release.registry }}/tikv/pd/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
             files: # prepare for context
               - name: pd-server
@@ -510,7 +510,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -626,7 +626,7 @@ components:
           - name: container image - tidb server
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
             {{- if eq .Release.profile "enterprise" }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
             {{- else }}
@@ -647,7 +647,7 @@ components:
           - name: container image - br tool
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/br
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
             files: # prepare for context
               - name: br
@@ -656,7 +656,7 @@ components:
           - name: container image - dumpling tool
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
@@ -665,7 +665,7 @@ components:
           - name: container image - tidb-lightning
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
@@ -770,7 +770,7 @@ components:
           - name: container image - tidb server
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-server
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
             {{- if eq .Release.profile "enterprise" }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
             {{- else }}
@@ -791,7 +791,7 @@ components:
           - name: container image - br tool
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/br
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
             files: # prepare for context
               - name: br
@@ -800,7 +800,7 @@ components:
           - name: container image - dumpling tool
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/dumpling
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
@@ -809,7 +809,7 @@ components:
           - name: container image - tidb-lightning
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb/images/tidb-lightning
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
@@ -826,7 +826,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-tools/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb-tools/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -854,7 +854,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-tools/image
+              repo: "{{ .Release.registry }}/pingcap/tidb-tools/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
             files:
               - name: sync_diff_inspector
@@ -868,7 +868,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-ctl/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb-ctl/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -900,7 +900,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-binlog/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb-binlog/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -963,7 +963,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-binlog/image
+              repo: "{{ .Release.registry }}/pingcap/tidb-binlog/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
             files: # context files
               - name: pump
@@ -986,7 +986,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-operator/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb-operator/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1034,7 +1034,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-operator/image
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/image"
             context: . # build under git repo.
             dockerfile: images/tidb-operator/Dockerfile
   tidb-dashboard:
@@ -1045,7 +1045,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tidb-dashboard/package
+      package_repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1076,7 +1076,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+              repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
@@ -1102,7 +1102,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tidb-dashboard/image
+              repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
@@ -1116,7 +1116,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tiflash/package
+      package_repo: "{{ .Release.registry }}/pingcap/tiflash/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1125,7 +1125,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
+        image: {{ .Release.registry }}/ee/ci/release-build-base-tiflash:v20231106
     routers:
       - description: interpret versions according to semantic version spec.
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -1218,7 +1218,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflash/image
+              repo: "{{ .Release.registry }}/pingcap/tiflash/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
             files:
               - name: tiflash/
@@ -1232,7 +1232,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tiflow/package
+      package_repo: "{{ .Release.registry }}/pingcap/tiflow/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1344,7 +1344,7 @@ components:
           - name: container image - cdc
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflow/images/cdc
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
             files: # context files
               - name: cdc
@@ -1353,7 +1353,7 @@ components:
           - name: container image - dm
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflow/images/dm
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dm.Dockerfile
             files:
               - name: dm-master
@@ -1368,7 +1368,7 @@ components:
           - name: container image - tiflow-engine
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflow/images/tiflow
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
             context: . # just build under git repo folder.
             dockerfile: deployments/engine/docker/Dockerfile
             build_args:
@@ -1395,7 +1395,7 @@ components:
           - name: fips container image - cdc
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflow/images/cdc
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
             files: # context files
               - name: cdc
@@ -1409,7 +1409,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tiflow-operator/package
+      package_repo: "{{ .Release.registry }}/pingcap/tiflow-operator/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1430,7 +1430,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiflow-operator/image
+              repo: "{{ .Release.registry }}/pingcap/tiflow-operator/image"
             context: . # just build under git repo folder.
             dockerfile: Dockerfile
   tikv:
@@ -1441,7 +1441,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/tikv/tikv/package
+      package_repo: "{{ .Release.registry }}/tikv/tikv/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1512,7 +1512,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/tikv/image
+              repo: "{{ .Release.registry }}/tikv/tikv/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
@@ -1535,7 +1535,7 @@ components:
           - name: fips container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/tikv/tikv/image
+              repo: "{{ .Release.registry }}/tikv/tikv/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
             {{- if eq .Release.profile "fips" }}
             build_args:
@@ -1552,7 +1552,7 @@ components:
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
     artifactory:
-      package_repo: hub.pingcap.net/pingcap/tiproxy/package
+      package_repo: "{{ .Release.registry }}/pingcap/tiproxy/package"
       tags:
         {{- if .Git.sha }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
@@ -1583,7 +1583,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: hub.pingcap.net/pingcap/tiproxy/image
+              repo: "{{ .Release.registry }}/pingcap/tiproxy/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiproxy/Dockerfile
             files: # prepare for context
               - { name: tiproxy, src: { path: bin/tiproxy } }
