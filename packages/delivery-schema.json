@@ -5,7 +5,7 @@
         "image_copy_rules": {
             "type": "object",
             "patternProperties": {
-                "^hub.pingcap.net/(pingcap|tikv)": {
+                "^hub.pingcap.net/(pingcap|tikv|lab)": {
                     "type": "array",
                     "items": {
                         "type": "object",

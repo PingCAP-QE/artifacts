@@ -349,3 +349,13 @@ image_copy_rules:
         - docker.io/pingcap/tidb-dashboard
         - uhub.service.ucloud.cn/pingcap/tidb-dashboard
         - gcr.io/pingcap-public/dbaas/tidb-dashboard
+  hub.pingcap.net/lab/linguflow-api:
+    - description: deliver all to DockerHub.
+      tags_regex: [.+]
+      dest_repositories:
+        - docker.io/pingcap/linguflow-api
+  hub.pingcap.net/lab/linguflow-ui:
+    - description: deliver all to DockerHub.
+      tags_regex: [.+]
+      dest_repositories:
+        - docker.io/pingcap/linguflow-ui
