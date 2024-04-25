@@ -678,7 +678,7 @@ editions:
               - name: tiflash
                 src:
                   type: oci
-                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tiflash-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                 publish:
                   name: tiflash
