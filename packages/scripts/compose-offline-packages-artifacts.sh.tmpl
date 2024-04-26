@@ -129,7 +129,7 @@ function pre_check_artifact{{ $i }}() {
     {{- range . }}
     echo -n "🔍 check tiup package: {{ .name }}@{{ .src.version }} in platform $os/$arch."
     {{- if eq .src.version "latest" }}
-    tiup list {{ .name }} | grep -E '^v\d+\.\d+\.\d+\s+' | tail -1 | grep "$os/$arch" > /dev/null && echo " ✅" || { 
+    tiup list {{ .name }} | grep -E '^v\d+\.\d+\.\d+\s+' | tail -1 | grep -E "($os/$arch|any/any)" > /dev/null && echo " ✅" || { 
       echo " ❌"
       exit 1
     }
