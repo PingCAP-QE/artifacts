@@ -327,7 +327,7 @@ editions:
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
@@ -743,7 +743,7 @@ editions:
               - name: tidb-lightning-ctl # New in v6.0.0
                 src:
                   type: oci
-                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "tidb-lightning-ctl-.*.tar.gz"
                   extract: true
                   extract_inner_path: tidb-lightning-ctl
