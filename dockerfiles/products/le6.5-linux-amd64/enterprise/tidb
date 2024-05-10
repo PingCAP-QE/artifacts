@@ -1,6 +1,6 @@
-# WIP
-ARG BASE_IMG=hub.pingcap.net/bases/tidb-base:v1.8.0-release-6.5
-FROM $BASE_IMG
+FROM pingcap/alpine-glibc:alpine-3.14.6
+RUN apk add --no-cache \
+    curl
 COPY tidb-server /tidb-server
 COPY audit-1.so /plugins/audit-1.so
 COPY whitelist-1.so /plugins/whitelist-1.so

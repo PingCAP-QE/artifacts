@@ -151,11 +151,20 @@ metadata:
   name: release-6-5
 build:
   artifacts:
-    - image: tidb-base
-      platforms: [linux/amd64, linux/arm64]
+    - image: tidb-base-old-amd64
+      platforms: [linux/amd64]
       kaniko:
         dockerfile: tidb-base/release-6.5.Dockerfile
         cache: {}
+        target: amd64
+        skipUnusedStages: true
+    - image: tidb-base-old-arm64
+      platforms: [linux/arm64]
+      kaniko:
+        dockerfile: tidb-base/release-6.5.Dockerfile
+        cache: {}
+        target: arm64
+        skipUnusedStages: true
   tagPolicy:
     customTemplate:
       template: "v1.8.0-release-6.5"
