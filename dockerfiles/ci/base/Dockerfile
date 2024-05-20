@@ -1,6 +1,6 @@
 # Base image
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.21.8
+ARG GOLANG_VERSION=1.21.10
 FROM golang:${GOLANG_VERSION}
 
 LABEL go-version "${GOLANG_VERSION}"
