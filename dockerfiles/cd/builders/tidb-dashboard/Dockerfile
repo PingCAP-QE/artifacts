@@ -24,9 +24,9 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 # Install nodejs.
-RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
+RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
 RUN yum -y install nodejs && yum clean all
-RUN npm install -g pnpm@7.30.5
+RUN npm install -g pnpm@8.15.8
 
 ########### stage: Buiding
 FROM builder as building
