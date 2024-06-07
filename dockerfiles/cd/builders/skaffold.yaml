@@ -157,7 +157,7 @@ profiles:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: builder-others
+  name: builder-tikv
 build:
   artifacts:
     - image: tikv
@@ -166,12 +166,13 @@ build:
         dockerfile: tikv/Dockerfile
         cache: {}
         target: builder
-    - image: tidb-dashboard
-      platforms: [linux/amd64, linux/arm64]
-      kaniko:
-        dockerfile: tidb-dashboard/Dockerfile
-        cache: {}
-        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -192,7 +193,66 @@ profiles:
         tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
-      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+  - name: devtoolset8
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-devtoolset8"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: 
+          DEVTOOLSET_VER: 8
+  - name: devtoolset9
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-devtoolset8"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: 
+          DEVTOOLSET_VER: 9
+  - name: devtoolset11
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-devtoolset11"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: 
+          DEVTOOLSET_VER: 11
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder-others
+build:
+  artifacts:
+    - image: tidb-dashboard
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tidb-dashboard/Dockerfile
+        cache: {}
+        target: builder
+  cluster:
+    concurrency: 0
+    randomDockerConfigSecret: false
+    randomPullSecret: false
+    dockerConfig:
+      secretName: hub-pingcap-net-ee
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+profiles:
+  - name: local-docker
+    build:
+      local:
+        useDockerCLI: true
+        useBuildkit: true
+        concurrency: 0
+        tryImportMissing: true
+    patches:
+      - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -230,7 +290,7 @@ profiles:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: builder-others-fips
+  name: builder-tikv-fips
 build:
   artifacts:
     - image: tikv
