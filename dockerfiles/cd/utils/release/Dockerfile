@@ -1,4 +1,4 @@
-FROM golang:1.22.3-alpine3.19 as gomplate_builder
+FROM golang:1.22.4-alpine3.19 as gomplate_builder
 
 RUN wget https://github.com/hairyhenderson/gomplate/archive/refs/heads/main.zip -O - | unzip - && cd gomplate-main && go build -o /usr/local/bin/gomplate ./cmd/gomplate
 
