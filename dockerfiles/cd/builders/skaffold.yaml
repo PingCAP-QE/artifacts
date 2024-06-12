@@ -211,15 +211,15 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value: 
           DEVTOOLSET_VER: 9
-  - name: devtoolset11
+  - name: devtoolset10
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-devtoolset11"
+        value: "{{ .SHA }}-devtoolset10"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value: 
-          DEVTOOLSET_VER: 11
+          DEVTOOLSET_VER: 10
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
