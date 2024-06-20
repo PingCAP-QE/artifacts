@@ -2,7 +2,7 @@ FROM golang:1.22.4-alpine3.19 as gomplate_builder
 
 RUN wget https://github.com/hairyhenderson/gomplate/archive/refs/heads/main.zip -O - | unzip - && cd gomplate-main && go build -o /usr/local/bin/gomplate ./cmd/gomplate
 
-FROM alpine:3.19.1
+FROM alpine:3.20.1
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "utils image for CD release"
