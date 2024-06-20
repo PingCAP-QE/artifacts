@@ -86,7 +86,9 @@ RUN apt-get update && \
     libexpat1-dev \
     gettext \
     unzip \
-    zlib1g-dev
+    zlib1g-dev \
+    autoconf \
+    dh-autoreconf
 ARG GIT_VERSION=2.39.4
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
     unzip git.zip && \
