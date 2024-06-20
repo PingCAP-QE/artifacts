@@ -69,7 +69,7 @@ ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 # install nodejs toolchain
 ARG NODE_VERSION=16
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
-    apt-get install -y nodejs npm && \
+    apt-get install -y nodejs && \
     apt-get clean && \
     npm install -g yarn pnpm
 
