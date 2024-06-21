@@ -131,6 +131,7 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
     install_ccache ${CCACHE_VERSION}
 
 # Git, update to 2.40.2 to fix the security issue
+# renovate: datasource=github-tags depName=git/git
 ARG GIT_VERSION=2.40.2
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
     unzip git.zip && \
