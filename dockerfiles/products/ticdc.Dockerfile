@@ -1,4 +1,4 @@
-ARG BASE_IMG=hub.pingcap.net/bases/tools-base:v1.8.0
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tools-base:v1.9.0
 FROM $BASE_IMG
 COPY cdc /cdc
 EXPOSE 8300
