@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [default, fips, release-6-5]
+        module: [default, fips]
         builder-profile: [local-docker]
 
     steps:

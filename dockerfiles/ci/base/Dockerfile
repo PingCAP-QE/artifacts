@@ -69,6 +69,34 @@ ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 # install nodejs toolchain
 ARG NODE_VERSION=16
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
-    apt-get install -y nodejs npm && \
+    apt-get install -y nodejs && \
     apt-get clean && \
     npm install -g yarn pnpm
+
+
+# update  some tools versions to fix security issues
+# update git to 2.39.4
+RUN apt-get remove git -y
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    build-essential \
+    libssl-dev \
+    libcurl4-gnutls-dev \
+    libexpat1-dev \
+    gettext \
+    unzip \
+    zlib1g-dev \
+    autoconf \
+    dh-autoreconf
+# renovate: datasource=github-tags depName=git/git
+ARG GIT_VERSION=2.39.4
+RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
+    unzip git.zip && \
+    cd git-$GIT_VERSION && \
+    make configure && \
+    ./configure --prefix=/usr/local && \
+    make all && \
+    make install && \
+    cd .. && \
+    rm -rf git-$GIT_VERSION git.zip

@@ -1,4 +1,4 @@
-ARG NGINX_VERSION=1.25.5
+ARG NGINX_VERSION=1.27.0
 FROM soulteary/prebuilt-nginx-modules:ngx-${NGINX_VERSION}-set-misc-master AS modules
 
 FROM nginx:${NGINX_VERSION}

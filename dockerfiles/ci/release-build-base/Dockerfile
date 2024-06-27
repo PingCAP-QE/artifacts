@@ -89,11 +89,11 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # go template tool
 # renovate: datasource=docker depName=hairyhenderson/gomplate
-COPY --from=hairyhenderson/gomplate:v3.11.5 /gomplate /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:v3.11.7 /gomplate /usr/local/bin/gomplate
 
 # Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
-ARG CMAKE_VERSION=3.22.1
+ARG CMAKE_VERSION=3.23.5
 RUN filename="cmake-${CMAKE_VERSION}-linux-$(arch).sh"; \
     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} && \
     sh ${filename} --prefix=/usr/local --skip-license --exclude-subdir && \
@@ -130,4 +130,15 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
     source ./install_ccache.sh && \
     install_ccache ${CCACHE_VERSION}
 
-
+# Git, update to 2.40.2 to fix the security issue
+# renovate: datasource=github-tags depName=git/git
+ARG GIT_VERSION=2.40.2
+RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
+    unzip git.zip && \
+    cd git-$GIT_VERSION && \
+    make configure && \
+    ./configure --with-openssl /usr/local/opt/openssl --prefix /usr/local && \
+    make all && \
+    make install && \
+    cd .. && \
+    rm -rf git-$GIT_VERSION git.zip
