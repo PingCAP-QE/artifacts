@@ -132,7 +132,7 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
 
 # Git, update to 2.40.2 to fix the security issue
 # renovate: datasource=github-tags depName=git/git
-ARG GIT_VERSION=2.40.2
+ARG GIT_VERSION=2.40.3
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
     unzip git.zip && \
     cd git-$GIT_VERSION && \
