@@ -994,7 +994,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-14-gdd4a4cf
+      - image: golang:1.21.11
     routers:
       - description: interpret versions according to semantic version spec.
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
