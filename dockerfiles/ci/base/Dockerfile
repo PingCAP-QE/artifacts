@@ -1,6 +1,6 @@
 # Base image
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.21.10
+ARG GOLANG_VERSION=1.21.12
 FROM golang:${GOLANG_VERSION}
 
 LABEL go-version "${GOLANG_VERSION}"
@@ -31,13 +31,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
-ARG ORAS_VERSION=v1.1.0
-RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
-    curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
-    mkdir -p oras-install/ && \
-    tar -zxf oras_*_${OS}_${ARCH}.tar.gz -C oras-install/ && \
-    install oras-install/oras /usr/local/bin/ && \
-    rm -rf oras_*_${OS}_${ARCH}.tar.gz oras-install/
+COPY --from=bitnami/oras:1.2.0 /oras /usr/local/bin/oras
 
 # codecov tool
 # renovate: datasource=github-tags depName=codecov/uploader
@@ -73,30 +67,7 @@ RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
     apt-get clean && \
     npm install -g yarn pnpm
 
-
-# update  some tools versions to fix security issues
-# update git to 2.39.4
-RUN apt-get remove git -y
-RUN apt-get update && \
-    apt-get install -y \
-    wget \
-    build-essential \
-    libssl-dev \
-    libcurl4-gnutls-dev \
-    libexpat1-dev \
-    gettext \
-    unzip \
-    zlib1g-dev \
-    autoconf \
-    dh-autoreconf
+# Upgrade Git tool 
 # renovate: datasource=github-tags depName=git/git
-ARG GIT_VERSION=2.39.5
-RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
-    unzip git.zip && \
-    cd git-$GIT_VERSION && \
-    make configure && \
-    ./configure --prefix=/usr/local && \
-    make all && \
-    make install && \
-    cd .. && \
-    rm -rf git-$GIT_VERSION git.zip
+COPY --from=bitnami/git:2.45.2 /opt/bitnami/git/bin/git /usr/bin/git 
+

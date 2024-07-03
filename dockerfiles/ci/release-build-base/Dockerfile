@@ -1,6 +1,10 @@
 # Base image
 # renovate: datasource=docker depName=centos
 FROM centos:7.9.2009
+# CentOS 7 has reached EOL
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
+    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "CD Base image for building"
@@ -9,6 +13,9 @@ LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts
 # install packages.
 RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
+    sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install --nogpgcheck -y \
@@ -130,7 +137,6 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
     source ./install_ccache.sh && \
     install_ccache ${CCACHE_VERSION}
 
-# Git, update to 2.40.2 to fix the security issue
 # renovate: datasource=github-tags depName=git/git
 ARG GIT_VERSION=2.40.3
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \

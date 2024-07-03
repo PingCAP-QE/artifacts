@@ -8,10 +8,14 @@
 
 ########### stage: Builder
 FROM centos:7.9.2009 as builder
+# CentOS 7 has reached EOL
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
+    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
     yum install -y wget && \
@@ -33,7 +37,7 @@ RUN GOPROXY=${GOPROXY} make default -C /ws
 RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.8.0
+FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.0
 
 COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 
