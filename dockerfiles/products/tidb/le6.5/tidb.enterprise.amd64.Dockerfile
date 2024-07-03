@@ -1,6 +1,6 @@
 FROM pingcap/alpine-glibc:alpine-3.14.6
-RUN apk add --no-cache \
-    curl
+RUN apk add --no-cache curl
+
 COPY tidb-server /tidb-server
 COPY audit-1.so /plugins/audit-1.so
 COPY whitelist-1.so /plugins/whitelist-1.so

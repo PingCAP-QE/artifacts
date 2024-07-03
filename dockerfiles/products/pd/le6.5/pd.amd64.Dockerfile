@@ -1,4 +1,6 @@
-FROM pingcap/centos-stream:8
+FROM pingcap/alpine-glibc:alpine-3.14.6
+RUN apk add --no-cache jq
+
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
 COPY pd-recover /pd-recover
