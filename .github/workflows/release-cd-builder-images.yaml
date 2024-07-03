@@ -77,7 +77,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
+        # module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
+        module: [builder-others, builder-tikv, builder-tikv-fips]
         builder-profile: [local-docker]
         include:
           - module: builder-tikv
