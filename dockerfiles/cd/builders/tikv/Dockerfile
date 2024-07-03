@@ -43,7 +43,7 @@ RUN --mount=type=cache,target=/tikv/target \
 RUN /tikv/bin/tikv-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0
+FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.9.0
 
 ENV MALLOC_CONF="prof:true,prof_active:false"
 COPY --from=building /tikv/bin/tikv-server  /tikv-server

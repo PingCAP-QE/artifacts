@@ -118,7 +118,7 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v1.8.0-fips"
+      template: "v1.9.0-fips"
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
