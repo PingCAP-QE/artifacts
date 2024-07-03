@@ -17,7 +17,7 @@ ARG DEVTOOLSET_VER=8
 RUN yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
-    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 && \
+    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip && \
     yum clean all && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake
 ENV DEVTOOLSET_VER ${DEVTOOLSET_VER}
