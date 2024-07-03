@@ -1,0 +1,5 @@
+FROM pingcap/tidb-base:centos8
+
+COPY tidb-server /tidb-server
+EXPOSE 4000
+ENTRYPOINT ["/tidb-server"]
