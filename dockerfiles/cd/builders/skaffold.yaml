@@ -233,6 +233,12 @@ build:
         dockerfile: tidb-dashboard/Dockerfile
         cache: {}
         target: builder
+    - image: tidb-operator
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: tidb-operator/Dockerfile
+        cache: {}
+        target: builder
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -253,6 +259,7 @@ profiles:
         tryImportMissing: true
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
+      - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
