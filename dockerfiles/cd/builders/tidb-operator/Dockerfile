@@ -7,7 +7,7 @@
 #   - docker build -t tidb -f Dockerfile ./tidb
 
 ########### stage: Builder
-ARG GOLANG_VERSION=1.21.11
+ARG GOLANG_VERSION=1.21.12
 FROM golang:${GOLANG_VERSION} as builder
 
 # install packages.
