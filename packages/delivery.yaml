@@ -47,13 +47,19 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
-  hub.pingcap.net/pingcap/tidb-operator/image:
+  hub.pingcap.net/pingcap/tidb-operator/image: &tidb-operator
     - description: delivery the version images.
       tags_regex:
+        - ^master$
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/tidb-operator
         - gcr.io/pingcap-public/dbaas/tidb-operator
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/tidb-operator
+        - gcr.io/pingcap-public/dbaas/tidb-operator
+  hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: *tidb-operator
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_community
       dest_repositories:
