@@ -1,19 +1,15 @@
-FROM golang:1.22.5-alpine3.20 as gomplate_builder
-
-RUN wget https://github.com/hairyhenderson/gomplate/archive/refs/heads/main.zip -O - | unzip - && cd gomplate-main && go build -o /usr/local/bin/gomplate ./cmd/gomplate
-
 FROM alpine:3.20.1
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "utils image for CD release"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
-# install tools: bash, git, jq, yq, goemplate
+# install tools: bash, git, jq, yq
 # RUN apk add --no-cache bash git jq yq uuidgen gomplate
 RUN apk add --no-cache bash git jq yq uuidgen
 
-# install gomplate
-COPY --from=gomplate_builder --chown=0:0 /usr/local/bin/gomplate /usr/local/bin/gomplate
+# install tools: gomplate
+COPY --from=hairyhenderson/gomplate:v4.1.0-alpine /bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
 COPY --from=ghcr.io/oras-project/oras:v1.2.0 --chown=0:0 /bin/oras /usr/local/bin/oras
