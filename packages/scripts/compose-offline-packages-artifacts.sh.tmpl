@@ -280,7 +280,7 @@ function write_push_results() {
     # Login steps:
     #   local registry=$(echo "${destination}" | cut -d/ -f)
     #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
-    digest="$(oras discover "${destination}" --distribution-spec v1.1-referrers-tag -o tree | cut -d@ -f2)"
+    digest="$(oras discover "${destination}" --distribution-spec v1.1-referrers-tag --format tree | cut -d@ -f2)"
 
     cat <<EOF > "$result_file"
 oci:
