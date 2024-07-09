@@ -16,7 +16,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-14-gdd4a4cf
+        image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
     routers:
       - description: Publish route for v0.5.0 and newer versions.
         if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
@@ -46,7 +46,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-14-gdd4a4cf
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
     routers:
       - description: interpret versions according to semantic version spec.
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -1422,7 +1422,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-14-gdd4a4cf
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
     routers:
       - description: interpret versions according to semantic version spec.
         os: [linux]
