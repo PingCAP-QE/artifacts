@@ -363,7 +363,6 @@ editions:
         if: {{ semver.CheckConstraint ">=7.6.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [enterprise]
         artifacts:
           - name: "tidb-enterprise-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: enterprise offline server package
@@ -498,7 +497,6 @@ editions:
         if: {{ semver.CheckConstraint ">=7.5.0-0, <7.6.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
-        profile: [enterprise]
         artifacts:
           - name: "tidb-enterprise-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
             desc: enterprise offline server package

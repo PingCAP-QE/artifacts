@@ -76,7 +76,7 @@ function fetch_file_from_oci_artifact() {
     local repo="$(echo $destination | cut -d ':' -f 1)"
 
     # get the file blob digest.
-    oras manifest fetch $destination | yq --prettyPrint ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
+    oras manifest fetch $destination | yq --prettyPrint -oy ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
 
     # download file
     file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
@@ -92,7 +92,7 @@ function check_file_in_oci_artifact() {
     oras manifest fetch -o oci_manifest.json $destination
 
     # get the file blob digest.
-    yq -e --prettyPrint ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | length > 0" oci_manifest.json
+    yq -e --prettyPrint -oy ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | length > 0" oci_manifest.json > /dev/null
 }
 
 function pre_check() {
