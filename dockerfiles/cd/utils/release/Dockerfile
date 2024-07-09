@@ -32,4 +32,5 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ARG TIUP_VER=1.15.2
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-v${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
-    chmod 755 /usr/local/bin/tiup
+    chmod 755 /usr/local/bin/tiup && \
+    mkdir -p ~/.tiup/bin
