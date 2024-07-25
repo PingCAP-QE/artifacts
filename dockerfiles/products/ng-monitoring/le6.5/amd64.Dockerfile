@@ -1,4 +1,5 @@
 FROM pingcap/alpine-glibc:alpine-3.14.6
+
 COPY ng-monitoring-server /ng-monitoring-server
 EXPOSE 12020
 ENTRYPOINT ["/ng-monitoring-server"]
