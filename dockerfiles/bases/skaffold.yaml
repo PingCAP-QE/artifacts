@@ -5,8 +5,8 @@ metadata:
   name: default
 build:
   artifacts:
-    - image: pingcap-base      
-      platforms: [linux/amd64, linux/arm64]      
+    - image: pingcap-base
+      platforms: [linux/amd64, linux/arm64]
       kaniko:
         dockerfile: pingcap-base/Dockerfile
         cache: {}
@@ -79,7 +79,7 @@ profiles:
     build:
       local:
         useDockerCLI: true
-        useBuildkit: true        
+        useBuildkit: true
         concurrency: 0
         tryImportMissing: true
     patches:
@@ -137,7 +137,7 @@ profiles:
     build:
       local:
         useDockerCLI: true
-        useBuildkit: true        
+        useBuildkit: true
         concurrency: 0
         tryImportMissing: true
     patches:
@@ -151,45 +151,18 @@ metadata:
   name: release-6-5
 build:
   artifacts:
-    - image: tidb-base-old-amd64
-      platforms: [linux/amd64]
-      kaniko:
-        dockerfile: tidb-base/release-6.5.Dockerfile
-        cache: {}
-        target: amd64
-        skipUnusedStages: true
-    - image: tidb-base-old-arm64
-      platforms: [linux/arm64]
-      kaniko:
-        dockerfile: tidb-base/release-6.5.Dockerfile
-        cache: {}
-        target: arm64
-        skipUnusedStages: true
+    - image: tidb-base
+      platforms: [linux/amd64,linux/arm64]
+      custom:
+        buildCommand: ./build-old.sh tidb-base release-6.5.Dockerfile
+        dependencies:
+          dockerfile:
+            path: tidb-base/release-6.5.Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.8.0-release-6.5"
-  cluster:
+      template: "v1.0.0-old"
+  local:
+    useDockerCLI: true
+    useBuildkit: true
     concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net
-    resources:
-      requests:
-        cpu: "1"
-        memory: 4Gi
-      limits:
-        cpu: "2"
-        memory: 8Gi
-profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true        
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
+    tryImportMissing: true
