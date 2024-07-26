@@ -151,6 +151,13 @@ metadata:
   name: release-6-5
 build:
   artifacts:
+    - image: ng-monitoring-base
+      platforms: [linux/amd64,linux/arm64]
+      custom:
+        buildCommand: ./build-old.sh ng-monitoring-base release-6.5.Dockerfile
+        dependencies:
+          dockerfile:
+            path: ng-monitoring-base/release-6.5.Dockerfile
     - image: tidb-base
       platforms: [linux/amd64,linux/arm64]
       custom:
