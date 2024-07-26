@@ -185,7 +185,14 @@ build:
         buildCommand: ./build-old.sh tikv-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
-            path: tikv-base/release-6.5.Dockerfile       
+            path: tikv-base/release-6.5.Dockerfile
+    - image: tools-base
+      platforms: [linux/amd64,linux/arm64]
+      custom:
+        buildCommand: ./build-old.sh tools-base release-6.5.Dockerfile
+        dependencies:
+          dockerfile:
+            path: tools-base/release-6.5.Dockerfile
   tagPolicy:
     customTemplate:
       template: "v1.0.0-old"
