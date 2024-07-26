@@ -165,6 +165,13 @@ build:
         dependencies:
           dockerfile:
             path: pd-base/release-6.5.Dockerfile
+    - image: tiflash-base
+      platforms: [linux/amd64,linux/arm64]
+      docker:
+        dockerfile: tiflash-base/release-6.5.Dockerfile
+        noCache: false
+        pullParent: false
+        squash: false
     - image: tidb-base
       platforms: [linux/amd64,linux/arm64]
       custom:
