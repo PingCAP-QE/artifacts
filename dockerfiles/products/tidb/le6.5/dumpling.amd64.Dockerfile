@@ -1,4 +1,0 @@
-FROM pingcap/alpine-glibc:alpine-3.14.6
-ADD https://github.com/golang/go/raw/go1.22.5/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
-
-COPY dumpling /dumpling
