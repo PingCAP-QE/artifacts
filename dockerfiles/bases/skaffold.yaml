@@ -165,13 +165,6 @@ build:
         dependencies:
           dockerfile:
             path: pd-base/release-6.5.Dockerfile
-    - image: tiflash-base
-      platforms: [linux/amd64,linux/arm64]
-      docker:
-        dockerfile: tiflash-base/release-6.5.Dockerfile
-        noCache: false
-        pullParent: false
-        squash: false
     - image: tidb-base
       platforms: [linux/amd64,linux/arm64]
       custom:
@@ -179,6 +172,20 @@ build:
         dependencies:
           dockerfile:
             path: tidb-base/release-6.5.Dockerfile
+    - image: tiflash-base
+      platforms: [linux/amd64,linux/arm64]
+      docker:
+        dockerfile: tiflash-base/release-6.5.Dockerfile
+        noCache: false
+        pullParent: false
+        squash: false
+    - image: tikv-base
+      platforms: [linux/amd64,linux/arm64]
+      custom:
+        buildCommand: ./build-old.sh tikv-base release-6.5.Dockerfile
+        dependencies:
+          dockerfile:
+            path: tikv-base/release-6.5.Dockerfile       
   tagPolicy:
     customTemplate:
       template: "v1.0.0-old"
