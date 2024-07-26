@@ -23,13 +23,16 @@ jobs:
 
     strategy:
       matrix:
-        module: [default, fips]
+        module: [default, fips, release-6-5]
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+          fetch-tags: 'true'
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
@@ -51,6 +54,11 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.8.0/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
+      - name: Setup manifest-tool
+        run: |
+          curl -L https://github.com/estesp/manifest-tool/releases/download/v2.1.7/binaries-manifest-tool-2.1.7.tar.gz | tar -zxvf - manifest-tool-linux-amd64
+          sudo install manifest-tool-linux-amd64 /usr/local/bin/manifest-tool
+      
       - name: Cache layers
         uses: actions/cache@v4
         with:

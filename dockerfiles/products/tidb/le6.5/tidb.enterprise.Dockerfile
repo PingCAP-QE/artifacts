@@ -1,6 +1,5 @@
-FROM pingcap/alpine-glibc:alpine-3.14.6
-RUN apk add --no-cache curl
-
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tidb-base:v1.0.0-old
+FROM $BASE_IMG
 COPY tidb-server /tidb-server
 COPY audit-1.so /plugins/audit-1.so
 COPY whitelist-1.so /plugins/whitelist-1.so
