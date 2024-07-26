@@ -179,6 +179,13 @@ build:
         noCache: false
         pullParent: false
         squash: false
+    - image: tiflow-base
+      platforms: [linux/amd64,linux/arm64]
+      custom:
+        buildCommand: ./build-old.sh tiflow-base release-6.5.Dockerfile
+        dependencies:
+          dockerfile:
+            path: tiflow-base/release-6.5.Dockerfile
     - image: tikv-base
       platforms: [linux/amd64,linux/arm64]
       custom:
