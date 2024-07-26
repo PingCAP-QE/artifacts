@@ -1,5 +1,5 @@
-FROM pingcap/centos-stream:8
-
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.0.0-old
+FROM $BASE_IMG
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
 COPY pd-recover /pd-recover
