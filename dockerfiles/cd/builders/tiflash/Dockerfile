@@ -17,7 +17,7 @@ LABEL org.opencontainers.image.description "binary builder for tiflash"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # renovate: datasource=github-tags depName=pingcap/tiflash
-ARG TIFLASH_VER=v8.0.0
+ARG TIFLASH_VER=v8.2.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
     TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \
     curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
