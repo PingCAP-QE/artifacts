@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function test_get_builder() {
-    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
@@ -73,7 +73,7 @@ function test_get_builder() {
 }
 
 function test_gen_package_artifacts_script() {
-    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
@@ -165,7 +165,7 @@ function test_gen_package_artifacts_script() {
 }
 
 function test_gen_package_images_script() {
-    local versions="v8.0.0 v7.5.0 v7.1.0 v6.5.0"
+    local versions="v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.0"
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-binlog tidb-tools"
     local architectures="amd64 arm64"
     local profile="release"
@@ -237,10 +237,10 @@ function test_gen_package_images_script() {
 }
 
 function test_gen_offline_package_artifacts_script() {
-    local versions="v8.0.0 v7.5.0 v7.1.0"
+    local versions="v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.0 v6.1.0"
     local operating_systems="linux"
     local architectures="amd64 arm64"
-    local editions="community"
+    local editions="community enterprise dm"
     local script="./packages/scripts/gen-package-offline-package-with-config.sh"
 
     for version in $versions; do

@@ -254,8 +254,31 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.19
     routers:
-      - description: Started from v5.3.0
-        if: {{ semver.CheckConstraint ">= 5.3.0-0" .Release.version }}
+      - description: From v5.3 until v6.0
+        if: {{ semver.CheckConstraint ">= 5.3.0-0, < 6.6.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make default
+        artifacts:
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/le6.5/Dockerfile
+            files:
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+          - name: "binaries-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: ng-monitoring-server
+                src:
+                  path: bin/ng-monitoring-server
+      - description: Range [v6.6, )
+        if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -383,7 +406,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/le6.5/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -391,7 +414,7 @@ components:
               - name: pd-ctl
                 src:
                   path: bin/pd-ctl
-      - description: From v6.5.x
+      - description: Range [v6.5, )
         if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
@@ -447,7 +470,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/le6.5/Dockerfile
+            {{- end }}
             files: # prepare for context
               - name: pd-server
                 src:
@@ -768,31 +795,48 @@ components:
               entrypoint: tidb-lightning
               standalone: true
           - name: container image - tidb server
+            if: {{ ne "enterprise" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            {{- if eq .Release.profile "enterprise" }}
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb.Dockerfile
+            {{- end }}
+            files: # prepare for context
+              - name: tidb-server
+                src:
+                  path: bin/tidb-server
+          - name: container image - tidb server enterprise edition
+            if: {{ eq "enterprise" .Release.profile }}
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
             {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb.enterprise.Dockerfile
             {{- end }}
             files: # prepare for context
               - name: tidb-server
                 src:
                   path: bin/tidb-server
               - name: audit-1.so
-                if: {{ eq "enterprise" .Release.profile }}
                 src:
                   path: bin/audit-1.so
               - name: whitelist-1.so
-                if: {{ eq "enterprise" .Release.profile }}
                 src:
                   path: bin/whitelist-1.so
           - name: container image - br tool
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/br.Dockerfile
+            {{- end }}
             files: # prepare for context
               - name: br
                 src:
@@ -801,7 +845,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/dumpling.Dockerfile
+            {{- end }}
             files: # prepare for context
               - name: dumpling
                 src:
@@ -810,7 +858,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb-lightning.Dockerfile
+            {{- end }}
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -838,7 +890,7 @@ components:
       - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
     routers:
       - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -855,7 +907,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-tools/image"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools/le6.5/Dockerfile
+            {{- end }}
             files:
               - name: sync_diff_inspector
                 src:
@@ -879,7 +935,7 @@ components:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
     routers:
-      - description: interpret versions according to semantic version spec.
+      - description: For all versions.
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -918,7 +974,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.18
     routers:
       - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -964,7 +1020,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-binlog/image"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog/le6.5/Dockerfile
+            {{- end }}
             files: # context files
               - name: pump
                 src:
@@ -1059,6 +1119,32 @@ components:
       - if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240325-24-gd14aee6
     routers:
+      - description: Range [v6.1.0, v6.6.0)
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < v6.6.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make package
+        artifacts:
+          - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
+            tiup:
+              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
+              entrypoint: tidb-dashboard
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/le6.5/Dockerfile
+            files: # prepare for context
+              - name: tidb-dashboard
+                src:
+                  path: bin/tidb-dashboard
       - description: starts from v6.6.0
         if: {{ semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
         os: [linux, darwin]
@@ -1085,8 +1171,8 @@ components:
               - name: tidb-dashboard
                 src:
                   path: bin/tidb-dashboard
-      - description: ">= 6.5.x and < 6.6.0"
-        if: {{ semver.CheckConstraint "~6.5.4-0" .Release.version }}
+      - description: "FIPS >= 6.5.x and < 6.6.0"
+        if: {{ and (eq .Release.profile "fips") (semver.CheckConstraint "~6.5.4-0" .Release.version) }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [fips]
@@ -1099,9 +1185,6 @@ components:
               - name: tidb-dashboard
                 src:
                   path: bin/tidb-dashboard
-            tiup:
-              description: TiDB Dashboard is a Web UI for monitoring, diagnosing, and managing the TiDB cluster
-              entrypoint: tidb-dashboard
           - name: container image
             type: image
             artifactory:
@@ -1224,7 +1307,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/le6.5/Dockerfile
+            {{- end }}
             files:
               - name: tiflash/
                 src:
@@ -1254,8 +1341,131 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.18
     routers:
-      - description: From v6.6.0
-        # FIXME: it not work for 6.5.0-0
+      - description: Range [6.1.0, 6.5.0)
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - os: darwin
+              description: install nodejs toolchain.
+              script: |
+                NODE_VERSION="v16.20.2"
+                NVM_VERSION="v0.39.5"
+                NVM_DIR="$HOME/.nvm"
+                mkdir -p $NVM_DIR
+
+                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash
+                fi
+                . $NVM_DIR/nvm.sh
+                nvm install ${NODE_VERSION}
+                nvm use ${NODE_VERSION}
+                nvm alias default ${NODE_VERSION}
+
+                node --version && npm --version
+                npm install -g yarn
+            - script: |
+                make cdc dm-master-with-webui dm-worker dmctl dm-syncer
+        artifacts:
+          - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: cdc
+                src:
+                  path: bin/cdc
+            tiup:
+              description: >-
+                CDC is a change data capture tool for TiDB
+              entrypoint: cdc
+          - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-master/dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-master/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-master/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dm-master/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dm-master component of Data Migration Platform.
+              entrypoint: dm-master/dm-master
+          - name: "dm-worker-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-worker/dm-worker
+                src:
+                  path: bin/dm-worker
+              - name: dm-worker/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-worker/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dm-worker/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dm-worker component of Data Migration Platform.
+              entrypoint: dm-worker/dm-worker
+          - name: "dmctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dmctl/dmctl
+                src:
+                  path: bin/dmctl
+              - name: dmctl/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dmctl/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dmctl/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dmctl component of Data Migration Platform.
+              entrypoint: dmctl/dmctl
+          - name: container image - cdc
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/le6.5/ticdc.Dockerfile
+            files: # context files
+              - name: cdc
+                src:
+                  path: bin/cdc
+          - name: container image - dm
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/le6.5/dm.Dockerfile
+            files:
+              - name: dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-worker
+                src:
+                  path: bin/dm-worker
+              - name: dmctl
+                src:
+                  path: bin/dmctl
+          - name: container image - tiflow-engine
+            if: {{ semver.CheckConstraint ">= 6.3.0-0" .Release.version }}
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
+            context: . # just build under git repo folder.
+            dockerfile: deployments/engine/docker/Dockerfile
+            build_args:
+              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
+      - description: From v6.5.0
         if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
@@ -1424,7 +1634,7 @@ components:
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
     routers:
-      - description: interpret versions according to semantic version spec.
+      - description: For all versions
         os: [linux]
         arch: [amd64, arm64]
         profile: [release]
@@ -1518,7 +1728,11 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
+            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
+            {{- else }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/le6.5/Dockerfile
+            {{- end }}
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
