@@ -1341,8 +1341,8 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.18
     routers:
-      - description: Range [6.1.0, 6.6.0)
-        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.6.0-0" .Release.version }}
+      - description: Range [6.1.0, 6.5.0)
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -1465,8 +1465,7 @@ components:
             dockerfile: deployments/engine/docker/Dockerfile
             build_args:
               - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
-      - description: From v6.6.0
-        # FIXME: it not work for 6.5.0-0
+      - description: From v6.5.0
         if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
