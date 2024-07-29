@@ -868,7 +868,7 @@ components:
                 src:
                   path: bin/tidb-lightning
               - name: tidb-lightning-ctl
-                src: 
+                src:
                   path: bin/tidb-lightning-ctl
               - name: br
                 if: {{ semver.CheckConstraint "< 6.6.0-0" .Release.version }}
