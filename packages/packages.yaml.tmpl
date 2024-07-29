@@ -865,11 +865,14 @@ components:
             {{- end }}
             files: # prepare for context
               - name: tidb-lightning
-                src:
+                src: 
                   path: bin/tidb-lightning
               - name: tidb-lightning-ctl
-                src:
+                src: 
                   path: bin/tidb-lightning-ctl
+              - name: br
+                if: {{ semver.CheckConstraint "< 6.6.0-0" .Release.version }}
+                src: { path: bin/br }
   tidb-tools:
     desc: tidb tools component tarball
     git:
