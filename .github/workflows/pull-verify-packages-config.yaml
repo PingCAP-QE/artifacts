@@ -46,4 +46,4 @@ jobs:
       - name: Test
         run: |
           chmod +x packages/scripts/ci.sh
-          ./packages/scripts/ci.sh
+          ./.github/scripts/ci.sh
