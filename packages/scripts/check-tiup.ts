@@ -1,6 +1,6 @@
 #!/usr/bin/env deno run --allow-run --allow-net --allow-write
-import { parse } from "jsr:@std/flags";
-import * as yaml from "jsr:@std/yaml";
+import * as yaml from "jsr:@std/yaml@^1.0.0";
+import { parseArgs } from "jsr:@std/cli@^1.0.1";
 
 const TiupPlatforms = [
   "darwin/amd64",
@@ -252,5 +252,5 @@ async function main(
 }
 
 // parase cli params with `CliParams` and pass to main
-const args = parse(Deno.args) as CliParams;
+const args = parseArgs(Deno.args) as CliParams;
 await main(args);
