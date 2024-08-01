@@ -54,4 +54,4 @@ $ grep -oE "{{\s*\..*?}}" packages/offline-packages.yaml.tmpl | grep -oE "\.\w+(
 
 ## How to verify the template
 
-Please run `./packages/scripts/ci.sh` locally before commit.
+Please run `./.github/scripts/ci.sh` locally before commit.
