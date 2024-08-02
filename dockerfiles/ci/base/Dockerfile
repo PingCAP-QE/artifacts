@@ -35,7 +35,7 @@ COPY --from=bitnami/oras:1.2.0 /oras /usr/local/bin/oras
 
 # codecov tool
 # renovate: datasource=github-tags depName=codecov/uploader
-ARG CODECOV_VERSION=v0.7.3
+ARG CODECOV_VERSION=v0.8.0
 RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
     curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/${folder}/codecov -o /usr/local/bin/codecov && \
     chmod +x /usr/local/bin/codecov
