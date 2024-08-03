@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.9.1-fips
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.9.0-fips
 FROM $BASE_IMG
 COPY tikv-server /tikv-server
 COPY tikv-ctl /tikv-ctl
