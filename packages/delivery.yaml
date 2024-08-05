@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=./delivery-schema.json
+# yaml-language-server: $schema=../schemas/delivery-schema.json
 definitions:
   sync_trunk_community: &sync_trunk_community
     description: delivery the trunk branch images.
