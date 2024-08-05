@@ -11,17 +11,29 @@ function main() {
     parse_arguments "$@"
 
     if $need_check; then
-      pre_check {{.os}} {{.arch}} {{.version}}
+      if is_published; then
+        echo "Already published, skip."
+      else
+        pre_check {{.os}} {{.arch}} {{.version}}
+      fi
     fi
     if $need_compose; then
+      if is_published; then
+        echo "Already published, skip."
+      else
         compose {{.os}} {{.arch}} {{.version}} "${release_ws}"
-    {{- if has .artifactory "package_repo" }}
-        if $need_push; then
-            push_files "${release_ws}"
-            write_push_results "$result_path"
-        fi
-    {{- end }}
+      fi
     fi
+    {{- if has .artifactory "package_repo" }}
+    if $need_push; then
+      if is_published; then
+        echo "Already published, skip."
+      else
+        push_files "${release_ws}"
+      fi
+        write_push_results "$result_path"
+    fi
+    {{- end }}
 }
 
 function parse_arguments() {
@@ -295,6 +307,17 @@ files:
 EOF
 }
 {{- end }}
+
+function is_published() {
+{{- if has .artifactory "package_repo" }}
+    local tag="{{ index .artifactory.tags 0 }}_{{ .os }}_{{ .arch }}"
+    local destination="{{ .artifactory.package_repo }}:$tag"
+    oras oras discover "$destination" --distribution-spec v1.1-referrers-tag > /dev/null
+{{- else }}
+    false
+{{- end }}
+}
+
 
 ##############################################################################
 ###### Call the main function with the arguments passed to the script ########
