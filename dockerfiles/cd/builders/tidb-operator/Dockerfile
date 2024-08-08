@@ -7,7 +7,7 @@
 #   - docker build -t tidb-operator -f Dockerfile ./tidb-operator
 
 ########### stage: Builder
-ARG GOLANG_VERSION=1.21.12
+ARG GOLANG_VERSION=1.21.13
 FROM golang:${GOLANG_VERSION} as builder
 
 # install packages.
