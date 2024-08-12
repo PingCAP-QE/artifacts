@@ -43,3 +43,6 @@ COPY --from=building /tidb/bin/tidb-server /tidb-server
 WORKDIR /
 EXPOSE 4000
 ENTRYPOINT ["/tidb-server"]
+
+# test it
+RUN /tidb-server -V

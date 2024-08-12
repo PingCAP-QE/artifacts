@@ -37,7 +37,7 @@ FROM builder as building
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make package -C /ws
-RUN /ws/bin/tidb-dashboard -V
+RUN /ws/bin/tidb-dashboard --version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pd-base:v1.9.1
@@ -46,3 +46,6 @@ COPY --from=building /ws/bin/tidb-dashboard /tidb-dashboard
 
 EXPOSE 12333
 ENTRYPOINT ["/tidb-dashboard"]
+
+# test it
+RUN /tidb-dashboard --version
