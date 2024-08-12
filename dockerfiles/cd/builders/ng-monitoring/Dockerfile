@@ -44,3 +44,6 @@ COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 WORKDIR /
 EXPOSE 12020
 ENTRYPOINT ["/ng-monitoring-server"]
+
+# test it
+RUN /ng-monitoring-server -V

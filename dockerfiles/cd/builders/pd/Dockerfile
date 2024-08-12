@@ -46,3 +46,6 @@ COPY --from=building /pd/bin/pd-recover /pd-recover
 
 EXPOSE 2379 2380
 ENTRYPOINT ["/pd-server"]
+
+# test it
+RUN /pd-server -V

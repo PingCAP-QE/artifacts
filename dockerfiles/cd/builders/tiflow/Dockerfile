@@ -74,6 +74,10 @@ COPY --from=building-cdc /tiflow/bin/cdc /cdc
 EXPOSE 8300
 CMD ["/cdc"]
 
+# test it
+RUN /cdc version
+
+
 ########### stage: Final image - dm
 FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.1 as final-dm
 
@@ -83,3 +87,9 @@ COPY --from=building-dm /tiflow/bin/dm-syncer /dm-syncer
 COPY --from=building-dm /tiflow/bin/dmctl     /dmctl
 
 EXPOSE 8291 8261 8262
+
+# test it
+RUN /dm-master -V
+RUN /dm-worker -V
+RUN /dm-syncer -V
+RUN /dmctl -V

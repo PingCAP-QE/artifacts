@@ -54,3 +54,6 @@ COPY --from=building /tikv/bin/tikv-ctl     /tikv-ctl
 
 EXPOSE 20160
 ENTRYPOINT ["/tikv-server"]
+
+# test it
+RUN /tikv-server --version

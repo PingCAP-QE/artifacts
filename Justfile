@@ -1,29 +1,29 @@
 msb-tikv: (_clone "tikv" "https://github.com/tikv/tikv.git" "master")
     docker build --load -t localhost/tikv:local-build -f dockerfiles/cd/builders/tikv/Dockerfile ../tikv
-    docker run --rm localhost/tikv:local-build --version
 
 msb-tiflash: (_clone "tiflash" "https://github.com/pingcap/tiflash" "master")
     docker build --load -t localhost/tiflash:local-build -f dockerfiles/cd/builders/tiflash/Dockerfile ../tiflash
-    docker run --rm --entrypoint=/tiflash/tiflash localhost/tiflash:local-build version
 
 msb-dm: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/dm:local-build -f dockerfiles/cd/builders/tiflow/Dockerfile --target final-dm ../tiflow
-    docker run --rm localhost/dm:local-build /dm-master -V
-    docker run --rm localhost/dm:local-build /dm-worker -V
-    docker run --rm localhost/dm:local-build /dm-syncer -V
-    docker run --rm localhost/dm:local-build /dmctl -V
 
 msb-ticdc: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/ticdc:local-build -f dockerfiles/cd/builders/tiflow/Dockerfile --target final-cdc ../tiflow
-    docker run --rm localhost/ticdc:local-build /cdc version
 
 msb-tidb: (_clone_without_submodules "tidb" "https://github.com/pingcap/tidb.git" "master")
     docker build --load -t localhost/tidb:local-build -f dockerfiles/cd/builders/tidb/Dockerfile ../tidb
-    docker run --rm localhost/tidb:local-build -V
 
 msb-pd: (_clone "pd" "https://github.com/tikv/pd.git" "master")
     docker build --load -t localhost/pd:local-build -f dockerfiles/cd/builders/pd/Dockerfile ../pd
-    docker run --rm localhost/pd:local-build -V
+
+msb-ng-monitoring: (_clone "ng-monitoring" "https://github.com/pingcap/ng-monitoring.git" "main")
+    docker build --load -t localhost/ng-monitoring:local-build -f dockerfiles/cd/builders/ng-monitoring/Dockerfile ../ng-monitoring
+
+msb-tidb-dashboard: (_clone "tidb-dashboard" "https://github.com/pingcap/tidb-dashboard.git" "master")
+    docker build --load -t localhost/tidb-dashboard:local-build -f dockerfiles/cd/builders/tidb-dashboard/Dockerfile ../tidb-dashboard
+
+msb-tidb-operator: (_clone "tidb-operator" "https://github.com/pingcap/tidb-operator.git" "master")
+    docker build --load -t localhost/tidb-operator:local-build -f dockerfiles/cd/builders/tidb-operator/Dockerfile ../tidb-operator
 
 build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")
 

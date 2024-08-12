@@ -47,3 +47,6 @@ ENV LD_LIBRARY_PATH /tiflash
 COPY --from=building /tiflash/output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]
+
+# test it
+RUN /tiflash/tiflash version
