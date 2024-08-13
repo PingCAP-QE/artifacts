@@ -1746,7 +1746,12 @@ components:
         profile: [fips]
         steps:
           fips:
-            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make fail_release
+            - os: linux
+              script: |
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+            - script: ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -1758,11 +1763,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            {{- if eq .Release.profile "fips" }}
-            build_args:
-              - BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.8.0-fips
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv-fips.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
