@@ -6,18 +6,7 @@
 #   - docker build -t dm -f Dockerfile ./tiflow
 
 ########### stage: Builder - cdc
-FROM centos:7.9.2009 as builder-cdc
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
-
-# install packages.
-RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum clean all
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder-cdc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang

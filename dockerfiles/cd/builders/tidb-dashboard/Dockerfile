@@ -7,17 +7,7 @@
 #   - docker build -t tidb -f Dockerfile ./tidb
 
 ########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
-
-# install packages.
-RUN yum -y update && \
-    yum -y groupinstall "Development Tools" && \
-    yum -y install java-11-openjdk && \
-    yum clean all
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -28,7 +18,7 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 # Install nodejs.
-RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
+RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
 RUN yum -y install nodejs && yum clean all
 RUN npm install -g pnpm@7.30.5
 

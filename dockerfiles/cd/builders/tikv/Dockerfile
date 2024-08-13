@@ -6,24 +6,23 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 
 # install packages.
-ARG DEVTOOLSET_VER=8
-RUN yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
-    sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
-    sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
-    sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
-    ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo) && \
-    yum update --nogpgcheck -y && \
-    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip && \
-    yum clean all && \
-    ln -s /usr/bin/cmake3 /usr/bin/cmake
-ENV DEVTOOLSET_VER ${DEVTOOLSET_VER}
+RUN dnf install -y \
+  openssl-devel \
+  gcc \
+  gcc-c++ \
+  make \
+  cmake \
+  perl \
+  git \
+  findutils \
+  curl \
+  python3 --allowerasing && \
+  dnf --enablerepo=crb install -y \
+  libstdc++-static && \
+  dnf clean all
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
@@ -34,7 +33,6 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
-LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
 ########### stage: Buiding
 FROM builder as building

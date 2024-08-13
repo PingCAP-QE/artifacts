@@ -6,23 +6,11 @@
 #   - docker build -t pd -f Dockerfile ./pd
 
 ########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
-
-# install packages.
-RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install --nogpgcheck -y which && \
-    yum clean all
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.21.6
+ARG GOLANG_VERSION=1.21.13
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
