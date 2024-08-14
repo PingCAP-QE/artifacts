@@ -11,10 +11,8 @@ jobs:
   just-build:
     # check if the comments come from pull request, exclude those from issue.
     if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/just msb-') }}
-
     name: test building with multi stages
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
@@ -50,29 +48,37 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Testing for tidb
+        if: contains(github.event.comment.body, 'msb-tidb')
         run: just msb-tidb
-        if: contains('msb-tidb', github.event.issue.body)
+
       - name: Testing for pd
+        if: contains(github.event.comment.body, 'msb-pd')
         run: just msb-pd
-        if: contains('msb-pd', github.event.issue.body)
+
       - name: Testing for CDC of tiflow
+        if: contains(github.event.comment.body, 'msb-cdc')
         run: just msb-cdc
-        if: contains('msb-cdc', github.event.issue.body)
+
       - name: Testing for DM of tiflow
+        if: contains(github.event.comment.body, 'msb-dm')
         run: just msb-dm
-        if: contains('msb-dm', github.event.issue.body)
+
       - name: Testing for TiDB Dashboard
+        if: contains(github.event.comment.body, 'msb-tidb-dashboard')
         run: just msb-tidb-dashboard
-        if: contains('msb-tidb-dashboard', github.event.issue.body)
+
       - name: Testing for TiDB Operator
+        if: contains(github.event.comment.body, 'msb-tidb-operator')
         run: just msb-tidb-operator
-        if: contains('msb-tidb-operator', github.event.issue.body)
+
       - name: Testing for ng-monitoring
+        if: contains(github.event.comment.body, 'msb-ng-monitoring')
         run: just msb-ng-monitoring
-        if: contains('msb-ng-monitoring', github.event.issue.body)
+
       - name: Testing for tiflash # slow
+        if: contains(github.event.comment.body, 'msb-tiflash')
         run: just msb-tiflash
-        if: contains('msb-tiflash', github.event.issue.body) 
+
       - name: Testing for tikv # slow
+        if: contains(github.event.comment.body, 'msb-tikv')
         run: just msb-tikv
-        if: contains('msb-tikv', github.event.issue.body)
