@@ -9,12 +9,15 @@
 ########### stage: Builder
 ARG GOLANG_VERSION=1.21.13
 FROM golang:${GOLANG_VERSION} as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiDB Operator"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
+LABEL go-version="${GOLANG_VERSION}"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y uuid-runtime
 
-LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: Buiding
 FROM builder as building

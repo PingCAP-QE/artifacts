@@ -7,6 +7,9 @@
 
 ########### stage: Builder
 FROM rockylinux:9.3.20231119 as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN dnf install -y \
