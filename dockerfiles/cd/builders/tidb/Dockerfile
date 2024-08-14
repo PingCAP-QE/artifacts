@@ -17,6 +17,9 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
+# install packages.
+RUN dnf install -y make git
+
 ########### stage: Buiding
 FROM builder as building
 COPY . /tidb
