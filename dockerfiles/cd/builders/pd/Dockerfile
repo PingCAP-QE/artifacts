@@ -5,8 +5,13 @@
 #   - git clone --recurse-submodules https://github.com/tikv/pd.git pd
 #   - docker build -t pd -f Dockerfile ./pd
 
-########### stage: Builder
+########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc which unzip
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -16,24 +21,20 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-# install packages.
-RUN dnf install -y make git
-
-########### stage: Buiding
+########### stage: building
 FROM builder as building
-COPY . /pd
+COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make build tools -C /pd
-RUN /pd/bin/pd-server -V
-RUN /pd/bin/pd-ctl -V
-RUN /pd/bin/pd-recover -V
+RUN GOPROXY=${GOPROXY} make build tools -C /ws
+RUN /ws/bin/pd-server -V
+RUN /ws/bin/pd-ctl -V
+RUN /ws/bin/pd-recover -V
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pd-base:v1.9.1
-
-COPY --from=building /pd/bin/pd-server  /pd-server
-COPY --from=building /pd/bin/pd-ctl     /pd-ctl
-COPY --from=building /pd/bin/pd-recover /pd-recover
+COPY --from=building /ws/bin/pd-server  /pd-server
+COPY --from=building /ws/bin/pd-ctl     /pd-ctl
+COPY --from=building /ws/bin/pd-recover /pd-recover
 
 EXPOSE 2379 2380
 ENTRYPOINT ["/pd-server"]

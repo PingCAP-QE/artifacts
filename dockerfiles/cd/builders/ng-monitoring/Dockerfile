@@ -6,8 +6,13 @@
 #   - rm ng-monitoring/.dockerignore # make step depended on git metadata.
 #   - docker build -t ng-monitoring -f Dockerfile ./ng-monitoring
 
-########### stage: Builder
+########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -17,10 +22,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-# install packages.
-RUN dnf install -y make git
-
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
@@ -29,7 +31,6 @@ RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.1
-
 COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 
 WORKDIR /

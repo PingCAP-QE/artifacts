@@ -6,8 +6,13 @@
 #   - rm tidb/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb -f Dockerfile ./tidb
 
-########### stage: Builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+########### stage: builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
+
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc java-11-openjdk findutils
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -17,15 +22,12 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-# install packages.
-RUN dnf install -y make git
-
 # Install nodejs.
 RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
 RUN yum -y install nodejs && yum clean all
-RUN npm install -g pnpm@7.30.5
+RUN npm install -g pnpm@9.7.0
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /ws
 ARG GOPROXY

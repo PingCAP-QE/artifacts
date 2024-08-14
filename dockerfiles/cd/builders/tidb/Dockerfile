@@ -6,8 +6,13 @@
 #   - rm tidb/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb -f Dockerfile ./tidb
 
-########### stage: Builder
+########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -17,20 +22,16 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-# install packages.
-RUN dnf install -y make git
-
-########### stage: Buiding
+########### stage: building
 FROM builder as building
-COPY . /tidb
+COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make server -C /tidb
-RUN /tidb/bin/tidb-server -V
+RUN GOPROXY=${GOPROXY} make server -C /ws
+RUN /ws/bin/tidb-server -V
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.9.1
-
-COPY --from=building /tidb/bin/tidb-server /tidb-server
+COPY --from=building /ws/bin/tidb-server /tidb-server
 
 WORKDIR /
 EXPOSE 4000
