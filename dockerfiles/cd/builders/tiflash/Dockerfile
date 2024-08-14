@@ -2,45 +2,44 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone --recurse-submodules https://github.com/tikv/tikv.git tikv
-#   - docker build -t tikv -f Dockerfile ./tikv
+#   - git clone --recurse-submodules https://github.com/pingcap/tiflash.git tiflash
+#   - docker build -t tiflash -f Dockerfile ./tiflash
 
 ########### stage: Builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
-
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for tiflash"
+LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
-# renovate: datasource=github-tags depName=pingcap/tiflash
-ARG TIFLASH_VER=v8.2.0
-RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
-    TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \
-    curl -sSL https://github.com/pingcap/tiflash/archive/refs/tags/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \
-    tar -zxf tiflash.tar.gz "$TAR_DIR/release-centos7-llvm/dockerfiles/misc" && \
-    pushd "$TAR_DIR/release-centos7-llvm/dockerfiles/misc" && \
-    chmod +x * && ./${FILE} && \
-    popd && \
-    rm -rf tiflash.tar.gz "$TAR_DIR"
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf --enablerepo=powertools install -y git llvm-toolset cmake ninja-build openssl
 
-ENV PATH="/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin"
-ENV CC=clang
-ENV CXX=clang++
-ENV LD=ld.lld
+# install rust toolchain
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
+ENV PATH /root/.cargo/bin/:$PATH
+
+ENV CC clang
+ENV CXX clang++
+ENV LD ld.lld
+# ENV LIBRARY_PATH="/usr/local/lib/$(uname -m)-unknown-linux-gnu/:${LIBRARY_PATH:+LIBRARY_PATH:}"
+# ENV LD_LIBRARY_PATH="/usr/local/lib/$(uname -m)-unknown-linux-gnu/:${LD_LIBRARY_PATH:+LD_LIBRARY_PATH:}"
+# ENV CPLUS_INCLUDE_PATH="/usr/local/include/$(uname -m)-unknown-linux-gnu/c++/v1/:${CPLUS_INCLUDE_PATH:+CPLUS_INCLUDE_PATH:}"
 
 ########### stage: Buiding
 FROM builder as building
 
-ADD . /tiflash
-RUN /tiflash/release-centos7-llvm/scripts/build-release.sh
-RUN mkdir output && mv release-centos7-llvm/tiflash output/tiflash
+ADD . /ws
+RUN /ws/release-centos7-llvm/scripts/build-release.sh
+RUN mkdir output && mv /ws/release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.1
 
 ENV LD_LIBRARY_PATH /tiflash
-COPY --from=building /tiflash/output/tiflash /tiflash
+COPY --from=building /ws/output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]
 
