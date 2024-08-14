@@ -89,25 +89,6 @@ jobs:
         module: [builder-others, builder-tikv, builder-tikv-fips]
         platform: [linux/amd64, linux/arm64]
         builder-profile: [local-docker]
-        include:
-          - module: builder-tikv
-            builder-profile: devtoolset8,local-docker
-            platform: linux/amd64
-          - module: builder-tikv
-            builder-profile: devtoolset9,local-docker
-            platform: linux/amd64
-          - module: builder-tikv
-            builder-profile: devtoolset10,local-docker
-            platform: linux/amd64
-          - module: builder-tikv
-            builder-profile: devtoolset8,local-docker
-            platform: linux/arm64
-          - module: builder-tikv
-            builder-profile: devtoolset9,local-docker
-            platform: linux/arm64
-          - module: builder-tikv
-            builder-profile: devtoolset10,local-docker
-            platform: linux/arm64
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

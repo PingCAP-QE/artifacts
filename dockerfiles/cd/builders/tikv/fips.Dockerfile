@@ -36,20 +36,17 @@ ENV PATH /root/.cargo/bin/:$PATH
 
 ########### stage: Buiding
 FROM builder as building
-COPY . /tikv
+COPY . /ws
 RUN --mount=type=cache,target=/tikv/target \
-  source /opt/rh/devtoolset-8/enable && \
-  ENABLE_FIPS=1 \
-  ROCKSDB_SYS_STATIC=1 \
-  make dist_release -C /tikv
-RUN /tikv/bin/tikv-server --version
+  ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release -C /ws
+RUN /ws/bin/tikv-server --version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.9.1-fips
 
 ENV MALLOC_CONF="prof:true,prof_active:false"
-COPY --from=building /tikv/bin/tikv-server  /tikv-server
-COPY --from=building /tikv/bin/tikv-ctl     /tikv-ctl
+COPY --from=building /ws/bin/tikv-server  /tikv-server
+COPY --from=building /ws/bin/tikv-ctl     /tikv-ctl
 
 EXPOSE 20160
 ENTRYPOINT ["/tikv-server"]

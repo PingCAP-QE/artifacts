@@ -6,23 +6,15 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: Builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
 
 # install packages.
-RUN dnf install -y \
-  openssl-devel \
-  gcc \
-  gcc-c++ \
-  make \
-  cmake \
-  perl \
-  git \
-  findutils \
-  curl \
-  python3 --allowerasing && \
-  dnf --enablerepo=crb install -y \
-  libstdc++-static && \
-  dnf clean all
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf --enablerepo=powertools install -y \
+      make git findutils gcc gcc-c++ cmake curl openssl-devel perl python3 \
+      libstdc++-static
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
@@ -38,9 +30,7 @@ ENV PATH /root/.cargo/bin/:$PATH
 FROM builder as building
 COPY . /tikv
 RUN --mount=type=cache,target=/tikv/target \
-    source /opt/rh/devtoolset-${DEVTOOLSET_VER}/enable && \
-    ROCKSDB_SYS_STATIC=1 \
-    make dist_release -C /tikv
+    ROCKSDB_SYS_STATIC=1 make dist_release -C /tikv
 RUN /tikv/bin/tikv-server --version
 
 ########### stage: Final image
