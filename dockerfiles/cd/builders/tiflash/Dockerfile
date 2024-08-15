@@ -5,7 +5,7 @@
 #   - git clone --recurse-submodules https://github.com/pingcap/tiflash.git tiflash
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
-########### stage: Builder
+########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
@@ -27,7 +27,7 @@ ENV LD ld.lld
 # ENV LD_LIBRARY_PATH="/usr/local/lib/$(uname -m)-unknown-linux-gnu/:${LD_LIBRARY_PATH:+LD_LIBRARY_PATH:}"
 # ENV CPLUS_INCLUDE_PATH="/usr/local/include/$(uname -m)-unknown-linux-gnu/c++/v1/:${CPLUS_INCLUDE_PATH:+CPLUS_INCLUDE_PATH:}"
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 
 ADD . /ws

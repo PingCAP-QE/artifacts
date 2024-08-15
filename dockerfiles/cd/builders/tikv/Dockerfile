@@ -5,7 +5,7 @@
 #   - git clone --recurse-submodules https://github.com/tikv/tikv.git tikv
 #   - docker build -t tikv -f Dockerfile ./tikv
 
-########### stage: Builder
+########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV"
@@ -29,7 +29,7 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /tikv
 RUN --mount=type=cache,target=/tikv/target \
