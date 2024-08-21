@@ -85,8 +85,8 @@ jobs:
 
     strategy:
       matrix:
-        # module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
-        module: [builder-others, builder-tikv, builder-tikv-fips]
+        module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
+        # module: [builder-others, builder-tikv, builder-tikv-fips]
         platform: [linux/amd64, linux/arm64]
         builder-profile: [local-docker]
     steps:
