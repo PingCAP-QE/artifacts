@@ -843,7 +843,7 @@ editions:
                   extract: true
                   extract_inner_path: reparo
               - name: arbiter # New in v6.0.0
-                if: {{ semver.CheckConstraint "< 8.1.1-0" .Release.version }}
+                if: {{ semver.CheckConstraint "< 8.1.1-0 || >= 8.2.0-0" .Release.version }}
                 src:
                   type: oci
                   url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
