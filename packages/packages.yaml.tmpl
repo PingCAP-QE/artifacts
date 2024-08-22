@@ -998,7 +998,7 @@ components:
                 src:
                   path: bin/reparo
               - name: arbiter
-                if: {{ semver.CheckConstraint "< 8.1.1-0" .Release.version }}
+                if: {{ semver.CheckConstraint "< 8.1.1-0 || >= 8.2.0-0" .Release.version }}
                 src:
                   path: bin/arbiter
               - name: binlogctl
