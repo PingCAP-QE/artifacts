@@ -312,7 +312,7 @@ function is_published() {
 {{- if has .artifactory "package_repo" }}
     local tag="{{ index .artifactory.tags 0 }}_{{ .os }}_{{ .arch }}"
     local destination="{{ .artifactory.package_repo }}:$tag"
-    oras oras discover "$destination" --distribution-spec v1.1-referrers-tag > /dev/null
+    oras discover "$destination" --distribution-spec v1.1-referrers-tag > /dev/null
 {{- else }}
     false
 {{- end }}
