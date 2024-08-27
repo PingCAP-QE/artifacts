@@ -1098,10 +1098,18 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tidb-operator/image"
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-operator"
             build_args:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-operator
+            dockerfile: Dockerfile
+          - name: container image - tidb-backup-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-backup-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-backup-manager
             dockerfile: Dockerfile
       - description: before 1.5.0
         if: {{ semver.CheckConstraint "< 1.5.0-0" .Release.version }}
@@ -1131,13 +1139,21 @@ components:
               - name: tidb-backup-manager
                 src:
                   path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
-          - name: container image
+          - name: container image - tidb-operator
             type: image
             artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tidb-operator/image"
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-operator"
             build_args:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-operator
+            dockerfile: Dockerfile
+          - name: container image - tidb-backup-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-backup-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-backup-manager
             dockerfile: Dockerfile
   tidb-dashboard:
     desc: ''
