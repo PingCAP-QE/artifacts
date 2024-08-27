@@ -1060,7 +1060,7 @@ components:
     builders:
       - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
     routers:
-      - description: interpret versions according to semantic version spec.
+      - description: starts from 1.5.0
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
@@ -1072,7 +1072,7 @@ components:
             - script: ENABLE_FIPS=1 make build
         artifacts:
           - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:  # output files.
+            files:
               - name: tidb-scheduler
                 src:
                   path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
@@ -1103,7 +1103,42 @@ components:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-operator
             dockerfile: Dockerfile
-
+      - description: before 1.5.0
+        if: {{ semver.CheckConstraint "< 1.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+        artifacts:
+          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-scheduler
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - name: tidb-discovery
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - name: tidb-controller-manager
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - name: tidb-admission-webhook
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
+          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-backup-manager
+                src:
+                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/image"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-operator
+            dockerfile: Dockerfile
   tidb-dashboard:
     desc: ''
     git:
