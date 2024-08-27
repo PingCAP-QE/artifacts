@@ -1061,7 +1061,7 @@ components:
       - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
     routers:
       - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 1.4.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release, fips]
