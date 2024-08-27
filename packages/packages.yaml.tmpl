@@ -139,7 +139,7 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
@@ -246,7 +246,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
@@ -343,7 +343,7 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-24-gd14aee6-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
@@ -546,7 +546,7 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
@@ -890,7 +890,7 @@ components:
         - {{ .Release.version }}
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
       - description: interpret versions according to semantic version spec.
         if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
@@ -936,7 +936,7 @@ components:
         - {{ .Release.version }}
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
       - description: For all versions.
         os: [linux, darwin]
@@ -968,7 +968,7 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
@@ -998,6 +998,7 @@ components:
                 src:
                   path: bin/reparo
               - name: arbiter
+                if: {{ semver.CheckConstraint "< 8.1.1-0 || >= 8.2.0-0" .Release.version }}
                 src:
                   path: bin/arbiter
               - name: binlogctl
@@ -1057,9 +1058,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-52-ga8d3395
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
     routers:
-      - description: interpret versions according to semantic version spec.
+      - description: starts from 1.5.0
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
@@ -1071,7 +1072,7 @@ components:
             - script: ENABLE_FIPS=1 make build
         artifacts:
           - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:  # output files.
+            files:
               - name: tidb-scheduler
                 src:
                   path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
@@ -1097,12 +1098,63 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tidb-operator/image"
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-operator"
             build_args:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-operator
             dockerfile: Dockerfile
-
+          - name: container image - tidb-backup-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-backup-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-backup-manager
+            dockerfile: Dockerfile
+      - description: before 1.5.0
+        if: {{ semver.CheckConstraint "< 1.5.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+        artifacts:
+          - name: "tidb-operator-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-scheduler
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler
+              - name: tidb-discovery
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery
+              - name: tidb-controller-manager
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager
+              - name: tidb-admission-webhook
+                src:
+                  path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook
+          - name: "tidb-backup-manager-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-backup-manager
+                src:
+                  path: images/tidb-backup-manager/bin/{{ .Release.arch }}/tidb-backup-manager
+          - name: container image - tidb-operator
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-operator"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-operator
+            dockerfile: Dockerfile
+          - name: container image - tidb-backup-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-backup-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/tidb-backup-manager
+            dockerfile: Dockerfile
   tidb-dashboard:
     desc: ''
     git:
@@ -1336,9 +1388,9 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
@@ -1784,7 +1836,7 @@ components:
         - {{ .Release.version }}
     builders: # binary builder, also we need it when build for mac to get build tools versions and other informations.
       - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (ne "fips" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
       - description: From 0.1.2
         if: {{ semver.CheckConstraint ">= 0.1.2-0" .Release.version }}
