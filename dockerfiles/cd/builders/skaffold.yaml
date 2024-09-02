@@ -60,6 +60,24 @@ profiles:
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
       - { op: move, from: /build/artifacts/2/kaniko, path: /build/artifacts/2/docker }
       - { op: move, from: /build/artifacts/3/kaniko, path: /build/artifacts/3/docker }
+  - name: go-1.23
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.23"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-23
+          GOLANG_VERSION: 1.23.0
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-23
+      - op: add
+        path: /build/artifacts/2/kaniko/buildArgs
+        value: *value-go1-23
+      - op: add
+        path: /build/artifacts/3/kaniko/buildArgs
+        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
@@ -135,24 +153,7 @@ profiles:
       - op: add
         path: /build/artifacts/3/kaniko/buildArgs
         value: *value-go1-19
-  - name: go-1.18
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.18"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value: &value-go1-18
-          GOLANG_VERSION: 1.18.10
-      - op: add
-        path: /build/artifacts/1/kaniko/buildArgs
-        value: *value-go1-18
-      - op: add
-        path: /build/artifacts/2/kaniko/buildArgs
-        value: *value-go1-18
-      - op: add
-        path: /build/artifacts/3/kaniko/buildArgs
-        value: *value-go1-18
+
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -237,7 +238,7 @@ profiles:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: builder-others-slow
+  name: builder-tiflash
 build:
   artifacts:
     - image: tiflash

@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.22, go-1.21, go-1.20, go-1.19, go-1.18]
+        go-profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
         builder-profile: [local-docker]
     steps:
       - name: Checkout sources
@@ -77,8 +77,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        # module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
-        module: [builder-others, builder-tikv, builder-tikv-fips]
+        module: [builder-tiflash, builder-tikv, builder-tikv-fips, builder-others]
         builder-profile: [local-docker]
     steps:
       - name: Checkout sources
