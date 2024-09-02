@@ -24,11 +24,10 @@ ENV LD ld.lld
 # building and install libc++
 RUN --mount=type=cache,target=/tmp/llvm \
     git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 --depth 1 /tmp/llvm/llvm-project && \
-    cd /tmp/llvm/llvm-project && \
-    cmake -G Ninja -S runtimes -B build -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" && \
+    cd /tmp/llvm/llvm-project && rm -rf build && mkdir build && \
+    cmake -G Ninja -S runtimes -B build -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_LIBDIR_SUFFIX=64 && \
     ninja -C build cxx cxxabi unwind && \
-    ninja -C build install-cxx install-cxxabi install-unwind && \
-    echo "/usr/local/lib" | tee /etc/ld.so.conf.d/llvm.conf
+    ninja -C build install-cxx install-cxxabi install-unwind
 
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
@@ -38,7 +37,7 @@ ENV PATH /root/.cargo/bin/:$PATH
 FROM builder as building
 
 ADD . /ws
-RUN CARGO_NET_GIT_FETCH_WITH_CLI=true LIBRARY_PATH=/usr/local/lib /ws/release-centos7-llvm/scripts/build-release.sh
+RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-centos7-llvm/scripts/build-release.sh
 RUN mkdir output && mv /ws/release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
