@@ -57,6 +57,7 @@ components:
           - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - name: binlogctl
+                if: {{ semver.CheckConstraint "< 8.4.0-0" .Release.version }}
                 src:
                   type: oci
                   url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
@@ -952,7 +953,9 @@ components:
                 src:
                   path: tidb-ctl
   tidb-binlog:
-    desc: tidb binlog component tarball
+    desc: |-
+      [Deprecated] Delcared Deprecation in v8.3.0, removed in v8.4.0
+      tidb binlog component tarball
     git:
       url: https://github.com/pingcap/tidb-binlog.git
       ref: {{ .Git.ref | default "master" }}
@@ -977,7 +980,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.18
     routers:
       - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]

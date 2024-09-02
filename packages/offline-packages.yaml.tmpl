@@ -52,8 +52,83 @@ editions:
       tags:
         - "{{ .Release.version }}-community"
     routers:
-      - description: "Started from v7.6.0 to latest added tiproxy compare with v7.5.0"
-        if: {{ semver.CheckConstraint ">=7.6.0-0" .Release.version }}
+      - description: "Started from v8.4.0"
+        if: {{ semver.CheckConstraint ">=8.4.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [community]
+        artifacts:
+          - name: "tidb-community-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: community offline server package
+            components:
+              - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } }
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: cluster, src: { type: tiup-clone, version: latest } }
+              - { name: insight, src: { type: tiup-clone, version: latest } }
+              - { name: diag, src: { type: tiup-clone, version: latest } }
+              - { name: influxdb, src: { type: tiup-clone, version: latest } }
+              - { name: playground, src: { type: tiup-clone, version: latest } }
+              - { name: tiproxy, src: { type: tiup-clone, version: latest } }
+              - { name: tidb, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tikv, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: pd, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tiflash, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+          - name: "tidb-community-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: community offline toolkit package
+            components:
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - name: package
+                if: {{ eq .Release.arch "amd64" }}
+                src: { type: tiup-clone, version: latest }
+              - { name: bench, src: { type: tiup-clone, version: latest } }
+              - { name: errdoc, src: { type: tiup-clone, version: latest } }
+              - { name: dba, src: { type: tiup-clone, version: latest } }
+              - { name: PCC, src: { type: tiup-clone, version: latest } }
+              - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
+              - { name: server, src: { type: tiup-clone, version: latest } } # New in v6.2.0, it's tiup-server.
+              - { name: pd-recover, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tidb-lightning, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dumpling, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: br, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: cdc, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-master, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-worker, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dmctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - name: tidb-lightning-ctl # New in v6.0.0
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+              - name: sync_diff_inspector # New in v6.0.0
+                src:
+                  type: oci
+                  # version release on master branch.
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: sync_diff_inspector
+              - name: etcdctl	# New in v6.0.0
+                src:
+                  type: http
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
+
+      - description: "Started from v7.6.0 until v8.4.0"
+        if: {{ semver.CheckConstraint ">=7.6.0-0, <8.4.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [community]
@@ -467,9 +542,118 @@ editions:
       tags:
         - "{{ .Release.version }}-enterprise"
     routers:
-      - description: "Started from v7.6.0 to latest added tiproxy compare with v7.5.0"
+      - description: "Started from v8.4.0"
+        if: {{ semver.CheckConstraint ">=8.4.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        artifacts:
+          - name: "tidb-enterprise-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: enterprise offline server package
+            components:
+              - { name: tidb-dashboard, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } }
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } }
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: cluster, src: { type: tiup-clone, version: latest } }
+              - { name: insight, src: { type: tiup-clone, version: latest } }
+              - { name: diag, src: { type: tiup-clone, version: latest } }
+              - { name: influxdb, src: { type: tiup-clone, version: latest } }
+              - { name: playground, src: { type: tiup-clone, version: latest } }
+              - { name: tiproxy, src: { type: tiup-clone, version: latest } }
+              - name: tidb
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                publish:
+                  name: tidb
+                  description: >-
+                    TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+                  entrypoint: tidb-server
+              - name: tikv
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tikv-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                publish:
+                  name: tikv
+                  description: >-
+                    Distributed transactional key-value database, originally created to complement TiDB.
+                  entrypoint: tikv-server
+              - name: pd
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "pd-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                publish:
+                  name: pd
+                  description: >-
+                    PD is the abbreviation for Placement Driver. It is used to manage and schedule the TiKV cluster.
+                  entrypoint: pd-server
+              - name: tiflash
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tiflash/package:{{ .Release.version }}-enterprise_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tiflash-(v.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                publish:
+                  name: tiflash
+                  description: >-
+                    The TiFlash Columnar Storage Engine.
+                  entrypoint: tiflash/tiflash
+              - { name: ctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+          - name: "tidb-enterprise-toolkit-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}"
+            desc: enterprise offline toolkit package
+            components:
+              - { name: tiup, src: { type: tiup-clone, version: latest } }
+              - { name: alertmanager, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: blackbox_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - { name: node_exporter, src: { type: tiup-clone, version: latest } } # New in v6.2.0
+              - name: package
+                if: {{ eq .Release.arch "amd64" }}
+                src: { type: tiup-clone, version: latest }
+              - { name: bench, src: { type: tiup-clone, version: latest } }
+              - { name: errdoc, src: { type: tiup-clone, version: latest } }
+              - { name: dba, src: { type: tiup-clone, version: latest } }
+              - { name: PCC, src: { type: tiup-clone, version: latest } }
+              - { name: dm, src: { type: tiup-clone, version: latest } } # it's tiup-dm pkg not dm.
+              - { name: server, src: { type: tiup-clone, version: latest } } # New in v6.2.0, it's tiup-server.
+              - { name: pd-recover, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: tidb-lightning, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dumpling, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: br, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: cdc, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-master, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dm-worker, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: dmctl, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: prometheus, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - { name: grafana, src: { type: tiup-clone, version: "{{ .Release.version }}" } }
+              - name: tidb-lightning-ctl # New in v6.0.0
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Release.version }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-lightning-ctl-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+              - name: sync_diff_inspector # New in v6.0.0
+                src:
+                  type: oci
+                  # version release on master branch.
+                  url: "{{ .Release.registry }}/pingcap/tidb-tools/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-tools-(.*-)?{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: sync_diff_inspector
+              - name: etcdctl	# New in v6.0.0
+                src:
+                  type: http
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
+      - description: "Started from v7.6.0 until v8.4.0"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.6.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">=7.6.0-0, <8.4.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
