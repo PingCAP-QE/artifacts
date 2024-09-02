@@ -5,25 +5,19 @@
 #   - git clone --recurse-submodules https://github.com/tikv/tikv.git tikv
 #   - docker build -t tikv -f Dockerfile ./tikv
 
-########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+########### stage: builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiKV"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-ARG DEVTOOLSET_VER=8
-RUN yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
-    sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
-    sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
-    sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
-    ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo) && \
-    yum update --nogpgcheck -y && \
-    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip && \
-    yum clean all && \
-    ln -s /usr/bin/cmake3 /usr/bin/cmake
-ENV DEVTOOLSET_VER ${DEVTOOLSET_VER}
+# install packages.
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf --enablerepo=powertools install -y \
+      make git findutils gcc gcc-c++ cmake curl openssl-devel perl python3 \
+      libstdc++-static
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
@@ -34,15 +28,12 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
-LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /tikv
 RUN --mount=type=cache,target=/tikv/target \
-    source /opt/rh/devtoolset-${DEVTOOLSET_VER}/enable && \
-    ROCKSDB_SYS_STATIC=1 \
-    make dist_release -C /tikv
+    ROCKSDB_SYS_STATIC=1 make dist_release -C /tikv
 RUN /tikv/bin/tikv-server --version
 
 ########### stage: Final image

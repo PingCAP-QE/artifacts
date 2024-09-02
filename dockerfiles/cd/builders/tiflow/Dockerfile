@@ -5,19 +5,13 @@
 #   - git clone --recurse-submodules https://github.com/pingcap/tiflow.git tiflow
 #   - docker build -t dm -f Dockerfile ./tiflow
 
-########### stage: Builder - cdc
-FROM centos:7.9.2009 as builder-cdc
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+########### stage: builder-cdc
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder-cdc
 
 # install packages.
-RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum clean all
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git findutils
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -27,7 +21,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-########### stage: Builder - dm
+########### stage: builder-dm
 FROM builder-cdc as builder-dm
 
 # install nodejs toolchain
@@ -45,32 +39,33 @@ RUN mkdir -p $NVM_DIR && \
 ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version && npm --version && npm install -g yarn
 
-########### stage: Builder - total
+########### stage: builder - total
 FROM builder-dm as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiFlow"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
-########### stage: Buiding cdc
+########### stage: building-cdc
 FROM builder-cdc as building-cdc
-
-COPY . /tiflow
+COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make cdc -C /tiflow
-RUN /tiflow/bin/cdc version
+RUN GOPROXY=${GOPROXY} make cdc -C /ws
+RUN /ws/bin/cdc version
 
-########### stage: Buiding dm
+########### stage: building-dm
 FROM builder-dm as building-dm
-
-COPY . /tiflow
+COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make dm-master-with-webui dm-worker dmctl dm-syncer -C /tiflow
-RUN /tiflow/bin/dm-master -V
-RUN /tiflow/bin/dm-worker -V
-RUN /tiflow/bin/dm-syncer -V
-RUN /tiflow/bin/dmctl -V
+RUN GOPROXY=${GOPROXY} make dm-master-with-webui dm-worker dmctl dm-syncer -C /ws
+RUN /ws/bin/dm-master -V
+RUN /ws/bin/dm-worker -V
+RUN /ws/bin/dm-syncer -V
+RUN /ws/bin/dmctl -V
 
 ########### stage: Final image - cdc
 FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.1 as final-cdc
+COPY --from=building-cdc /ws/bin/cdc /cdc
 
-COPY --from=building-cdc /tiflow/bin/cdc /cdc
 EXPOSE 8300
 CMD ["/cdc"]
 
@@ -80,11 +75,10 @@ RUN /cdc version
 
 ########### stage: Final image - dm
 FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.1 as final-dm
-
-COPY --from=building-dm /tiflow/bin/dm-master /dm-master
-COPY --from=building-dm /tiflow/bin/dm-worker /dm-worker
-COPY --from=building-dm /tiflow/bin/dm-syncer /dm-syncer
-COPY --from=building-dm /tiflow/bin/dmctl     /dmctl
+COPY --from=building-dm /ws/bin/dm-master /dm-master
+COPY --from=building-dm /ws/bin/dm-worker /dm-worker
+COPY --from=building-dm /ws/bin/dm-syncer /dm-syncer
+COPY --from=building-dm /ws/bin/dmctl     /dmctl
 
 EXPOSE 8291 8261 8262
 

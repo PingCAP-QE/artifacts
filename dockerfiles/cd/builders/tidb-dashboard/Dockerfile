@@ -2,22 +2,20 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb.git tidb 
-#   - rm tidb/.dockerignore # make step depended on git metadata.
-#   - docker build -t tidb -f Dockerfile ./tidb
+#   - git clone https://github.com/pingcap/tidb-dashbord.git tidb-dashbord 
+#   - rm tidb-dashbord/.dockerignore # make step depended on git metadata.
+#   - docker build -t tidb-dashbord -f Dockerfile ./tidb-dashbord
 
-########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+########### stage: builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiDB Dashboard"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-RUN yum -y update && \
-    yum -y groupinstall "Development Tools" && \
-    yum -y install java-11-openjdk && \
-    yum clean all
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc java-11-openjdk findutils
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -28,11 +26,11 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 # Install nodejs.
-RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
+RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
 RUN yum -y install nodejs && yum clean all
-RUN npm install -g pnpm@7.30.5
+RUN npm install -g pnpm@9.7.0
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /ws
 ARG GOPROXY

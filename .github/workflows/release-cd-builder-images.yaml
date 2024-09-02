@@ -80,13 +80,6 @@ jobs:
         # module: [builder-others, builder-tikv, builder-tikv-fips, builder-others-slow]
         module: [builder-others, builder-tikv, builder-tikv-fips]
         builder-profile: [local-docker]
-        include:
-          - module: builder-tikv
-            builder-profile: devtoolset8,local-docker
-          - module: builder-tikv
-            builder-profile: devtoolset9,local-docker            
-          - module: builder-tikv
-            builder-profile: devtoolset10,local-docker
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

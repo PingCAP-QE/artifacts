@@ -2,24 +2,20 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb.git tidb 
-#   - rm tidb/.dockerignore # make step depended on git metadata.
-#   - docker build -t tidb -f Dockerfile ./tidb
+#   - git clone https://github.com/pingcap/ng-monitoring.git ng-monitoring 
+#   - rm ng-monitoring/.dockerignore # make step depended on git metadata.
+#   - docker build -t ng-monitoring -f Dockerfile ./ng-monitoring
 
-########### stage: Builder
-FROM centos:7.9.2009 as builder
-# CentOS 7 has reached EOL
-RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+########### stage: builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for NG-Monitoring"
+LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-RUN yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install -y wget && \
-    yum clean all
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf upgrade-minimal -y && \
+    dnf install -y make git gcc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -29,7 +25,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-########### stage: Buiding
+########### stage: building
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
@@ -38,7 +34,6 @@ RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.1
-
 COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 
 WORKDIR /
