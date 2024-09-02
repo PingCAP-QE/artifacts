@@ -5,6 +5,21 @@
 #   - git clone --recurse-submodules https://github.com/pingcap/tiflash.git tiflash
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
+########### stage: extract-conda-openssl
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as extract-conda-openssl
+RUN dnf install -y unzip wget zstd
+# install openssl with conda pre-build package.
+# index: in https://prefix.dev/channels/conda-forge/packages/openssl
+RUN zip_url=$([ "$(arch)" = "x86_64" ] && \
+        echo "https://conda.anaconda.org/conda-forge/linux-64/openssl-1.1.1w-hd590300_0.conda" || \
+        echo "https://conda.anaconda.org/conda-forge/linux-aarch64/openssl-1.1.1w-h31becfc_0.conda"\
+    ); \
+    pkg_file=$(basename "$zip_url" .conda); \
+    mkdir /output; \
+    wget ${zip_url} -O /output/openssl.conda && unzip -d /output /output/openssl.conda && \
+    mkdir -p /usr/local/opt/openssl && \
+    tar -C /usr/local/opt/openssl -I zstd -xvf /output/pkg-${pkg_file}.tar.zst
+
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
@@ -12,14 +27,15 @@ LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-# openssl is not updated to 1.1.1w, just 1.1.1o
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf --enablerepo=powertools install -y git llvm-toolset cmake ninja-build openssl python3.12 libcurl-devel
-
+    dnf --enablerepo=powertools install -y git llvm-toolset cmake ninja-build python3.12 libcurl-devel
 ENV CC clang
 ENV CXX clang++
 ENV LD ld.lld
+
+# install openssl
+COPY --from=extract-conda-openssl /usr/local/opt/openssl /usr/local/opt/openssl
 
 # building and install libc++
 RUN --mount=type=cache,target=/tmp/llvm \
