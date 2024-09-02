@@ -649,7 +649,7 @@ editions:
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.6.0 until v8.4.0"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
-        if: {{ semver.CheckConstraint ">=7.6.0-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">=7.6.0-0, <8.4.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         artifacts:
