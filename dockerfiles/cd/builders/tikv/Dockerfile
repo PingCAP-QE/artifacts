@@ -9,7 +9,7 @@
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV"
-LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 # install packages.

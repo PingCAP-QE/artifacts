@@ -24,7 +24,7 @@ RUN zip_url=$([ "$(arch)" = "x86_64" ] && \
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
-LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
