@@ -4,6 +4,7 @@ set -eo pipefail
 artifact_url="$1"
 nightly="$2"
 out_script="${3:-publish.sh}"
+force_version="${4}"
 
 # fetch artifact config
 oras manifest fetch-config "$artifact_url" >artifact-config.json
@@ -15,21 +16,25 @@ fi
 tiup_last_index=$(yq --output-format=yaml '.["net.pingcap.tibuild.tiup"] | length - 1' artifact-config.json)
 os=$(yq --output-format=yaml '.["net.pingcap.tibuild.os"]' artifact-config.json)
 architecture=$(yq --output-format=yaml '.["net.pingcap.tibuild.architecture"]' artifact-config.json)
-version=$(yq --output-format=yaml '.["org.opencontainers.image.version"]' artifact-config.json)
-if [ "$nightly" == "true" ]; then
-    # from vX.Y.Z-alpha-574-g75b451c454 => vX.Y.Z-alpha-nightly
-    version=$(echo "$version" | sed -E 's/\-[0-9]+-g[0-9a-f]+$//')
-    version="${version}-nightly"
-fi
+if [ "$force_version" != "" ]; then
+    version="$force_version"
+else
+    version=$(yq --output-format=yaml '.["org.opencontainers.image.version"]' artifact-config.json)
+    if [ "$nightly" == "true" ]; then
+        # from vX.Y.Z-alpha-574-g75b451c454 => vX.Y.Z-alpha-nightly
+        version=$(echo "$version" | sed -E 's/\-[0-9]+-g[0-9a-f]+$//')
+        version="${version}-nightly"
+    fi
 
-# GA case:
-#   when
-#   - the version is "vX.Y.Z-pre" and
-#   - the artifact_url has suffix: "vX.Y.Z_(linux|darwin)_(amd64|arm64)",
-#   then
-#   - set the version to "vX.Y.Z"
-if [[ "$version" == v[0-9]*.[0-9]*.[0-9]*-pre && "$artifact_url" =~ .*:v[0-9]*.[0-9]*.[0-9]*_(linux|darwin)_(amd64|arm64)$ ]]; then
-    version="${version%-pre}"
+    # GA case:
+    #   when
+    #   - the version is "vX.Y.Z-pre" and
+    #   - the artifact_url has suffix: "vX.Y.Z_(linux|darwin)_(amd64|arm64)",
+    #   then
+    #   - set the version to "vX.Y.Z"
+    if [[ "$version" == v[0-9]*.[0-9]*.[0-9]*-pre && "$artifact_url" =~ .*:v[0-9]*.[0-9]*.[0-9]*_(linux|darwin)_(amd64|arm64)$ ]]; then
+        version="${version%-pre}"
+    fi
 fi
 
 # generate the publish script.
