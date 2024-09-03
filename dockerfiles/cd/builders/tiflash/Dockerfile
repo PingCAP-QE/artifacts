@@ -6,7 +6,7 @@
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
 ########### stage: extract-conda-openssl
-FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as extract-conda-openssl
+FROM quay.io/rockylinux/rockylinux:9.4.20240523-ubi as extract-conda-openssl
 RUN dnf install -y unzip wget zstd
 # install openssl with conda pre-build package.
 # index: in https://prefix.dev/channels/conda-forge/packages/openssl
@@ -21,7 +21,7 @@ RUN zip_url=$([ "$(arch)" = "x86_64" ] && \
     tar -C /usr/local/opt/openssl -I zstd -xvf /output/pkg-${pkg_file}.tar.zst
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
+FROM quay.io/rockylinux/rockylinux:9.4.20240523-ubi as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"

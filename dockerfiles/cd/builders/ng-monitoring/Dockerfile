@@ -7,7 +7,7 @@
 #   - docker build -t ng-monitoring -f Dockerfile ./ng-monitoring
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+FROM quay.io/rockylinux/rockylinux:9.4.20240523 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for NG-Monitoring"
 LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
