@@ -33,7 +33,7 @@ _msb component git_url git_branch:
     docker build -t {{component}} -f dockerfiles-multi-stages/{{component}}/Dockerfile ../{{component}}
 
 _clone component git_url git_branch:
-    [ -e ../{{component}} ] || git clone --recurse-submodules {{git_url}} --branch {{git_branch}} ../{{component}}
+    [ -e ../{{component}} ] || git clone --recurse-submodules -j8 {{git_url}} --branch {{git_branch}} ../{{component}}
     ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
 
 _clone_without_submodules component git_url git_branch:
