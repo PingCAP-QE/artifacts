@@ -38,12 +38,12 @@ ENV LD ld.lld
 COPY --from=extract-conda-openssl /usr/local/opt/openssl /usr/local/opt/openssl
 
 # building and install libc++
-RUN --mount=type=cache,target=/tmp/llvm \
-    git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 --depth 1 /tmp/llvm/llvm-project && \
-    cd /tmp/llvm/llvm-project && rm -rf build && mkdir build && \
+RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 --depth 1 /tmp/llvm-project && \
+    cd /tmp/llvm-project && rm -rf build && mkdir build && \
     cmake -G Ninja -S runtimes -B build -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_LIBDIR_SUFFIX=64 && \
     ninja -C build cxx cxxabi unwind && \
-    ninja -C build install-cxx install-cxxabi install-unwind
+    ninja -C build install-cxx install-cxxabi install-unwind && \
+    rm -rf /tmp/llvm-project
 
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
