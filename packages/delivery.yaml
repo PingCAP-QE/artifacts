@@ -283,26 +283,27 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-tools
-  hub.pingcap.net/pingcap/tidb-binlog/image:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/tidb-binlog
-    - <<: *sync_rc_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog
-    - <<: *sync_ga_community
-      dest_repositories:
-        - docker.io/pingcap/tidb-binlog
-        - uhub.service.ucloud.cn/pingcap/tidb-binlog
-    - <<: *sync_rc_community_to_enterprise_repo
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog-enterprise
-        - gcr.io/pingcap-public/dbaas/tidb-binlog
-    - <<: *sync_ga_community_to_enterprise_repo
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog-enterprise
-        - gcr.io/pingcap-public/dbaas/tidb-binlog
-        - docker.io/pingcap/tidb-binlog-enterprise
+  # [Deprecated]
+  # hub.pingcap.net/pingcap/tidb-binlog/image:
+  #   - <<: *sync_trunk_community
+  #     dest_repositories:
+  #       - docker.io/pingcap/tidb-binlog
+  #   - <<: *sync_rc_community
+  #     dest_repositories:
+  #       - hub.pingcap.net/qa/tidb-binlog
+  #   - <<: *sync_ga_community
+  #     dest_repositories:
+  #       - docker.io/pingcap/tidb-binlog
+  #       - uhub.service.ucloud.cn/pingcap/tidb-binlog
+  #   - <<: *sync_rc_community_to_enterprise_repo
+  #     dest_repositories:
+  #       - hub.pingcap.net/qa/tidb-binlog-enterprise
+  #       - gcr.io/pingcap-public/dbaas/tidb-binlog
+  #   - <<: *sync_ga_community_to_enterprise_repo
+  #     dest_repositories:
+  #       - hub.pingcap.net/qa/tidb-binlog-enterprise
+  #       - gcr.io/pingcap-public/dbaas/tidb-binlog
+  #       - docker.io/pingcap/tidb-binlog-enterprise
   hub.pingcap.net/tikv/tikv/image:
     - <<: *sync_trunk_community
       dest_repositories:
