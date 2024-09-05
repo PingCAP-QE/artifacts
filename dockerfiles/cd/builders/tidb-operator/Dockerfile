@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb-operator.git tidb 
+#   - git clone https://github.com/pingcap/tidb-operator.git tidb
 #   - rm tidb-operator/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb-operator -f Dockerfile ./tidb-operator
 

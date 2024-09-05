@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb-dashbord.git tidb-dashbord 
+#   - git clone https://github.com/pingcap/tidb-dashbord.git tidb-dashbord
 #   - rm tidb-dashbord/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb-dashbord -f Dockerfile ./tidb-dashbord
 

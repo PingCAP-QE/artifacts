@@ -141,12 +141,12 @@ function pre_check_artifact{{ $i }}() {
     {{- range . }}
     echo -n "🔍 check tiup package: {{ .name }}@{{ .src.version }} in platform $os/$arch."
     {{- if eq .src.version "latest" }}
-    tiup list {{ .name }} | grep -E '^v\d+\.\d+\.\d+\s+' | tail -1 | grep -E "($os/$arch|any/any)" > /dev/null && echo " ✅" || { 
+    tiup list {{ .name }} | grep -E '^v\d+\.\d+\.\d+\s+' | tail -1 | grep -E "($os/$arch|any/any)" > /dev/null && echo " ✅" || {
       echo " ❌"
       exit 1
     }
     {{- else }}
-    tiup list {{ .name }} | grep -E '^{{ .src.version }}\s+' | grep "$os/$arch" > /dev/null && echo " ✅" || { 
+    tiup list {{ .name }} | grep -E '^{{ .src.version }}\s+' | grep "$os/$arch" > /dev/null && echo " ✅" || {
       echo " ❌"
       exit 1
     }
@@ -158,7 +158,7 @@ function pre_check_artifact{{ $i }}() {
     {{- range ($components | jq `map(select(.src.type == "oci"))`) }}
     # {{ .name }}
     echo -n "🔍 check file '{{ .name }}' from OCI artifact: {{ .src.url }} -> {{ .src.path }}"
-    check_file_in_oci_artifact {{ .src.url }} "{{ .src.path }}" && echo " ✅" || { 
+    check_file_in_oci_artifact {{ .src.url }} "{{ .src.path }}" && echo " ✅" || {
       echo " ❌"
       exit 1
     }

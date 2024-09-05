@@ -1,4 +1,4 @@
-Central declarative congfigurations for artifacts delivering. 
+Central declarative congfigurations for artifacts delivering.
 ===
 
 > We use go template format to control them.
@@ -6,8 +6,8 @@ Central declarative congfigurations for artifacts delivering.
 
 ## Prerequire tools
 
-- [gomplate](https://github.com/hairyhenderson/gomplate) 
-  > Please install the master version. 
+- [gomplate](https://github.com/hairyhenderson/gomplate)
+  > Please install the master version.
 - [yq](https://github.com/mikefarah/yq)
 - [jq](https://jqlang.github.io/jq/download/)
 
