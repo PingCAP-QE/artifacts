@@ -58,7 +58,7 @@ jobs:
         run: |
           curl -L https://github.com/estesp/manifest-tool/releases/download/v2.1.7/binaries-manifest-tool-2.1.7.tar.gz | tar -zxvf - manifest-tool-linux-amd64
           sudo install manifest-tool-linux-amd64 /usr/local/bin/manifest-tool
-      
+
       - name: Cache layers
         uses: actions/cache@v4
         with:

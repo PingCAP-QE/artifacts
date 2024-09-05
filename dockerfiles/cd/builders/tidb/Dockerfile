@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb.git tidb 
+#   - git clone https://github.com/pingcap/tidb.git tidb
 #   - rm tidb/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb -f Dockerfile ./tidb
 
@@ -10,7 +10,7 @@
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiDB"
-LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \

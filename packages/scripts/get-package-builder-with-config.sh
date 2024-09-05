@@ -40,7 +40,7 @@ function main() {
     fi
 
     # get the builder image.
-    yq -e '.builders[0].image' release-package.yaml | tee $out_file
+    yq -e '.builders[0].image' release-package.yaml | tee "$out_file"
 }
 
 main "$@"

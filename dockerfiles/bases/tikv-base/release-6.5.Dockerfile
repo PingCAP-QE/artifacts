@@ -13,4 +13,3 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
 # set timezone
 ENV TZ=/etc/localtime
 ENV TZDIR=/usr/share/zoneinfo
-

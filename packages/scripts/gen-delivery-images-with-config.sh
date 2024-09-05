@@ -9,27 +9,24 @@ main() {
     local image_url_with_tag="$1"
     local yaml_file="${2:-${PROJECT_ROOT_DIR}/packages/delivery.yaml}"
     local out_file="${3:-${RELEASE_SCRIPTS_DIR}/delivery-images.sh}"
-    rm -rf $out_file
+    rm -rf "$out_file"
 
     # Extract image URL and tag
-    local image_url=$(echo "$image_url_with_tag" | cut -d ':' -f1)
-    local tag=$(echo "$image_url_with_tag" | cut -d ':' -f2)
+    image_url="$(echo "$image_url_with_tag" | cut -d ':' -f1)"
+    tag=$(echo "$image_url_with_tag" | cut -d ':' -f2)
 
     # Retrieve rules for the source repository from the YAML config
-    local rules=$(yq ".image_copy_rules[\"$image_url\"]" "$yaml_file")
-    local rule_count=$(yq ".image_copy_rules[\"$image_url\"] | length" "$yaml_file")
-    if [ $rule_count -eq 0 ]; then
+    rule_count=$(yq ".image_copy_rules[\"$image_url\"] | length" "$yaml_file")
+    if [ "$rule_count" -eq 0 ]; then
         echo "🤷 none rules found for image: $image_url"
         exit 0
     fi
 
     # Loop through each rule for the source repository
     for ri in $(seq 0 $((rule_count - 1))); do
-        echo $ri
-        local rule=$(yq ".image_copy_rules[\"$image_url\"][$ri]" "$yaml_file")
+        rule=$(yq ".image_copy_rules[\"$image_url\"][$ri]" "$yaml_file")
         description=$(yq '.description' <<< "$rule")
         dest_repos=$(yq '.dest_repositories[]' <<< "$rule")
-        dest_tags=
 
         # Check if the tag matches the tags regex
         if yq -e ".tags_regex[] | select(. | test \"$tag\")" 2>&1> /dev/null <<< "$rule" ; then

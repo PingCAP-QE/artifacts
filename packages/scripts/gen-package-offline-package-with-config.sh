@@ -65,9 +65,9 @@ function main() {
 }
 
 function install_tiup_tool() {
-    local run_os="$(uname -s)"
-    local run_arch="$(uname -m)"
-    local tiup_ver="v1.15.2"
+    run_os="$(uname -s)"
+    run_arch="$(uname -m)"
+    tiup_ver="v1.15.2"
     local tiup_tarball
 
     case "${run_os}/${run_arch}" in

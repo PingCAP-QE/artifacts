@@ -14,7 +14,7 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version $profile
+                    $script "$cm" "$os" "$ac" "$version" $profile
                 done
             done
         done
@@ -26,7 +26,7 @@ function test_get_builder() {
         for os in $operating_systems; do
             for ac in $architectures; do
                 echo "$cm $os $ac $version:"
-                $script $cm $os $ac $version $profile
+                $script "$cm" "$os" "$ac" "$version" $profile
             done
         done
     done
@@ -38,7 +38,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v1.5.0 v1.6.0; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile
+            $script "$cm" "$os" "$ac" "$version" $profile
         done
     done
     # tiflow-operator
@@ -47,7 +47,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile
+            $script "$cm" "$os" "$ac" "$version" $profile
         done
     done
 
@@ -57,7 +57,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile
+            $script "$cm" "$os" "$ac" "$version" $profile
         done
     done
 
@@ -67,7 +67,7 @@ function test_get_builder() {
     for ac in $architectures; do
         for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile
+            $script "$cm" "$os" "$ac" "$version" $profile
         done
     done
 }
@@ -85,7 +85,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -98,7 +98,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version enterprise branch-xxx 123456789abcdef
+                    $script "$cm" "$os" "$ac" "$version" enterprise branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -111,7 +111,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo "$cm $os $ac $version:"
-                    $script $cm $os $ac $version failpoint branch-xxx 123456789abcdef
+                    $script "$cm" "$os" "$ac" "$version" failpoint branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -125,7 +125,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v1.5.0 v1.6.0; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -136,7 +136,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -147,7 +147,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -158,7 +158,7 @@ function test_gen_package_artifacts_script() {
     for ac in $architectures; do
         for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
-            $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -175,7 +175,7 @@ function test_gen_package_images_script() {
         for cm in $components; do
             for ac in $architectures; do
                 echo "$cm $os $ac $version:"
-                $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+                $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
@@ -186,7 +186,7 @@ function test_gen_package_images_script() {
     for version in $versions; do
         for ac in $architectures; do
             echo "$cm $os $ac $version:"
-            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -198,7 +198,7 @@ function test_gen_package_images_script() {
     for ac in $architectures; do
         for version in v1.6.0 v1.5.0; do
             echo "$cm $os $ac $version:"
-            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -208,7 +208,7 @@ function test_gen_package_images_script() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo "$cm $os $ac $version:"
-            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -219,7 +219,7 @@ function test_gen_package_images_script() {
     for version in v0.5.0 v0.6.0; do
         for ac in $architectures; do
             echo "$cm $os $ac $version:"
-            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -230,7 +230,7 @@ function test_gen_package_images_script() {
     for ac in $architectures; do
         for version in v0.1.2 v0.1.3; do
             echo "$cm $os $ac $version:"
-            $script $cm linux $ac $version $profile branch-xxx 123456789abcdef
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -248,7 +248,7 @@ function test_gen_offline_package_artifacts_script() {
             for ac in $architectures; do
                 for edition in $editions; do
                     echo "$os $ac $version $edition:"
-                    $script $os $ac $version $edition
+                    $script "$os" "$ac" "$version" "$edition"
                     shellcheck -S error packages/scripts/compose-offline-packages-artifacts.sh
                 done
             done

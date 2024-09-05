@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/tidb-operator.git tidb 
+#   - git clone https://github.com/pingcap/tidb-operator.git tidb
 #   - rm tidb-operator/.dockerignore # make step depended on git metadata.
 #   - docker build -t tidb-operator -f Dockerfile ./tidb-operator
 
@@ -11,7 +11,7 @@ ARG GOLANG_VERSION=1.21.13
 FROM golang:${GOLANG_VERSION} as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiDB Operator"
-LABEL org.opencontainers.image.source = "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 LABEL go-version="${GOLANG_VERSION}"
 
 # install packages.
