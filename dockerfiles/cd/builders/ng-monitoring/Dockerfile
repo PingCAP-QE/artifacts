@@ -2,7 +2,7 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/ng-monitoring.git ng-monitoring 
+#   - git clone https://github.com/pingcap/ng-monitoring.git ng-monitoring
 #   - rm ng-monitoring/.dockerignore # make step depended on git metadata.
 #   - docker build -t ng-monitoring -f Dockerfile ./ng-monitoring
 
