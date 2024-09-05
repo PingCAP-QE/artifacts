@@ -66,7 +66,7 @@ function main() {
         exit 0
     fi
 
-    gomplate --context .=release-router.yaml -f $RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl --chmod "755" --out $out_file
+    gomplate --context .=release-router.yaml -f "$RELEASE_SCRIPTS_DIR/build-package-artifacts.sh.tmpl" --chmod "755" --out "$out_file"
     echo "✅ Generated shell script: $out_file"
 }
 
