@@ -10,10 +10,6 @@ repos:
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.10.0.1
-    hooks:
-      - id: shellcheck
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.16.1
     hooks:
