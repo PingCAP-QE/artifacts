@@ -72,7 +72,7 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.19.12
+          GOLANG_VERSION: 1.19.13
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
