@@ -1,12 +1,4 @@
 # See README.md
-{{- $binlog_final_version_map := coll.Dict "~8.1.1-0" "v8.1.1" "~7.5.3-0" "v7.5.3" "~7.1.5-0" "v7.1.5" "~6.5.10-0" "v6.5.10" "~6.1.7-0" "v6.1.7" }}
-{{- $use_binlog_package_tag_prefix := .Git.ref }}
-{{- $temp_release_version := .Release.version }}
-{{- range $k, $v := $binlog_final_version_map }}
-  {{- if (semver.CheckConstraint $k $temp_release_version) }}
-    {{- $use_binlog_package_tag_prefix = $v }}
-  {{- end }}
-{{- end }}
 components:
   advanced-statefulset:
     desc:
@@ -68,7 +60,7 @@ components:
                 if: {{ semver.CheckConstraint "< 8.4.0-0" .Release.version }}
                 src:
                   type: oci
-                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ $use_binlog_package_tag_prefix }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
                   path: "binaries-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: binlogctl
@@ -864,7 +856,7 @@ components:
                   path: bin/tidb-lightning-ctl
       - description: For range [v7.1.0, v8.4.0)
         # fips profile only invalid in v6.5.x
-        if: {{ semver.CheckConstraint ">= 7.1.0-0, < 8.4.0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 7.1.0-0, < 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, enterprise-without-plugins, failpoint]
