@@ -141,7 +141,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -294,7 +294,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
