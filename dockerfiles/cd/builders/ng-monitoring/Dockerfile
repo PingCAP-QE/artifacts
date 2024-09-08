@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc
+    dnf install -y make git gcc wget
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
