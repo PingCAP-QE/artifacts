@@ -27,6 +27,17 @@
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s.*(version|VERSION|ver|VER)(: |=)(?<currentValue>.*)\\s"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}docker{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        ".*/packages.yaml.tmpl$$"
+      ],
+      "matchStrings": [
+        "\\bimage: (?<depName>ghcr.io/pingcap-qe/cd/.*?):(?<currentValue>.*)"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
   ]
 }
