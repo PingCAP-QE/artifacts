@@ -419,7 +419,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -696,7 +696,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -1189,7 +1189,7 @@ components:
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - if: {{ eq "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.21
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
@@ -1240,7 +1240,7 @@ components:
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - if: (eq "experiment" .Release.profile)
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.21
       - if: (ne "experiment" .Release.profile)
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
@@ -1483,7 +1483,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240901-5-g022d4cc
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240901-15-gdc1ad6e
       - if: {{ and (semver.CheckConstraint ">= 6.5.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240325-91-g4bdc4c6
     routers:
@@ -1607,7 +1607,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile)}}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v20240901-5-g022d4cc
+        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v20240901-15-gdc1ad6e
       - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (ne "experiment" .Release.profile)}}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20240625-llvm-17.0.6
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
@@ -1835,7 +1835,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -2297,7 +2297,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile)}}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240901-15-gdc1ad6e
       - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (has (coll.Slice "release" "enterprise" "failpoint") .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
@@ -2487,7 +2487,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (eq "experiment" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-5-g022d4cc-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.21
       - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (ne "experiment" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
