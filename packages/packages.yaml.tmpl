@@ -639,7 +639,7 @@ components:
                 It is used to manage and schedule the TiKV cluster.
               entrypoint: pd-server
           - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            if: {{ eq "enterprise" .Release.profile }}
+            if: {{ ne "enterprise" .Release.profile }}
             files:
               - name: pd-recover
                 src:
@@ -650,7 +650,7 @@ components:
                 the PD cluster which cannot start or provide services normally.
               entrypoint: pd-recover
           - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            if: {{ eq "enterprise" .Release.profile }}
+            if: {{ ne "enterprise" .Release.profile }}
             files:
               - name: pd-ctl
                 src:
