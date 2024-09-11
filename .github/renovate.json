@@ -37,7 +37,7 @@
         "\\bimage: (?<depName>ghcr.io/pingcap-qe/cd/.*?):(?<currentValue>.*)"
       ],
       "datasourceTemplate": "docker",
-      "versioningTemplate": "docker"
+      "versioningTemplate": "semver-coerced"
     }
   ]
 }
