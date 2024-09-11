@@ -48,16 +48,73 @@ components:
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
     routers:
-      - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+      - description: For range [v8.4.0, )
+        if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, experiment]
         artifacts:
           - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
+              - name: cdc
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tiflow/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "cdc-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: cdc
+              - name: ctl
+                src:
+                  type: http
+                  url: "https://github.com/pingcap/tiup/releases/download/v1.8.1/tiup-v1.8.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: bin/tiup-ctl
+              - name: etcdctl
+                src:
+                  type: http                  
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}{{ ternary ".zip" ".tar.gz" (eq .Release.os "darwin") }}"                
+                  extract: true
+                  extract_inner_path: etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
+              - name: pd-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "pd-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: pd-ctl
+              - name: tidb-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb-ctl/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-ctl
+              - name: tikv-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tikv-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tikv-ctl
+              - name: tidb-lightning-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-lightning-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+            tiup:
+              description: TiDB controller suite
+              entrypoint: ctl
+      - description: For range [v6.1.0, v8.4.0)
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        artifacts:
+          - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
               - name: binlogctl
-                if: {{ semver.CheckConstraint "< 8.4.0-0" .Release.version }}
                 src:
                   type: oci
                   url: "{{ .Release.registry }}/pingcap/tidb-binlog/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
@@ -82,10 +139,6 @@ components:
                   type: http
                   {{- if eq .Release.os "darwin" }}
                   # ${FILE_SERVER_URL}/download/pingcap/etcd-${ETCDCTL_VERSION}-${os}-${arch}.tar.gz
-                  # Notice: it only support darwin arm64 platform from [v3.5.5](https://github.com/etcd-io/etcd/releases/tag/v3.5.5) in office artifacts.
-                  # When we upgrade to 3.5.x, we should replace it with the following url:
-                  # "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.zip"
-                  # Also we need support extract from zip archive.
                   url: "http://fileserver.pingcap.net/download/pingcap/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   {{- else }}
                   url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
