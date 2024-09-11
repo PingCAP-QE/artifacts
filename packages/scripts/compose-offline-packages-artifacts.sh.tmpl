@@ -207,7 +207,13 @@ function compose_artifact{{ $i }}() {
     # {{ .name }}
     tarball_file=$(fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}")
     {{- if has .src "extract" }}
+      {{- if strings.HasSuffix ".tar.gz" .src.path }}
     tar -zxvf $tarball_file --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- else if strings.HasSuffix ".zip" .src.path }}
+    unzip -j $tarball_file {{ default "" .src.extract_inner_path }} -d $archive_dir
+      {{- else }}
+        {{ fail "Unsupported archive format, only support .tar.gz and .zip" }}
+      {{- end }}
     {{- else if has . "publish" }}
     tiup mirror publish {{ default .name .publish.name }} $version $tarball_file {{ .publish.entrypoint }} ${tiup_publish_options}
     {{- else }}
@@ -220,7 +226,13 @@ function compose_artifact{{ $i }}() {
     # {{ .name }}
     wget --tries=3 -c {{ .src.url }}
     {{- if has .src "extract" }}
+      {{- if strings.HasSuffix ".tar.gz" .src.url }}
     tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- else if strings.HasSuffix ".zip" .src.url }}
+    unzip -j {{ path.Base .src.url }} {{ default "" .src.extract_inner_path }} -d $archive_dir
+      {{- else }}
+        {{ fail "Unsupported archive format, only support .tar.gz and .zip" }}
+      {{- end }}
     {{- else if has . "publish" }}
     tiup mirror publish {{ default .name .publish.name }} $version {{ path.Base .src.url }} {{ .publish.entrypoint }} ${tiup_publish_options}
     {{- else }}

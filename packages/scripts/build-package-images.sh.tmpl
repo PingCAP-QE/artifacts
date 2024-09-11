@@ -148,7 +148,13 @@ build_and_push_images() {
     # - {{ .name }}
     mkdir -p "$(dirname ${archive_dir}/{{ .name }})"
     {{- if has .src "extract" }}
+      {{- if strings.HasSuffix ".tar.gz" .src.path }}
     tar -zxvf {{ .src.path }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- else if strings.HasSuffix ".zip" .src.path }}
+    unzip -j {{ .src.path }} {{ default "" .src.extract_inner_path }} -d $archive_dir
+      {{- else }}
+        {{ fail "Unsupported archive format, only support .tar.gz and .zip" }}
+      {{- end }}
       {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
     mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
       {{- end }}
@@ -165,7 +171,13 @@ build_and_push_images() {
     wget --tries=3 -c {{ .src.url }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
+      {{- if strings.HasSuffix ".tar.gz" .src.url }}
     tar -zxvf {{ path.Base .src.url }} --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path | strings.TrimSuffix "/") | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+      {{- else if strings.HasSuffix ".zip" .src.url }}
+    unzip -j {{ path.Base .src.url }} {{ default "" .src.extract_inner_path }} -d $archive_dir
+      {{- else }}
+        {{ fail "Unsupported archive format, only support .tar.gz and .zip" }}
+      {{- end }}
       {{- if and (has .src "extract_inner_path") (ne (path.Base .src.extract_inner_path) .name) }}
     mv $archive_dir/{{ path.Base .src.extract_inner_path }} ${archive_dir}/{{ .name }}
       {{- end }}
