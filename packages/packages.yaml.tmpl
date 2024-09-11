@@ -71,8 +71,8 @@ components:
                   extract_inner_path: bin/tiup-ctl
               - name: etcdctl
                 src:
-                  type: http                  
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}{{ ternary ".zip" ".tar.gz" (eq .Release.os "darwin") }}"                
+                  type: http
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}{{ ternary ".zip" ".tar.gz" (eq .Release.os "darwin") }}"
                   extract: true
                   extract_inner_path: etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
               - name: pd-ctl
