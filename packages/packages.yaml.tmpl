@@ -2495,6 +2495,8 @@ components:
         steps:
           release:
             - script: make cmd
+          experiment:
+            - script: make cmd
         artifacts:
           - name: "tiproxy-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
