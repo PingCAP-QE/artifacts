@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - centos7-builders
     paths:
       - "dockerfiles/cd/builders/**/Dockerfile"
       - "dockerfiles/cd/builders/**/*.Dockerfile"
@@ -24,7 +25,7 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.22, go-1.21, go-1.20, go-1.19, go-1.18]
+        go-profile: [go-1.23, go-1.22, go-1.21]
         builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
     steps:

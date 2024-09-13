@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - centos7-builders
     paths:
       - "dockerfiles/ci/base/**/Dockerfile"
       - "dockerfiles/ci/base/**/*.Dockerfile"
@@ -26,8 +27,7 @@ jobs:
         module: [base]
         platform: [linux/amd64, linux/arm64]
         builder-profile: [local-docker]
-        go-profile: [go-1.21, go-1.20, go-1.19]
-
+        go-profile: [go-1.23, go-1.22, go-1.21]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

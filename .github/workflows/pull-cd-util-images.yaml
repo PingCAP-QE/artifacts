@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - main
+      - centos7-builders
     paths:
       - "dockerfiles/cd/utils/**/Dockerfile"
       - "dockerfiles/cd/utils/**/*.Dockerfile"
