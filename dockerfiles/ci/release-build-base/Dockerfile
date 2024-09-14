@@ -138,7 +138,7 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
     install_ccache ${CCACHE_VERSION}
 
 # renovate: datasource=github-tags depName=git/git
-ARG GIT_VERSION=2.46.0
+ARG GIT_VERSION=2.46.1
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
     unzip git.zip && \
     cd git-$GIT_VERSION && \
