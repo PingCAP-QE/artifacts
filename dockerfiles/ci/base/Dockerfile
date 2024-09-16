@@ -69,4 +69,4 @@ RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - && \
 
 # Upgrade Git tool
 # renovate: datasource=github-tags depName=git/git
-COPY --from=bitnami/git:2.46.0 /opt/bitnami/git/bin/git /usr/bin/git
+COPY --from=bitnami/git:2.46.1 /opt/bitnami/git/bin/git /usr/bin/git
