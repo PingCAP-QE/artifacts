@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
+        go-profile: [go-1.23, go-1.22, go-1.21]
         builder-profile: [local-docker]
     steps:
       - name: Checkout sources
