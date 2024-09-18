@@ -68,7 +68,8 @@ profiles:
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value: &value-go1-23
-          GOLANG_VERSION: 1.23.0
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.23.1
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
         value: *value-go1-23
@@ -105,7 +106,6 @@ profiles:
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
         value: &value-go1-21
-          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.21.13
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
@@ -116,43 +116,6 @@ profiles:
       - op: add
         path: /build/artifacts/3/kaniko/buildArgs
         value: *value-go1-21
-  - name: go-1.20
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.20"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value: &value-go1-20
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.20.14
-      - op: add
-        path: /build/artifacts/1/kaniko/buildArgs
-        value: *value-go1-20
-      - op: add
-        path: /build/artifacts/2/kaniko/buildArgs
-        value: *value-go1-20
-      - op: add
-        path: /build/artifacts/2/kaniko/buildArgs
-        value: *value-go1-20
-  - name: go-1.19
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.19"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value: &value-go1-19
-          GOLANG_VERSION: 1.19.13
-      - op: add
-        path: /build/artifacts/1/kaniko/buildArgs
-        value: *value-go1-19
-      - op: add
-        path: /build/artifacts/2/kaniko/buildArgs
-        value: *value-go1-19
-      - op: add
-        path: /build/artifacts/3/kaniko/buildArgs
-        value: *value-go1-19
 
 ---
 apiVersion: skaffold/v4beta6
