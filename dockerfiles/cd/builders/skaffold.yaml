@@ -209,7 +209,7 @@ profiles:
           GOLANG_VERSION: 1.23.1
       - op: add
         path: /build/artifacts/1/kaniko/buildArgs
-        value: *value-go1-23   
+        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
