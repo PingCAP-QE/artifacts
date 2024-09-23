@@ -60,7 +60,7 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v1.9.2"
+      template: "v1.9.1"
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -118,7 +118,7 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v1.9.2-fips"
+      template: "v1.9.1-fips"
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -202,7 +202,7 @@ build:
             path: tools-base/release-6.5.Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.0.2-old"
+      template: "v1.0.1-old"
   local:
     useDockerCLI: true
     useBuildkit: true
