@@ -176,6 +176,13 @@ build:
         dockerfile: tidb-operator/Dockerfile
         cache: {}
         target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
