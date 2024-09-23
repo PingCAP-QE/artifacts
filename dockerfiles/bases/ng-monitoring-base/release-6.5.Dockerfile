@@ -7,7 +7,7 @@ FROM pingcap/centos-stream:8 AS arm64
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
-    && _date=20240919 dnf upgrade -y && dnf clean all \
+    && _date=20240920 dnf upgrade -y && dnf clean all && rm -rf /var/cache/yum \
     && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
