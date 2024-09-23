@@ -47,7 +47,7 @@ jobs:
 
       - name: Setup skaffold
         run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.8.0/skaffold-linux-amd64 && \
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
       - name: Cache layers
@@ -103,7 +103,7 @@ jobs:
 
       - name: Setup skaffold
         run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.8.0/skaffold-linux-amd64 && \
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
       - name: Cache layers

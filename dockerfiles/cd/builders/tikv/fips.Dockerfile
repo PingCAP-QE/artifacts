@@ -6,7 +6,7 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: builder
-FROM rockylinux:9.3.20231119 as builder
+FROM quay.io/rockylinux/rockylinux:9.4.20240523 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -22,10 +22,10 @@ RUN dnf install -y \
   git \
   findutils \
   curl \
-  python3 --allowerasing && \
-  dnf --enablerepo=crb install -y \
-  libstdc++-static && \
-  dnf clean all
+  python3 --allowerasing \
+  && dnf --enablerepo=crb install -y libstdc++-static \
+  && dnf clean all \
+  && rm -Rf /var/cache/dnf
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf

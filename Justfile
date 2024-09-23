@@ -27,11 +27,6 @@ msb-tidb-operator: (_clone "tidb-operator" "https://github.com/pingcap/tidb-oper
 
 build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")
 
-_msb component git_url git_branch:
-    [ -e ../{{component}} ] || git clone --recurse-submodules {{git_url}} --branch {{git_branch}} ../{{component}}
-    ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
-    docker build -t {{component}} -f dockerfiles-multi-stages/{{component}}/Dockerfile ../{{component}}
-
 _clone component git_url git_branch:
     [ -e ../{{component}} ] || git clone --recurse-submodules -j8 {{git_url}} --branch {{git_branch}} ../{{component}}
     ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.

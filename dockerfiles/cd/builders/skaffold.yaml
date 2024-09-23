@@ -176,6 +176,13 @@ build:
         dockerfile: tidb-operator/Dockerfile
         cache: {}
         target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
@@ -197,6 +204,44 @@ profiles:
     patches:
       - { op: move, from: /build/artifacts/0/kaniko, path: /build/artifacts/0/docker }
       - { op: move, from: /build/artifacts/1/kaniko, path: /build/artifacts/1/docker }
+  - name: go-1.23
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.23"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-23
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.23.1
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-23
+  - name: go-1.22
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.23"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-22
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.22.7
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-22
+  - name: go-1.21
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.23"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: &value-go1-21
+          GOLANG_VERSION: 1.21.13
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-21
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
