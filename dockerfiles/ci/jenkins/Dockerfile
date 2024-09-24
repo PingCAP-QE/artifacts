@@ -2,11 +2,9 @@
 ARG BASE_IMG
 FROM $BASE_IMG
 
-RUN which bash
-
+# create user jenkins and add it to sudoers.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y sudo
-
 RUN groupadd -g 1000 jenkins && \
     useradd -u 1000 -g 1000 -m -s /bin/bash jenkins && \
     echo "jenkins:password" | chpasswd && \
