@@ -1,5 +1,4 @@
 # Base image
-########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
