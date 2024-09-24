@@ -1,6 +1,6 @@
 # base image dockerfile: ci/base/Dockerfile
 ARG BASE_IMG
-FROM $BASE_IMG 
+FROM $BASE_IMG
 
 RUN which bash
 
