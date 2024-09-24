@@ -3,7 +3,7 @@
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: base
+  name: ci
 build:
   artifacts:
     - image: base
@@ -11,6 +11,14 @@ build:
       kaniko:
         dockerfile: base/Dockerfile
         cache: {}
+    - image: jenkins
+      platforms: [linux/amd64, linux/arm64]
+      kaniko:
+        dockerfile: jenkins/Dockerfile
+        cache: {}
+      requires:
+        - image: base
+          alias: BASE_IMG
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
@@ -72,77 +80,3 @@ profiles:
         path: /build/artifacts/0/kaniko/buildArgs
         value:
           GOLANG_VERSION: 1.21.13 # EOL
----
-apiVersion: skaffold/v4beta6
-kind: Config
-metadata:
-  name: release-build-base
-build:
-  artifacts:
-    - image: release-build-base
-      platforms: [linux/amd64, linux/arm64]
-      kaniko:
-        dockerfile: release-build-base/Dockerfile
-        cache: {}
-  tagPolicy:
-    customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
-  cluster:
-    concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net-ee
-    resources:
-      requests:
-        cpu: "1"
-        memory: 2Gi
-      limits:
-        cpu: "2"
-        memory: 4Gi
-profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
-  - name: go-1.21
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.21"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value:
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.21.13
-  - name: go-1.20
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.20"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value:
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.20.14
-  - name: go-1.19
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.19"
-      - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
-        value:
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.19.13

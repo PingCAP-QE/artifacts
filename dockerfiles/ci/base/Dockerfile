@@ -37,19 +37,20 @@ RUN curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && dnf install -y nsolid \
     && npm install -g yarn@1.22.22 pnpm@8.15.9
 
-# java tool chains: open-jdk, gradle, apache-maven
+#### install java tool chains: open-jdk, gradle, apache-maven
 #   -> open-jdk
 ARG JAVA_VER=17
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y java-${JAVA_VER}-openjdk
-# RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); cd /usr/lib/jvm/ && ln -s java-${OPENJDK_VER}-openjdk-${ARCH} java-17-openjdk
-# ENV JAVA_HOME=/usr/lib/jvm/java-${OPENJDK_VER}-openjdk
+ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
+
 #   -> gradle
 ARG GRADLE_VER=7.4.2
 RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip && \
     unzip gradle-${GRADLE_VER}-bin.zip -d /opt && \
     rm gradle-${GRADLE_VER}-bin.zip
 ENV PATH=$PATH:/opt/gradle-${GRADLE_VER}/bin
+
 #   -> apache-maven
 ARG MAVEN_VER=3.8.8
 RUN wget https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz && \

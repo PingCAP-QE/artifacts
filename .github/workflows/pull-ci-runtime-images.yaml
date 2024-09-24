@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [base]
+        module: [ci]
         platform: [linux/amd64, linux/arm64]
         builder-profile: [local-docker]
         go-profile: [go-1.23, go-1.22, go-1.21]
