@@ -51,6 +51,9 @@ profiles:
       - op: move
         from: /build/artifacts/0/kaniko
         path: /build/artifacts/0/docker
+      - op: move
+        from: /build/artifacts/1/kaniko
+        path: /build/artifacts/1/docker
   - name: go-1.23
     patches:
       - op: replace
@@ -58,9 +61,12 @@ profiles:
         value: "{{ .SHA }}-go1.23"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
-        value:
+        value: &value-go1-23
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.1
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
@@ -68,9 +74,12 @@ profiles:
         value: "{{ .SHA }}-go1.22"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
-        value:
+        value: &value-go1-22
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.22.7
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-22
   - name: go-1.21
     patches:
       - op: replace
@@ -78,5 +87,8 @@ profiles:
         value: "{{ .SHA }}-go1.21"
       - op: add
         path: /build/artifacts/0/kaniko/buildArgs
-        value:
+        value: &value-go1-21
           GOLANG_VERSION: 1.21.13 # EOL
+      - op: add
+        path: /build/artifacts/1/kaniko/buildArgs
+        value: *value-go1-21
