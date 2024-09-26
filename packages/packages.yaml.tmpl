@@ -1418,7 +1418,10 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
+      - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240901-43-g84787ec
+      - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
     routers:
       - description: starts from 1.5.0
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
