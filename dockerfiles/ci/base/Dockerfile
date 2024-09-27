@@ -59,7 +59,7 @@ ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 
 #### install tools: bazel, codecov, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazel
-ARG BAZEL_VERSION=7.3.1
+ARG BAZEL_VERSION=6.5.0
 RUN OS=linux; ARCH=$(arch); \
     curl -fsSL "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
