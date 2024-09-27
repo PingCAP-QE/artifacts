@@ -40,7 +40,7 @@ RUN curl -fsSL https://rpm.nodesource.com/setup_${NODE_VERSION}.x | bash - \
 #   -> open-jdk
 ARG JAVA_VER=17
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y java-${JAVA_VER}-openjdk
+    dnf install -y java-${JAVA_VER}-openjdk-devel
 ENV JAVA_HOME=/usr/lib/jvm/jre-openjdk
 
 #   -> gradle
