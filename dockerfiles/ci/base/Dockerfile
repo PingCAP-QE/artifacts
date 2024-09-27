@@ -57,11 +57,11 @@ RUN wget https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache
     rm apache-maven-${MAVEN_VER}-bin.tar.gz
 ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 
-#### install tools: bazelisk, codecov, oras
-# renovate: datasource=github-tags depName=bazelbuild/bazelisk
-ARG BAZELISK_VERSION=v1.20.0
-RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
-    curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
+#### install tools: bazel, codecov, oras
+# renovate: datasource=github-tags depName=bazelbuild/bazel
+ARG BAZEL_VERSION=v1.20.0
+RUN OS=linux; ARCH=$(arch); \
+    curl -fsSL "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
 # codecov tool
 # renovate: datasource=github-tags depName=codecov/uploader
