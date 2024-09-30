@@ -149,7 +149,7 @@ profiles:
         value: *value-go1-19
       - op: add
         path: /build/artifacts/4/docker/buildArgs
-        value: *value-go1-19        
+        value: *value-go1-19
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
