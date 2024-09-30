@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "dockerfiles/cd/builders/*/Dockerfile"
-      - "dockerfiles/cd/builders/*/*.Dockerfile"
-      - "dockerfiles/cd/builders/skaffold.yaml"
+      - "dockerfiles/cd/builders/*/centos7/Dockerfile"
+      - "dockerfiles/cd/builders/*/centos7/*.Dockerfile"
+      - "dockerfiles/cd/builders/skaffold-centos7.yaml"
 
 jobs:
   skaffold-go:
@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.23, go-1.22, go-1.21]
+        go-profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -53,11 +53,12 @@ jobs:
         working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
-            --build-concurrency 1 \
+            --filename=skaffold-centos7.yaml \
+            --build-concurrency=1 \
             --cache-artifacts \
-            --default-repo ghcr.io/pingcap-qe/cd/builders \
-            --module ${{ matrix.module }} \
-            --profile ${{ matrix.go-profile }}
+            --default-repo=ghcr.io/pingcap-qe/cd/builders \
+            --module=${{ matrix.module }} \
+            --profile=${{ matrix.go-profile }}
   skaffold-nogo:
     name: publish images with skaffold
     runs-on: ubuntu-latest
@@ -67,7 +68,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [builder-tiflash, builder-tikv, builder-tikv-fips]
+        module: [builder-tiflash, builder-tikv]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -99,7 +100,8 @@ jobs:
         working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
-            --build-concurrency 1 \
+            --filename=skaffold-centos7.yaml \
+            --build-concurrency=1 \
             --cache-artifacts \
-            --default-repo ghcr.io/pingcap-qe/cd/builders \
-            --module ${{ matrix.module }}
+            --default-repo=ghcr.io/pingcap-qe/cd/builders \
+            --module=${{ matrix.module }}

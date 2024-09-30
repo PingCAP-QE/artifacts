@@ -1,17 +1,20 @@
-name: Publish CD builder images
+name: Pull test for CD builder images
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - main
     paths:
-      - "dockerfiles/cd/builders/*/Dockerfile"
-      - "dockerfiles/cd/builders/*/*.Dockerfile"
-      - "dockerfiles/cd/builders/skaffold.yaml"
+      - "dockerfiles/cd/builders/*/centos7/Dockerfile"
+      - "dockerfiles/cd/builders/*/centos7/*.Dockerfile"
+      - "dockerfiles/cd/builders/skaffold-centos7.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   skaffold-go:
-    name: publish images with skaffold
+    name: build images with skaffold
     runs-on: ubuntu-latest
 
     permissions:
@@ -21,7 +24,8 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.23, go-1.22, go-1.21]
+        go-profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
+        platform: [linux/amd64, linux/arm64]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -49,25 +53,31 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
-      - name: Publish images
+      - name: Build images
         working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
-            --build-concurrency 1 \
+            --filename=skaffold-centos7.yaml \
+            --build-concurrency=1 \
             --cache-artifacts \
-            --default-repo ghcr.io/pingcap-qe/cd/builders \
-            --module ${{ matrix.module }} \
-            --profile ${{ matrix.go-profile }}
+            --default-repo=ghcr.io/pingcap-qe/cd/builders \
+            --module=${{ matrix.module }} \
+            --profile=${{ matrix.go-profile }} \
+            --platform=${{ matrix.platform }} \
+            --push=false
+
   skaffold-nogo:
-    name: publish images with skaffold
+    name: build images with skaffold
     runs-on: ubuntu-latest
 
     permissions:
       contents: read
       packages: write
+
     strategy:
       matrix:
-        module: [builder-tiflash, builder-tikv, builder-tikv-fips]
+        module: [builder-tiflash, builder-tikv]
+        platform: [linux/amd64, linux/arm64]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -95,11 +105,14 @@ jobs:
           curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
           sudo install skaffold /usr/local/bin/
 
-      - name: Publish images
+      - name: Build images
         working-directory: dockerfiles/cd/builders
         run: |
           skaffold build \
-            --build-concurrency 1 \
+            --filename=skaffold-centos7.yaml \
+            --build-concurrency=1 \
             --cache-artifacts \
-            --default-repo ghcr.io/pingcap-qe/cd/builders \
-            --module ${{ matrix.module }}
+            --default-repo=ghcr.io/pingcap-qe/cd/builders \
+            --module=${{ matrix.module }} \
+            --platform=${{ matrix.platform }} \
+            --push=false
