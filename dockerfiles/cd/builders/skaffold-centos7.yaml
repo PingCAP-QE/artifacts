@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -9,36 +8,31 @@ build:
     - image: tidb
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tidb/Dockerfile
+        dockerfile: tidb/centos7/Dockerfile
         target: builder
     - image: tiflow
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tiflow/Dockerfile
+        dockerfile: tiflow/centos7/Dockerfile
         target: builder
     - image: pd
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: pd/Dockerfile
+        dockerfile: pd/centos7/Dockerfile
         target: builder
     - image: ng-monitoring
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: ng-monitoring/Dockerfile
+        dockerfile: ng-monitoring/centos7/Dockerfile
         target: builder
     - image: tidb-dashboard
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tidb-dashboard/Dockerfile
-        target: builder
-    - image: tidb-operator
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: tidb-operator/Dockerfile
+        dockerfile: tidb-dashboard/centos7/Dockerfile
         target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}"
+      template: "{{ .SHA }}-centos7"
       components:
         - name: SHA
           gitCommit:
@@ -53,7 +47,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.23"
+        value: "{{ .SHA }}-centos7-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-23
@@ -71,14 +65,11 @@ profiles:
       - op: add
         path: /build/artifacts/4/docker/buildArgs
         value: *value-go1-23
-      - op: add
-        path: /build/artifacts/5/docker/buildArgs
-        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.22"
+        value: "{{ .SHA }}-centos7-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-22
@@ -96,14 +87,11 @@ profiles:
       - op: add
         path: /build/artifacts/4/docker/buildArgs
         value: *value-go1-22
-      - op: add
-        path: /build/artifacts/5/docker/buildArgs
-        value: *value-go1-22
   - name: go-1.21
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.21"
+        value: "{{ .SHA }}-centos7-go1.21"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-21
@@ -120,9 +108,48 @@ profiles:
       - op: add
         path: /build/artifacts/4/docker/buildArgs
         value: *value-go1-21
+  - name: go-1.20
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.20"
       - op: add
-        path: /build/artifacts/5/docker/buildArgs
-        value: *value-go1-21
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-20
+          GOLANG_VERSION: 1.20.14
+      - op: add
+        path: /build/artifacts/1/docker/buildArgs
+        value: *value-go1-20
+      - op: add
+        path: /build/artifacts/2/docker/buildArgs
+        value: *value-go1-20
+      - op: add
+        path: /build/artifacts/3/docker/buildArgs
+        value: *value-go1-20
+      - op: add
+        path: /build/artifacts/4/docker/buildArgs
+        value: *value-go1-20
+  - name: go-1.19
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.19"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-19
+          GOLANG_VERSION: 1.19.13
+      - op: add
+        path: /build/artifacts/1/docker/buildArgs
+        value: *value-go1-19
+      - op: add
+        path: /build/artifacts/2/docker/buildArgs
+        value: *value-go1-19
+      - op: add
+        path: /build/artifacts/3/docker/buildArgs
+        value: *value-go1-19
+      - op: add
+        path: /build/artifacts/4/docker/buildArgs
+        value: *value-go1-19
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -133,7 +160,7 @@ build:
     - image: tikv
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tikv/Dockerfile
+        dockerfile: tikv/centos7/Dockerfile
         target: builder
   local:
     useDockerCLI: true
@@ -147,6 +174,34 @@ build:
         - name: SHA
           gitCommit:
             variant: Tags
+profiles:
+  - name: devtoolset8
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-devtoolset8"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value:
+          DEVTOOLSET_VER: 8
+  - name: devtoolset9
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-devtoolset9"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value:
+          DEVTOOLSET_VER: 9
+  - name: devtoolset10
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-devtoolset10"
+      - op: add
+        path: /build/artifacts/0/kaniko/buildArgs
+        value:
+          DEVTOOLSET_VER: 10
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -157,34 +212,17 @@ build:
     - image: tiflash
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tiflash/Dockerfile
+        dockerfile: tiflash/centos7/Dockerfile
         target: builder
   local:
     useDockerCLI: true
     useBuildkit: true
     concurrency: 0
     tryImportMissing: true
----
-apiVersion: skaffold/v4beta6
-kind: Config
-metadata:
-  name: builder-tikv-fips
-build:
-  artifacts:
-    - image: tikv
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: tikv/fips.Dockerfile
-        target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}-fips"
+      template: "{{ .SHA }}-centos7"
       components:
         - name: SHA
           gitCommit:
             variant: Tags
-  local:
-    useDockerCLI: true
-    useBuildkit: true
-    concurrency: 0
-    tryImportMissing: true
