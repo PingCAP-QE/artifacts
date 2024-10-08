@@ -13,3 +13,9 @@ RUN groupadd -g 1000 jenkins && \
 # Switch to the non-root user jenkins and set the working directory
 USER jenkins
 WORKDIR /home/jenkins
+
+# TODO: we should set it in CI script or pipeline to avoid frequently update the image.
+ENV USE_BAZEL_VERSION=6.5.0
+
+# Other environment variables:
+# - `BAZELISK_BASE_URL` should be set in CI script or pipeline for different regions.
