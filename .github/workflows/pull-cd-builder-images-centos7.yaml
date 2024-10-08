@@ -1,4 +1,4 @@
-name: Pull test for CD builder images
+name: Pull test for CD builder images - CentOS7
 on:
   pull_request:
     branches:

@@ -21,7 +21,6 @@ jobs:
     strategy:
       matrix:
         module: [default, fips, release-6-5]
-        builder-profile: [local-docker]
 
     steps:
       - name: Checkout sources
@@ -70,5 +69,4 @@ jobs:
             --build-concurrency 1 \
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/bases \
-            --module ${{ matrix.module }} \
-            --profile ${{ matrix.builder-profile }}
+            --module ${{ matrix.module }}
