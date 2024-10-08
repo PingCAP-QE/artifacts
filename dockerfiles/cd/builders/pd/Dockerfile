@@ -28,7 +28,7 @@ LABEL go-version="${GOLANG_VERSION}"
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable -C /ws
+RUN GOPROXY=${GOPROXY} make build tools -C /ws
 RUN /ws/bin/pd-server -V
 RUN /ws/bin/pd-ctl -V
 RUN /ws/bin/pd-recover -V
