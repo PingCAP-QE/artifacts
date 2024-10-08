@@ -1,4 +1,4 @@
-# Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
+# Ref: https://skaffold.dev/docs/builders/builder-types/docker
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -8,14 +8,12 @@ build:
   artifacts:
     - image: base
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: base/Dockerfile
-        cache: {}
     - image: jenkins
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: jenkins/Dockerfile
-        cache: {}
       requires:
         - image: base
           alias: BASE_IMG
@@ -26,46 +24,24 @@ build:
         - name: SHA
           gitCommit:
             variant: Tags
-  cluster:
+  local:
+    useDockerCLI: true
+    useBuildkit: true
     concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net-ee
-    resources:
-      requests:
-        cpu: "1"
-        memory: 2Gi
-      limits:
-        cpu: "2"
-        memory: 4Gi
+    tryImportMissing: true
 profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
-      - op: move
-        from: /build/artifacts/1/kaniko
-        path: /build/artifacts/1/docker
   - name: go-1.23
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-go1.23"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-23
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.2
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value: *value-go1-23
   - name: go-1.22
     patches:
@@ -73,12 +49,12 @@ profiles:
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-go1.22"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-22
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.22.8
       - op: add
-        path: /build/artifacts/1/kaniko/buildArgs
+        path: /build/artifacts/1/docker/buildArgs
         value: *value-go1-22
   - name: go-1.21
     patches:
@@ -86,9 +62,9 @@ profiles:
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-go1.21"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-21
           GOLANG_VERSION: 1.21.13 # EOL
       - op: add
-        path: /build/artifacts/1/kaniko/buildArgs
+        path: /build/artifacts/1/docker/buildArgs
         value: *value-go1-21

@@ -181,7 +181,7 @@ profiles:
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-centos7-devtoolset8"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value:
           DEVTOOLSET_VER: 8
   - name: devtoolset9
@@ -190,7 +190,7 @@ profiles:
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-centos7-devtoolset9"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value:
           DEVTOOLSET_VER: 9
   - name: devtoolset10
@@ -199,7 +199,7 @@ profiles:
         path: /build/tagPolicy/customTemplate/template
         value: "{{ .SHA }}-centos7-devtoolset10"
       - op: add
-        path: /build/artifacts/0/kaniko/buildArgs
+        path: /build/artifacts/0/docker/buildArgs
         value:
           DEVTOOLSET_VER: 10
 ---

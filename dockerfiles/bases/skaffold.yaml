@@ -1,4 +1,4 @@
-# Ref: https://skaffold.dev/docs/builders/builder-types/docker/#dockerfile-in-cluster-with-kaniko
+# Ref: https://skaffold.dev/docs/builders/builder-types/docker
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
@@ -7,103 +7,59 @@ build:
   artifacts:
     - image: pingcap-base
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: pingcap-base/Dockerfile
-        cache: {}
     - image: pd-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: pd-base/Dockerfile
-        cache: {}
     - image: ng-monitoring-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: ng-monitoring-base/Dockerfile
-        cache: {}
     - image: tidb-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: tidb-base/Dockerfile
-        cache: {}
     - image: tiflash-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: tiflash-base/Dockerfile
-        cache: {}
     - image: tikv-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: tikv-base/Dockerfile
-        cache: {}
     - image: tools-base
       platforms: [linux/amd64, linux/arm64]
       requires:
         - image: pingcap-base
           alias: PINGCAP_BASE
-      kaniko:
+      docker:
         dockerfile: tools-base/Dockerfile
-        cache: {}
   tagPolicy:
     customTemplate:
       template: "v1.9.2"
-  cluster:
+  local:
+    useDockerCLI: true
+    useBuildkit: true
     concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net
-    resources:
-      requests:
-        cpu: "1"
-        memory: 4Gi
-      limits:
-        cpu: "2"
-        memory: 8Gi
-profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
-      - op: move
-        from: /build/artifacts/1/kaniko
-        path: /build/artifacts/1/docker
-      - op: move
-        from: /build/artifacts/2/kaniko
-        path: /build/artifacts/2/docker
-      - op: move
-        from: /build/artifacts/3/kaniko
-        path: /build/artifacts/3/docker
-      - op: move
-        from: /build/artifacts/4/kaniko
-        path: /build/artifacts/4/docker
-      - op: move
-        from: /build/artifacts/5/kaniko
-        path: /build/artifacts/5/docker
-      - op: move
-        from: /build/artifacts/6/kaniko
-        path: /build/artifacts/6/docker
+    tryImportMissing: true
+
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -113,37 +69,16 @@ build:
   artifacts:
     - image: tikv-base
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: tikv-base/fips.Dockerfile
-        cache: {}
   tagPolicy:
     customTemplate:
       template: "v1.9.1-fips"
-  cluster:
+  local:
+    useDockerCLI: true
+    useBuildkit: true
     concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net
-    resources:
-      requests:
-        cpu: "1"
-        memory: 4Gi
-      limits:
-        cpu: "2"
-        memory: 8Gi
-profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
+    tryImportMissing: true
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -152,49 +87,49 @@ metadata:
 build:
   artifacts:
     - image: ng-monitoring-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh ng-monitoring-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
             path: ng-monitoring-base/release-6.5.Dockerfile
     - image: pd-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh pd-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
             path: pd-base/release-6.5.Dockerfile
     - image: tidb-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh tidb-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
             path: tidb-base/release-6.5.Dockerfile
     - image: tiflash-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       docker:
         dockerfile: tiflash-base/release-6.5.Dockerfile
         noCache: false
         pullParent: false
         squash: false
     - image: tiflow-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh tiflow-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
             path: tiflow-base/release-6.5.Dockerfile
     - image: tikv-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh tikv-base release-6.5.Dockerfile
         dependencies:
           dockerfile:
             path: tikv-base/release-6.5.Dockerfile
     - image: tools-base
-      platforms: [linux/amd64,linux/arm64]
+      platforms: [linux/amd64, linux/arm64]
       custom:
         buildCommand: ./build-old.sh tools-base release-6.5.Dockerfile
         dependencies:
