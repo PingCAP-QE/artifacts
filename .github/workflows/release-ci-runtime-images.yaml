@@ -21,7 +21,6 @@ jobs:
     strategy:
       matrix:
         module: [ci]
-        builder-profile: [local-docker]
         go-profile: [go-1.23, go-1.22, go-1.21]
 
     steps:
@@ -69,4 +68,4 @@ jobs:
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/ci \
             --module ${{ matrix.module }} \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }}
+            --profile ${{ matrix.go-profile }}

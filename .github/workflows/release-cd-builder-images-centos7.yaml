@@ -1,4 +1,4 @@
-name: Publish CD builder images
+name: Publish CD builder images - CentOS7
 on:
   workflow_dispatch:
   push:
