@@ -33,7 +33,7 @@ RUN GOPROXY=${GOPROXY} make default -C /ws
 RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.1
+FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.2
 COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 
 WORKDIR /
