@@ -6,6 +6,8 @@ on:
     paths:
       - "dockerfiles/ci/base/**/Dockerfile"
       - "dockerfiles/ci/base/**/*.Dockerfile"
+      - "dockerfiles/ci/jenkins/**/Dockerfile"
+      - "dockerfiles/ci/jenkins/**/*.Dockerfile"
       - "dockerfiles/ci/skaffold.yaml"
 
 concurrency:
@@ -25,7 +27,6 @@ jobs:
       matrix:
         module: [ci]
         platform: [linux/amd64, linux/arm64]
-        builder-profile: [local-docker]
         go-profile: [go-1.23, go-1.22, go-1.21]
 
     steps:
@@ -73,5 +74,5 @@ jobs:
             --default-repo ghcr.io/pingcap-qe/ci \
             --module ${{ matrix.module }} \
             --platform ${{ matrix.platform }} \
-            --profile ${{ matrix.go-profile }},${{ matrix.builder-profile }} \
+            --profile ${{ matrix.go-profile }} \
             --push=false

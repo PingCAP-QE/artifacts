@@ -7,47 +7,18 @@ build:
   artifacts:
     - image: release
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: release/Dockerfile
-        cache: {}
     - image: ks3util
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: ks3util/Dockerfile
-        cache: {}
     - image: remote
       platforms: [linux/amd64, linux/arm64]
-      kaniko:
+      docker:
         dockerfile: remote/Dockerfile
-        cache: {}
-  cluster:
+  local:
+    useDockerCLI: true
+    useBuildkit: true
     concurrency: 0
-    randomDockerConfigSecret: false
-    randomPullSecret: false
-    dockerConfig:
-      secretName: hub-pingcap-net-ee
-    resources:
-      requests:
-        cpu: "1"
-        memory: 2Gi
-      limits:
-        cpu: "2"
-        memory: 4Gi
-profiles:
-  - name: local-docker
-    build:
-      local:
-        useDockerCLI: true
-        useBuildkit: true
-        concurrency: 0
-        tryImportMissing: true
-    patches:
-      - op: move
-        from: /build/artifacts/0/kaniko
-        path: /build/artifacts/0/docker
-      - op: move
-        from: /build/artifacts/1/kaniko
-        path: /build/artifacts/1/docker
-      - op: move
-        from: /build/artifacts/2/kaniko
-        path: /build/artifacts/2/docker
+    tryImportMissing: true

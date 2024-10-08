@@ -36,4 +36,4 @@ _clone_without_submodules component git_url git_branch:
     ([ -e ../{{component}}/.dockerignore ] && rm ../{{component}}/.dockerignore) || true # make step depended on git metadata.
 
 _docker_build_prod_base_images registry_prefix:
-    cd dockerfiles/bases; skaffold build --profile local-docker --default-repo {{registry_prefix}}
+    cd dockerfiles/bases; skaffold build --default-repo {{registry_prefix}}

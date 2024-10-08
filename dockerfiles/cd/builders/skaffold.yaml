@@ -142,7 +142,7 @@ build:
     tryImportMissing: true
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}-centos7"
+      template: "{{ .SHA }}"
       components:
         - name: SHA
           gitCommit:

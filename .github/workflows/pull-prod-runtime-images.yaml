@@ -24,7 +24,6 @@ jobs:
     strategy:
       matrix:
         module: [default, fips, release-6-5]
-        builder-profile: [local-docker]
         platform: [linux/amd64, linux/arm64]
 
     steps:
@@ -76,5 +75,4 @@ jobs:
             --default-repo ghcr.io/pingcap-qe/bases \
             --module ${{ matrix.module }} \
             --platform ${{ matrix.platform }} \
-            --profile ${{ matrix.builder-profile }} \
             --push=false
