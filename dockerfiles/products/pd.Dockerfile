@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.9.1
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.9.2
 FROM $BASE_IMG
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
