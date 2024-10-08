@@ -58,7 +58,7 @@ RUN mkdir output && mv /ws/release-centos7-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.1
+FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2
 
 ENV LD_LIBRARY_PATH /tiflash
 COPY --from=building /ws/output/tiflash /tiflash
