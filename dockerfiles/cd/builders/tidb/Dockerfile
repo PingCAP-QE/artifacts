@@ -29,7 +29,7 @@ LABEL go-version="${GOLANG_VERSION}"
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} WITH_RACE=1 make failpoint-enable server build_tools build_dumpling failpoint-disable -C /ws
+RUN GOPROXY=${GOPROXY} make server -C /ws
 RUN /ws/bin/tidb-server -V
 
 ########### stage: Final image
