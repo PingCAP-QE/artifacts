@@ -76,7 +76,8 @@ jobs:
 
     strategy:
       matrix:
-        module: [builder-tiflash, builder-tikv]
+        # module: [builder-tiflash, builder-tikv]
+        module: [builder-tikv]
         platform: [linux/amd64, linux/arm64]
     steps:
       - name: Checkout sources
