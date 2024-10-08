@@ -26,7 +26,7 @@ ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make build -C /ws && mv /ws/images/tidb-operator/bin/$(arch) /ws/bin
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.1
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
 
 COPY --from=building /ws/bin/tidb-scheduler /usr/local/bin/tidb-scheduler
 COPY --from=building /ws/bin/tidb-discovery /usr/local/bin/tidb-discovery
