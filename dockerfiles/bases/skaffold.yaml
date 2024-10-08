@@ -60,7 +60,7 @@ build:
         cache: {}
   tagPolicy:
     customTemplate:
-      template: "v1.9.1"
+      template: "v1.9.2"
   cluster:
     concurrency: 0
     randomDockerConfigSecret: false
