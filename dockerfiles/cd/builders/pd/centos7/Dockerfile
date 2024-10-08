@@ -38,7 +38,7 @@ RUN /pd/bin/pd-ctl -V
 RUN /pd/bin/pd-recover -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pd-base:v1.9.1
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.9.2
 
 COPY --from=building /pd/bin/pd-server  /pd-server
 COPY --from=building /pd/bin/pd-ctl     /pd-ctl
