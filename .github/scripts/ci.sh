@@ -34,19 +34,19 @@ function test_get_builder() {
         done
     done
 
-    # experiment profile
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
-    local versions="v8.5.0 v8.4.0"
-    for cm in $components; do
-        for version in $versions; do
-            for os in $operating_systems; do
-                for ac in $architectures; do
-                    echo -en "[🚢] $cm $os $ac $version experiment:\t"
-                    $script $cm $os $ac $version experiment
-                done
-            done
-        done
-    done
+    # # experiment profile
+    # local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
+    # local versions="v8.5.0 v8.4.0"
+    # for cm in $components; do
+    #     for version in $versions; do
+    #         for os in $operating_systems; do
+    #             for ac in $architectures; do
+    #                 echo -en "[🚢] $cm $os $ac $version experiment:\t"
+    #                 $script $cm $os $ac $version experiment
+    #             done
+    #         done
+    #     done
+    # done
 }
 
 ##### others that owns theirs non-unified versions #####
@@ -235,19 +235,19 @@ function test_gen_package_images_script() {
         done
     done
 
-    # experiment profile
-    local profile="experiment"
-    local versions="v8.5.0 v8.4.0"
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
-    for cm in $components; do
-        for version in $versions; do
-            for ac in $architectures; do
-                echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
-                shellcheck -S error packages/scripts/build-package-images.sh
-            done
-        done
-    done
+    # # experiment profile
+    # local profile="experiment"
+    # local versions="v8.5.0 v8.4.0"
+    # local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
+    # for cm in $components; do
+    #     for version in $versions; do
+    #         for ac in $architectures; do
+    #             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+    #             $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+    #             shellcheck -S error packages/scripts/build-package-images.sh
+    #         done
+    #     done
+    # done
 }
 
 function test_gen_package_images_script_freedom_releasing() {

@@ -52,7 +52,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment]
+        profile: [release]
         artifacts:
           - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -193,9 +193,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.20
@@ -208,16 +208,9 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment]
+        profile: [release]
         steps:
           release:
-            - script: |-
-                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
-                export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
-                make grafana_without_pull
-                make default -C ng-monitoring
-                make output/prometheus
-          experiment:
             - script: |-
                 export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
@@ -346,9 +339,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v20240325-24-gd14aee6-go1.20
@@ -361,11 +354,9 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment]
+        profile: [release]
         steps:
           release:
-            - script: make default
-          experiment:
             - script: make default
         artifacts:
           - name: container image
@@ -471,9 +462,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-24-gd14aee6-go1.20
@@ -486,11 +477,9 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint, experiment]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
-            - script: make build
-          experiment:
             - script: make build
           enterprise:
             - script: PD_EDITION=Enterprise make build tools
@@ -744,9 +733,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-24-gd14aee6-go1.20
@@ -760,12 +749,9 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment, enterprise, enterprise-without-plugins, failpoint]
+        profile: [release, enterprise, enterprise-without-plugins, failpoint]
         steps:
           release:
-            - script: |
-                make server build_tools build_dumpling
-          experiment:
             - script: |
                 make server build_tools build_dumpling
           enterprise:
@@ -1534,20 +1520,18 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240901-15-gdc1ad6e
-      - if: {{ and (semver.CheckConstraint ">= 6.5.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v20240325-91-g4bdc4c6
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment]
+        profile: [release]
         steps:
           release:
-            - script: make package
-          experiment:
             - script: make package
         artifacts:
           - name: "tidb-dashboard-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -1658,9 +1642,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile)}}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v20240901-15-gdc1ad6e
-      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (ne "experiment" .Release.profile)}}
+      - if: {{ semver.CheckConstraint ">= 8.2.0-0, < 8.4.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20240625-llvm-17.0.6
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
@@ -1669,83 +1653,31 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment, enterprise]
+        profile: [release, enterprise]
         steps:
-          experiment:
+          release:
             - os: linux
               script: |
                 ./release-centos7-llvm/scripts/build-tiflash-release.sh
                 mkdir outputs
                 mv release-centos7-llvm/tiflash outputs/tiflash
-          release:
             - os: darwin
               script: |
                 ./release-darwin/build/build-release.sh
                 mkdir outputs
                 mv release-darwin/tiflash outputs/tiflash
-            - os: linux
-              script: |
-                # Create new build script to take advantage of ccache
-                mkdir -p build
-                cp -r release-centos7-llvm/scripts build/
-                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
-            - os: linux
-              script: |
-                # Build with ccache tool
-                mkdir -p /usr/lib64/ccache/bin/
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
-
-                ccache -z
-
-                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
-                CC=clang \
-                CXX=clang++ \
-                LD=ld.lld \
-                build/scripts/build-release.sh
-
-                # debug it.
-                ccache -s
-            - os: linux
-              description: move the building targets outputs to the constant path.
-              script: |
-                mkdir outputs
-                mv release-centos7-llvm/tiflash outputs/tiflash
           enterprise:
             - script: export TIFLASH_EDITION=Enterprise
+            - os: linux
+              script: |
+                ./release-centos7-llvm/scripts/build-tiflash-release.sh
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
             - os: darwin
               script: |
                 ./release-darwin/build/build-release.sh
                 mkdir outputs
                 mv release-darwin/tiflash outputs/tiflash
-            - os: linux
-              script: |
-                # Create new build script to take advantage of ccache
-                mkdir -p build
-                cp -r release-centos7-llvm/scripts build/
-                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
-            - os: linux
-              script: |
-                # Build with ccache tool
-                mkdir -p /usr/lib64/ccache/bin/
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
-                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
-
-                ccache -z
-
-                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
-                CC=clang \
-                CXX=clang++ \
-                LD=ld.lld \
-                build/scripts/build-release.sh
-
-                # debug it.
-                ccache -s
-            - os: linux
-              description: move the building targets outputs to the constant path.
-              script: |
-                mkdir outputs
-                mv release-centos7-llvm/tiflash outputs/tiflash
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1886,9 +1818,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 7.4.0-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-91-g4bdc4c6-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-91-g4bdc4c6-go1.21
@@ -1897,134 +1829,8 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-24-gd14aee6-go1.18
     routers:
-      - description: For range [v8.4.0, )
-        if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        os: [linux, darwin]
-        arch: [amd64, arm64]
-        profile: [release, experiment]
-        steps:
-          experiment:
-            - script: |
-                make cdc dm-master-with-webui dm-worker dmctl dm-syncer
-          release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
-            - script: |
-                make cdc dm-master-with-webui dm-worker dmctl dm-syncer
-        artifacts:
-          - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: cdc
-                src:
-                  path: bin/cdc
-            tiup:
-              description: >-
-                CDC is a change data capture tool for TiDB
-              entrypoint: cdc
-          - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: dm-master/dm-master
-                src:
-                  path: bin/dm-master
-              - name: dm-master/conf/dm_worker.rules.yml
-                src:
-                  path: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: dm-master/scripts/DM-Monitor-Professional.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
-              - name: dm-master/scripts/DM-Monitor-Standard.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
-            tiup:
-              description: >-
-                dm-master component of Data Migration Platform.
-              entrypoint: dm-master/dm-master
-          - name: "dm-worker-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: dm-worker/dm-worker
-                src:
-                  path: bin/dm-worker
-              - name: dm-worker/conf/dm_worker.rules.yml
-                src:
-                  path: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: dm-worker/scripts/DM-Monitor-Professional.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
-              - name: dm-worker/scripts/DM-Monitor-Standard.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
-            tiup:
-              description: >-
-                dm-worker component of Data Migration Platform.
-              entrypoint: dm-worker/dm-worker
-          - name: "dmctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
-            files:
-              - name: dmctl/dmctl
-                src:
-                  path: bin/dmctl
-              - name: dmctl/conf/dm_worker.rules.yml
-                src:
-                  path: dm/metrics/alertmanager/dm_worker.rules.yml
-              - name: dmctl/scripts/DM-Monitor-Professional.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
-              - name: dmctl/scripts/DM-Monitor-Standard.json
-                src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
-            tiup:
-              description: >-
-                dmctl component of Data Migration Platform.
-              entrypoint: dmctl/dmctl
-          - name: container image - cdc
-            type: image
-            artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
-            files: # context files
-              - name: cdc
-                src:
-                  path: bin/cdc
-          - name: container image - dm
-            type: image
-            artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dm.Dockerfile
-            files:
-              - name: dm-master
-                src:
-                  path: bin/dm-master
-              - name: dm-worker
-                src:
-                  path: bin/dm-worker
-              - name: dmctl
-                src:
-                  path: bin/dmctl
-          - name: container image - tiflow-engine
-            type: image
-            artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
-            context: . # just build under git repo folder.
-            dockerfile: deployments/engine/docker/Dockerfile
-            build_args:
-              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
-      - description: For range [v6.5.0, v8.4.0)
-        if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
+      - description: For range [v6.5.0, )
+        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -2348,9 +2154,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.4.0-0" .Release.version) (eq "experiment" .Release.profile)}}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240901-15-gdc1ad6e
-      - if: {{ and (semver.CheckConstraint ">= 6.1.0-0" .Release.version) (has (coll.Slice "release" "enterprise" "failpoint") .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6-fips
@@ -2359,18 +2165,9 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment, enterprise, failpoint]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
-            - os: linux
-              script: |
-                source /opt/rh/devtoolset-8/enable
-                if [ "$(uname -m)" == "aarch64" ]; then
-                    export JEMALLOC_SYS_WITH_LG_PAGE=16
-                fi
-            - script: |
-                ROCKSDB_SYS_STATIC=1 make dist_release
-          experiment:
             - os: linux
               script: |
                 if [ "$(uname -m)" == "aarch64" ]; then
@@ -2381,7 +2178,6 @@ components:
           enterprise:
             - os: linux
               script: |
-                source /opt/rh/devtoolset-8/enable
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
@@ -2390,7 +2186,6 @@ components:
           failpoint:
             - os: linux
               script: |
-                source /opt/rh/devtoolset-8/enable
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
@@ -2538,20 +2333,18 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (eq "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240901-15-gdc1ad6e-go1.23
-      - if: {{ and (semver.CheckConstraint ">= 0.1.2-0" .Release.version) (ne "experiment" .Release.profile) }}
+      - if: {{ semver.CheckConstraint ">= 0.1.2-0, < 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-91-g4bdc4c6-go1.21
     routers:
       - description: From 0.1.2
         if: {{ semver.CheckConstraint ">= 0.1.2-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, experiment]
+        profile: [release]
         steps:
           release:
-            - script: make cmd
-          experiment:
             - script: make cmd
         artifacts:
           - name: "tiproxy-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
