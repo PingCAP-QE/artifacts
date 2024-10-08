@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc
+    dnf install -y make git gcc findutils
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -29,7 +29,7 @@ LABEL go-version="${GOLANG_VERSION}"
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make server -C /ws
+RUN GOPROXY=${GOPROXY} WITH_RACE=1 make failpoint-enable server build_tools build_dumpling failpoint-disable -C /ws                
 RUN /ws/bin/tidb-server -V
 
 ########### stage: Final image

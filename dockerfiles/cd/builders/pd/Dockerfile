@@ -14,11 +14,11 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc which unzip
+    dnf install -y make git gcc which unzip findutils
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.21.13
+ARG GOLANG_VERSION=1.23.2
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
@@ -28,7 +28,7 @@ LABEL go-version="${GOLANG_VERSION}"
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
-RUN GOPROXY=${GOPROXY} make build tools -C /ws
+RUN GOPROXY=${GOPROXY} WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable -C /ws
 RUN /ws/bin/pd-server -V
 RUN /ws/bin/pd-ctl -V
 RUN /ws/bin/pd-recover -V
