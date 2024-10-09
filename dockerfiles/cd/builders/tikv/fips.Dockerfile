@@ -45,7 +45,7 @@ RUN --mount=type=cache,target=/tikv/target \
 RUN /ws/bin/tikv-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.9.2-fips
+FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.9.1-fips
 
 ENV MALLOC_CONF="prof:true,prof_active:false"
 COPY --from=building /ws/bin/tikv-server  /tikv-server
