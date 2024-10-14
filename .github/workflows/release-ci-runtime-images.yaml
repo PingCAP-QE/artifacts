@@ -7,6 +7,8 @@ on:
     paths:
       - "dockerfiles/ci/base/**/Dockerfile"
       - "dockerfiles/ci/base/**/*.Dockerfile"
+      - "dockerfiles/ci/jenkins/**/Dockerfile"
+      - "dockerfiles/ci/jenkins/**/*.Dockerfile"
       - "dockerfiles/ci/skaffold.yaml"
 
 jobs:
