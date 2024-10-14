@@ -73,3 +73,14 @@ RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
 COPY --from=bitnami/oras:1.2.0 /oras /usr/local/bin/oras
+
+# gh-ost
+# linux amd64 only
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        wget https://github.com/github/gh-ost/releases/download/v1.0.47/gh-ost-binary-linux-20181016015113.tar.gz && \
+        tar -xf gh-ost-binary-linux-20181016015113.tar.gz -C /usr/local/bin/ && \
+        rm gh-ost-binary-linux-20181016015113.tar.gz; \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
