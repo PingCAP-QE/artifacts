@@ -10,6 +10,13 @@ RUN groupadd -g 1000 jenkins && \
     echo "jenkins:password" | chpasswd && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+# install python2.7
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y python27
+RUN ln -s /usr/bin/python2 /usr/bin/python && \
+    ln -s /usr/bin/pip2 /usr/bin/pip
+
+
 # Switch to the non-root user jenkins and set the working directory
 USER jenkins
 WORKDIR /home/jenkins
