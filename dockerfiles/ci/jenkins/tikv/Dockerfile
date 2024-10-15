@@ -34,4 +34,3 @@ RUN cargo install cargo-nextest --version 0.9.72 && \
     cargo install cargo-sort --version 1.0.9
 
 ENV CARGO_INCREMENTAL=0
- 
