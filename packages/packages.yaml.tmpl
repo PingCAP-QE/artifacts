@@ -1405,9 +1405,9 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240901-43-g84787ec
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v20240325-91-g4bdc4c6
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.21
     routers:
       - description: starts from 1.5.0
         if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
