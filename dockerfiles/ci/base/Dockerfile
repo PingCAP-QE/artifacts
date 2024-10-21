@@ -87,3 +87,16 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     else \
         echo "Architecture not supported: $(arch)"; \
     fi
+
+# pulsar
+# linux amd64 only
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        curl https://archive.apache.org/dist/pulsar/pulsar-3.2.0/apache-pulsar-3.2.0-bin.tar.gz -o pulsar.tar.gz && \
+        tar -xvf pulsar.tar.gz && \
+        mv apache-pulsar-3.2.0 /usr/local/pulsar && \
+        rm pulsar.tar.gz; \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
+ENV PATH=$PATH:/usr/local/pulsar/bin
