@@ -1,4 +1,4 @@
-# base image dockerfile: ci/jenkins/Dockerfile
+# base image dockerfile: cd/builders/tikv/Dockerfile
 ARG BASE_IMG
 FROM $BASE_IMG
 
