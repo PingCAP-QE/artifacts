@@ -19,7 +19,7 @@ RUN curl -LsSO https://r.mariadb.com/downloads/mariadb_repo_setup \
 # install OS packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc wget unzip psmisc lsof jq MariaDB-client
+    dnf install -y make git gcc wget unzip psmisc lsof jq MariaDB-client nc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
