@@ -1,5 +1,5 @@
 # base image dockerfile: cd/builders/tikv/Dockerfile
-ARG BASE_IMG
+ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-14-g52a7228
 FROM $BASE_IMG
 
 # create user jenkins and add it to sudoers.
