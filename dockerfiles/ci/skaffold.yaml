@@ -78,7 +78,7 @@ build:
     - image: tikv
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: tikv/Dockerfile
+        dockerfile: jenkins/tikv/Dockerfile
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"

@@ -116,7 +116,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Build images
-        working-directory: dockerfiles/ci/jenkins
+        working-directory: dockerfiles/ci
         run: |
           skaffold build \
             --build-concurrency=1 \
