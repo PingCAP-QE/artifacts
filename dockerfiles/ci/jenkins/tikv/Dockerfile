@@ -10,6 +10,9 @@ RUN groupadd -g 1000 jenkins && \
     echo "jenkins:password" | chpasswd && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # install python2.7
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y python27
