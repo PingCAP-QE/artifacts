@@ -5,6 +5,9 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "CI Base image for building/testing"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # setup mariadb repo
 #   ref: https://mariadb.com/docs/server/connect/clients/mariadb-client/#Linux_(Repository)
 RUN curl -LsSO https://r.mariadb.com/downloads/mariadb_repo_setup \
@@ -16,7 +19,7 @@ RUN curl -LsSO https://r.mariadb.com/downloads/mariadb_repo_setup \
 # install OS packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc wget unzip psmisc lsof jq MariaDB-client
+    dnf install -y make git gcc wget unzip psmisc lsof jq MariaDB-client nc
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -84,3 +87,16 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     else \
         echo "Architecture not supported: $(arch)"; \
     fi
+
+# pulsar
+# linux amd64 only
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        curl https://archive.apache.org/dist/pulsar/pulsar-3.2.0/apache-pulsar-3.2.0-bin.tar.gz -o pulsar.tar.gz && \
+        tar -xvf pulsar.tar.gz && \
+        mv apache-pulsar-3.2.0 /usr/local/pulsar && \
+        rm pulsar.tar.gz; \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
+ENV PATH=$PATH:/usr/local/pulsar/bin

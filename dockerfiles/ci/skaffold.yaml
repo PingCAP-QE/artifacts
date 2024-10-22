@@ -68,3 +68,49 @@ profiles:
       - op: add
         path: /build/artifacts/1/docker/buildArgs
         value: *value-go1-21
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: ci-jenkins-tikv
+build:
+  artifacts:
+    - image: tikv
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: jenkins/tikv/Dockerfile
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: ci-jenkins-tiflash
+build:
+  artifacts:
+    - image: tiflash
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: jenkins/tiflash/Dockerfile
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
