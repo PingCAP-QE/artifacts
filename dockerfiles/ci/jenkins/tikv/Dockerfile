@@ -13,9 +13,9 @@ RUN groupadd -g 1000 jenkins && \
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# install python2.7
+# install python2.7 and other dependencies
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y python27
+    dnf install -y python27 hostname wget procps-ng
 RUN ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
 
