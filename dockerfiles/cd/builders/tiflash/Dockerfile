@@ -46,7 +46,7 @@ RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DLLVM_LIBDIR_SUFFIX=64 && \
     ninja -C build && \
-    ninja -C build && \
+    ninja -C build install && \
     rm -rf /tmp/llvm-project
 
 # install rust toolchain
