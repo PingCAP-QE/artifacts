@@ -49,6 +49,10 @@ RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 
     ninja -C build install && \
     rm -rf /tmp/llvm-project
 
+# Verify installation of clang tools
+RUN clang-format --version && \
+    clang-tidy --version
+
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
