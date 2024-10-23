@@ -45,8 +45,9 @@ RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 
         -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DLLVM_LIBDIR_SUFFIX=64 && \
-    ninja -C build && \
-    ninja -C build install && \
+        ninja -C build clang-format clang-tidy && \
+        ninja -C build cxx cxxabi unwind && \
+        ninja -C build install-clang-format install-clang-tidy install-cxx install-cxxabi install-unwind && \
     rm -rf /tmp/llvm-project
 
 # Verify installation of clang tools
