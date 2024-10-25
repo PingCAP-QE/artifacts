@@ -13,18 +13,19 @@ RUN groupadd -g 1000 jenkins && \
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# setup mariadb repo
-#   ref: https://mariadb.com/docs/server/connect/clients/mariadb-client/#Linux_(Repository)
-RUN curl -LsSO https://r.mariadb.com/downloads/mariadb_repo_setup \
-    && echo "6083ef1974d11f49d42ae668fb9d513f7dc2c6276ffa47caed488c4b47268593  mariadb_repo_setup" | sha256sum -c - \
-    && chmod +x mariadb_repo_setup \
-    && ./mariadb_repo_setup \
-    && rm mariadb_repo_setup
 
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y xz xz-libs hostname wget procps-ng python27 MariaDB-client clang-tools-extra-17.0.6 && \
+    dnf install -y xz xz-libs glibc-langpack-en hostname wget procps-ng python27 clang-tools-extra-17.0.6 && \
     ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
+
+ENV LANG=en_US.UTF-8
+
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y xz xz-libs && \
+    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm && \
+    dnf module disable mysql -y && \
+    dnf install -y mysql-community-client --nogpgcheck
 
 # install ccache
 ARG CCACHE_VERSION=4.10.2
