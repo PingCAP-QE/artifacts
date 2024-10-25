@@ -14,8 +14,8 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y hostname wget procps-ng python27
-RUN ln -s /usr/bin/python2 /usr/bin/python && \
+    dnf install -y hostname wget procps-ng python27 clang-tools-extra-17.0.6 && \
+    ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
 
 # install ccache
