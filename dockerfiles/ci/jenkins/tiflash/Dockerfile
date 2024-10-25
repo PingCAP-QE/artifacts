@@ -14,7 +14,7 @@ ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y hostname wget procps-ng python27
+    dnf install -y hostname wget procps-ng python27 clang-tools-extra-17.0.6
 RUN ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
 
