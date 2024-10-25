@@ -48,10 +48,10 @@ RUN curl -LO  https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSI
     ln -s $(which ccache) /usr/lib64/ccache/clang++
 
 # Switch to the non-root user jenkins and set the working directory
-USER jenkins
-WORKDIR /home/jenkins
+USER root
+WORKDIR /root
 
-ENV CARGO_HOME="/home/jenkins/.cargo"
+ENV CARGO_HOME="/root/.cargo"
 # install rustup and set stable toolchain as default
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2023-12-28 && \
     source $HOME/.cargo/env && \
