@@ -2,21 +2,19 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-14-g52a7228
 FROM $BASE_IMG
 
-# create user jenkins and add it to sudoers.
-RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y sudo
-RUN groupadd -g 1000 jenkins && \
-    useradd -u 1000 -g 1000 -m -s /bin/bash jenkins && \
-    echo "jenkins:password" | chpasswd && \
-    echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+ENV LANG=en_US.UTF-8
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y hostname wget procps-ng python27 clang-tools-extra-17.0.6 && \
+    dnf install -y xz xz-libs glibc-langpack-en hostname wget procps-ng python27 clang-tools-extra-17.0.6 && \
     ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
+
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm && \
+    dnf module disable mysql -y && \
+    dnf install -y mysql-community-client --nogpgcheck
 
 # install ccache
 ARG CCACHE_VERSION=4.10.2
@@ -38,11 +36,8 @@ RUN curl -LO  https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSI
     ln -s $(which ccache) /usr/lib64/ccache/clang && \
     ln -s $(which ccache) /usr/lib64/ccache/clang++
 
-# Switch to the non-root user jenkins and set the working directory
-USER jenkins
-WORKDIR /home/jenkins
 
-ENV CARGO_HOME="/home/jenkins/.cargo"
+ENV CARGO_HOME="/root/.cargo"
 # install rustup and set stable toolchain as default
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain nightly-2023-12-28 && \
     source $HOME/.cargo/env && \
