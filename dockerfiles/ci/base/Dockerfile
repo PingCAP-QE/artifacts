@@ -74,6 +74,9 @@ RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
     curl -fsSL https://uploader.codecov.io/${CODECOV_VERSION}/${folder}/codecov -o /usr/local/bin/codecov && \
     chmod +x /usr/local/bin/codecov
 
+# gocovmerge
+RUN go install github.com/wadey/gocovmerge@b5bfa59ec0adc420475f97f89b58045c721d761c
+
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
 COPY --from=bitnami/oras:1.2.0 /oras /usr/local/bin/oras
