@@ -8,18 +8,15 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# setup mariadb repo
-#   ref: https://mariadb.com/docs/server/connect/clients/mariadb-client/#Linux_(Repository)
-RUN curl -LsSO https://r.mariadb.com/downloads/mariadb_repo_setup \
-    && echo "6083ef1974d11f49d42ae668fb9d513f7dc2c6276ffa47caed488c4b47268593  mariadb_repo_setup" | sha256sum -c - \
-    && chmod +x mariadb_repo_setup \
-    && ./mariadb_repo_setup \
-    && rm mariadb_repo_setup
-
 # install OS packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc wget unzip psmisc lsof jq MariaDB-client nc
+    dnf install -y make git gcc wget unzip psmisc lsof jq nc
+
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm && \
+    dnf module disable mysql -y && \
+    dnf install -y mysql-community-client --nogpgcheck
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
