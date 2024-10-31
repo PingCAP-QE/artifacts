@@ -11,6 +11,15 @@ RUN groupadd -g 1000 jenkins && \
     echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
     chown -R jenkins:jenkins /usr/local/pulsar
 
+# pulsar permission
+# linux amd64 only
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        chown -R jenkins:jenkins /usr/local/pulsar; \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
+
 ENV GOPATH=/go
 ENV PATH=$GOPATH/bin:$PATH
 RUN mkdir -p /go && chown -R jenkins:jenkins /go
