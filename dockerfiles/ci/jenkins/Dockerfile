@@ -8,7 +8,8 @@ RUN --mount=type=cache,target=/var/cache/dnf \
 RUN groupadd -g 1000 jenkins && \
     useradd -u 1000 -g 1000 -m -s /bin/bash jenkins && \
     echo "jenkins:password" | chpasswd && \
-    echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+    echo "jenkins ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    chown -R jenkins:jenkins /usr/local/pulsar
 
 # Switch to the non-root user jenkins and set the working directory
 USER jenkins
