@@ -75,7 +75,7 @@ RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
     chmod +x /usr/local/bin/codecov
 
 # gocovmerge
-RUN go install github.com/wadey/gocovmerge@b5bfa59ec0adc420475f97f89b58045c721d761c
+RUN go install github.com/djshow832/gocovmerge@30018881427f1120998f9df5d9228c2ca0a43109
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
