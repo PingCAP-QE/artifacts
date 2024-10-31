@@ -14,8 +14,8 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y make git gcc wget unzip psmisc lsof jq python27 && \
     ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip && \
-    pip install s3cmd=2.3.0 requests==2.26.0 certifi==2021.10.8 && \
-    pip3 install requests=2.27.1
+    pip install s3cmd==2.3.0 requests==2.26.0 certifi==2021.10.8 && \
+    pip3 install requests==2.27.1
 
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm && \
