@@ -25,7 +25,7 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
         wget https://archive.mariadb.org/mariadb-${MARIADB_VERSION}/bintar-linux-systemd-x86_64/mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz && \
         tar -xvf mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz && \
         mv mariadb-${MARIADB_VERSION}-linux-systemd-x86_64 /usr/local/mariadb && \
-        rm mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz \
+        rm mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz; \
     else \
         echo "Architecture not supported: $(arch)"; \
     fi
