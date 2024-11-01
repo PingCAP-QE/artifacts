@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
 
 ENV MARIADB_VERSION=5.5.68
 ENV PATH=$PATH:/usr/local/mariadb/bin
-# linux amd64 only  
+# linux amd64 only
 RUN if [ "$(arch)" = "x86_64" ]; then \
         echo "Detected amd64 architecture, proceeding with installation" && \
         wget https://archive.mariadb.org/mariadb-${MARIADB_VERSION}/bintar-linux-systemd-x86_64/mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz && \
