@@ -11,16 +11,24 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # install OS packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
-    dnf install -y make git gcc wget unzip psmisc lsof jq python27 python3&& \
+    dnf install -y make git gcc wget unzip psmisc lsof jq python27 python3 nc ncurses-compat-libs && \
     ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip && \
     pip install s3cmd==2.3.0 requests==2.26.0 certifi==2021.10.8 && \
     pip3 install requests==2.27.1
 
-RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y https://dev.mysql.com/get/mysql80-community-release-el8-1.noarch.rpm && \
-    dnf module disable mysql -y && \
-    dnf install -y mysql-community-client --nogpgcheck
+ENV MARIADB_VERSION=5.5.68
+ENV PATH=$PATH:/usr/local/mariadb/bin
+# linux amd64 only  
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        wget https://archive.mariadb.org/mariadb-${MARIADB_VERSION}/bintar-linux-systemd-x86_64/mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz && \
+        tar -xvf mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz && \
+        mv mariadb-${MARIADB_VERSION}-linux-systemd-x86_64 /usr/local/mariadb && \
+        rm mariadb-${MARIADB_VERSION}-linux-systemd-x86_64.tar.gz \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
