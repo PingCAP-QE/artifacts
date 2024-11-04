@@ -1,4 +1,14 @@
 # See README.md
+# Hotfix for v6.5.7 series
+
+{{ define "image_dockerfile_folder" -}}
+{{- if semver.CheckConstraint "~6.5.12-0 || >6.5.7-0, < 6.5.8-0" . -}}
+~6.5.12/
+{{- else if semver.CheckConstraint "<6.5.12-0" . -}}
+lt6.5.12/
+{{- end -}}
+{{- end -}}
+
 components:
   advanced-statefulset:
     desc:
@@ -363,7 +373,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -386,7 +396,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -411,7 +421,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -422,7 +432,7 @@ components:
                 src:
                   path: bin/ng-monitoring-server
 
-      - description: From v5.3 until v6.0
+      - description: For range [v5.3.0, v6.6.0)
         if: {{ semver.CheckConstraint ">= 5.3.0-0, < 6.6.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
@@ -435,7 +445,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/le6.5/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -529,11 +539,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -601,7 +607,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -645,7 +651,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -711,7 +717,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/le6.5/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - { name: pd-server, src: { path: bin/pd-server } }
               - { name: pd-ctl, src: { path: bin/pd-ctl } }
@@ -843,9 +849,9 @@ components:
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
             {{- if eq .Release.profile "enterprise" }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.enterprise.Dockerfile
             {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.Dockerfile
             {{- end }}
             files: # prepare for context
               - name: tidb-server
@@ -863,7 +869,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -872,7 +878,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -881,7 +887,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -988,9 +994,9 @@ components:
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
             {{- if eq .Release.profile "enterprise" }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.enterprise.Dockerfile
             {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.Dockerfile
             {{- end }}
             files: # prepare for context
               - name: tidb-server
@@ -1008,7 +1014,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -1017,7 +1023,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -1026,7 +1032,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -1132,11 +1138,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1146,11 +1148,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-enterprise.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb.enterprise.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.enterprise.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1165,11 +1163,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/br.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/br.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -1178,11 +1172,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dumpling.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/dumpling.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -1191,11 +1181,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-lightning.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/le6.5/tidb-lightning.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -1248,11 +1234,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-tools/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -1370,11 +1352,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-binlog/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # context files
               - name: pump
                 src:
@@ -1546,7 +1524,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1572,7 +1550,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1598,7 +1576,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/le6.5/Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1621,7 +1599,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1691,11 +1669,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -1792,11 +1766,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -1924,7 +1894,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -1933,7 +1903,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/dm.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -1975,7 +1945,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/~6.5.12/ticdc.Dockerfile # same as new base.
             files: # context files
               - name: cdc
                 src:
@@ -2075,7 +2045,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/le6.5/ticdc.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/lt6.5.12/ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -2084,7 +2054,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/le6.5/dm.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/lt6.5.12/dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2217,7 +2187,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/Dockerfile
             files:
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
@@ -2280,11 +2250,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            {{- if semver.CheckConstraint ">= 6.6.0-0" .Release.version }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/le6.5/Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
@@ -2312,7 +2278,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv-fips.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/fips.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
