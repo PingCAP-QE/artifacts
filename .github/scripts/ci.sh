@@ -2,7 +2,7 @@
 set -euo pipefail
 
 function test_get_builder() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.0 v6.1.0"
+    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local script="./packages/scripts/get-package-builder-with-config.sh"
@@ -86,7 +86,7 @@ function test_get_builder_freedom_releasing() {
 }
 
 function test_gen_package_artifacts_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.0 v6.1.0"
+    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-artifacts-with-config.sh"
@@ -190,7 +190,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
 }
 
 function test_gen_package_images_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.0 v6.1.0"
+    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local os="linux"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-images-with-config.sh"
@@ -271,7 +271,7 @@ function test_gen_package_images_script_freedom_releasing() {
 }
 
 function test_gen_offline_package_artifacts_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.0 v6.1.0"
+    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux"
     local architectures="amd64 arm64"
     local editions="community enterprise dm"
