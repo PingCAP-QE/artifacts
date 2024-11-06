@@ -45,6 +45,37 @@ RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 
     ninja -C build install-cxx install-cxxabi install-unwind && \
     rm -rf /tmp/llvm-project
 
+# building and reinstall llvm toolsets.
+RUN git clone https://github.com/llvm/llvm-project.git  --branch llvmorg-17.0.6 --depth 1 /tmp/llvm-project && \
+    cd /tmp/llvm-project && rm -rf build && mkdir build && \
+    cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -GNinja \
+        -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_LIBDIR_SUFFIX=64 \
+        -DLLVM_ENABLE_PROJECTS="clang;lld" \
+        -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" \
+        -DLLVM_TARGETS_TO_BUILD=Native \
+        ../llvm && \
+    ninja && ninja install && \
+    \
+    cd .. && rm -rf build && mkdir -p build && cd build && \
+    cmake -DCMAKE_BUILD_TYPE=Release \
+        -GNinja \
+        -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_LIBDIR_SUFFIX=64 \
+        -DLLVM_ENABLE_PROJECTS="clang;lld;polly;clang-tools-extra;bolt" \
+        -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;openmp;compiler-rt" \
+        -DLLVM_TARGETS_TO_BUILD=Native \
+        -DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON \
+        -DCLANG_DEFAULT_LINKER=lld \
+        -DCLANG_DEFAULT_CXX_STDLIB=libc++ \
+        -DCMAKE_CXX_COMPILER=clang++ \
+        -DCMAKE_C_COMPILER=clang \
+        -DLLVM_ENABLE_LIBCXX=ON \
+        -DLLVM_ENABLE_LLD=ON \
+        -DLIBOMP_LIBFLAGS="-lm" \
+        ../llvm && \
+    ninja && ninja install && cd ../.. && rm -rf /tmp/llvm-project
+
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
