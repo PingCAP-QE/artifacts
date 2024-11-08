@@ -1636,9 +1636,9 @@ components:
           release:
             - os: linux
               script: |
-                ./release-rocky8-llvm/scripts/build-tiflash-release.sh
+                ./release-linux-llvm/scripts/build-tiflash-release.sh
                 mkdir outputs
-                mv release-rocky8-llvm/tiflash outputs/tiflash
+                mv release-linux-llvm/tiflash outputs/tiflash
             - os: darwin
               script: |
                 ./release-darwin/build/build-release.sh
@@ -1648,9 +1648,9 @@ components:
             - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
-                ./release-rocky8-llvm/scripts/build-tiflash-release.sh
+                ./release-linux-llvm/scripts/build-tiflash-release.sh
                 mkdir outputs
-                mv release-rocky8-llvm/tiflash outputs/tiflash
+                mv release-linux-llvm/tiflash outputs/tiflash
             - os: darwin
               script: |
                 ./release-darwin/build/build-release.sh

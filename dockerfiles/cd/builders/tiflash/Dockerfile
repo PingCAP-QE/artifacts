@@ -84,8 +84,8 @@ ENV PATH /root/.cargo/bin/:$PATH
 FROM builder as building
 
 ADD . /ws
-RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-centos7-llvm/scripts/build-release.sh
-RUN mkdir output && mv /ws/release-centos7-llvm/tiflash output/tiflash
+RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh
+RUN mkdir output && mv /ws/release-linux-llvm/tiflash output/tiflash
 RUN output/tiflash/tiflash version
 
 ########### stage: Final image
