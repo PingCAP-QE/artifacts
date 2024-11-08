@@ -1673,7 +1673,7 @@ components:
             files:
               - name: tiflash/
                 src:
-                  path: outputs/tiflash/    
+                  path: outputs/tiflash/
       - description: For v8.4.x
         if: {{ semver.CheckConstraint "~8.4.0-0" .Release.version }}
         os: [linux, darwin]
