@@ -16,7 +16,6 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
-# renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_VER=v8.3.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
     TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \

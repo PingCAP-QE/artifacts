@@ -42,9 +42,10 @@ ENV PATH="/opt/cmake/bin:/usr/local/bin/:${PATH}:/usr/local/go/bin:/root/.cargo/
 FROM builder as building
 
 ADD . /ws
-RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-centos7-llvm/scripts/build-release.sh
-RUN mkdir /ws/output && mv /ws/release-centos7-llvm/tiflash /ws/output/tiflash
+RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh
+RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
+
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2
