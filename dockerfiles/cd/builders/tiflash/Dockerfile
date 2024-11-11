@@ -14,8 +14,8 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # FIXME: replace with official repo and tag.
 # renovate: datasource=github-tags depName=pingcap/tiflash
-ARG TIFLASH_REPO=Lloyd-Pottiger/tiflash
-ARG TIFLASH_REF=upgarde-build-image
+ARG TIFLASH_REPO=pingcap/tiflash
+ARG TIFLASH_REF=master
 RUN FILE="bake_llvm_base.sh"; \
     TAR_DIR="tiflash-${TIFLASH_REF}"; \
     curl -sSL https://github.com/${TIFLASH_REPO}/archive/refs/heads/${TIFLASH_REF}.tar.gz -o tiflash.tar.gz && \
