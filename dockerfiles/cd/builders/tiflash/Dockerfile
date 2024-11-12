@@ -19,8 +19,8 @@ ARG TIFLASH_REF=master
 RUN FILE="bake_llvm_base.sh"; \
     TAR_DIR="tiflash-${TIFLASH_REF}"; \
     curl -sSL https://github.com/${TIFLASH_REPO}/archive/refs/heads/${TIFLASH_REF}.tar.gz -o tiflash.tar.gz && \
-    tar -zxf tiflash.tar.gz "$TAR_DIR/release-rocky8-llvm/dockerfiles/misc" && \
-    pushd "$TAR_DIR/release-rocky8-llvm/dockerfiles/misc" && \
+    tar -zxf tiflash.tar.gz "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
+    pushd "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
     chmod +x * && ./${FILE} && \
     popd && \
     rm -rf tiflash.tar.gz "$TAR_DIR"
