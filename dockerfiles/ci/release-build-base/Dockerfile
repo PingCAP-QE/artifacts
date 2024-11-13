@@ -1,5 +1,4 @@
 # Base image
-# renovate: datasource=docker depName=centos
 FROM centos:7.9.2009
 # CentOS 7 has reached EOL
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
