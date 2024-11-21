@@ -2,9 +2,8 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - git clone https://github.com/pingcap/ng-monitoring.git ng-monitoring
-#   - rm ng-monitoring/.dockerignore # make step depended on git metadata.
-#   - docker build -t ng-monitoring -f Dockerfile ./ng-monitoring
+#   - change to current directory
+#   - docker build -t tem-cd:v1.0.0 .
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
@@ -41,6 +40,13 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
+
+# Install go tools
+RUN go install github.com/googleapis/api-linter/cmd/api-linter@v1.67.4
+RUN go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+RUN go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+ENV PATH $HOME/go/bin/:$PATH
 
 # install tools: tiup
 # renovate: datasource=github-release depName=pingcap/tiup
