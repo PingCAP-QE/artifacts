@@ -72,4 +72,4 @@ EXPOSE 8080
 ENTRYPOINT ["/tem"]
 
 # test it
-RUN /tem -version
+RUN /tem --version
