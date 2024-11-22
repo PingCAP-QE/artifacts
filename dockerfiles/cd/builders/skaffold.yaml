@@ -36,6 +36,11 @@ build:
       docker:
         dockerfile: tidb-operator/Dockerfile
         target: builder
+    - image: tem
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: tem/Dockerfile
+        target: builder  
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
@@ -74,6 +79,9 @@ profiles:
       - op: add
         path: /build/artifacts/5/docker/buildArgs
         value: *value-go1-23
+      - op: add
+        path: /build/artifacts/6/docker/buildArgs
+        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
@@ -99,6 +107,9 @@ profiles:
       - op: add
         path: /build/artifacts/5/docker/buildArgs
         value: *value-go1-22
+      - op: add
+        path: /build/artifacts/6/docker/buildArgs
+        value: *value-go1-22
   - name: go-1.21
     patches:
       - op: replace
@@ -122,6 +133,9 @@ profiles:
         value: *value-go1-21
       - op: add
         path: /build/artifacts/5/docker/buildArgs
+        value: *value-go1-21
+      - op: add
+        path: /build/artifacts/6/docker/buildArgs
         value: *value-go1-21
 ---
 apiVersion: skaffold/v4beta6
