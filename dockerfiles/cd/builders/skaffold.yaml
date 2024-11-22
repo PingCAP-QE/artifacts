@@ -40,7 +40,7 @@ build:
       platforms: [linux/amd64, linux/arm64]
       docker:
         dockerfile: tem/Dockerfile
-        target: builder  
+        target: builder
   tagPolicy:
     customTemplate:
       template: "{{ .SHA }}"
