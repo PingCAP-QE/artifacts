@@ -2,8 +2,8 @@
 #   - docker >= v20.10
 #
 # build steps:
-#   - change to current directory
-#   - docker build -t tem-cd:v1.0.0 .
+#   - git clone <tem-git-url> tem
+#   - docker build -t tem -f Dockerfile ./tem
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
@@ -56,3 +56,20 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-v${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
     mkdir -p "$HOME/.tiup/bin"
+
+########### stage: building
+FROM builder as building
+COPY . /tem
+RUN make build -C /tem
+RUN /tem/bin/tem --version
+
+########### stage: Final image
+FROM ghcr.io/pingcap-qe/bases/tem-base:v3.0.0
+COPY --from=building /tem/bin/tem /tem
+
+WORKDIR /
+EXPOSE 8080
+ENTRYPOINT ["/tem"]
+
+# test it
+RUN /tem -version
