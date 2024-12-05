@@ -22,6 +22,8 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y glibc-locale-source && \
     localedef -f GBK -i zh_CN zh_CN.gbk
 
+
+
 # Install MySQL 5.7
 RUN dnf module disable mysql -y && \
     echo '[mysql57-community]' > /etc/yum.repos.d/mysql57.repo && \
@@ -115,4 +117,12 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     fi
 ENV PATH=$PATH:/usr/local/pulsar/bin
 
+# install percona-toolkit
+# linux amd64 only
+RUN if [ "$(arch)" = "x86_64" ]; then \
+        echo "Detected amd64 architecture, proceeding with installation" && \
+        dnf install -y https://repo.percona.com/testing/centos/7/RPMS/x86_64/percona-toolkit-3.0.12-1.el7.x86_64.rpm; \
+    else \
+        echo "Architecture not supported: $(arch)"; \
+    fi
 
