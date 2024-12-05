@@ -17,6 +17,11 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     pip install s3cmd==2.3.0 requests==2.26.0 certifi==2021.10.8 && \
     pip3 install requests==2.27.1
 
+# Install gbk support
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y glibc-locale-source && \
+    localedef -f GBK -i zh_CN zh_CN.gbk
+
 # Install MySQL 5.7
 RUN dnf module disable mysql -y && \
     echo '[mysql57-community]' > /etc/yum.repos.d/mysql57.repo && \
@@ -27,6 +32,8 @@ RUN dnf module disable mysql -y && \
     dnf install -y mysql-community-server && \
     dnf clean all && \
     rm -rf /var/cache/dnf
+
+
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -107,3 +114,5 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
         echo "Architecture not supported: $(arch)"; \
     fi
 ENV PATH=$PATH:/usr/local/pulsar/bin
+
+
