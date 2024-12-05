@@ -22,8 +22,6 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y glibc-locale-source && \
     localedef -f GBK -i zh_CN zh_CN.gbk
 
-
-
 # Install MySQL 5.7
 RUN dnf module disable mysql -y && \
     echo '[mysql57-community]' > /etc/yum.repos.d/mysql57.repo && \
@@ -34,8 +32,6 @@ RUN dnf module disable mysql -y && \
     dnf install -y mysql-community-server && \
     dnf clean all && \
     rm -rf /var/cache/dnf
-
-
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -125,4 +121,3 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     else \
         echo "Architecture not supported: $(arch)"; \
     fi
-
