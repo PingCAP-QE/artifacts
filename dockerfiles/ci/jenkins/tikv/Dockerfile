@@ -35,8 +35,11 @@ ENV PATH="${CARGO_HOME}/bin:${PATH}"
 # install components
 RUN rustup component add rustfmt clippy rust-src llvm-tools
 
+RUN rustup set profile minimal
+
 # Install specific versions of cargo-nextest and cargo-sort
-RUN cargo install cargo-nextest --version 0.9.72 && \
+RUN rustup update stable && rustup default stable && \
+    cargo install cargo-nextest --version 0.9.72 && \
     cargo install cargo-sort --version 1.0.9
 
 ENV CARGO_INCREMENTAL=0
