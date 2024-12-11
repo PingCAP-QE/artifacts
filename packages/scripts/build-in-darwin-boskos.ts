@@ -1,5 +1,6 @@
 // It can not used standalone. we used it after we checkouted the source code, and mounted the ssh info volume.
 import { NodeSSH, SSHExecOptions } from "npm:node-ssh@13.2.0";
+import SftpClient from "npm:ssh2-sftp-client@11.0.0";
 import * as path from "jsr:@std/path@1.0.8";
 import { parseArgs } from "jsr:@std/cli@^1.0.1/parse-args";
 import * as yaml from "jsr:@std/yaml@1.0.5";
@@ -129,7 +130,7 @@ class BoskosClient {
         const heartbeat = async (resource: BoskosResource) => {
             while (needHearbeat) {
                 await this.heartbeat(resource.name, boskos.owner, "busy");
-                await new Promise((resolve) => setTimeout(resolve, 60000));
+                await new Promise((resolve) => setTimeout(resolve, 10000));
             }
 
             console.log("❤️ heartbeat stopped");
@@ -142,12 +143,10 @@ class BoskosClient {
         // parallel send the heartbeat to boskos server.
         await Promise.all([
             heartbeat(resource),
-            deal(resource).finally(() => {
-                console.log(
-                    "🔓 release the drawin builder....",
-                );
+            deal(resource).finally(async () => {
+                console.info("🔓 release the drawin builder....");
                 needHearbeat = false;
-                this.release(resource.name, boskos.owner);
+                await this.release(resource.name, boskos.owner);
             }),
         ]);
     }
@@ -181,7 +180,7 @@ async function sshExec(
         throw new Error(`command run failed, exit code: ${ret.code}`);
     }
 }
-async function build(ssh: NodeSSH, options: buildOptions) {
+async function build(ssh: NodeSSH, sftp: SftpClient, options: buildOptions) {
     const remoteWorkspace = options.remoteWorkspace;
     const remoteCwd = path.join(
         remoteWorkspace,
@@ -223,14 +222,15 @@ async function build(ssh: NodeSSH, options: buildOptions) {
     console.info("✅ build finished in remote host.");
 
     // 5. copy the artifacts from the mac hosts to the workspace `source`, we need deliver them internal firstly.
-    console.info("🚢 copy artifacts from remote host to local host.");
+    console.group("🚢 copy artifacts from remote to local.");
     await Deno.mkdir(options.releaseDir, { recursive: true });
-    await ssh.getDirectory(
-        options.releaseDir,
+    const downloadedResults = await sftp.downloadDir(
         path.join(remoteCwd, options.releaseDir),
-        { recursive: true },
+        options.releaseDir,
     );
+    console.info(downloadedResults);
     console.info("✅ copied done.");
+    console.groupEnd();
 }
 
 async function copySourceToRemote(
@@ -329,14 +329,7 @@ async function main(
     const boskosClient = new BoskosClient(boskos.serverUrl);
     await boskosClient.lockAndDo(boskos, async (resource) => {
         const userData = getResourceUserData(resource.name, sshInfoDir);
-        const ssh = new NodeSSH();
         console.info("🚩💻 remote building host is ", resource.name);
-        await ssh.connect({
-            host: userData.ssh_host,
-            port: userData.ssh_port,
-            username: userData.ssh_user,
-            privateKey: userData.privateKey,
-        });
         console.info("🫧 prepare to build");
         const remoteWorkspace = path.join(
             userData.config.workspace_dir,
@@ -352,10 +345,26 @@ async function main(
             remoteWorkspace: remoteWorkspace,
         };
         console.dir({ buildOptions });
-        await build(ssh, buildOptions).finally(async () => {
+
+        const ssh = new NodeSSH();
+        await ssh.connect({
+            host: userData.ssh_host,
+            port: userData.ssh_port,
+            username: userData.ssh_user,
+            privateKey: userData.privateKey,
+        });
+        const sftp = new SftpClient();
+        await sftp.connect({
+            host: userData.ssh_host,
+            port: userData.ssh_port,
+            username: userData.ssh_user,
+            privateKey: userData.privateKey,
+        });
+        await build(ssh, sftp, buildOptions).finally(async () => {
             // clean the remote workspace.
             await ssh.exec("rm", ["-rvf", remoteWorkspace]);
             ssh.dispose();
+            sftp.end();
         });
         console.info("🎉🎉🎉 all done");
     });
