@@ -33,13 +33,12 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --de
 ENV PATH="${CARGO_HOME}/bin:${PATH}"
 
 # install components
-RUN rustup component add rustfmt clippy rust-src llvm-tools
-
-RUN rustup set profile minimal
+RUN rustup component add rustfmt clippy rust-src llvm-tools && \
+    rustup set profile minimal
 
 # Install specific versions of cargo-nextest and cargo-sort
 RUN rustup update stable && rustup default stable && \
-    cargo install cargo-nextest --version 0.9.72 && \
-    cargo install cargo-sort --version 1.0.9
+    cargo install --locked --version 0.9.72 cargo-nextest  && \
+    cargo install --locked --version 1.0.9 cargo-sort
 
 ENV CARGO_INCREMENTAL=0
