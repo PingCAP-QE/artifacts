@@ -93,7 +93,7 @@ RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
-COPY --from=bitnami/oras:1.2.0 /oras /usr/local/bin/oras
+COPY --from=bitnami/oras:1.2.1 /oras /usr/local/bin/oras
 
 # gh-ost
 # linux amd64 only
