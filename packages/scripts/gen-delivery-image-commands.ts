@@ -1,5 +1,6 @@
-import { parse } from "https://deno.land/std@0.194.0/flags/mod.ts";
-import * as yaml from "https://deno.land/std@0.214.0/yaml/mod.ts";
+#!/usr/bin/env -S deno run --allow-read --allow-write
+import * as yaml from "jsr:@std/yaml@1.0.5"
+import { parseArgs } from "jsr:@std/cli@1.0.9"
 
 interface Rule {
   description?: string;
@@ -99,7 +100,7 @@ const {
   image_url,
   yaml_file = "./packages/delivery.yaml",
   outfile = "./delivery-images.sh",
-} = parse(Deno.args);
+} = parseArgs(Deno.args);
 
 // Example usage
 await generateShellScript(image_url, yaml_file, outfile);
