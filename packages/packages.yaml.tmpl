@@ -2187,6 +2187,9 @@ components:
           release:
             - os: linux
               script: |
+                if [ -f /opt/rh/devtoolset-8/enable ]; then
+                    source /opt/rh/devtoolset-8/enable
+                fi              
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
@@ -2195,6 +2198,9 @@ components:
           enterprise:
             - os: linux
               script: |
+                if [ -f /opt/rh/devtoolset-8/enable ]; then
+                    source /opt/rh/devtoolset-8/enable
+                fi              
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
@@ -2203,6 +2209,9 @@ components:
           failpoint:
             - os: linux
               script: |
+                if [ -f /opt/rh/devtoolset-8/enable ]; then
+                    source /opt/rh/devtoolset-8/enable
+                fi
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
