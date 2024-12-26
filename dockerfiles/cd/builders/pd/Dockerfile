@@ -6,7 +6,7 @@
 #   - docker build -t pd -f Dockerfile ./pd
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:9.5.20241118 as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for PD"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"

@@ -6,6 +6,23 @@
   "separateMinorPatch": true,
   "packageRules": [
     {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "matchDepNames": [
+        "golang",
+        "go"
+      ],
+      "separateMinorPatch": true,
+      "groupName": null
+    },
+    {
       "matchUpdateTypes": [
         "major",
         "minor"

@@ -1,5 +1,5 @@
 # Base image
-FROM quay.io/rockylinux/rockylinux:9.5.20241118
+FROM quay.io/rockylinux/rockylinux:8.10.20240528
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "CI Base image for building/testing"

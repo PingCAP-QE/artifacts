@@ -6,7 +6,7 @@
 #   - docker build -t dm -f Dockerfile ./tiflow
 
 ########### stage: builder-cdc
-FROM quay.io/rockylinux/rockylinux:9.5.20241118 as builder-cdc
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder-cdc
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
