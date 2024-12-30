@@ -85,7 +85,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
-ARG ORAS_VERSION=v1.2.1
+ARG ORAS_VERSION=v1.2.2
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
     mkdir -p oras-install/ && \
