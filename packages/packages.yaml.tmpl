@@ -494,7 +494,7 @@ components:
           enterprise:
             - script: PD_EDITION=Enterprise make build tools
           failpoint:
-            - script: WITH_RACE=1 FAILPOINT=1 make failpoint-enable build failpoint-disable
+            - script: FAILPOINT=1 make failpoint-enable build failpoint-disable
         artifacts:
           - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ ne "enterprise" .Release.profile }}
@@ -789,7 +789,7 @@ components:
           failpoint:
             - script: |
                 make failpoint-enable
-                WITH_RACE=1 make server build_tools build_dumpling # failpoint
+                make server build_tools build_dumpling # failpoint
                 make failpoint-disable
         artifacts:
           - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
