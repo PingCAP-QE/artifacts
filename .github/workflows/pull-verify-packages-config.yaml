@@ -14,12 +14,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.23"
-
       - name: Install tools
         run: |
           # install gomplate
-          GOBIN=/usr/local/bin go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@v4.1.0
+          GOBIN=/usr/local/bin go install github.com/hairyhenderson/gomplate/v4/cmd/gomplate@v4.3.0
           gomplate --version
+
+          # install crane
+          GOBIN=/usr/local/bin go install github.com/google/go-containerregistry/cmd/crane@v0.20.2
+          crane version
 
           # install shelldoc to check the README.md
           git clone https://github.com/endocode/shelldoc && \
