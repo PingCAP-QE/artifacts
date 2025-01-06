@@ -1,8 +1,22 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
+function check_image_existed() {
+    local img=$1
+    # skip the check if the image starts with "hub.pingcap.net" which is the internal image.
+    if [[ $img == hub.pingcap.net* ]]; then
+        return
+    fi
+    if crane digest $img > /dev/null; then
+        echo "The image $img is existed."
+    else
+        echo "The image $img is not existed, please check it!"
+        exit 1
+    fi
+}
+
 function test_get_builder() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local script="./packages/scripts/get-package-builder-with-config.sh"
@@ -14,8 +28,9 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version release:\t"
-                    echo "$cm $os $ac $version:"
-                    $script "$cm" "$os" "$ac" "$version" release
+                    img=$($script "$cm" "$os" "$ac" "$version" release)
+                    echo $img
+                    check_image_existed $img
                 done
             done
         done
@@ -28,7 +43,9 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version enterprise:\t"
-                    $script "$cm" "$os" "$ac" "$version" enterprise
+                    img=$($script "$cm" "$os" "$ac" "$version" enterprise)
+                    echo $img
+                    check_image_existed $img
                 done
             done
         done
@@ -86,7 +103,7 @@ function test_get_builder_freedom_releasing() {
 }
 
 function test_gen_package_artifacts_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-artifacts-with-config.sh"
@@ -190,7 +207,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
 }
 
 function test_gen_package_images_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local os="linux"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-images-with-config.sh"
@@ -271,7 +288,7 @@ function test_gen_package_images_script_freedom_releasing() {
 }
 
 function test_gen_offline_package_artifacts_script() {
-    local versions="v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux"
     local architectures="amd64 arm64"
     local editions="community enterprise dm"
