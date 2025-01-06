@@ -26,7 +26,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
+        image: ghcr.io/pingcap-qe/cd/utils/release:v2024.10.8-55-gdeaa249
     routers:
       - description: Publish route for v0.5.0 and newer versions.
         if: {{ semver.CheckConstraint ">= 0.5.0-0" .Release.version }}
@@ -56,7 +56,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v2024.10.8-55-gdeaa249
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
@@ -76,7 +76,7 @@ components:
               - name: ctl
                 src:
                   type: http
-                  url: "https://github.com/pingcap/tiup/releases/download/v1.16.0/tiup-v1.16.0-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  url: "https://github.com/pingcap/tiup/releases/download/v1.16.1/tiup-v1.16.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: bin/tiup-ctl
               - name: etcdctl
@@ -204,7 +204,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -350,7 +350,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -473,7 +473,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -740,7 +740,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -1210,7 +1210,7 @@ components:
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - if: {{ eq "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-51-g7bd274e-go1.23
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1257,7 +1257,7 @@ components:
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - if: (eq "experiment" .Release.profile)
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: (ne "experiment" .Release.profile)
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1383,7 +1383,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-51-g9b98efb-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.21
     routers:
@@ -1499,7 +1499,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1620,9 +1620,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.11.7
-      - if: {{ semver.CheckConstraint ">= 8.2.0-0, < 8.4.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20240625-llvm-17.0.6
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
@@ -1836,7 +1834,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -2138,7 +2136,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/utils/release:v20240325-60-gb6f8928
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v2024.10.8-55-gdeaa249
     routers:
       - description: For all versions
         os: [linux]
@@ -2172,7 +2170,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240901-15-gdc1ad6e
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-51-g9b98efb-centos7
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
@@ -2356,7 +2354,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 1.3.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-38-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 0.1.2-0, < 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
