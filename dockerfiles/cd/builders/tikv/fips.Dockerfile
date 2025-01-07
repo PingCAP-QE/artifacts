@@ -12,20 +12,10 @@ LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS su
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-RUN dnf install -y \
-  openssl-devel \
-  gcc \
-  gcc-c++ \
-  make \
-  cmake \
-  perl \
-  git \
-  findutils \
-  curl \
-  python3 --allowerasing \
-  && dnf --enablerepo=crb install -y libstdc++-static \
-  && dnf clean all \
-  && rm -Rf /var/cache/dnf
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf --enablerepo=crb install -y --allowerasing \
+    git findutils gcc gcc-c++ make cmake dwz curl openssl-devel perl python3 \
+    libstdc++-static
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
@@ -41,7 +31,7 @@ ENV PATH /root/.cargo/bin/:$PATH
 FROM builder as building
 COPY . /ws
 RUN --mount=type=cache,target=/tikv/target \
-  ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release -C /ws
+    ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release -C /ws
 RUN /ws/bin/tikv-server --version
 
 ########### stage: Final image

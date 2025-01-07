@@ -20,7 +20,7 @@ RUN yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
     ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo) && \
     yum update --nogpgcheck -y && \
-    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip && \
+    yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip dwz && \
     yum clean all && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake
 ENV DEVTOOLSET_VER ${DEVTOOLSET_VER}
