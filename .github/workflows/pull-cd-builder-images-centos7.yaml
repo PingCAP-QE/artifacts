@@ -91,7 +91,15 @@ jobs:
         profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
         platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
-
+        exclude:
+          - builder: ticdc
+            profile: go-1.22
+          - builder: ticdc
+            profile: go-1.21
+          - builder: ticdc
+            profile: go-1.20
+          - builder: ticdc
+            profile: go-1.19
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

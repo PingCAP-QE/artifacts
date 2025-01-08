@@ -30,7 +30,8 @@ profiles:
         value: "{{ .SHA }}-centos7-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-23 # renovate: datasource=docker depName=golang
+        value:
+          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.4
   - name: go-1.22
     patches:
@@ -39,7 +40,8 @@ profiles:
         value: "{{ .SHA }}-centos7-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-22 # renovate: datasource=docker depName=golang
+        value:
+          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.22.10
   - name: go-1.21
     patches:
@@ -48,7 +50,7 @@ profiles:
         value: "{{ .SHA }}-centos7-go1.21"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-21
+        value:
           GOLANG_VERSION: 1.21.13
   - name: go-1.20
     patches:
@@ -57,7 +59,7 @@ profiles:
         value: "{{ .SHA }}-centos7-go1.20"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-20
+        value:
           GOLANG_VERSION: 1.20.14
   - name: go-1.19
     patches:
@@ -66,5 +68,5 @@ profiles:
         value: "{{ .SHA }}-centos7-go1.19"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-19
+        value:
           GOLANG_VERSION: 1.19.13

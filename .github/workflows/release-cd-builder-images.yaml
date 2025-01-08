@@ -91,6 +91,11 @@ jobs:
         module: [builder-go]
         profile: [go-1.23, go-1.22, go-1.21]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
+        exclude:
+          - builder: ticdc
+            profile: go-1.22
+          - builder: ticdc
+            profile: go-1.21
 
     steps:
       - name: Checkout sources
