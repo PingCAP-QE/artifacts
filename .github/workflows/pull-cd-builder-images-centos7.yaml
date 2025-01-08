@@ -10,7 +10,8 @@ on:
 
 jobs:
   define-matrix:
-    runs-on: ubuntu-latest
+    name: Define building matrix - CentOS7
+    runs-on: ubuntu-24.04
     outputs:
       changed_folders: ${{ steps.changed.outputs.folders }}
       changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders }}
@@ -70,15 +71,15 @@ jobs:
           JSON_CHANGED_FOLDERS_CPP_TYPE=$(jq --null-input --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_CPP_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
 
           # Set the output variable
-          echo "files=$JSON_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "folders=$JSON_CHANGED_FOLDERS" >> $GITHUB_OUTPUT
-          echo "go_builder_folders=$JSON_CHANGED_FOLDERS_GO_TYPE" >> $GITHUB_OUTPUT
-          echo "rust_builder_folders=$JSON_CHANGED_FOLDERS_RUST_TYPE" >> $GITHUB_OUTPUT
-          echo "cpp_builder_folders=$JSON_CHANGED_FOLDERS_CPP_TYPE" >> $GITHUB_OUTPUT
+          echo "files=$JSON_CHANGED_FILES" | tee -a $GITHUB_OUTPUT
+          echo "folders=$JSON_CHANGED_FOLDERS" | tee -a $GITHUB_OUTPUT
+          echo "go_builder_folders=$JSON_CHANGED_FOLDERS_GO_TYPE" | tee -a $GITHUB_OUTPUT
+          echo "rust_builder_folders=$JSON_CHANGED_FOLDERS_RUST_TYPE" | tee -a $GITHUB_OUTPUT
+          echo "cpp_builder_folders=$JSON_CHANGED_FOLDERS_CPP_TYPE" | tee -a $GITHUB_OUTPUT
 
   skaffold-golang:
-    name: build images for golang builders
-    runs-on: ubuntu-latest
+    name: build golang builders - base CentOS7
+    runs-on: ubuntu-24.04
     needs: define-matrix
 
     permissions:
@@ -139,8 +140,8 @@ jobs:
             --push=false
 
   skaffold-rust:
-    name: build images for rust builders
-    runs-on: ubuntu-latest
+    name: build rust builders - base CentOS7
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -190,8 +191,8 @@ jobs:
             --push=false
 
   skaffold-cpp:
-    name: skaffold build images for cpp builders
-    runs-on: ubuntu-latest
+    name: build cpp builders - base CentOS7
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write

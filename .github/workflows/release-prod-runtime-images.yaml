@@ -12,7 +12,7 @@ on:
 jobs:
   skaffold:
     name: publish images with skaffold
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
@@ -26,8 +26,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          fetch-depth: '0'
-          fetch-tags: 'true'
+          fetch-depth: "0"
+          fetch-tags: "true"
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
