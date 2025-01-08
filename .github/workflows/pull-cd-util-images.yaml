@@ -15,7 +15,7 @@ concurrency:
 jobs:
   skaffold:
     name: build images with skaffold
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read

@@ -11,7 +11,8 @@ on:
 
 jobs:
   define-matrix:
-    runs-on: ubuntu-latest
+    name: Define building matrix
+    runs-on: ubuntu-24.04
     outputs:
       changed_folders: ${{ steps.changed.outputs.folders }}
       changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders }}
@@ -79,7 +80,7 @@ jobs:
 
   skaffold-golang:
     name: push golang builders
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: define-matrix
 
     permissions:
@@ -134,7 +135,7 @@ jobs:
 
   skaffold-rust:
     name: push rust builders
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
@@ -181,7 +182,7 @@ jobs:
 
   skaffold-cpp:
     name: push cpp builders
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
