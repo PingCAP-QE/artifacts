@@ -19,6 +19,10 @@ jobs:
       changed_cpp_builder_folders: ${{ steps.changed.outputs.cpp_builder_folders }}
 
     steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
       - name: Parse changed scopes
         id: changed
         run: |
@@ -51,7 +55,7 @@ jobs:
           JSON_CHANGED_FILES=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           JSON_CHANGED_FOLDERS=$(echo "$CHANGED_FOLDERS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
           # trim the prefix substring "dockerfiles/cd/builders/" from the JSON_CHANGED_FOLDERS
-          JSON_CHANGED_BUILDERS=$(echo "$JSON_CHANGED_FOLDERS" | jq -R -s -c 'map(sub("/centos7"; "")) | map(sub("dockerfiles/cd/builders/"; "")) | map(select(length > 0)) | uniq')
+          JSON_CHANGED_BUILDERS=$(echo "$JSON_CHANGED_FOLDERS" | jq -c 'map(sub("/centos7"; "")) | map(sub("dockerfiles/cd/builders/"; "")) | map(select(length > 0)) | unique')
 
           # golang type builders
           JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd","ticdc", "tidb", "tidb-dashboard", "tiflow"]'
@@ -60,11 +64,11 @@ jobs:
 
           ### Compute the building matrix on builder axies.
           # Get intersection of arrays: JSON_ALL_GO_BUILDERS, JSON_CHANGED_BUILDERS
-          JSON_CHANGED_FOLDERS_GO_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_GO_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+          JSON_CHANGED_FOLDERS_GO_TYPE=$(jq --null-input --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_GO_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
           # Get intersection of arrays: JSON_ALL_RUST_BUILDERS, JSON_CHANGED_BUILDERS
-          JSON_CHANGED_FOLDERS_RUST_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_RUST_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+          JSON_CHANGED_FOLDERS_RUST_TYPE=$(jq --null-input --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_RUST_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
           # Get intersection of arrays: JSON_ALL_CPP_BUILDERS, JSON_CHANGED_BUILDERS
-          JSON_CHANGED_FOLDERS_CPP_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_CPP_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+          JSON_CHANGED_FOLDERS_CPP_TYPE=$(jq --null-input --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_CPP_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
 
           # Set the output variable
           echo "files=$JSON_CHANGED_FILES" >> $GITHUB_OUTPUT
@@ -115,7 +119,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Publish images
-        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
             --filename=skaffold-centos7.yaml \
@@ -162,7 +166,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Publish images
-        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
             --filename=skaffold-centos7.yaml \
@@ -209,7 +213,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Build images
-        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
             --filename=skaffold-centos7.yaml \
