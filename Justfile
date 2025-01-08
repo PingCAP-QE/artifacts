@@ -7,8 +7,11 @@ msb-tiflash: (_clone "tiflash" "https://github.com/pingcap/tiflash" "master")
 msb-dm: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/dm:local-build -f dockerfiles/cd/builders/tiflow/Dockerfile --target final-dm ../tiflow
 
-msb-cdc: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
+msb-cdc-old: (_clone "tiflow" "https://github.com/pingcap/tiflow.git" "master")
     docker build --load -t localhost/cdc:local-build -f dockerfiles/cd/builders/tiflow/Dockerfile --target final-cdc ../tiflow
+
+msb-cdc: (_clone "ticdc" "https://github.com/pingcap/ticdc.git" "master")
+    docker build --load -t localhost/cdc:local-build -f dockerfiles/cd/builders/ticdc/Dockerfile ../ticdc
 
 msb-tidb: (_clone_without_submodules "tidb" "https://github.com/pingcap/tidb.git" "master")
     docker build --load -t localhost/tidb:local-build -f dockerfiles/cd/builders/tidb/Dockerfile ../tidb

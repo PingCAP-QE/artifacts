@@ -7,7 +7,6 @@
 
 ########### stage: builder-cdc
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder-cdc
-
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \

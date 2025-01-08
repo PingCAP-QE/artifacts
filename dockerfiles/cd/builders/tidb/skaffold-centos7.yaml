@@ -1,0 +1,70 @@
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: tidb
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: centos7/Dockerfile
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}-centos7"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+profiles:
+  - name: go-1.23
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.23"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-23 # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.23.4
+  - name: go-1.22
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.22"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-22 # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.22.10
+  - name: go-1.21
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.21"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-21
+          GOLANG_VERSION: 1.21.13
+  - name: go-1.20
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.20"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-20
+          GOLANG_VERSION: 1.20.14
+  - name: go-1.19
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-centos7-go1.19"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-19
+          GOLANG_VERSION: 1.19.13

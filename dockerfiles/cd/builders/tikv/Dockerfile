@@ -12,7 +12,6 @@ LABEL org.opencontainers.image.description "binary builder for TiKV"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-# install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
     dnf --enablerepo=powertools install -y \

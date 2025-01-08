@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: ticdc
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: Dockerfile
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .SHA }}"
+      components:
+        - name: SHA
+          gitCommit:
+            variant: Tags
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+profiles:
+  - name: go-1.23
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .SHA }}-go1.23"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value: &value-go1-23 # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.23.4

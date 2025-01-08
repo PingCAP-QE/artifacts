@@ -55,7 +55,7 @@ jobs:
         if: contains(github.event.comment.body, 'msb-pd')
         run: just msb-pd
 
-      - name: Testing for CDC of tiflow
+      - name: Testing for new CDC
         if: contains(github.event.comment.body, 'msb-cdc')
         run: just msb-cdc
 

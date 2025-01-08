@@ -6,16 +6,76 @@ on:
     paths:
       - "dockerfiles/cd/builders/*/centos7/Dockerfile"
       - "dockerfiles/cd/builders/*/centos7/*.Dockerfile"
-      - "dockerfiles/cd/builders/skaffold-centos7.yaml"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - "dockerfiles/cd/builders/*/skaffold-centos7.yaml"
 
 jobs:
-  skaffold-go:
-    name: build images with skaffold
+  define-matrix:
     runs-on: ubuntu-latest
+    outputs:
+      changed_folders: ${{ steps.changed.outputs.folders }}
+      changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders }}
+      changed_rust_builder_folders: ${{ steps.changed.outputs.rust_builder_folders }}
+      changed_cpp_builder_folders: ${{ steps.changed.outputs.cpp_builder_folders }}
+
+    steps:
+      - name: Parse changed scopes
+        id: changed
+        run: |
+          # Determine the base SHA depending on the event
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_SHA=${{ github.event.pull_request.base.sha }}
+            HEAD_SHA=${{ github.event.pull_request.head.sha }}
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            # For push events, compare with the previous commit
+            BASE_SHA=$(git rev-parse HEAD^)
+            HEAD_SHA=$(git rev-parse HEAD)
+          else
+            echo "Unsupported event: ${{ github.event_name }}"
+            exit 1
+          fi
+
+          echo "Base SHA: $BASE_SHA"
+          echo "Head SHA: $HEAD_SHA"
+
+          # Get list of changed files with status
+          git diff --name-status $BASE_SHA $HEAD_SHA > changed_files.txt
+          echo "Changed Files with Status:"
+          cat changed_files.txt
+
+          # Filter out deleted files and get only filenames and select the files in dockerfiles/cd/builders with `centos7` matched.
+          CHANGED_FILES=$(grep -v '^D' changed_files.txt | cut -f2- | grep -E '^dockerfiles/cd/builders/(.*Dockerfile|skaffold.*.yaml)' | grep centos7)
+          CHANGED_FOLDERS=$(echo "$CHANGED_FILES" | xargs -n1 dirname | sort --unique)
+
+          # Convert the lists to JSON arrays
+          JSON_CHANGED_FILES=$(echo "$CHANGED_FILES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          JSON_CHANGED_FOLDERS=$(echo "$CHANGED_FOLDERS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          # trim the prefix substring "dockerfiles/cd/builders/" from the JSON_CHANGED_FOLDERS
+          JSON_CHANGED_BUILDERS=$(echo "$JSON_CHANGED_FOLDERS" | jq -R -s -c 'map(sub("/centos7"; "")) | map(sub("dockerfiles/cd/builders/"; "")) | map(select(length > 0)) | uniq')
+
+          # golang type builders
+          JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd","ticdc", "tidb", "tidb-dashboard", "tiflow"]'
+          JSON_ALL_RUST_BUILDERS='["tikv"]'
+          JSON_ALL_CPP_BUILDERS='["tiflash"]'
+
+          ### Compute the building matrix on builder axies.
+          # Get intersection of arrays: JSON_ALL_GO_BUILDERS, JSON_CHANGED_BUILDERS
+          JSON_CHANGED_FOLDERS_GO_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_GO_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+          # Get intersection of arrays: JSON_ALL_RUST_BUILDERS, JSON_CHANGED_BUILDERS
+          JSON_CHANGED_FOLDERS_RUST_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_RUST_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+          # Get intersection of arrays: JSON_ALL_CPP_BUILDERS, JSON_CHANGED_BUILDERS
+          JSON_CHANGED_FOLDERS_CPP_TYPE=$(jq --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_CPP_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
+
+          # Set the output variable
+          echo "files=$JSON_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "folders=$JSON_CHANGED_FOLDERS" >> $GITHUB_OUTPUT
+          echo "go_builder_folders=$JSON_CHANGED_FOLDERS_GO_TYPE" >> $GITHUB_OUTPUT
+          echo "rust_builder_folders=$JSON_CHANGED_FOLDERS_RUST_TYPE" >> $GITHUB_OUTPUT
+          echo "cpp_builder_folders=$JSON_CHANGED_FOLDERS_CPP_TYPE" >> $GITHUB_OUTPUT
+
+  skaffold-golang:
+    name: build images for golang builders
+    runs-on: ubuntu-latest
+    needs: define-matrix
 
     permissions:
       contents: read
@@ -24,19 +84,20 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        go-profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
+        profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
         platform: [linux/amd64, linux/arm64]
+        builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          fetch-depth: '0'
-          fetch-tags: 'true'
+          fetch-depth: "0"
+          fetch-tags: "true"
 
-      # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      # https://github.com/docker/setup-buildx-action
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -54,42 +115,40 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Build images
-        working-directory: dockerfiles/cd/builders
+        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
         run: |
           skaffold build \
             --filename=skaffold-centos7.yaml \
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
-            --module=${{ matrix.module }} \
-            --profile=${{ matrix.go-profile }} \
+            --profile=${{ matrix.profile }} \
             --platform=${{ matrix.platform }} \
             --push=false
 
-  skaffold-nogo:
-    name: build images with skaffold
+  skaffold-rust:
+    name: build images for rust builders
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
 
     strategy:
       matrix:
-        # module: [builder-tiflash, builder-tikv]
         module: [builder-tikv]
         platform: [linux/amd64, linux/arm64]
+        builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          fetch-depth: '0'
-          fetch-tags: 'true'
+          fetch-depth: "0"
+          fetch-tags: "true"
 
-      # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      # https://github.com/docker/setup-buildx-action
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -107,7 +166,7 @@ jobs:
           sudo install skaffold /usr/local/bin/
 
       - name: Build images
-        working-directory: dockerfiles/cd/builders
+        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
         run: |
           skaffold build \
             --filename=skaffold-centos7.yaml \
@@ -115,5 +174,54 @@ jobs:
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --module=${{ matrix.module }} \
+            --platform=${{ matrix.platform }} \
+            --push=false
+
+  skaffold-cpp:
+    name: skaffold build images for cpp builders
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        platform: [linux/amd64, linux/arm64]
+        builder: ${{ fromJSON(needs.define-matrix.outputs.changed_cpp_builder_folders) }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: "true"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup skaffold
+        run: |
+          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
+          sudo install skaffold /usr/local/bin/
+
+      - name: Build images
+        working-directory: dockerfiles/cd/builders/$${{ matrix.builder }}
+        run: |
+          skaffold build \
+            --filename=skaffold-centos7.yaml \
+            --build-concurrency=1 \
+            --cache-artifacts \
+            --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --platform=${{ matrix.platform }} \
             --push=false

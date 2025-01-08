@@ -47,6 +47,9 @@ RUN node --version && npm --version && npm install -g yarn
 
 ########### stage: Builder - total
 FROM builder-dm as builder
+LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description "binary builder for TiFlow"
+LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: Buiding cdc
 FROM builder-cdc as building-cdc
