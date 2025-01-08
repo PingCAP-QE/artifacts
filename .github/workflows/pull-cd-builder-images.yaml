@@ -71,11 +71,11 @@ jobs:
           JSON_CHANGED_FOLDERS_CPP_TYPE=$(jq --null-input --argjson changed "$JSON_CHANGED_BUILDERS" --argjson ALL "$JSON_ALL_CPP_BUILDERS" -R -s -c '$changed - ($changed - $ALL)' )
 
           # Set the output variable
-          echo "files=$JSON_CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "folders=$JSON_CHANGED_FOLDERS" >> $GITHUB_OUTPUT
-          echo "go_builder_folders=$JSON_CHANGED_FOLDERS_GO_TYPE" >> $GITHUB_OUTPUT
-          echo "rust_builder_folders=$JSON_CHANGED_FOLDERS_RUST_TYPE" >> $GITHUB_OUTPUT
-          echo "cpp_builder_folders=$JSON_CHANGED_FOLDERS_CPP_TYPE" >> $GITHUB_OUTPUT
+          echo "files=$JSON_CHANGED_FILES" | tee -a $GITHUB_OUTPUT
+          echo "folders=$JSON_CHANGED_FOLDERS" | tee -a $GITHUB_OUTPUT
+          echo "go_builder_folders=$JSON_CHANGED_FOLDERS_GO_TYPE" | tee -a $GITHUB_OUTPUT
+          echo "rust_builder_folders=$JSON_CHANGED_FOLDERS_RUST_TYPE" | tee -a $GITHUB_OUTPUT
+          echo "cpp_builder_folders=$JSON_CHANGED_FOLDERS_CPP_TYPE" | tee -a $GITHUB_OUTPUT
 
   skaffold-golang:
     name: build golang builders
