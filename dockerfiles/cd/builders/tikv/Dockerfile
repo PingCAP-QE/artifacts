@@ -12,12 +12,11 @@ LABEL org.opencontainers.image.description "binary builder for TiKV"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
-# install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
     dnf --enablerepo=powertools install -y \
-      make git findutils gcc gcc-c++ cmake curl openssl-devel perl python3 \
-      libstdc++-static
+    git findutils gcc gcc-c++ make cmake curl dwz openssl-devel perl python3  \
+    libstdc++-static
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
