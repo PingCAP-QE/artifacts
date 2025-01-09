@@ -36,6 +36,20 @@ function test_get_builder() {
         done
     done
 
+    # for cdc - only community edition
+    local cm="ticdc"
+    local versions="v9.0.0"
+    for version in $versions; do
+        for os in $operating_systems; do
+            for ac in $architectures; do
+                echo -en "[🚢] $cm $os $ac $version release:\t"
+                img=$($script "$cm" "$os" "$ac" "$version" release)
+                echo $img
+                check_image_existed $img
+            done
+        done
+    done
+
     # enterprise profile
     local components="tidb tiflash tikv pd"
     for cm in $components; do
@@ -119,6 +133,19 @@ function test_gen_package_artifacts_script() {
                     $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
+            done
+        done
+    done
+
+    # for cdc - only community edition
+    local cm="ticdc"
+    local versions="v9.0.0"
+    for version in $versions; do
+        for os in $operating_systems; do
+            for ac in $architectures; do
+                echo -en "[📃📦] $cm $os $ac $version $profile:\t"
+                $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
+                shellcheck -S error packages/scripts/build-package-artifacts.sh
             done
         done
     done
@@ -222,6 +249,17 @@ function test_gen_package_images_script() {
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
+        done
+    done
+
+    # for cdc - only community edition
+    local cm="ticdc"
+    local versions="v9.0.0"
+    for version in $versions; do
+        for ac in $architectures; do
+            echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
 
