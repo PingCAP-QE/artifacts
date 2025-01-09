@@ -47,6 +47,11 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
+  hub.pingcap.net/pingcap/ticdc/image:
+    # only delivey the master branch images.
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator:
     - description: delivery the version images.
       tags_regex:
@@ -155,9 +160,10 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/dumpling
         - docker.io/pingcap/dumpling-enterprise
   hub.pingcap.net/pingcap/tiflow/images/cdc:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc
+    # We switch the `master` tag image building from `pingcap/tiflow` to `pingcap/ticdc` repo.
+    # - <<: *sync_trunk_community
+    #   dest_repositories:
+    #     - docker.io/pingcap/ticdc
     - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/ticdc

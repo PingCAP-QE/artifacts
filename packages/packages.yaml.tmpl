@@ -1817,7 +1817,7 @@ components:
                 src:
                   path: outputs/tiflash/
   tiflow:
-    desc: tiflow components tarball
+    desc: tiflow components
     git:
       url: https://github.com/pingcap/tiflow.git
       ref: {{ .Git.ref | default "master" }}
@@ -2119,7 +2119,51 @@ components:
             dockerfile: deployments/engine/docker/Dockerfile
             build_args:
               - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
-
+  ticdc:
+    desc: ticdc components
+    git:
+      url: https://github.com/pingcap/ticdc.git
+      ref: {{ .Git.ref | default "master" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: "{{ .Release.registry }}/pingcap/ticdc/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    # binary builder, also we need it when build for mac to get build tools versions and other informations.
+    builders:
+      - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2024.10.8-64-g95f12b0-centos7-go1.23
+    routers:
+      - description: For range [v9.0.0, )
+        if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make cdc
+        artifacts:
+          - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: cdc
+                src:
+                  path: bin/cdc
+            tiup:
+              description: >-
+                CDC is a change data capture tool for TiDB
+              entrypoint: cdc
+          - name: container image - cdc
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/ticdc/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/Dockerfile
+            files: # context files
+              - { name: cdc, src: { path: bin/cdc } }
   tiflow-operator:
     desc: tiflow operator components tarball
     git:
