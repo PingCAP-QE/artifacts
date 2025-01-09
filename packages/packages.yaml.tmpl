@@ -1844,8 +1844,114 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-103-g043adb3-go1.18
     routers:
-      - description: For range [v6.5.0, )
-        if: {{ semver.CheckConstraint ">= 6.5.0-0" .Release.version }}
+      - description: |
+            For range [v9.0.0, ). Since v9.0.0 we build and publish cdc components from `pingcap/ticdc` repository.
+        if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - os: darwin
+              description: install nodejs toolchain.
+              script: |
+                NODE_VERSION="v16.20.2"
+                NVM_VERSION="v0.39.5"
+                NVM_DIR="$HOME/.nvm"
+                mkdir -p $NVM_DIR
+
+                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash
+                fi
+                . $NVM_DIR/nvm.sh
+                nvm install ${NODE_VERSION}
+                nvm use ${NODE_VERSION}
+                nvm alias default ${NODE_VERSION}
+
+                node --version && npm --version
+                npm install -g yarn
+            - script: |
+                make dm-master-with-webui dm-worker dmctl dm-syncer
+        artifacts:
+          - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-master/dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-master/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-master/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dm-master/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dm-master component of Data Migration Platform.
+              entrypoint: dm-master/dm-master
+          - name: "dm-worker-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dm-worker/dm-worker
+                src:
+                  path: bin/dm-worker
+              - name: dm-worker/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dm-worker/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dm-worker/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dm-worker component of Data Migration Platform.
+              entrypoint: dm-worker/dm-worker
+          - name: "dmctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: dmctl/dmctl
+                src:
+                  path: bin/dmctl
+              - name: dmctl/conf/dm_worker.rules.yml
+                src:
+                  path: dm/metrics/alertmanager/dm_worker.rules.yml
+              - name: dmctl/scripts/DM-Monitor-Professional.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+              - name: dmctl/scripts/DM-Monitor-Standard.json
+                src:
+                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+            tiup:
+              description: >-
+                dmctl component of Data Migration Platform.
+              entrypoint: dmctl/dmctl
+          - name: container image - dm
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
+            files:
+              - name: dm-master
+                src:
+                  path: bin/dm-master
+              - name: dm-worker
+                src:
+                  path: bin/dm-worker
+              - name: dmctl
+                src:
+                  path: bin/dmctl
+          - name: container image - tiflow-engine
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
+            context: . # just build under git repo folder.
+            dockerfile: deployments/engine/docker/Dockerfile
+            build_args:
+              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
+      - description: For range [v6.5.0, v9.0.0)
+        if: {{ semver.CheckConstraint ">= 6.5.0-0, < v9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
