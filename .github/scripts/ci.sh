@@ -77,7 +77,7 @@ function test_get_builder_freedom_releasing() {
     local profile="release"
     local os="linux"
     for ac in $architectures; do
-        for version in v1.5.0 v1.6.0; do
+        for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[🚢] $cm $os $ac $version $profile:\t"
             $script "$cm" "$os" "$ac" "$version" $profile
         done
@@ -192,7 +192,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     local cm="tidb-operator"
     local os="linux"
     for ac in $architectures; do
-        for version in v1.5.0 v1.6.0; do
+        for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
             $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-artifacts.sh
@@ -287,7 +287,7 @@ function test_gen_package_images_script_freedom_releasing() {
     # tidb-operator
     local cm="tidb-operator"
     for ac in $architectures; do
-        for version in v1.6.0 v1.5.0; do
+        for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
