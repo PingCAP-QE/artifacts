@@ -1387,8 +1387,31 @@ components:
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.21
     routers:
-      - description: starts from 1.5.0
-        if: {{ semver.CheckConstraint ">= 1.5.0-0" .Release.version }}
+      - description: for range [v2.0.0, )
+        if: {{ semver.CheckConstraint ">= 2.0.0-0" .Release.version }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: make build
+        artifacts:
+          - name: container image - operator
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-operator"
+            context: .
+            dockerfile: image/Dockerfile
+            target: operator # target build stage in Dockerfile
+          - name: container image - prestop-checker
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/prestop-checker"
+            context: .
+            dockerfile: image/Dockerfile
+            target: prestop-checker # target build stage in Dockerfile
+      - description: for range [v1.5.0, v2.0.0)
+        if: {{ semver.CheckConstraint ">= 1.5.0-0, < 2.0.0-0" .Release.version }}
         os: [linux]
         arch: [amd64, arm64]
         profile: [release, fips]
