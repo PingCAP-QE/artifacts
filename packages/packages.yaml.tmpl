@@ -58,8 +58,66 @@ components:
     builders:
       - image: ghcr.io/pingcap-qe/cd/utils/release:v2024.10.8-55-gdeaa249
     routers:
-      - description: For range [v8.4.0, )
-        if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
+      - description: For range [v9.0.0, )
+        if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release]
+        artifacts:
+          - name: "ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: cdc
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/ticdc/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "cdc-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: cdc
+              - name: ctl
+                src:
+                  type: http
+                  url: "https://github.com/pingcap/tiup/releases/download/v1.16.1/tiup-v1.16.1-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: bin/tiup-ctl
+              - name: etcdctl
+                src:
+                  type: http
+                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}{{ ternary ".zip" ".tar.gz" (eq .Release.os "darwin") }}"
+                  extract: true
+                  extract_inner_path: etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl
+              - name: pd-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/pd/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "pd-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: pd-ctl
+              - name: tidb-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb-ctl/package:master_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-ctl
+              - name: tikv-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/tikv/tikv/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tikv-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tikv-ctl
+              - name: tidb-lightning-ctl
+                src:
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/tidb/package:{{ .Git.ref }}_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "tidb-lightning-ctl-.*-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  extract: true
+                  extract_inner_path: tidb-lightning-ctl
+            tiup:
+              description: TiDB controller suite
+              entrypoint: ctl
+      - description: For range [v8.4.0, v9.0.0)
+        if: {{ semver.CheckConstraint ">= 8.4.0-0, < 9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
