@@ -34,3 +34,9 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-v${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
     mkdir -p "$HOME/.tiup/bin"
+
+# install tools: aws-cli
+RUN apk add --no-cache python3 aws-cli py3-pip  && \
+    pip3 install awscli-plugin-endpoint --break-system-packages && \
+    aws configure set plugins.cli_legacy_plugin_path $(find /usr/lib -name site-packages -type d | head -1) && \
+    aws configure set plugins.endpoint awscli_plugin_endpoint
