@@ -53,11 +53,16 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/ticdc
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator:
-    - description: delivery the version images.
+    - description: delivery the v1 version images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-.+)?$
+        - ^(v1[.][0-9]+[.][0-9]+)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/tidb-operator
+        - gcr.io/pingcap-public/dbaas/tidb-operator
+    - description: delivery the v2 version images, it is in development.
+      tags_regex:
+        - ^(v2[.][0-9]+[.][0-9]+)(-.+)?$
+      dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-operator
     - <<: *sync_trunk_community
       dest_repositories:
