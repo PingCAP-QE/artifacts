@@ -1,5 +1,5 @@
 # Ref: https://github.com/sqawasmi/trafficserver-docker/blob/master/Dockerfile
-FROM debian:12.8
+FROM debian:12.9
 
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
