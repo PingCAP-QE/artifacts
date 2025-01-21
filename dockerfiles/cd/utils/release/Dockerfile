@@ -4,9 +4,8 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "utils image for CD release"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
-# install tools: bash, git, jq, yq
-# RUN apk add --no-cache bash git jq yq uuidgen gomplate
-RUN apk add --no-cache bash git jq yq uuidgen
+# install tools: bash, curl, git, jq, yq, uuidgen
+RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gomplate
 COPY --from=hairyhenderson/gomplate:v4.3.0-alpine /bin/gomplate /usr/local/bin/gomplate
