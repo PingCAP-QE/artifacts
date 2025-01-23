@@ -48,7 +48,7 @@ jobs:
           cat changed_files.txt
 
           # Filter out deleted files and get only filenames and select the files in dockerfiles/cd/builders with `centos7` matched.
-          CHANGED_FILES=$(grep -v '^D' changed_files.txt | cut -f2- | grep -E '^dockerfiles/cd/builders/(.*Dockerfile|skaffold.*.yaml)' | grep centos7)
+          CHANGED_FILES=$(grep -v '^D' changed_files.txt | cut -f2- | grep -E '^dockerfiles/cd/builders/.*/(.*Dockerfile|skaffold.*.yaml)' | grep centos7)
           CHANGED_FOLDERS=$(echo "$CHANGED_FILES" | xargs -n1 dirname | sort --unique)
 
           # Convert the lists to JSON arrays
