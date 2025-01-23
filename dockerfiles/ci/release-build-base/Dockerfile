@@ -99,7 +99,7 @@ COPY --from=hairyhenderson/gomplate:v4.3.0 /gomplate /usr/local/bin/gomplate
 
 # Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
-ARG CMAKE_VERSION=3.23.5
+ARG CMAKE_VERSION=3.31.5
 RUN filename="cmake-${CMAKE_VERSION}-linux-$(arch).sh"; \
     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${filename} && \
     sh ${filename} --prefix=/usr/local --skip-license --exclude-subdir && \
