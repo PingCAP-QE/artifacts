@@ -1,6 +1,9 @@
 # yaml-language-server: $schema=../schemas/delivery-schema.json
 deprecated:
-  - hub.pingcap.net/pingcap/tidb-binlog/image # deprecated in v8.3 and removed in v8.4.
+  # deprecated in v8.3 and removed in v8.4.
+  - hub.pingcap.net/pingcap/tidb-binlog/image
+  # deprecated and removed in v9.0.0, use hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector instead.
+  - hub.pingcap.net/pingcap/tidb-tools/image
 definitions:
   sync_trunk_community: &sync_trunk_community
     description: delivery the trunk branch images.
@@ -220,6 +223,13 @@ image_copy_rules:
     - <<: *sync_ga_community
       dest_repositories:
         - gcr.io/pingcap-public/tidbcloud/tiflow
+  hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector:
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/sync-diff-inspector
+    - <<: *sync_ga_community
+      dest_repositories:
+        - docker.io/pingcap/sync-diff-inspector
   hub.pingcap.net/pingcap/tiflash/image:
     - <<: *sync_trunk_community
       dest_repositories:
@@ -290,10 +300,6 @@ image_copy_rules:
         - hub.pingcap.net/qa/ng-monitoring-enterprise
         - gcr.io/pingcap-public/dbaas/ng-monitoring
         - docker.io/pingcap/ng-monitoring-enterprise
-  hub.pingcap.net/pingcap/tidb-tools/image:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/tidb-tools
   hub.pingcap.net/pingcap/tidb-binlog/image:
     - <<: *sync_trunk_community
       dest_repositories:

@@ -7,7 +7,6 @@ Central declarative congfigurations for artifacts delivering.
 ## Prerequire tools
 
 - [gomplate](https://github.com/hairyhenderson/gomplate)
-  > Please install the master version.
 - [yq](https://github.com/mikefarah/yq)
 - [jq](https://jqlang.github.io/jq/download/)
 
