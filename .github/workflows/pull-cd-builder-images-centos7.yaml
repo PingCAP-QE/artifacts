@@ -101,6 +101,8 @@ jobs:
             profile: go-1.20
           - builder: ticdc
             profile: go-1.19
+      max-parallel: 10
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
