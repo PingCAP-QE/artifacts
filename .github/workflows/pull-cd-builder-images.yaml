@@ -97,6 +97,7 @@ jobs:
             profile: go-1.22
           - builder: ticdc
             profile: go-1.21
+      max-parallel: 10
 
     steps:
       - name: Checkout sources
