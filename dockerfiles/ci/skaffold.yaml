@@ -39,7 +39,7 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value: &value-go1-23
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.23.5
+          GOLANG_VERSION: 1.23.6
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value: *value-go1-23
