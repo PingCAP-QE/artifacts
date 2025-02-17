@@ -25,6 +25,11 @@ function test_get_builder() {
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
     for cm in $components; do
         for version in $versions; do
+            # Skip tidb-tools for version v9.0.0
+            if [[ $cm == "tidb-tools" && $version == "v9.0.0" ]]; then
+                echo "Skipping tidb-tools for version v9.0.0"
+                continue
+            fi
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version release:\t"
@@ -127,6 +132,11 @@ function test_gen_package_artifacts_script() {
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
     for cm in $components; do
         for version in $versions; do
+            # Skip tidb-tools for version v9.0.0
+            if [[ $cm == "tidb-tools" && $version == "v9.0.0" ]]; then
+                echo "Skipping tidb-tools for version v9.0.0"
+                continue
+            fi
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
@@ -244,6 +254,11 @@ function test_gen_package_images_script() {
     local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
     for cm in $components; do
         for version in $versions; do
+            # Skip tidb-tools for version v9.0.0
+            if [[ $cm == "tidb-tools" && $version == "v9.0.0" ]]; then
+                echo "Skipping tidb-tools for version v9.0.0"
+                continue
+            fi
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef

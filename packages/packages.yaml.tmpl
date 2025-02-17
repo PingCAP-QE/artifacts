@@ -1272,8 +1272,9 @@ components:
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
-      - description: interpret versions according to semantic version spec.
-        if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+      - description: >
+            for range [6.1.0, v9.0.0), it stop at v8.5.1. sync diff inspector tool is migrate to pingcap/tiflow repo.
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < v9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, experiment]
@@ -1952,7 +1953,7 @@ components:
                 node --version && npm --version
                 npm install -g yarn
             - script: |
-                make dm-master-with-webui dm-worker dmctl dm-syncer
+                make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
         artifacts:
           - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -2008,6 +2009,24 @@ components:
               description: >-
                 dmctl component of Data Migration Platform.
               entrypoint: dmctl/dmctl
+          - name: "sync-diff-inspector-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: sync_diff_inspector
+                src:
+                  path: bin/sync_diff_inspector
+            tiup:
+              description: >-
+                sync-diff-inspector is a tool used to verify the consistency across different MySQL-compatible data sources.
+              entrypoint: sync_diff_inspector
+          - name: container image - sync-diff-inspector
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflow/images/sync-diff-inspector"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}sync-diff-inspector.Dockerfile
+            files:
+              - name: sync_diff_inspector
+                src:
+                  path: bin/sync_diff_inspector
           - name: container image - dm
             type: image
             artifactory:
