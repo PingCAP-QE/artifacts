@@ -1711,12 +1711,12 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
             - os: linux
               script: |
-                ./release-linux-llvm/scripts/build-tiflash-release.sh
+                ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
             - os: darwin
@@ -1728,14 +1728,15 @@ components:
             - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
-                ./release-linux-llvm/scripts/build-tiflash-release.sh
+                ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
-            - os: darwin
+          failpoint:
+            - os: linux
               script: |
-                ./release-darwin/build/build-release.sh
+                ./release-linux-llvm/scripts/build-debug.sh
                 mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
+                mv release-linux-llvm/tiflash outputs/tiflash
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1763,7 +1764,7 @@ components:
           release:
             - os: linux
               script: |
-                ./release-centos7-llvm/scripts/build-tiflash-release.sh
+                ./release-centos7-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-centos7-llvm/tiflash outputs/tiflash
             - os: darwin
@@ -1775,14 +1776,15 @@ components:
             - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
-                ./release-centos7-llvm/scripts/build-tiflash-release.sh
+                ./release-centos7-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-centos7-llvm/tiflash outputs/tiflash
-            - os: darwin
+          failpoint:
+            - os: linux
               script: |
-                ./release-darwin/build/build-release.sh
+                ./release-centos7-llvm/scripts/build-debug.sh
                 mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
+                mv release-centos7-llvm/tiflash outputs/tiflash
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
@@ -1845,13 +1847,6 @@ components:
                 mv release-centos7-llvm/tiflash outputs/tiflash
           enterprise:
             - script: export TIFLASH_EDITION=Enterprise
-            - os: darwin
-              script: |
-                ./release-darwin/build/build-release.sh
-            - os: darwin
-              script: |
-                mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
             - os: linux
               script: |
                 # Create new build script to take advantage of ccache
@@ -1872,6 +1867,36 @@ components:
                 CXX=clang++ \
                 LD=ld.lld \
                 build/scripts/build-release.sh
+
+                # debug it.
+                ccache -s
+            - os: linux
+              description: move the building targets outputs to the constant path.
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
+          failpoint:
+            - script: export TIFLASH_EDITION=Enterprise
+            - os: linux
+              script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - os: linux
+              script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-debug.sh
 
                 # debug it.
                 ccache -s
