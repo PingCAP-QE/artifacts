@@ -1876,7 +1876,6 @@ components:
                 mkdir outputs
                 mv release-centos7-llvm/tiflash outputs/tiflash
           failpoint:
-            - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
                 # Create new build script to take advantage of ccache
