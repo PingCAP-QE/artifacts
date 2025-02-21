@@ -1469,6 +1469,13 @@ components:
             context: .
             dockerfile: image/Dockerfile
             target: prestop-checker # target build stage in Dockerfile
+          - name: container image - backup-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/backup-manager"
+            context: .
+            dockerfile: image/Dockerfile
+            target: backup-manager # target build stage in Dockerfile
       - description: for range [v1.5.0, v2.0.0)
         if: {{ semver.CheckConstraint ">= 1.5.0-0, < 2.0.0-0" .Release.version }}
         os: [linux]
