@@ -59,7 +59,7 @@ jobs:
           JSON_CHANGED_BUILDERS=$(echo "$JSON_CHANGED_FOLDERS" | jq -c 'map(sub("/centos7"; "")) | map(sub("dockerfiles/cd/builders/"; "")) | map(select(length > 0)) | unique')
 
           # golang type builders
-          JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd","ticdc", "tidb", "tidb-dashboard", "tiflow"]'
+          JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd","ticdc", "tidb", "tidb-dashboard", "tiflow", "tidbx"]'
           JSON_ALL_RUST_BUILDERS='["tikv"]'
           JSON_ALL_CPP_BUILDERS='["tiflash"]'
 
@@ -100,6 +100,14 @@ jobs:
           - builder: ticdc
             profile: go-1.20
           - builder: ticdc
+            profile: go-1.19
+          - builder: tidbx
+            profile: go-1.22
+          - builder: tidbx
+            profile: go-1.21
+          - builder: tidbx
+            profile: go-1.20
+          - builder: tidbx
             profile: go-1.19
       max-parallel: 1
 
