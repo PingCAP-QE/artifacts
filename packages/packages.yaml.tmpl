@@ -1472,7 +1472,7 @@ components:
           - name: container image - backup-manager
             type: image
             artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/backup-manager"
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/tidb-backup-manager"
             context: .
             dockerfile: image/Dockerfile
             target: backup-manager # target build stage in Dockerfile
