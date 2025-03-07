@@ -1810,8 +1810,8 @@ components:
               - name: tiflash/
                 src:
                   path: outputs/tiflash/
-      - description: For range [v6.1.0, v8.4.0)
-        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
+      - description: For range [v6.2.0, v8.4.0)
+        if: {{ semver.CheckConstraint ">= 6.2.0-0, < 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, failpoint]
@@ -1903,6 +1903,96 @@ components:
                 CXX=clang++ \
                 LD=ld.lld \
                 build/scripts/build-debug.sh
+
+                # debug it.
+                ccache -s
+            - os: linux
+              description: move the building targets outputs to the constant path.
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
+        artifacts:
+          - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files: # output files.
+              - name: tiflash/
+                src:
+                  path: outputs/tiflash/
+            tiup:
+              description: The TiFlash Columnar Storage Engine
+              entrypoint: tiflash/tiflash
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tiflash/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            files:
+              - name: tiflash/
+                src:
+                  path: outputs/tiflash/
+      - description: For range [v6.1.0, v6.2.0)
+        if: {{ semver.CheckConstraint ">= 6.1.0-0, < 6.2.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release, enterprise]
+        steps:
+          release:
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+            - os: darwin
+              script: |
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
+            - os: linux
+              script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - os: linux
+              script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-release.sh
+
+                # debug it.
+                ccache -s
+            - os: linux
+              description: move the building targets outputs to the constant path.
+              script: |
+                mkdir outputs
+                mv release-centos7-llvm/tiflash outputs/tiflash
+          enterprise:
+            - script: export TIFLASH_EDITION=Enterprise
+            - os: linux
+              script: |
+                # Create new build script to take advantage of ccache
+                mkdir -p build
+                cp -r release-centos7-llvm/scripts build/
+                sed -i  '/-GNinja/i  \ \ -DUSE_INTERNAL_TIFLASH_PROXY=0 \\\n\ \ -DPREBUILT_LIBS_ROOT=contrib/tiflash-proxy/ \\' build/scripts/build-tiflash-release.sh
+            - os: linux
+              script: |
+                # Build with ccache tool
+                mkdir -p /usr/lib64/ccache/bin/
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang
+                ln -s $(which ccache) /usr/lib64/ccache/bin/clang++
+
+                ccache -z
+
+                PATH="/usr/lib64/ccache/bin:/opt/cmake/bin:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
+                CC=clang \
+                CXX=clang++ \
+                LD=ld.lld \
+                build/scripts/build-release.sh
 
                 # debug it.
                 ccache -s
