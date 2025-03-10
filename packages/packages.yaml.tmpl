@@ -9,6 +9,19 @@ lt6.5.12/
 {{- end -}}
 {{- end -}}
 
+{{ define "get_monitoring_target_from_git_ref" -}}
+{{- if strings.HasPrefix "v" . -}}
+{{- $v := semver.Semver . -}}
+{{- if and (semver.CheckConstraint ">9.0.0-0" .) (regexp.Match "^v[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+$" .) -}}
+{{ printf "release-%d.%d-beta.%s" $v.Major $v.Minor (index (strings.Split "." .) 3) }}
+{{- else -}}
+{{ printf "release-%d.%d" $v.Major $v.Minor }}
+{{- end -}}
+{{- else -}}
+{{ . }}
+{{- end }}
+{{- end -}}
+
 components:
   advanced-statefulset:
     desc:
@@ -280,7 +293,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
+                export TARGET={{ template "get_monitoring_target_from_git_ref" .Git.ref }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 make grafana_without_pull
                 make default -C ng-monitoring
@@ -290,7 +303,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/monitoring/image"
-            context: monitor-snapshot/{{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}/operator/
+            context: monitor-snapshot/{{ template "get_monitoring_target_from_git_ref" .Git.ref }}/operator/
             dockerfile: Dockerfile
           - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             src: { path: "output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz" }
@@ -317,7 +330,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
+                export TARGET={{ template "get_monitoring_target_from_git_ref" .Git.ref }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 make grafana_without_pull
                 make default -C ng-monitoring
@@ -327,7 +340,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/monitoring/image"
-            context: monitor-snapshot/{{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}/operator/
+            context: monitor-snapshot/{{ template "get_monitoring_target_from_git_ref" .Git.ref }}/operator/
             dockerfile: Dockerfile
           - name: "grafana-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             src: { path: "output/grafana-{{ .Release.os }}-{{ .Release.arch }}.tar.gz" }
@@ -353,7 +366,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
+                export TARGET={{ template "get_monitoring_target_from_git_ref" .Git.ref }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make default -C ng-monitoring
@@ -378,7 +391,7 @@ components:
         steps:
           release:
             - script: |-
-                export TARGET={{ if strings.HasPrefix "v" .Git.ref }}{{ printf "release-%d.%d" (semver.Semver .Git.ref).Major (semver.Semver .Git.ref).Minor }}{{ else }}{{ .Git.ref }}{{ end }}
+                export TARGET={{ template "get_monitoring_target_from_git_ref" .Git.ref }}
                 export TARGET_OS={{ .Release.os }} TARGET_ARCH={{ .Release.arch }}
                 go run ./cmd/monitoring.go --config=monitoring.yaml --tag={{ .Git.ref }}
                 make output/prometheus
