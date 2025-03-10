@@ -13,35 +13,43 @@ definitions:
   sync_rc_community: &sync_rc_community
     description: delivery community images for release branches.
     tags_regex:
-      - ^release-[0-9]+[.][0-9]+(-experiment)?$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-experiment)?$
+      - ^release-[0-9]+[.][0-9]+(-beta[.][0-9]+)?$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc)[.][0-9]+.pre$
   sync_rc_community_and_failpoint: &sync_rc_community_and_failpoint
     description: delivery community and failpoint images for release branches.
     tags_regex:
-      - ^release-[0-9]+[.][0-9]+(-(failpoint|experiment))?$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-(failpoint|experiment))?$
+      - ^release-[0-9]+[.][0-9]+(-beta[.][0-9]+)?(-failpoint)?$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-failpoint)?$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc)[.][0-9]+.pre(-failpoint)?$
   sync_rc_enterprise: &sync_rc_enterprise
     description: delivery the enterprise RC images.
     tags_regex:
       - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc)[.][0-9]+.pre)-enterprise$
     tag_regex_replace: "$1"
   sync_rc_community_to_enterprise_repo: &sync_rc_community_to_enterprise_repo
     description: delivery the community RC image to enterprise repos.
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc)[.][0-9]+.pre$
+      - ^release-[0-9]+[.][0-9]+(-beta[.][0-9]+)?$
   sync_ga_community: &sync_ga_community
     description: delivery community images for GA images.
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+$
   sync_ga_enterprise: &sync_ga_enterprise
     description: delivery the enterprise GA images.
     tags_regex:
       - ^(v[0-9]+[.][0-9]+[.][0-9]+)-enterprise$
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+)-rc[.][0-9]+-enterprise$
     tag_regex_replace: "$1"
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
     description: delivery the community GA image to enterprise repos.
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+$
 image_copy_rules:
   hub.pingcap.net/pingcap/advanced-statefulset:
     - description: delivery the version images.
