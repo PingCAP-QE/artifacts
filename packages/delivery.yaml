@@ -15,7 +15,7 @@ definitions:
     tags_regex:
       - ^release-[0-9]+[.][0-9]+(-beta[.][0-9]+)?$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9](+[.]pre)?$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+([.]pre)?$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre$
   sync_rc_community_and_failpoint: &sync_rc_community_and_failpoint
     description: delivery community and failpoint images for release branches.
