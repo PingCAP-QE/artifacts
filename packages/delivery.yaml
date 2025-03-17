@@ -62,29 +62,27 @@ image_copy_rules:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
   hub.pingcap.net/pingcap/ticdc/image:
-    # only delivey the master branch images.
+    # only delivey the master branch images and versions since v9.0.0-beta.1
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ticdc
     - <<: *sync_rc_community
       dest_repositories:
         - hub.pingcap.net/qa/ticdc
-    # TODO: enable the GA delivery /cc @wuhuizuo
-    # - <<: *sync_ga_community
-    #   dest_repositories:
-    #     - hub.pingcap.net/qa/ticdc
-    #     - docker.io/pingcap/ticdc
-    #     - uhub.service.ucloud.cn/pingcap/ticdc
+    - <<: *sync_ga_community
+      dest_repositories:
+        - hub.pingcap.net/qa/ticdc
+        - docker.io/pingcap/ticdc
+        - uhub.service.ucloud.cn/pingcap/ticdc
     - <<: *sync_rc_community_to_enterprise_repo
       dest_repositories:
         - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
-    # TODO: enable the GA delivery /cc @wuhuizuo
-    # - <<: *sync_ga_community_to_enterprise_repo
-    #   dest_repositories:
-    #     - hub.pingcap.net/qa/ticdc-enterprise
-    #     - gcr.io/pingcap-public/dbaas/ticdc
-    #     - docker.io/pingcap/ticdc-enterprise
+    - <<: *sync_ga_community_to_enterprise_repo
+      dest_repositories:
+        - hub.pingcap.net/qa/ticdc-enterprise
+        - gcr.io/pingcap-public/dbaas/ticdc
+        - docker.io/pingcap/ticdc-enterprise
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator:
     - description: delivery the v1 version images.
       tags_regex:
@@ -204,6 +202,7 @@ image_copy_rules:
         - docker.io/pingcap/dumpling-enterprise
   hub.pingcap.net/pingcap/tiflow/images/cdc:
     # We switch the `master` tag image building from `pingcap/tiflow` to `pingcap/ticdc` repo.
+    # Since v9.0.0-beta.1, the image is built and synced from the pingcap/ticdc repo
     # - <<: *sync_trunk_community
     #   dest_repositories:
     #     - docker.io/pingcap/ticdc
