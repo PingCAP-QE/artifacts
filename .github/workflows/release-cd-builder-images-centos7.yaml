@@ -90,25 +90,13 @@ jobs:
     strategy:
       matrix:
         module: [builder-go]
-        profile: [go-1.23, go-1.22, go-1.21, go-1.20, go-1.19]
+        profile: [go-1.24, go-1.23, go-1.22]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
         exclude:
           - builder: ticdc
             profile: go-1.22
-          - builder: ticdc
-            profile: go-1.21
-          - builder: ticdc
-            profile: go-1.20
-          - builder: ticdc
-            profile: go-1.19
           - builder: tidbx
             profile: go-1.22
-          - builder: tidbx
-            profile: go-1.21
-          - builder: tidbx
-            profile: go-1.20
-          - builder: tidbx
-            profile: go-1.19
       max-parallel: 1
 
     steps:
