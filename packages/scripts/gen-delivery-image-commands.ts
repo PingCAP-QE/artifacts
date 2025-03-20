@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write
-import * as yaml from "jsr:@std/yaml@1.0.5"
-import { parseArgs } from "jsr:@std/cli@1.0.9"
+import * as yaml from "jsr:@std/yaml@1.0.5";
+import { parseArgs } from "jsr:@std/cli@1.0.9";
 
 interface Rule {
   description?: string;
@@ -31,6 +31,10 @@ async function generateShellScript(
   const rules = (config.image_copy_rules[imageUrl] || []).filter((r) =>
     r.tags_regex.some((regex) => new RegExp(regex).test(tag))
   );
+
+  rules.forEach((r) => {
+    r.tags_regex = r.tags_regex.filter((regex) => new RegExp(regex).test(tag));
+  });
 
   if (rules.length === 0) {
     console.info("🤷 No delivery rule matched.");
