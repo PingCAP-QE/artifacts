@@ -28,7 +28,7 @@ definitions:
     description: delivery the enterprise RC images.
     tags_regex:
       - ^(v[0-9]+[.][0-9]+[.][0-9]+-pre)-enterprise$
-      - ^(v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+([.]pre)?)-enterprise$
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+[.]pre)-enterprise$
       - ^(v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre)-enterprise$
     tag_regex_replace: "$1"
   sync_rc_community_to_enterprise_repo: &sync_rc_community_to_enterprise_repo
@@ -46,7 +46,7 @@ definitions:
     description: delivery the enterprise GA images.
     tags_regex:
       - ^(v[0-9]+[.][0-9]+[.][0-9]+)-enterprise$
-      - ^(v[0-9]+[.][0-9]+[.][0-9]+)-rc[.][0-9]+-enterprise$
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+)-enterprise$
     tag_regex_replace: "$1"
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
     description: delivery the community GA image to enterprise repos.
