@@ -115,6 +115,16 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-backup-manager
         - gcr.io/pingcap-public/dbaas/tidb-backup-manager
+  hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator-v2-prestop-hook:
+    - description: delivery the v2 version images, it is in development.
+      tags_regex:
+        - ^(v2[.][0-9]+[.][0-9]+)(-.+)?$
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb-operator-v2-prestop-hook
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/tidb-operator-v2-prestop-hook
+        - gcr.io/pingcap-public/dbaas/tidb-operator-v2-prestop-hook
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_community
       dest_repositories:
