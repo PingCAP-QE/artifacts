@@ -366,7 +366,7 @@ async function main(
     };
 
     // avoid timeout or excepted termination will not cleanup.
-    ["SIGINT", "SIGTERM"].forEach((signal) => {
+    ["SIGINT", "SIGTERM", "SIGHUP"].forEach((signal) => {
       Deno.addSignalListener(signal as Deno.Signal, cleanupFn);
     });
     await build(ssh, sftp, buildOptions).finally(cleanupFn);
