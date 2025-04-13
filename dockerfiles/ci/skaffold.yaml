@@ -37,11 +37,9 @@ profiles:
         value: "{{ .SHA }}-go1.24"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-24 # renovate: datasource=docker depName=golang
+        value:
+          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.24.2
-      - op: add
-        path: /build/artifacts/1/docker/buildArgs
-        value: *value-go1-24
   - name: go-1.23
     patches:
       - op: replace
@@ -49,11 +47,9 @@ profiles:
         value: "{{ .SHA }}-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-23 # renovate: datasource=docker depName=golang
+        value:
+          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.8
-      - op: add
-        path: /build/artifacts/0/docker/buildArgs
-        value: *value-go1-23
   - name: go-1.22
     patches:
       - op: replace
@@ -61,11 +57,9 @@ profiles:
         value: "{{ .SHA }}-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
-        value: &value-go1-22 # renovate: datasource=docker depName=golang
+        value:
+          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.22.12
-      - op: add
-        path: /build/artifacts/1/docker/buildArgs
-        value: *value-go1-22
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
