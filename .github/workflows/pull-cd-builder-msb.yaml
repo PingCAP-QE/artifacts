@@ -1,7 +1,7 @@
 name: Build multi stage images
 on:
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [labeled]
 
 concurrency:
   group: ${{ github.workflow }}
@@ -9,8 +9,7 @@ concurrency:
 
 jobs:
   just-build:
-    # check if the comments come from pull request, exclude those from issue.
-    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '/just msb-') }}
+    if: ${{ github.event.label.name == 'run/msb' }}
     name: test building with multi stages
     runs-on: ubuntu-24.04
     permissions:
@@ -21,15 +20,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Checkout Pull Request
-        run: gh pr checkout ${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      # https://github.com/docker/setup-buildx-action
+
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -48,37 +41,28 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Testing for tidb
-        if: contains(github.event.comment.body, 'msb-tidb')
         run: just msb-tidb
 
       - name: Testing for pd
-        if: contains(github.event.comment.body, 'msb-pd')
         run: just msb-pd
 
       - name: Testing for new CDC
-        if: contains(github.event.comment.body, 'msb-cdc')
         run: just msb-cdc
 
       - name: Testing for DM of tiflow
-        if: contains(github.event.comment.body, 'msb-dm')
         run: just msb-dm
 
       - name: Testing for TiDB Dashboard
-        if: contains(github.event.comment.body, 'msb-tidb-dashboard')
         run: just msb-tidb-dashboard
 
       - name: Testing for TiDB Operator
-        if: contains(github.event.comment.body, 'msb-tidb-operator')
         run: just msb-tidb-operator
 
       - name: Testing for ng-monitoring
-        if: contains(github.event.comment.body, 'msb-ng-monitoring')
         run: just msb-ng-monitoring
 
       - name: Testing for tiflash # slow
-        if: contains(github.event.comment.body, 'msb-tiflash')
         run: just msb-tiflash
 
       - name: Testing for tikv # slow
-        if: contains(github.event.comment.body, 'msb-tikv')
         run: just msb-tikv

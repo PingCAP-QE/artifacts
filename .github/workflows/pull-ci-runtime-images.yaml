@@ -27,7 +27,7 @@ jobs:
       matrix:
         module: [ci]
         platform: [linux/amd64, linux/arm64]
-        go-profile: [go-1.23, go-1.22, go-1.21]
+        go-profile: [go-1.24, go-1.23, go-1.22]
 
     steps:
       - name: Checkout sources
@@ -35,13 +35,13 @@ jobs:
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-      # https://github.com/docker/setup-qemu-action
+
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      # https://github.com/docker/setup-buildx-action
+        uses: docker/setup-qemu-action@v3 # https://github.com/docker/setup-qemu-action
+
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3 # https://github.com/docker/setup-buildx-action
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3

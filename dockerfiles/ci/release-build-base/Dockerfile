@@ -1,3 +1,5 @@
+# Deprecated: please use the builder images in dockerfiles/cd/builders folder.
+
 # Base image
 FROM centos:7.9.2009
 # CentOS 7 has reached EOL

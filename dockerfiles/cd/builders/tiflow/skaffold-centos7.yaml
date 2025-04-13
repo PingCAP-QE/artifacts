@@ -12,11 +12,7 @@ build:
         target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}-centos7"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}-centos7"
   local:
     useDockerCLI: true
     useBuildkit: true
@@ -27,7 +23,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-go1.24"
+        value: "{{ .GIT }}-centos7-go1.24"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -36,7 +32,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-go1.23"
+        value: "{{ .GIT }}-centos7-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -46,7 +42,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-go1.22"
+        value: "{{ .GIT }}-centos7-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
