@@ -17,17 +17,13 @@ build:
     tryImportMissing: true
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}-centos7"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}-centos7"
 profiles:
   - name: devtoolset8
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-devtoolset8"
+        value: "{{ .GIT }}-centos7-devtoolset8"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -36,7 +32,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-devtoolset9"
+        value: "{{ .GIT }}-centos7-devtoolset9"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -45,7 +41,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-centos7-devtoolset10"
+        value: "{{ .GIT }}-centos7-devtoolset10"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:

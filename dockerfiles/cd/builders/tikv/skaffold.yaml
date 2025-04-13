@@ -13,11 +13,7 @@ build:
         target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}"
   local:
     useDockerCLI: true
     useBuildkit: true
@@ -37,11 +33,7 @@ build:
         target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}-fips"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}-fips"
   local:
     useDockerCLI: true
     useBuildkit: true

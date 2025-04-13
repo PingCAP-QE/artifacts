@@ -19,11 +19,7 @@ build:
           alias: BASE_IMG
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}"
   local:
     useDockerCLI: true
     useBuildkit: true
@@ -34,7 +30,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.24"
+        value: "{{ .GIT }}-go1.24"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -44,7 +40,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.23"
+        value: "{{ .GIT }}-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -54,7 +50,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .SHA }}-go1.22"
+        value: "{{ .GIT }}-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
@@ -73,11 +69,7 @@ build:
         dockerfile: jenkins/tikv/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}"
   local:
     useDockerCLI: true
     useBuildkit: true
@@ -96,11 +88,7 @@ build:
         dockerfile: jenkins/tiflash/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "{{ .SHA }}"
-      components:
-        - name: SHA
-          gitCommit:
-            variant: Tags
+      template: "{{ .GIT }}"
   local:
     useDockerCLI: true
     useBuildkit: true
