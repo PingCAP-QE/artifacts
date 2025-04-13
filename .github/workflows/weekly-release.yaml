@@ -1,0 +1,80 @@
+name: Weekly GitHub Release
+
+on:
+  schedule:
+    # Run weekly on Sunday at 00:00 UTC
+    - cron: "0 0 * * 0"
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Ensure only one instance of this workflow runs at a time
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          # Fetch all history for proper comparison
+          fetch-depth: 0
+
+      - name: Setup GitHub CLI
+        uses: cli/gh-extension-precompile@v2
+        with:
+          repo: cli/gh
+
+      - name: Check for changes since last release
+        id: check-changes
+        run: |
+          # Get the latest release tag
+          LATEST_RELEASE=$(gh release list --limit 1 | awk '{print $1}')
+
+          if [ -z "$LATEST_RELEASE" ]; then
+            echo "No previous releases found. Creating initial release."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "Latest release: $LATEST_RELEASE"
+
+            # Check if there are any changes since the latest release
+            CHANGES=$(git log $LATEST_RELEASE..HEAD --oneline)
+
+            if [ -n "$CHANGES" ]; then
+              echo "Changes detected since last release"
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            else
+              echo "No changes since last release"
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date
+        if: steps.check-changes.outputs.has_changes == 'true'
+        id: date
+        run: echo "date=$(date +'%Y.%-m.%-d')" >> $GITHUB_OUTPUT
+
+      - name: Create new tag and release
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          # Create tag name with date
+          TAG_NAME="v${{ steps.date.outputs.date }}"
+
+          # Create a new tag
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a $TAG_NAME -m "Weekly release $TAG_NAME"
+
+          # Push the tag
+          git push origin $TAG_NAME
+
+          # Create GitHub release
+          gh release create $TAG_NAME \
+            --title "Weekly Release $TAG_NAME" \
+            --notes "Weekly automatic release created on $(date +'%Y-%m-%d')"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
