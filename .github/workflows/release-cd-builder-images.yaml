@@ -14,10 +14,10 @@ jobs:
     name: Define building matrix
     runs-on: ubuntu-24.04
     outputs:
-      changed_folders: ${{ steps.changed.outputs.folders }}
-      changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders }}
-      changed_rust_builder_folders: ${{ steps.changed.outputs.rust_builder_folders }}
-      changed_cpp_builder_folders: ${{ steps.changed.outputs.cpp_builder_folders }}
+      changed_folders: ${{ steps.changed.outputs.folders || '[]' }}
+      changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders || '[]' }}
+      changed_rust_builder_folders: ${{ steps.changed.outputs.rust_builder_folders || '[]' }}
+      changed_cpp_builder_folders: ${{ steps.changed.outputs.cpp_builder_folders || '[]' }}
 
     steps:
       - name: Checkout sources
@@ -82,7 +82,6 @@ jobs:
     name: push golang builders
     runs-on: ubuntu-24.04
     needs: define-matrix
-    if: needs.define-matrix.outputs.changed_go_builder_folders != ""
     permissions:
       contents: read
       packages: write
@@ -136,7 +135,6 @@ jobs:
     name: push rust builders
     runs-on: ubuntu-24.04
     needs: define-matrix
-    if: needs.define-matrix.outputs.changed_rust_builder_folders != ""
     permissions:
       contents: read
       packages: write
@@ -185,7 +183,6 @@ jobs:
     name: push cpp builders
     runs-on: ubuntu-24.04
     needs: define-matrix
-    if: needs.define-matrix.outputs.changed_rust_builder_folders != ""
     permissions:
       contents: read
       packages: write
