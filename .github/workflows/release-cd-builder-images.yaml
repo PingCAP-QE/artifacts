@@ -82,7 +82,7 @@ jobs:
     name: push golang builders
     runs-on: ubuntu-24.04
     needs: define-matrix
-
+    if: needs.define-matrix.outputs.changed_go_builder_folders != ""
     permissions:
       contents: read
       packages: write
@@ -135,6 +135,8 @@ jobs:
   skaffold-rust:
     name: push rust builders
     runs-on: ubuntu-24.04
+    needs: define-matrix
+    if: needs.define-matrix.outputs.changed_rust_builder_folders != ""
     permissions:
       contents: read
       packages: write
@@ -182,6 +184,8 @@ jobs:
   skaffold-cpp:
     name: push cpp builders
     runs-on: ubuntu-24.04
+    needs: define-matrix
+    if: needs.define-matrix.outputs.changed_rust_builder_folders != ""
     permissions:
       contents: read
       packages: write
