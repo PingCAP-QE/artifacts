@@ -145,7 +145,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [builder-tikv]
+        module: [builder]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
 
     steps:
