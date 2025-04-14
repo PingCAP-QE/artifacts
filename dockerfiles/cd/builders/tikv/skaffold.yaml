@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
 #
+#
 # build for RockyLinux 8 based builder images
 ---
 apiVersion: skaffold/v4beta6

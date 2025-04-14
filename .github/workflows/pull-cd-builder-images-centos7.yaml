@@ -81,6 +81,7 @@ jobs:
     name: build golang builders - base CentOS7
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write
@@ -140,13 +141,14 @@ jobs:
     name: build rust builders - base CentOS7
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write
 
     strategy:
       matrix:
-        module: [builder-tikv]
+        module: [builder]
         platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
 
@@ -192,6 +194,7 @@ jobs:
     name: build cpp builders - base CentOS7
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write

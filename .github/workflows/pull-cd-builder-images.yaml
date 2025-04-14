@@ -81,6 +81,7 @@ jobs:
     name: build golang builders
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write
@@ -137,13 +138,14 @@ jobs:
     name: build rust builders
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write
 
     strategy:
       matrix:
-        module: [builder-tikv, builder-tikv-fips]
+        module: [builder, builder-fips]
         platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
 
@@ -188,6 +190,7 @@ jobs:
     name: build cpp builders
     runs-on: ubuntu-24.04
     needs: define-matrix
+    if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
       contents: read
       packages: write
