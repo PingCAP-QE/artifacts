@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dind-skaffold-builder
+  labels:
+    app: dind-skaffold-builder
+spec:
+  containers:
+    - name: skaffold
+      image: gcr.io/k8s-skaffold/skaffold:latest
+      command:
+        - sleep
+        - "infinity"
+      env:
+        - name: DOCKER_HOST
+          value: tcp://localhost:2375
+      volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+      resources:
+        requests:
+          memory: "2Gi"
+          cpu: "1"
+        limits:
+          memory: "4Gi"
+          cpu: "2"
+    - name: dind
+      image: docker:dind
+      securityContext:
+        privileged: true
+      lifecycle:
+        postStart:
+          exec:
+            command:
+              - sh
+              - -c
+              - "until docker info; do sleep 1; done && docker run --privileged --rm tonistiigi/binfmt --install all"
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+      volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        - name: docker-graph-storage
+          mountPath: /var/lib/docker
+      args:
+        - --experimental
+        - --registry-mirror=https://registry-mirror.pingcap.net
+      resources:
+        limits:
+          memory: "64Gi"
+          cpu: "16"
+  volumes:
+    - name: workspace
+      emptyDir: {}
+    - name: docker-graph-storage
+      emptyDir: {}
