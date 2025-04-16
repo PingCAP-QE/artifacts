@@ -2768,3 +2768,49 @@ components:
               - { name: tiproxy, src: { path: bin/tiproxy } }
               - { name: tiproxyctl, src: { path: bin/tiproxyctl } }
               - { name: conf/, src: { path: conf/ } }
+  tici:
+    desc: tici components tarballs and images
+    git:
+      # In future, the repo will be opensource in pingcap ORG
+      url: https://github.com/pingcap-inc/tici.git
+      ref: {{ .Git.ref | default "main" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: "{{ .Release.registry }}/pingcap/tici/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    # binary builder, also we need it when build for mac to get build tools versions and other informations.
+    builders:
+      - docker.io/library/rust:1.85.0
+    routers:
+      - description: currently in demo stage
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                # Verify Rust environment
+                echo "Rust version: $(rustc --version)"
+                echo "Cargo version: $(cargo --version)"
+
+                # install protoc tool
+                apt-get update && apt-get install -y protobuf-compiler
+            - script: |
+                cargo build --release
+        artifacts:
+          - name: "tici-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tici, src: { path: target/release/tici } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tici/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tici/Dockerfile
+            files: # prepare for context
+              - { name: tici, src: { path: target/release/tici } }
