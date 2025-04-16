@@ -41,8 +41,8 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 FROM builder as building
 
 ADD . /ws
-RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-centos7-llvm/scripts/build-release.sh
-RUN mkdir /ws/output && mv /ws/release-centos7-llvm/tiflash /ws/output/tiflash
+RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh
+RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
 
 ########### stage: Final image
