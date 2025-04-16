@@ -14,7 +14,8 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 # CentOS 7 has reached EOL
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+    && ([ "$(arch)" = "x86_64" ] || sed -i 's#vault.centos.org/centos/#vault.centos.org/altarch/#g' /etc/yum.repos.d/*.repo)
 
 ARG TIFLASH_VER=v8.3.0
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
