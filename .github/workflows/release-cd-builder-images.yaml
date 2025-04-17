@@ -119,9 +119,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Publish images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -168,9 +168,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Publish images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -216,9 +216,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Build images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}

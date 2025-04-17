@@ -79,7 +79,7 @@ jobs:
 
   skaffold-golang:
     name: build golang builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
@@ -106,9 +106,6 @@ jobs:
           fetch-depth: "0"
           fetch-tags: "true"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -121,9 +118,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Build images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -139,7 +136,7 @@ jobs:
 
   skaffold-rust:
     name: build rust builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
@@ -159,9 +156,6 @@ jobs:
           fetch-depth: "0"
           fetch-tags: "true"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -174,9 +168,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Build images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -192,7 +186,7 @@ jobs:
 
   skaffold-cpp:
     name: build cpp builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
@@ -211,9 +205,6 @@ jobs:
           fetch-depth: "0"
           fetch-tags: "true"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
@@ -226,9 +217,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: heypigeonhq/setup-skaffold@v1.1.0
+        with:
+          version: 2.15.0
 
       - name: Build images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
