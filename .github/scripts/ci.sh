@@ -119,6 +119,17 @@ function test_get_builder_freedom_releasing() {
             done
         done
     done
+
+    # tici, currently it only support linux.
+    local cm="tici"
+    for os in linux; do
+        for ac in $architectures; do
+            for version in v0.1.0 v0.2.0; do
+                echo -en "[🚢] $cm $os $ac $version $profile:\t"
+                $script "$cm" "$os" "$ac" "$version" $profile
+            done
+        done
+    done
 }
 
 function test_gen_package_artifacts_script() {
@@ -241,6 +252,18 @@ function test_gen_package_artifacts_script_freedom_releasing() {
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
+
+    # tici, currently it only support linux.
+    local cm="tici"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v0.1.0 v0.2.0; do
+            echo -en "[📃📦] $cm $os $ac $version $profile:\t"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
+        done
+    done
+
 }
 
 function test_gen_package_images_script() {
@@ -338,6 +361,17 @@ function test_gen_package_images_script_freedom_releasing() {
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
+
+    # tici. currently it only support linux.
+    local cm="tici"
+    for version in v0.1.0 v0.2.0; do
+        for ac in $architectures; do
+            echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
+        done
+    done
+
 }
 
 function test_gen_offline_package_artifacts_script() {
