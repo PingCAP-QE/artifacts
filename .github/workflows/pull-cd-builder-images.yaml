@@ -79,7 +79,7 @@ jobs:
 
   skaffold-golang:
     name: build golang builders
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
@@ -90,11 +90,7 @@ jobs:
       matrix:
         module: [builder-go]
         profile: [go-1.24, go-1.23, go-1.22]
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-24.04
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
+        platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
         exclude:
           - builder: ticdc
@@ -137,7 +133,7 @@ jobs:
 
   skaffold-rust:
     name: build rust builders
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
@@ -147,11 +143,7 @@ jobs:
     strategy:
       matrix:
         module: [builder, builder-fips]
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-24.04
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
+        platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
 
     steps:
@@ -190,7 +182,7 @@ jobs:
 
   skaffold-cpp:
     name: build cpp builders
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
@@ -199,11 +191,7 @@ jobs:
 
     strategy:
       matrix:
-        include:
-          - platform: linux/amd64
-            runner: ubuntu-24.04
-          - platform: linux/arm64
-            runner: ubuntu-24.04-arm
+        platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_cpp_builder_folders) }}
 
     steps:

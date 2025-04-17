@@ -15,7 +15,7 @@ concurrency:
 jobs:
   skaffold:
     name: build images with skaffold
-    runs-on: ${{ matrix.runner }}
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
 
     permissions:
       contents: read
