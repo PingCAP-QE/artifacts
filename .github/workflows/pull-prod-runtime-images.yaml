@@ -46,9 +46,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        uses: ./.github/actions/setup-skaffold
+        uses: heypigeonhq/setup-skaffold@v1.1.0
         with:
-          version: v2.13.2
+          version: 2.15.0
 
       - name: Setup manifest-tool
         run: |
