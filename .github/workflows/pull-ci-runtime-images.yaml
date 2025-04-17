@@ -52,9 +52,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: ./.github/actions/setup-skaffold
+        with:
+          version: v2.13.2
 
       - name: Cache layers
         uses: actions/cache@v4
@@ -112,9 +112,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        run: |
-          curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v2.13.2/skaffold-linux-amd64 && \
-          sudo install skaffold /usr/local/bin/
+        uses: ./.github/actions/setup-skaffold
+        with:
+          version: v2.13.2
 
       - name: Build images
         working-directory: dockerfiles/ci
