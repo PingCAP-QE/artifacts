@@ -192,7 +192,7 @@ jobs:
 
   skaffold-cpp:
     name: build cpp builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
@@ -201,7 +201,11 @@ jobs:
 
     strategy:
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: macos-14 # It's macOS/arm64
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_cpp_builder_folders) }}
 
     steps:
@@ -211,8 +215,11 @@ jobs:
           fetch-depth: "0"
           fetch-tags: "true"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker environment on macOS
+        if: matrix.runner == 'macos-14'
+        run: |
+          brew install colima docker
+          colima start
 
       - name: Set up Docker Buildx
         id: buildx
