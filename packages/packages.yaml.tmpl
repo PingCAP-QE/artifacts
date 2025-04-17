@@ -2786,7 +2786,7 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - docker.io/library/rust:1.85.0
+      - image: docker.io/library/rust:1.85.0
     routers:
       - description: currently in demo stage
         os: [linux]
