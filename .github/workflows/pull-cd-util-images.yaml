@@ -24,15 +24,14 @@ jobs:
     strategy:
       matrix:
         module: [utils]
-        include:
-          - runner: ubuntu-24.04
-            platform: linux/amd64
-          - runner: ubuntu-24.04-arm
-            platform: linux/arm64
+        platform: [linux/amd64, linux/arm64]
 
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: "true"
 
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
