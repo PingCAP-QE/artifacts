@@ -205,7 +205,7 @@ jobs:
           - platform: linux/amd64
             runner: ubuntu-24.04
           - platform: linux/arm64
-            runner: macos-14 # It's macOS/arm64
+            runner: ubuntu-24.04-arm
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_cpp_builder_folders) }}
 
     steps:
@@ -214,12 +214,6 @@ jobs:
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-
-      - name: Set up Docker environment on macOS
-        if: matrix.runner == 'macos-14'
-        run: |
-          brew install colima docker
-          colima start
 
       - name: Set up Docker Buildx
         id: buildx
