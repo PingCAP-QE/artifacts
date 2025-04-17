@@ -17,7 +17,7 @@ concurrency:
 jobs:
   skaffold:
     name: build images with skaffold
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
 
     permissions:
       contents: read
@@ -26,8 +26,12 @@ jobs:
     strategy:
       matrix:
         module: [ci]
-        platform: [linux/amd64, linux/arm64]
         go-profile: [go-1.24, go-1.23, go-1.22]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
 
     steps:
       - name: Checkout sources
@@ -35,9 +39,6 @@ jobs:
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3 # https://github.com/docker/setup-qemu-action
 
       - name: Set up Docker Buildx
         id: buildx
@@ -78,7 +79,7 @@ jobs:
             --push=false
   skaffold-nogo:
     name: build images with skaffold
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
 
     permissions:
       contents: read
@@ -87,17 +88,17 @@ jobs:
     strategy:
       matrix:
         module: [ci-jenkins-tiflash, ci-jenkins-tikv]
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-
-      # https://github.com/docker/setup-qemu-action
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx

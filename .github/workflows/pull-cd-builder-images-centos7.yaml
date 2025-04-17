@@ -79,7 +79,7 @@ jobs:
 
   skaffold-golang:
     name: build golang builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
@@ -90,7 +90,11 @@ jobs:
       matrix:
         module: [builder-go]
         profile: [go-1.24, go-1.23, go-1.22]
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
         exclude:
           - builder: ticdc
@@ -105,9 +109,6 @@ jobs:
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         id: buildx
@@ -139,7 +140,7 @@ jobs:
 
   skaffold-rust:
     name: build rust builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
@@ -149,7 +150,11 @@ jobs:
     strategy:
       matrix:
         module: [builder]
-        platform: [linux/amd64, linux/arm64]
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
 
     steps:
@@ -158,9 +163,6 @@ jobs:
         with:
           fetch-depth: "0"
           fetch-tags: "true"
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         id: buildx
