@@ -89,7 +89,6 @@ jobs:
 
     strategy:
       matrix:
-        module: [builder-go]
         profile: [go-1.24, go-1.23, go-1.22]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
         exclude:
@@ -145,8 +144,8 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [builder]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_rust_builder_folders) }}
+        profile: [devtoolset8, devtoolset9, devtoolset10]
 
     steps:
       - name: Checkout sources
@@ -182,7 +181,7 @@ jobs:
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
-            --module=${{ matrix.module }}
+            --profile=${{ matrix.profile }}
 
   skaffold-cpp:
     name: build cpp builders - base CentOS7
