@@ -2788,7 +2788,7 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - image: docker.io/library/rust:1.85.0
+      - image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset10
     routers:
       - description: currently in demo stage
         os: [linux]
@@ -2801,9 +2801,6 @@ components:
                 echo "Rust version: $(rustc --version)"
                 echo "Cargo version: $(cargo --version)"
 
-                # install protoc tool
-                apt-get update && apt-get install -y protobuf-compiler
-            - script: |
                 cargo build --release
         artifacts:
           - name: "tici-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
