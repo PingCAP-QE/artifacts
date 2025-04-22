@@ -919,11 +919,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            {{- if eq .Release.profile "enterprise" }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.enterprise.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1064,11 +1060,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            {{- if eq .Release.profile "enterprise" }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.enterprise.Dockerfile
-            {{- else }}
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb.Dockerfile
-            {{- end }}
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -2555,8 +2547,10 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-126-g2a14891-centos7
+      - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset{{ ternary "9" "8"  (eq "experiment" .Release.profile) }}"
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 9.0.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset8
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
@@ -2601,6 +2595,17 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
+          experiment:
+            - os: linux
+              script: |
+                if [ -f /opt/rh/devtoolset-9/enable ]; then
+                    source /opt/rh/devtoolset-9/enable
+                fi
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+            - script: |
+                ROCKSDB_SYS_STATIC=1 make dist_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ ne "enterprise" .Release.profile }}
