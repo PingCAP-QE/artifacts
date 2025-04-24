@@ -2560,7 +2560,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint]
+        profile: [release, enterprise, failpoint, experiment]
         steps:
           release:
             - os: linux
