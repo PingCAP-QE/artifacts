@@ -22,11 +22,6 @@ jobs:
           # Fetch all history for proper comparison
           fetch-depth: 0
 
-      - name: Setup GitHub CLI
-        uses: cli/gh-extension-precompile@v2
-        with:
-          repo: cli/gh
-
       - name: Check for changes since last release
         id: check-changes
         run: |
