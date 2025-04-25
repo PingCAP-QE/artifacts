@@ -2547,12 +2547,8 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
-        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset{{ ternary "9" "8"  (eq "experiment" .Release.profile) }}"
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 9.0.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset8
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6-fips
     routers:
@@ -2560,7 +2556,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint, experiment]
+        profile: [release, enterprise, failpoint]
         steps:
           release:
             - os: linux
@@ -2595,11 +2591,11 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
-          experiment:
+          cse:
             - os: linux
               script: |
-                if [ -f /opt/rh/devtoolset-9/enable ]; then
-                    source /opt/rh/devtoolset-9/enable
+                if [ -f /opt/rh/devtoolset-8/enable ]; then
+                    source /opt/rh/devtoolset-8/enable
                 fi
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
@@ -2727,6 +2723,43 @@ components:
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
+      - description: For CSE(next-gen)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [cse]
+        steps:
+          fips:
+            - os: linux
+              script: |
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+            - script: |
+                make release
+                mkdir -p bin
+                cp target/release/tikv-server bin/tikv-server
+                cp target/release/cse-ctl bin/cse-ctl
+                cp target/release/tikv-worker bin/tikv-worker
+        artifacts:
+          - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tikv-server, src: { path: bin/tikv-server } }
+          - name: "cse-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: cse-ctl, src: { path: bin/cse-ctl } }
+          - name: "tikv-worker-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tikv-worker, src: { path: bin/tikv-worker } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/tikv/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/cse.Dockerfile
+            files: # prepare for context
+              - { name: tikv-server, src: { path: bin/tikv-server } }
+              - { name: cse-ctl, src: { path: bin/cse-ctl } }
+              - { name: tikv-worker, src: { path: bin/tikv-worker } }
+
   tiproxy:
     desc: tiproxy components tarballs and images
     git:
