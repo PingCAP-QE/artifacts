@@ -1725,7 +1725,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint]
+        profile: [release, enterprise, failpoint, next-gen]
         steps:
           release:
             - os: linux
@@ -1749,6 +1749,12 @@ components:
             - os: linux
               script: |
                 ./release-linux-llvm/scripts/build-debug.sh
+                mkdir outputs
+                mv release-linux-llvm/tiflash outputs/tiflash
+          next-gen:
+            - os: linux
+              script: |
+                ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
         artifacts:
@@ -2591,17 +2597,6 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
-          cse:
-            - os: linux
-              script: |
-                if [ -f /opt/rh/devtoolset-8/enable ]; then
-                    source /opt/rh/devtoolset-8/enable
-                fi
-                if [ "$(uname -m)" == "aarch64" ]; then
-                    export JEMALLOC_SYS_WITH_LG_PAGE=16
-                fi
-            - script: |
-                ROCKSDB_SYS_STATIC=1 make dist_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ ne "enterprise" .Release.profile }}
@@ -2723,12 +2718,12 @@ components:
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
-      - description: For CSE(next-gen)
+      - description: For Next-Gen
         os: [linux]
         arch: [amd64, arm64]
-        profile: [cse]
+        profile: [next-gen]
         steps:
-          fips:
+          next-gen:
             - os: linux
               script: |
                 if [ "$(uname -m)" == "aarch64" ]; then
