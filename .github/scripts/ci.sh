@@ -130,6 +130,17 @@ function test_get_builder_freedom_releasing() {
             done
         done
     done
+
+    # tikv cse profile
+    local cm="tikv"
+    for os in linux; do
+        for ac in $architectures; do
+            for version in v8.5.0 v9.0.0; do
+                echo -en "[🚢] $cm $os $ac $version cse:\t"
+                $script "$cm" "$os" "$ac" "$version" cse
+            done
+        done
+    done
 }
 
 function test_gen_package_artifacts_script() {
@@ -264,6 +275,16 @@ function test_gen_package_artifacts_script_freedom_releasing() {
         done
     done
 
+    # tikv cse profile, currently it only support linux.
+    local cm="tikv"
+    local os="linux"
+    for ac in $architectures; do
+        for version in v8.5.0 v9.0.0; do
+            echo -en "[📃📦] $cm $os $ac $version cse:\t"
+            $script "$cm" "$os" "$ac" "$version" cse branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-artifacts.sh
+        done
+    done
 }
 
 function test_gen_package_images_script() {
@@ -372,6 +393,15 @@ function test_gen_package_images_script_freedom_releasing() {
         done
     done
 
+    # tikv cse profile. currently it only support linux.
+    local cm="tikv"
+    for version in v8.5.0 v9.0.0; do
+        for ac in $architectures; do
+            echo -en "[📃💿] $cm $os $ac $version cse:\t"
+            $script "$cm" linux "$ac" "$version" cse branch-xxx 123456789abcdef
+            shellcheck -S error packages/scripts/build-package-images.sh
+        done
+    done
 }
 
 function test_gen_offline_package_artifacts_script() {
