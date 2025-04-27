@@ -37,6 +37,12 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --def
 ENV PATH /root/.cargo/bin/:$PATH
 LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
 ########### stage: Buiding
 FROM builder as building
 COPY . /tikv

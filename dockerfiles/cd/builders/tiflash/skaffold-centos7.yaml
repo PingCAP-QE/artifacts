@@ -17,4 +17,16 @@ build:
     tryImportMissing: true
   tagPolicy:
     customTemplate:
-      template: "{{ .GIT }}-centos7"
+      template: "{{ .GIT }}-centos7{{ .TAG_SUFFIX }}"
+      components:
+        - name: TAG_SUFFIX
+          envTemplate:
+            template: "-go{{ .GO_VER_XY }}{{ if .NON_ROOT }}-non-root{{ end }}"
+profiles:
+  - name: non-root-builder
+    activation:
+      - env: NON_ROOT=true
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: non-root-builder

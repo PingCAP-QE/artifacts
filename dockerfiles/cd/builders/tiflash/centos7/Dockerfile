@@ -34,6 +34,12 @@ ENV CC=clang
 ENV CXX=clang++
 ENV LD=ld.lld
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
 ARG PROTOBUF_VER=v3.15.8

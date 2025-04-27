@@ -12,38 +12,46 @@ build:
         target: builder
   tagPolicy:
     customTemplate:
-      template: "{{ .GIT }}-centos7"
+      template: "{{ .GIT }}-centos7{{ .TAG_SUFFIX }}"
+      components:
+        - name: TAG_SUFFIX
+          envTemplate:
+            template: "-go{{ .GO_VER_XY }}{{ if .NON_ROOT }}-non-root{{ end }}"
   local:
     useDockerCLI: true
     useBuildkit: true
     concurrency: 0
     tryImportMissing: true
 profiles:
-  - name: go-1.24
+  - name: non-root-builder
+    activation:
+      - env: NON_ROOT=true
     patches:
       - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-go1.24"
+        path: /build/artifacts/0/docker/target
+        value: non-root-builder
+  - name: go-1.24
+    activation:
+      - env: GO_VER_XY=1.24
+    patches:
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.24.2
   - name: go-1.23
+    activation:
+      - env: GO_VER_XY=1.23
     patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-go1.23"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
           # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.8
   - name: go-1.22
+    activation:
+      - env: GO_VER_XY=1.22
     patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-go1.22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
