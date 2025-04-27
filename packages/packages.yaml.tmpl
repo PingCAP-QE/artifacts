@@ -2726,6 +2726,7 @@ components:
           next-gen:
             - os: linux
               script: |
+                source /opt/rh/devtoolset-8/enable
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
