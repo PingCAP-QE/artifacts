@@ -2750,7 +2750,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/cse.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/next-gen.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: cse-ctl, src: { path: bin/cse-ctl } }
@@ -2831,6 +2831,7 @@ components:
         steps:
           release:
             - script: |
+                source /opt/rh/devtoolset-10/enable
                 # Verify Rust environment
                 echo "Rust version: $(rustc --version)"
                 echo "Cargo version: $(cargo --version)"

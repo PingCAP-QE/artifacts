@@ -3,5 +3,6 @@ FROM $BASE_IMG
 COPY tikv-server /tikv-server
 COPY cse-ctl /cse-ctl
 COPY tikv-worker /tikv-worker
-EXPOSE 20160 20180
+ENV MALLOC_CONF="prof:true,prof_active:false"
+EXPOSE 20160
 ENTRYPOINT ["/tikv-server"]
