@@ -20,39 +20,31 @@ build:
     tryImportMissing: true
   tagPolicy:
     customTemplate:
-      template: "{{ .GIT }}-centos7{{ .TAG_SUFFIX }}"
-      components:
-        - name: TAG_SUFFIX
-          envTemplate:
-            template: "{{ if .DTS_VER }}-devtoolset{{ .DTS_VER }}{{ end }}{{ if .NON_ROOT }}-non-root{{ end }}"
+      template: "{{ .GIT }}-centos7"
 profiles:
-  - name: non-root-builder
-    activation:
-      - env: NON_ROOT=true
+  - name: devtoolset8
     patches:
       - op: replace
-        path: /build/artifacts/0/docker/target
-        value: non-root-builder
-  - name: devtoolset8
-    activation:
-      - env: DTS_VER=8
-    patches:
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-devtoolset8"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
           DEVTOOLSET_VER: 8
   - name: devtoolset9
-    activation:
-      - env: DTS_VER=9
     patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-devtoolset9"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
           DEVTOOLSET_VER: 9
   - name: devtoolset10
-    activation:
-      - env: DTS_VER=10
     patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-devtoolset10"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
