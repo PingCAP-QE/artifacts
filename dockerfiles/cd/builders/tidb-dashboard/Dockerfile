@@ -30,6 +30,12 @@ RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
 RUN yum -y install nodejs && yum clean all
 RUN npm install -g pnpm@9.7.0
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
 ########### stage: building
 FROM builder as building
 COPY . /ws

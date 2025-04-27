@@ -44,6 +44,12 @@ LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlow"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
 ########### stage: building-cdc
 FROM builder-cdc as building-cdc
 COPY . /ws

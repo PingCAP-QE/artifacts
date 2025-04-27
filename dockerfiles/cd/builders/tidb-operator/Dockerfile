@@ -18,6 +18,11 @@ LABEL go-version="${GOLANG_VERSION}"
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y uuid-runtime
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
 
 ########### stage: building
 FROM builder as building

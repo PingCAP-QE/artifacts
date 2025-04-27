@@ -24,7 +24,13 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
-########### stage: building-cdc
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder as non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
+########### stage: building
 FROM builder as building
 COPY . /ws
 ARG GOPROXY
