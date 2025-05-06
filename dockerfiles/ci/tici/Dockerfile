@@ -1,0 +1,20 @@
+# base image dockerfile: ci/base/Dockerfile
+ARG BASE_IMG
+FROM $BASE_IMG
+
+RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql
+
+# MinIO
+RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z
+RUN chmod +x minio
+RUN wget -O mc https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2025-02-08T19-14-21Z
+RUN chmod +x mc
+
+# TiUP
+RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+
+# To run python test scripts
+RUN yum install -y python3 python3-devel mysql-devel
+RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
+
+RUN yum install -y protobuf-compiler
