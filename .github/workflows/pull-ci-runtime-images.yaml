@@ -8,6 +8,7 @@ on:
       - "dockerfiles/ci/base/**/*.Dockerfile"
       - "dockerfiles/ci/jenkins/**/Dockerfile"
       - "dockerfiles/ci/jenkins/**/*.Dockerfile"
+      - "dockerfiles/ci/tici/**/Dockerfile"
       - "dockerfiles/ci/skaffold.yaml"
 
 concurrency:
