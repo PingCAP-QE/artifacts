@@ -72,6 +72,7 @@ jobs:
             --default-repo ghcr.io/pingcap-qe/ci \
             --module ${{ matrix.module }} \
             --profile ${{ matrix.go-profile }}
+
   skaffold-jenkins-nogo:
     name: publish images with skaffold
     runs-on: ubuntu-24.04
@@ -117,7 +118,8 @@ jobs:
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/ci/jenkins \
             --module ${{ matrix.module }}
-  skaffold-nogo:
+
+  skaffold-common:
     name: publish images with skaffold
     runs-on: ubuntu-24.04
 
@@ -126,7 +128,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [tici]
+        module: [ci]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

@@ -74,6 +74,7 @@ jobs:
             --platform ${{ matrix.platform }} \
             --profile ${{ matrix.go-profile }} \
             --push=false
+
   skaffold-jenkins-nogo:
     name: build jenkins nogo images with skaffold
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
@@ -120,8 +121,9 @@ jobs:
             --module=${{ matrix.module }} \
             --platform=${{ matrix.platform }} \
             --push=false
-  skaffold-nogo:
-    name: build images with skaffold
+
+  skaffold-common:
+    name: build common images with skaffold
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
 
     permissions:
@@ -130,7 +132,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [tici]
+        module: [ci]
         platform: [linux/amd64, linux/arm64]
     steps:
       - name: Checkout sources
