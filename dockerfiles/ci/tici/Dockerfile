@@ -16,4 +16,3 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/instal
 # To run python test scripts
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
-
