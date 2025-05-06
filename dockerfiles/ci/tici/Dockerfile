@@ -2,7 +2,7 @@
 ARG BASE_IMG
 FROM $BASE_IMG
 
-RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql
+RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler
 
 # MinIO
 RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z
@@ -17,4 +17,3 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/instal
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
 
-RUN yum install -y protobuf-compiler
