@@ -5,10 +5,10 @@ FROM $BASE_IMG
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler
 
 # MinIO
-RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z
-RUN chmod +x minio
-RUN wget -O mc https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2025-02-08T19-14-21Z
-RUN chmod +x mc
+RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
+    chmod +x minio && \
+    wget -O mc https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2025-02-08T19-14-21Z && \
+    chmod +x mc
 
 # TiUP
 RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
