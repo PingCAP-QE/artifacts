@@ -14,6 +14,7 @@ RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/min
 
 # TiUP
 RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+ENV PATH=/root/.tiup/bin:$PATH
 
 # To run python test scripts
 RUN yum install -y python3 python3-devel mysql-devel
