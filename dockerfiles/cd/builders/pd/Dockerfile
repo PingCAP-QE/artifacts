@@ -6,7 +6,7 @@
 #   - docker build -t pd -f Dockerfile ./pd
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for PD"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -25,13 +25,13 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
 
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make build tools -C /ws

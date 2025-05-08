@@ -6,7 +6,7 @@
 #   - docker build -t ticdc -f Dockerfile ./ticdc
 
 ########### stage: Builder
-FROM centos:7.9.2009 as builder
+FROM centos:7.9.2009 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlow"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -32,13 +32,13 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
 
 ########### stage: Buiding
-FROM builder as building
+FROM builder AS building
 
 COPY . /ws
 ARG GOPROXY

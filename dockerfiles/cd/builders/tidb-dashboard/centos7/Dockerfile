@@ -7,7 +7,7 @@
 #   - docker build -t tidb -f Dockerfile ./tidb
 
 ########### stage: Builder
-FROM centos:7.9.2009 as builder
+FROM centos:7.9.2009 AS builder
 # CentOS 7 has reached EOL
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
@@ -33,13 +33,13 @@ RUN yum -y install nodejs && yum clean all
 RUN npm install -g pnpm@7.30.5
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
 
 ########### stage: Buiding
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make package -C /ws

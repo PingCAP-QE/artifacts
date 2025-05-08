@@ -6,7 +6,7 @@
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
 ########### stage: builder
-FROM centos:7.9.2009 as builder
+FROM centos:7.9.2009 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -35,7 +35,7 @@ ENV CXX=clang++
 ENV LD=ld.lld
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
@@ -47,7 +47,7 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh

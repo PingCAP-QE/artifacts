@@ -6,7 +6,7 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:9.5.20241118 as builder
+FROM quay.io/rockylinux/rockylinux:9.5.20241118 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -28,7 +28,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --def
 ENV PATH /root/.cargo/bin/:$PATH
 
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 RUN --mount=type=cache,target=/tikv/target \
     ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release -C /ws

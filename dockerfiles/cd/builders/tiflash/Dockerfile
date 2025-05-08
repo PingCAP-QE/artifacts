@@ -6,7 +6,7 @@
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -37,19 +37,18 @@ ENV PATH="/opt/cmake/bin:/usr/local/bin/:${PATH}:/usr/local/go/bin:/root/.cargo/
     LD=ld.lld
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
 
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh
 RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
-
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2

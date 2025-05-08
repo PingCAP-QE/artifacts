@@ -6,7 +6,7 @@
 #   - docker build -t dm -f Dockerfile ./tiflow
 
 ########### stage: builder-cdc
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder-cdc
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 AS builder-cdc
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
@@ -21,7 +21,7 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: builder-dm
-FROM builder-cdc as builder-dm
+FROM builder-cdc AS builder-dm
 
 # install nodejs toolchain
 # renovate: datasource=docker depName=node
@@ -39,26 +39,26 @@ ENV PATH="${NVM_DIR}/versions/node/v${NODE_VERSION}/bin/:${PATH}"
 RUN node --version && npm --version && npm install -g yarn
 
 ########### stage: builder - total
-FROM builder-dm as builder
+FROM builder-dm AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlow"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
 
 ########### stage: building-cdc
-FROM builder-cdc as building-cdc
+FROM builder-cdc AS building-cdc
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make cdc -C /ws
 RUN /ws/bin/cdc version
 
 ########### stage: building-dm
-FROM builder-dm as building-dm
+FROM builder-dm AS building-dm
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make dm-master-with-webui dm-worker dmctl dm-syncer -C /ws
@@ -68,7 +68,7 @@ RUN /ws/bin/dm-syncer -V
 RUN /ws/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 as final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-cdc
 COPY --from=building-cdc /ws/bin/cdc /cdc
 
 EXPOSE 8300
@@ -79,7 +79,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 as final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-dm
 COPY --from=building-dm /ws/bin/dm-master /dm-master
 COPY --from=building-dm /ws/bin/dm-worker /dm-worker
 COPY --from=building-dm /ws/bin/dm-syncer /dm-syncer

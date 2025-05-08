@@ -4,7 +4,7 @@
 # compose from tikv, tidb, pd, and other components.
 
 ########### stage: builder
-FROM ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-63-gb22476a-centos7 as builder
+FROM ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-63-gb22476a-centos7 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiDBx (experimental)"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -18,7 +18,7 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
-FROM builder as non-root-builder
+FROM builder AS non-root-builder
 RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
 USER builder
