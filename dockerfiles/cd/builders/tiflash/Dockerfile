@@ -15,12 +15,12 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_REPO=pingcap/tiflash
 ARG TIFLASH_REF=master
-RUN FILE="bake_llvm_base.sh"; \
-    TAR_DIR="tiflash-${TIFLASH_REF}"; \
+RUN TAR_DIR="tiflash-${TIFLASH_REF}"; \
     curl -sSL https://github.com/${TIFLASH_REPO}/archive/refs/heads/${TIFLASH_REF}.tar.gz -o tiflash.tar.gz && \
     tar -zxf tiflash.tar.gz "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
     pushd "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
-    chmod +x * && ./${FILE} && \
+    chmod +x * && \
+    ./bake_base.sh && ./bake_llvm.sh && ./bake_rest.sh && \
     popd && \
     rm -rf tiflash.tar.gz "$TAR_DIR"
 
