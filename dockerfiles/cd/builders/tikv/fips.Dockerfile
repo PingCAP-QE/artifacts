@@ -27,6 +27,12 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers.d/nopasswd
+USER builder
+
 ########### stage: building
 FROM builder AS building
 COPY . /ws
