@@ -9,6 +9,10 @@ on:
       - "dockerfiles/cd/builders/*/skaffold.centos7.yaml"
       - "dockerfiles/cd/builders/*/skaffold.centos7.non-root.yaml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   define-matrix:
     name: Define building matrix - CentOS7
