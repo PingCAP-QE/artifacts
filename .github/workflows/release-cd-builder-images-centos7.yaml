@@ -134,7 +134,7 @@ jobs:
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --profile=${{ matrix.profile }}
-            
+
       - name: Publish non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
@@ -197,7 +197,7 @@ jobs:
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --profile=${{ matrix.profile }}
-            
+
       - name: Publish non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
@@ -259,7 +259,7 @@ jobs:
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders
-            
+
       - name: Publish non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |

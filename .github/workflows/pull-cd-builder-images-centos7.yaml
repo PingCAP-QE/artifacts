@@ -133,7 +133,7 @@ jobs:
             --profile=${{ matrix.profile }} \
             --platform=${{ matrix.platform }} \
             --push=false
-            
+
       - name: Build non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
@@ -199,7 +199,7 @@ jobs:
             --module=${{ matrix.module }} \
             --platform=${{ matrix.platform }} \
             --push=false
-            
+
       - name: Build non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
@@ -263,7 +263,7 @@ jobs:
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --platform=${{ matrix.platform }} \
             --push=false
-            
+
       - name: Build non-root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
