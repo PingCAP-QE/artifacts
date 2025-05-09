@@ -1,5 +1,6 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone --recurse-submodules https://github.com/tikv/tikv.git tikv
@@ -13,16 +14,17 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
     && ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo)
 
-# install packages.
+# install packages with BuildKit cache mount
+# This prevents package cache from being stored in image layers
 ARG DEVTOOLSET_VER=8
-RUN yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
     sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
     sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
     sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
     ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo) && \
     yum update --nogpgcheck -y && \
     yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip dwz perl-IPC-Cmd perl-Data-Dumper && \
-    yum clean all && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake
 ENV DEVTOOLSET_VER ${DEVTOOLSET_VER}
 
@@ -39,7 +41,9 @@ LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN sudo ls && useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum install --nogpgcheck -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 

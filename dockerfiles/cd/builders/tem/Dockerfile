@@ -1,5 +1,6 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone <tem-git-url> tem
@@ -59,7 +60,9 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN sudo ls && useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 
