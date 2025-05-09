@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
+#
+# build for CentOS 7 based builder images
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: tikv
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: centos7/Dockerfile
+        target: non-root-builder
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}-centos7-non-root"
+profiles:
+  - name: devtoolset8
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-non-root-devtoolset8"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          DEVTOOLSET_VER: 8
+  - name: devtoolset9
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-non-root-devtoolset9"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          DEVTOOLSET_VER: 9
+  - name: devtoolset10
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-centos7-non-root-devtoolset10"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          DEVTOOLSET_VER: 10

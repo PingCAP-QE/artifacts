@@ -6,7 +6,8 @@ on:
     paths:
       - "dockerfiles/cd/builders/*/centos7/Dockerfile"
       - "dockerfiles/cd/builders/*/centos7/*.Dockerfile"
-      - "dockerfiles/cd/builders/*/skaffold-centos7.yaml"
+      - "dockerfiles/cd/builders/*/skaffold.centos7.yaml"
+      - "dockerfiles/cd/builders/*/skaffold.centos7.non-root.yaml"
 
 jobs:
   define-matrix:
@@ -121,17 +122,33 @@ jobs:
         with:
           version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
-            --filename=skaffold-centos7.yaml \
+            --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --profile=${{ matrix.profile }} \
             --platform=${{ matrix.platform }} \
             --push=false
+            
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.centos7.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.centos7.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --profile=${{ matrix.profile }} \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi
 
   skaffold-rust:
     name: build rust builders - base CentOS7
@@ -171,17 +188,33 @@ jobs:
         with:
           version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
-            --filename=skaffold-centos7.yaml \
+            --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --module=${{ matrix.module }} \
             --platform=${{ matrix.platform }} \
             --push=false
+            
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.centos7.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.centos7.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --module=${{ matrix.module }} \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi
 
   skaffold-cpp:
     name: build cpp builders - base CentOS7
@@ -220,13 +253,28 @@ jobs:
         with:
           version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
-            --filename=skaffold-centos7.yaml \
+            --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
             --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --platform=${{ matrix.platform }} \
             --push=false
+            
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.centos7.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.centos7.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi
