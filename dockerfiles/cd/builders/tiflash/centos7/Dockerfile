@@ -35,6 +35,12 @@ ENV CC=clang
 ENV CXX=clang++
 ENV LD=ld.lld
 
+# install protoc.
+# renovate: datasource=github-release depName=protocolbuffers/protobuf
+ARG PROTOBUF_VER=v3.15.8
+RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
+    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
+
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
 RUN --mount=type=cache,target=/var/cache/yum \
@@ -43,11 +49,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 
-# install protoc.
-# renovate: datasource=github-release depName=protocolbuffers/protobuf
-ARG PROTOBUF_VER=v3.15.8
-RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
-    curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
 ########### stage: building
 FROM builder AS building
