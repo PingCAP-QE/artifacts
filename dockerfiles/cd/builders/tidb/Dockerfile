@@ -1,5 +1,6 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone https://github.com/pingcap/tidb.git tidb
@@ -7,7 +8,7 @@
 #   - docker build -t tidb -f Dockerfile ./tidb
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiDB"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -25,8 +26,16 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+USER builder
+
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make server -C /ws

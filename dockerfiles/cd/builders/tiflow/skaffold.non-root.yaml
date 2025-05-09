@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: tiflow
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: Dockerfile
+        target: non-root-builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}-non-root"
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+profiles:
+  - name: go-1.24
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-non-root-go1.24"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          GOLANG_VERSION: 1.24.1
+  - name: go-1.23
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-non-root-go1.23"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.23.8
+  - name: go-1.22
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-non-root-go1.22"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          GOLANG_VERSION: 1.22.12

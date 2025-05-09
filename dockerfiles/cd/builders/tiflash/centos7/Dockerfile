@@ -1,12 +1,13 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone --recurse-submodules https://github.com/pingcap/tiflash.git tiflash
 #   - docker build -t tiflash -f Dockerfile ./tiflash
 
 ########### stage: builder
-FROM centos:7.9.2009 as builder
+FROM centos:7.9.2009 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -40,8 +41,17 @@ ARG PROTOBUF_VER=v3.15.8
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum install --nogpgcheck -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+USER builder
+
+
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true /ws/release-linux-llvm/scripts/build-release.sh

@@ -1,5 +1,6 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone https://github.com/pingcap/tidb-operator.git tidb
@@ -8,7 +9,7 @@
 
 ########### stage: builder
 ARG GOLANG_VERSION=1.23.8
-FROM golang:${GOLANG_VERSION} as builder
+FROM golang:${GOLANG_VERSION} AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiDB Operator"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -18,9 +19,17 @@ LABEL go-version="${GOLANG_VERSION}"
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y uuid-runtime
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update && \
+    apt-get install -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+USER builder
 
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make build -C /ws && mv /ws/images/tidb-operator/bin/$(arch) /ws/bin
