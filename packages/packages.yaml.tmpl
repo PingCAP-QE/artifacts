@@ -2837,7 +2837,7 @@ components:
                 echo "Rust version: $(rustc --version)"
                 echo "Cargo version: $(cargo --version)"
 
-                cargo build --release
+                make release
         artifacts:
           - name: "tici-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
