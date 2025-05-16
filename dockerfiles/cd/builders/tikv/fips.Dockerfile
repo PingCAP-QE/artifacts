@@ -6,7 +6,7 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:9.5.20241118 as builder
+FROM quay.io/rockylinux/rockylinux:9.5.20241118 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -27,8 +27,16 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
 ENV PATH /root/.cargo/bin/:$PATH
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+USER builder
+
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /ws
 RUN --mount=type=cache,target=/tikv/target \
     ENABLE_FIPS=1 ROCKSDB_SYS_STATIC=1 make dist_release -C /ws

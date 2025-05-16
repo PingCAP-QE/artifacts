@@ -1,12 +1,13 @@
+# syntax=docker/dockerfile:1
 # build requires:
-#   - docker >= v20.10
+#   - docker >= v23.0
 #
 # build steps:
 #   - git clone <tem-git-url> tem
 #   - docker build -t tem -f Dockerfile ./tem
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:8.10.20240528 as builder
+FROM quay.io/rockylinux/rockylinux:8.10.20240528 AS builder
 LABEL org.opencontainers.image.authors "shenhaibo@pingcap.com"
 LABEL org.opencontainers.image.description "builder with protobuf and Go toolchain for TEM cd"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
@@ -57,8 +58,16 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     chmod 755 /usr/local/bin/tiup && \
     mkdir -p "$HOME/.tiup/bin"
 
+########### stage: non-root-builder, used for development with non-root user.
+FROM builder AS non-root-builder
+RUN --mount=type=cache,target=/var/cache/dnf \
+    dnf install -y sudo && \
+    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
+    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+USER builder
+
 ########### stage: building
-FROM builder as building
+FROM builder AS building
 COPY . /tem
 RUN make build -C /tem
 RUN /tem/bin/tem --version

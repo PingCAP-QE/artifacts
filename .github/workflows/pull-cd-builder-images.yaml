@@ -7,6 +7,11 @@ on:
       - "dockerfiles/cd/builders/*/Dockerfile"
       - "dockerfiles/cd/builders/*/*.Dockerfile"
       - "dockerfiles/cd/builders/*/skaffold.yaml"
+      - "dockerfiles/cd/builders/*/skaffold.non-root.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   define-matrix:
@@ -117,9 +122,9 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@v1.1.0
         with:
-          version: 2.15.0
+          version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
@@ -129,6 +134,22 @@ jobs:
             --profile=${{ matrix.profile }} \
             --platform=${{ matrix.platform }} \
             --push=false
+
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --profile=${{ matrix.profile }} \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi
 
   skaffold-rust:
     name: build rust builders
@@ -166,9 +187,9 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@v1.1.0
         with:
-          version: 2.15.0
+          version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
@@ -178,6 +199,22 @@ jobs:
             --module=${{ matrix.module }} \
             --platform=${{ matrix.platform }} \
             --push=false
+
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --module=${{ matrix.module }} \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi
 
   skaffold-cpp:
     name: build cpp builders
@@ -214,9 +251,9 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@v1.1.0
         with:
-          version: 2.15.0
+          version: 2.16.0
 
-      - name: Build images
+      - name: Build root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
         run: |
           skaffold build \
@@ -225,3 +262,18 @@ jobs:
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --platform=${{ matrix.platform }} \
             --push=false
+
+      - name: Build non-root images
+        working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
+        run: |
+          if [ -f "skaffold.non-root.yaml" ]; then
+            skaffold build \
+              --filename=skaffold.non-root.yaml \
+              --build-concurrency=1 \
+              --cache-artifacts \
+              --default-repo=ghcr.io/pingcap-qe/cd/builders \
+              --platform=${{ matrix.platform }} \
+              --push=false
+          else
+            echo "Non-root skaffold config not found, skipping"
+          fi

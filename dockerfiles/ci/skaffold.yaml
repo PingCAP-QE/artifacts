@@ -17,6 +17,13 @@ build:
       requires:
         - image: base
           alias: BASE_IMG
+    - image: tici
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: tici/Dockerfile
+      requires:
+        - image: base
+          alias: BASE_IMG
   tagPolicy:
     customTemplate:
       template: "{{ .GIT }}"
