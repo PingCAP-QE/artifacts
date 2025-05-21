@@ -2,7 +2,7 @@
 ARG BASE_IMG
 FROM $BASE_IMG
 
-RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler
+RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core
 
 # MinIO
 RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
