@@ -2555,15 +2555,15 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset8
+        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "9" "8" (eq .Release.profile "experiment") }}"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v20240325-24-gd14aee6-fips
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-fips
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint]
+        profile: [release, enterprise, failpoint, experiment]
         steps:
           release:
             - os: linux
@@ -2598,6 +2598,18 @@ components:
                 fi
             - script: |
                 ROCKSDB_SYS_STATIC=1 make fail_release
+          experiment:
+            - os: linux
+              script: |
+                latest_devtoolset_dir=$(ls -d /opt/rh/devtoolset-* | sort -t- -k2,2nr | head -1)
+                if [ -d "${latest_devtoolset_dir}" ]; then
+                    source ${latest_devtoolset_dir}/enable
+                fi
+                if [ "$(uname -m)" == "aarch64" ]; then
+                    export JEMALLOC_SYS_WITH_LG_PAGE=16
+                fi
+            - script: |
+                ROCKSDB_SYS_STATIC=1 make dist_release
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ ne "enterprise" .Release.profile }}
