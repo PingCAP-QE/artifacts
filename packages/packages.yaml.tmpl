@@ -2739,16 +2739,17 @@ components:
           next-gen:
             - os: linux
               script: |
-                source /opt/rh/devtoolset-8/enable
+                latest_devtoolset_dir=$(ls -d /opt/rh/devtoolset-* | sort -t- -k2,2nr | head -1)
+                if [ -d "${latest_devtoolset_dir}" ]; then
+                    source ${latest_devtoolset_dir}/enable
+                fi
                 if [ "$(uname -m)" == "aarch64" ]; then
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
             - script: |
                 make release
                 mkdir -p bin
-                cp target/release/tikv-server bin/tikv-server
-                cp target/release/cse-ctl bin/cse-ctl
-                cp target/release/tikv-worker bin/tikv-worker
+                cp target/release/* bin/
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
