@@ -2555,7 +2555,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "9" "8" (eq .Release.profile "experiment") }}"
+        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "10" "8" (eq .Release.profile "next-gen") }}"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-fips
     routers:
@@ -2749,7 +2749,7 @@ components:
             - script: |
                 make release
                 mkdir -p bin
-                cp target/release/* bin/
+                cp -v target/release/{tikv-server,cse-ctl,tikv-worker} bin/
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
