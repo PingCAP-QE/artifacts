@@ -10,6 +10,10 @@ definitions:
     tags_regex: [^master(-experiment)?$]
     constant_tags: [nightly] # add new tags.
   sync_trunk_enterprise: &sync_trunk_enterprise {}
+  sync_trunk_next-gen: &sync_trunk_next-gen
+    description: delivery next-gen images for developing branches.
+    tags_regex:
+      - ^(master|dedicated|feature_next-gen.*)(-.*)?-next-gen$
   sync_pre_community: &sync_pre_community
     description: delivery community images for release branches.
     tags_regex:
@@ -126,6 +130,9 @@ image_copy_rules:
         - docker.io/pingcap/tidb-operator-prestop-hook
         - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-hook
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb
@@ -147,6 +154,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb
         - docker.io/pingcap/tidb-enterprise
   hub.pingcap.net/pingcap/tidb/images/br:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/br
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/br
@@ -168,6 +178,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/br
         - docker.io/pingcap/br-enterprise
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb-lightning
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-lightning
@@ -189,6 +202,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
         - docker.io/pingcap/tidb-lightning-enterprise
   hub.pingcap.net/pingcap/tidb/images/dumpling:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/dumpling
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dumpling
@@ -274,6 +290,9 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/sync-diff-inspector
   hub.pingcap.net/pingcap/tiflash/image:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiflash
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tiflash
@@ -364,6 +383,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-binlog
         - docker.io/pingcap/tidb-binlog-enterprise
   hub.pingcap.net/tikv/tikv/image:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tikv
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tikv
@@ -385,6 +407,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tikv
         - docker.io/pingcap/tikv-enterprise
   hub.pingcap.net/tikv/pd/image:
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/pd
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/pd
