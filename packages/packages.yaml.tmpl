@@ -1755,7 +1755,9 @@ components:
           next-gen:
             - os: linux
               script: |
+                export ENABLE_NEXT_GEN=true
                 ./release-linux-llvm/scripts/build-release.sh
+                release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
         artifacts:
