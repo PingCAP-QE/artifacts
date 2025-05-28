@@ -554,8 +554,78 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-103-g043adb3-go1.18
     routers:
-      - description: For range [v8.4.0, )
-        if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
+      - description: For range [v9.0.0-0, ), support next-gen build since the version.
+        if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release, next-gen, enterprise, failpoint]
+        steps:
+          release:
+            - script: make build
+          next-gen:
+            - script: NEXT_GEN=1 make build
+          enterprise:
+            - script: PD_EDITION=Enterprise make build tools
+          failpoint:
+            - script: FAILPOINT=1 make failpoint-enable build failpoint-disable
+        artifacts:
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+            tiup: # will publish to tiup.
+              description: >-
+                PD is the abbreviation for Placement Driver.
+                It is used to manage and schedule the TiKV cluster.
+              entrypoint: pd-server
+          - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+            tiup:
+              description: >-
+                PD Recover is a disaster recovery tool of PD, used to recover
+                the PD cluster which cannot start or provide services normally.
+              entrypoint: pd-recover
+          - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-heartbeat-bench, src: { path: bin/pd-heartbeat-bench } }
+              - { name: pd-tso-bench, src: { path: bin/pd-tso-bench } }
+              - { name: regions-dump, src: { path: bin/regions-dump } }
+              - { name: stores-dump, src: { path: bin/stores-dump } }
+              - { if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}, name: pd-api-bench, src: { path: bin/pd-api-bench } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/pd/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+
+      - description: For range [v8.4.0, v9.0.0)
+        if: {{ semver.CheckConstraint ">= 8.4.0-0, < v9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, failpoint]
