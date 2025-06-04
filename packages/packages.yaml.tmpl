@@ -563,7 +563,9 @@ components:
           release:
             - script: make build
           next-gen:
-            - script: NEXT_GEN=1 make build
+            - script: |
+                NEXT_GEN=1 PD_EDITION=Enterprise make build
+                bin/pd-server -V | grep -E "^Kernel Type:.*Next Generation"
           enterprise:
             - script: PD_EDITION=Enterprise make build tools
           failpoint:
@@ -935,6 +937,7 @@ components:
           next-gen: # only since v9.0.0
             - script: |
                 NEXT_GEN=1 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
+                bin/tidb-server -V | grep -E "^Kernel Type:.*Next Generation"
         artifacts:
           - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ eq "enterprise" .Release.profile }}
@@ -1825,6 +1828,7 @@ components:
           next-gen:
             - os: linux
               script: |
+                export TIFLASH_EDITION=Enterprise
                 export ENABLE_NEXT_GEN=true
                 ./release-linux-llvm/scripts/build-release.sh
                 release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
@@ -2822,6 +2826,7 @@ components:
                 make release
                 mkdir -p bin
                 cp -v target/release/{tikv-server,cse-ctl,tikv-worker} bin/
+                bin/tikv-server -V | grep -E "^Edition:.*Cloud Storage Engine"
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
