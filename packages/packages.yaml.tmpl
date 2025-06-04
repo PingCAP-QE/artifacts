@@ -935,6 +935,7 @@ components:
           next-gen: # only since v9.0.0
             - script: |
                 NEXT_GEN=1 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
+                bin/tidb-server -V | grep -E "Kernel Type:.*Next Generation"
         artifacts:
           - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ eq "enterprise" .Release.profile }}
