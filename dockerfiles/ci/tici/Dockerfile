@@ -19,3 +19,6 @@ ENV PATH=/root/.tiup/bin:$PATH
 # To run python test scripts
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
+
+RUN wget http://fileserver.pingcap.net/download/builds/devbuild/7930/ticdc-newarch-linux-amd64.tar.gz && \
+    tar -zxvf ticdc-newarch-linux-amd64.tar.gz -C /usr/local/
