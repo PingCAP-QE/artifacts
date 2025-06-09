@@ -19,3 +19,13 @@ ENV PATH=/root/.tiup/bin:$PATH
 # To run python test scripts
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
+
+# Use a patch version of CDC for output handles.
+# If the feature of pull/1403 merged, remove this command.
+RUN git clone https://github.com/pingcap/ticdc.git && \
+    cd ticdc && \
+    git fetch origin pull/1403/head:pr-1403 && git checkout pr-1403 && \
+    make cdc && \
+    mv bin/cdc /usr/local/bin/cdc && \
+    cd .. && \
+    rm -rf ticdc
