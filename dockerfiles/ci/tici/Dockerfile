@@ -3,8 +3,6 @@ FROM $BASE_IMG
 
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
 
-# Update internal dns to speed up downloading
-RUN printf "search bm_dhcp_domain\nnameserver 10.2.4.254\nnameserver 10.2.100.3\n" > /etc/resolv.conf
 # MinIO
 RUN wget -q -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
     chmod +x minio && \
@@ -41,5 +39,4 @@ RUN git clone https://github.com/pingcap/ticdc.git && \
 
 # Dataset (put it at last because it takes a long time to download)
 # It could be cached elsewhere to reduce size of the image
-RUN wget -q https://quickwit-datasets-public.s3.amazonaws.com/hdfs-logs-multitenants.json.gz
-RUN gzip -d hdfs-logs-multitenants.json.gz
+RUN wget -q https://quickwit-datasets-public.s3.amazonaws.com/hdfs-logs-multitenants.json.gz && gzip -d hdfs-logs-multitenants.json.gz
