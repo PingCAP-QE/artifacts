@@ -13,9 +13,43 @@ on:
       - "dockerfiles/ci/skaffold.yaml"
 
 jobs:
+  detect-changes:
+    name: Detect file changes
+    runs-on: ubuntu-24.04
+    # 只有在 push 事件时才检测变更，workflow_dispatch 时跳过检测（构建所有镜像）
+    if: github.event_name == 'push'
+    outputs:
+      base-jenkins: ${{ steps.filter.outputs.base-jenkins }}
+      jenkins-special: ${{ steps.filter.outputs.jenkins-special }}
+      tici: ${{ steps.filter.outputs.tici }}
+      skaffold: ${{ steps.filter.outputs.skaffold }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            base-jenkins:
+              - 'dockerfiles/ci/base/**/Dockerfile'
+              - 'dockerfiles/ci/base/**/*.Dockerfile'
+              - 'dockerfiles/ci/jenkins/Dockerfile'
+            jenkins-special:
+              - 'dockerfiles/ci/jenkins/tikv/**'
+              - 'dockerfiles/ci/jenkins/tiflash/**'
+            tici:
+              - 'dockerfiles/ci/tici/**'
+            skaffold:
+              - 'dockerfiles/ci/skaffold.yaml'
   skaffold-go:
     name: publish images with skaffold
     runs-on: ubuntu-24.04
+    needs: [detect-changes]
+    if: |
+      always() &&
+      (github.event_name == 'workflow_dispatch' ||
+       needs.detect-changes.outputs.base-jenkins == 'true' ||
+       needs.detect-changes.outputs.skaffold == 'true')
 
     permissions:
       contents: read
@@ -76,6 +110,12 @@ jobs:
   skaffold-jenkins-nogo:
     name: publish images with skaffold
     runs-on: ubuntu-24.04
+    needs: [detect-changes]
+    if: |
+      always() &&
+      (github.event_name == 'workflow_dispatch' ||
+       needs.detect-changes.outputs.jenkins-special == 'true' ||
+       needs.detect-changes.outputs.skaffold == 'true')
 
     permissions:
       contents: read
@@ -122,13 +162,19 @@ jobs:
   skaffold-common:
     name: publish images with skaffold
     runs-on: ubuntu-24.04
+    needs: [detect-changes]
+    if: |
+      always() &&
+      (github.event_name == 'workflow_dispatch' ||
+       needs.detect-changes.outputs.tici == 'true' ||
+       needs.detect-changes.outputs.skaffold == 'true')
 
     permissions:
       contents: read
       packages: write
     strategy:
       matrix:
-        module: [ci]
+        module: [ci-tici]
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

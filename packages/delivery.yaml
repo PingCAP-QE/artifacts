@@ -320,6 +320,12 @@ image_copy_rules:
         - ^(main|master)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/tiproxy
+    - <<: *sync_pre_community
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiproxy
+    - <<: *sync_ga_community
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiproxy
   hub.pingcap.net/pingcap/monitoring/image:
     - <<: *sync_trunk_community
       dest_repositories:
