@@ -1,13 +1,15 @@
-# base image dockerfile: ci/base/Dockerfile
-ARG BASE_IMG
+ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-135-g43bfc3c-centos7
 FROM $BASE_IMG
 
-RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core
+RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
+
+ARG OS=linux
 
 # MinIO
-RUN wget -O minio https://dl.min.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q -O minio https://dl.min.io/server/minio/release/${OS}-${ARCH}/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
     chmod +x minio && \
-    wget -O mc https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2025-02-08T19-14-21Z && \
+    wget -q -O mc https://dl.min.io/client/mc/release/${OS}-${ARCH}/archive/mc.RELEASE.2025-02-08T19-14-21Z && \
     chmod +x mc && \
     mv minio /usr/local/bin/minio && \
     mv mc /usr/local/bin/mc
@@ -20,8 +22,17 @@ ENV PATH=/root/.tiup/bin:$PATH
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
 
-# Use a patch version of CDC for output handles.
-# If the feature of pull/1403 merged, remove this command.
+# For rustup toolchain
+ENV RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static" RUSTUP_UPDATE_ROOT="https://mirrors.ustc.edu.cn/rust-static/rustup"
+RUN rustup install nightly-2025-02-28
+
+# Install Go and build ticdc
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q https://go.dev/dl/go1.23.10.${OS}-${ARCH}.tar.gz && \
+    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.10.${OS}-${ARCH}.tar.gz && \
+    go version && \
+    rm go1.23.10.${OS}-${ARCH}.tar.gz
+
 RUN git clone https://github.com/pingcap/ticdc.git && \
     cd ticdc && \
     git fetch origin pull/1403/head:pr-1403 && git checkout pr-1403 && \
