@@ -4,10 +4,10 @@ FROM $BASE_IMG
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
 
 ARG OS=linux
-ARG ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64)
 
 # MinIO
-RUN wget -q -O minio https://dl.min.io/server/minio/release/${OS}-${ARCH}/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q -O minio https://dl.min.io/server/minio/release/${OS}-${ARCH}/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
     chmod +x minio && \
     wget -q -O mc https://dl.min.io/client/mc/release/${OS}-${ARCH}/archive/mc.RELEASE.2025-02-08T19-14-21Z && \
     chmod +x mc && \
@@ -27,7 +27,8 @@ ENV RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static" RUSTUP_UPDATE_R
 RUN rustup install nightly-2025-02-28
 
 # Install Go and build ticdc
-RUN wget -q https://go.dev/dl/go1.23.10.${OS}-${ARCH}.tar.gz && \
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q https://go.dev/dl/go1.23.10.${OS}-${ARCH}.tar.gz && \
     rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.10.${OS}-${ARCH}.tar.gz && \
     go version && \
     rm go1.23.10.${OS}-${ARCH}.tar.gz
