@@ -70,21 +70,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ticdc
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/ticdc
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc
         - docker.io/pingcap/ticdc
         - uhub.service.ucloud.cn/pingcap/ticdc
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc-enterprise
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator:
@@ -136,21 +130,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb
-    - <<: *sync_pre_community_and_failpoint
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb
     - <<: *sync_pre_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-enterprise
         - gcr.io/pingcap-public/dbaas/tidb
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tidb
         - docker.io/pingcap/tidb
         - uhub.service.ucloud.cn/pingcap/tidb
     - <<: *sync_ga_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-enterprise
         - gcr.io/pingcap-public/dbaas/tidb
         - docker.io/pingcap/tidb-enterprise
   hub.pingcap.net/pingcap/tidb/images/br:
@@ -160,21 +148,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/br
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/br
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/br
         - docker.io/pingcap/br
         - uhub.service.ucloud.cn/pingcap/br
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/br-enterprise
         - gcr.io/pingcap-public/dbaas/br
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/br-enterprise
         - gcr.io/pingcap-public/dbaas/br
         - docker.io/pingcap/br-enterprise
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning:
@@ -184,21 +166,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-lightning
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-lightning
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-lightning
         - docker.io/pingcap/tidb-lightning
         - uhub.service.ucloud.cn/pingcap/tidb-lightning
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-lightning-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-lightning
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-lightning-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-lightning
         - docker.io/pingcap/tidb-lightning-enterprise
   hub.pingcap.net/pingcap/tidb/images/dumpling:
@@ -208,21 +184,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dumpling
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/dumpling
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/dumpling
         - docker.io/pingcap/dumpling
         - uhub.service.ucloud.cn/pingcap/dumpling
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/dumpling-enterprise
         - gcr.io/pingcap-public/dbaas/dumpling
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/dumpling-enterprise
         - gcr.io/pingcap-public/dbaas/dumpling
         - docker.io/pingcap/dumpling-enterprise
   hub.pingcap.net/pingcap/tiflow/images/cdc:
@@ -231,42 +201,30 @@ image_copy_rules:
     # - <<: *sync_trunk_community
     #   dest_repositories:
     #     - docker.io/pingcap/ticdc
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/ticdc
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc
         - docker.io/pingcap/ticdc
         - uhub.service.ucloud.cn/pingcap/ticdc
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ticdc-enterprise
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc-enterprise
   hub.pingcap.net/pingcap/tiflow/images/dm:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dm
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/dm
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/dm
         - docker.io/pingcap/dm
         - uhub.service.ucloud.cn/pingcap/dm
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/dm-enterprise
         - gcr.io/pingcap-public/dbaas/dm
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/dm-enterprise
         - gcr.io/pingcap-public/dbaas/dm
         - docker.io/pingcap/dm-enterprise
   hub.pingcap.net/pingcap/tiflow/images/tiflow:
@@ -296,21 +254,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tiflash
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tiflash
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tiflash
         - docker.io/pingcap/tiflash
         - uhub.service.ucloud.cn/pingcap/tiflash
     - <<: *sync_pre_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tiflash-enterprise
         - gcr.io/pingcap-public/dbaas/tiflash
     - <<: *sync_ga_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tiflash-enterprise
         - gcr.io/pingcap-public/dbaas/tiflash
         - docker.io/pingcap/tiflash-enterprise
   hub.pingcap.net/pingcap/tiproxy/image:
@@ -330,62 +282,45 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-monitor-initializer
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-monitor-initializer
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-monitor-initializer
         - docker.io/pingcap/tidb-monitor-initializer
         - uhub.service.ucloud.cn/pingcap/tidb-monitor-initializer
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-monitor-initializer
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-monitor-initializer-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-monitor-initializer
         - docker.io/pingcap/tidb-monitor-initializer-enterprise
   hub.pingcap.net/pingcap/ng-monitoring/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ng-monitoring
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/ng-monitoring
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/ng-monitoring
         - docker.io/pingcap/ng-monitoring
         - uhub.service.ucloud.cn/pingcap/ng-monitoring
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ng-monitoring-enterprise
         - gcr.io/pingcap-public/dbaas/ng-monitoring
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/ng-monitoring-enterprise
         - gcr.io/pingcap-public/dbaas/ng-monitoring
         - docker.io/pingcap/ng-monitoring-enterprise
   hub.pingcap.net/pingcap/tidb-binlog/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-binlog
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog
     - <<: *sync_ga_community
       dest_repositories:
         - docker.io/pingcap/tidb-binlog
         - uhub.service.ucloud.cn/pingcap/tidb-binlog
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-binlog
     - <<: *sync_ga_community_to_enterprise_repo
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-binlog-enterprise
         - gcr.io/pingcap-public/dbaas/tidb-binlog
         - docker.io/pingcap/tidb-binlog-enterprise
   hub.pingcap.net/tikv/tikv/image:
@@ -395,21 +330,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tikv
-    - <<: *sync_pre_community_and_failpoint
-      dest_repositories:
-        - hub.pingcap.net/qa/tikv
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tikv
         - docker.io/pingcap/tikv
         - uhub.service.ucloud.cn/pingcap/tikv
     - <<: *sync_pre_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tikv-enterprise
         - gcr.io/pingcap-public/dbaas/tikv
     - <<: *sync_ga_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/tikv-enterprise
         - gcr.io/pingcap-public/dbaas/tikv
         - docker.io/pingcap/tikv-enterprise
   hub.pingcap.net/tikv/pd/image:
@@ -419,21 +348,15 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/pd
-    - <<: *sync_pre_community_and_failpoint
-      dest_repositories:
-        - hub.pingcap.net/qa/pd
     - <<: *sync_pre_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/pd-enterprise
         - gcr.io/pingcap-public/dbaas/pd
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/pd
         - docker.io/pingcap/pd
         - uhub.service.ucloud.cn/pingcap/pd
     - <<: *sync_ga_enterprise
       dest_repositories:
-        - hub.pingcap.net/qa/pd-enterprise
         - gcr.io/pingcap-public/dbaas/pd
         - docker.io/pingcap/pd-enterprise
   hub.pingcap.net/pingcap/tiflow-operator/image:
@@ -453,12 +376,8 @@ image_copy_rules:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-dashboard
-    - <<: *sync_pre_community
-      dest_repositories:
-        - hub.pingcap.net/qa/tidb-dashboard
     - <<: *sync_ga_community
       dest_repositories:
-        - hub.pingcap.net/qa/tidb-dashboard
         - docker.io/pingcap/tidb-dashboard
         - uhub.service.ucloud.cn/pingcap/tidb-dashboard
         - gcr.io/pingcap-public/dbaas/tidb-dashboard
