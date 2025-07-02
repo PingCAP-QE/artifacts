@@ -3,6 +3,9 @@ FROM $BASE_IMG
 
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
 
+ARG OS=linux
+ARG ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64)
+
 # MinIO
 RUN wget -q -O minio https://dl.min.io/server/minio/release/${OS}-${ARCH}/archive/minio.RELEASE.2025-02-07T23-21-09Z && \
     chmod +x minio && \
