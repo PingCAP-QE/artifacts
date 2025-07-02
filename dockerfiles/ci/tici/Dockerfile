@@ -36,7 +36,3 @@ RUN git clone https://github.com/pingcap/ticdc.git && \
     mv bin/cdc /usr/local/bin/cdc && \
     cd .. && \
     rm -rf ticdc
-
-# Dataset (put it at last because it takes a long time to download)
-# It could be cached elsewhere to reduce size of the image
-RUN wget -q https://quickwit-datasets-public.s3.amazonaws.com/hdfs-logs-multitenants.json.gz && gzip -d hdfs-logs-multitenants.json.gz
