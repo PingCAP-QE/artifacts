@@ -9,7 +9,7 @@
 ########### stage: builder
 FROM ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.4.15-rocky8-llvm-17.0.6-v2 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlash"
+LABEL org.opencontainers.image.description "binary builder for TiCI"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 RUN --mount=type=cache,target=/var/cache/dnf \
