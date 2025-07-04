@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.description "binary builder for TiCI"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y protobuf-compiler perl-core openssl-devel
+    yum install --nogpgcheck -y perl-core openssl-devel
 
 ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"

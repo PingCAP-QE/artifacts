@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.description "binary builder for TiFlash"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y protobuf-compiler perl-core openssl-devel
+    dnf install -y perl-core openssl-devel
 
 ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
