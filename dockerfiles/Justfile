@@ -28,7 +28,7 @@ msb-tidb-dashboard: (_clone "tidb-dashboard" "https://github.com/pingcap/tidb-da
 msb-tidb-operator: (_clone "tidb-operator" "https://github.com/pingcap/tidb-operator.git" "master")
     docker build --load -t localhost/tidb-operator:local-build -f cd/builders/tidb-operator/Dockerfile building/tidb-operator
 
-build_product_base_images: (_docker_build_prod_base_images "hub.pingcap.net/bases")
+build_product_base_images: (_docker_build_prod_base_images "ghcr.pingcap-qe/bases")
 
 _clone component git_url git_branch:
     [ -e building/{{component}} ] || git clone --recurse-submodules -j8 {{git_url}} --branch {{git_branch}} building/{{component}}
