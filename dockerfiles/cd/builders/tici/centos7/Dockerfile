@@ -35,7 +35,7 @@ RUN mkdir /ws/output && mv /ws/target/release/tici /ws/output/tici
 RUN /ws/output/tici version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
 COPY --from=building /ws/output/tici /app/tici
 
 ENTRYPOINT ["/app/tici"]
