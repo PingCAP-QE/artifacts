@@ -122,7 +122,7 @@ docker run --rm pd:latest -V
 
 ### How to build the image from source
 
-You can simplely build it by run `just msb-tiflash`, or run the same steps in bash:
+You can simplely build it by run `just msb-tiflash` in folder `dockerfiles` of the project, or run the same steps in bash:
 
 ```bash
 #!/usr/bin/env bash

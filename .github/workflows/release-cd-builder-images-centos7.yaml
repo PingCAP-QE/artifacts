@@ -66,7 +66,7 @@ jobs:
           # golang type builders
           JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd","ticdc", "tidb", "tidb-dashboard", "tiflow", "tidbx"]'
           JSON_ALL_RUST_BUILDERS='["tikv"]'
-          JSON_ALL_CPP_BUILDERS='["tiflash"]'
+          JSON_ALL_CPP_BUILDERS='["tiflash", "tici"]'
 
           ### Compute the building matrix on builder axies.
           # Get intersection of arrays: JSON_ALL_GO_BUILDERS, JSON_CHANGED_BUILDERS

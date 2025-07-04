@@ -3,3 +3,4 @@
 packages/scripts/build-package-artifacts.sh
 packages/scripts/build-package-images.sh
 packages/scripts/compose-offline-packages-artifacts.sh
+dockerfiles/building
