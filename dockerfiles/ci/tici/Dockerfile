@@ -23,7 +23,6 @@ RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
 
 # For rustup toolchain
-ENV RUSTUP_DIST_SERVER="https://mirrors.ustc.edu.cn/rust-static" RUSTUP_UPDATE_ROOT="https://mirrors.ustc.edu.cn/rust-static/rustup"
 RUN rustup install nightly-2025-02-28
 
 # Install Go and build ticdc
@@ -40,3 +39,8 @@ RUN git clone https://github.com/pingcap/ticdc.git && \
     mv bin/cdc /usr/local/bin/cdc && \
     cd .. && \
     rm -rf ticdc
+
+ENV CXXFLAGS="-stdlib=libc++"
+ENV LDFLAGS="-stdlib=libc++"
+ENV CC="clang"
+ENV CXX="clang++"
