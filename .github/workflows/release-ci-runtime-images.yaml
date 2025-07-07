@@ -161,7 +161,7 @@ jobs:
 
   skaffold-common:
     name: publish images with skaffold
-    runs-on: arc-runner-set-pingcap-qe
+    runs-on: ubuntu-24.04
     needs: [detect-changes]
     if: |
       always() &&
