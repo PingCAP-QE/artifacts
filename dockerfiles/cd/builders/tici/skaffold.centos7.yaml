@@ -1,0 +1,20 @@
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: tici
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: centos7/Dockerfile
+        target: builder
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}-centos7"
