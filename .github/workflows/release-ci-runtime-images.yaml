@@ -161,7 +161,7 @@ jobs:
 
   skaffold-common:
     name: publish images with skaffold
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, ARM64]
     needs: [detect-changes]
     if: |
       always() &&
