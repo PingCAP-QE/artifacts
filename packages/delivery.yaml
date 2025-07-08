@@ -110,12 +110,12 @@ image_copy_rules:
       tags_regex:
         - ^(v2[.][0-9]+[.][0-9]+)(-.+)?$
       dest_repositories:
-        - docker.io/pingcap/tidb-operator-prestop-hook
-        - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-hook
+        - docker.io/pingcap/tidb-operator-prestop-checker
+        - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
     - <<: *sync_trunk_community
       dest_repositories:
-        - docker.io/pingcap/tidb-operator-prestop-hook
-        - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-hook
+        - docker.io/pingcap/tidb-operator-prestop-checker
+        - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_next-gen
       dest_repositories:
