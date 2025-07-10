@@ -18,6 +18,10 @@ RUN --mount=type=cache,target=/var/cache/yum \
 ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
 
+# Set up Rust linker and flags
+RUN rm -rf ~/.cargo/config
+RUN echo '[target.x86_64-unknown-linux-gnu]\nlinker = "/usr/local/bin/clang"\nrustflags = ["-C", "link-arg=-fuse-ld=lld", "-C", "link-arg=-Wl,-Bsymbolic", "-C", "link-arg=-lc++", "-C", "link-arg=-lc++abi"]\n\n[target.aarch64-unknown-linux-gnu]\nlinker = "/usr/local/bin/clang"\nrustflags = ["-C", "link-arg=-fuse-ld=lld", "-C", "link-arg=-Wl,-Bsymbolic", "-C", "link-arg=-lc++", "-C", "link-arg=-lc++abi"]\n\n[profile.release]\nrpath = true' > ~/.cargo/config.toml
+
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
 RUN --mount=type=cache,target=/var/cache/yum \
