@@ -1,6 +1,7 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
 FROM $BASE_IMG
 
-COPY tici /app/tici
+COPY meta_service_server worker_node_server /app/
 
-ENTRYPOINT ["/app/tici"]
+ENTRYPOINT ["/app/meta_service_server"]
+# TODO: maybe we should split it into two images.
