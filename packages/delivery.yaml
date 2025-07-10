@@ -82,7 +82,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc-enterprise
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator:
-    - description: delivery the version images.
+    - description: delivery the version images, except pre release types.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
       dest_repositories:
@@ -93,7 +93,7 @@ image_copy_rules:
         - docker.io/pingcap/tidb-operator
         - gcr.io/pingcap-public/dbaas/tidb-operator
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-backup-manager:
-    - description: delivery the version images.
+    - description: delivery the version images, except pre release types.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
       dest_repositories:
