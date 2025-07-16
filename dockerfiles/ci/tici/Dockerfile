@@ -46,15 +46,4 @@ ENV CC="clang"
 ENV CXX="clang++"
 
 # Set up Rust linker and flags
-RUN rm -rf ~/.cargo/config && cat <<EOF > ~/.cargo/config.toml
-[target.x86_64-unknown-linux-gnu]
-linker = "/usr/local/bin/clang"
-rustflags = ["-C", "link-arg=-fuse-ld=lld", "-C", "link-arg=-Wl,-Bsymbolic", "-C", "link-arg=-lc++", "-C", "link-arg=-lc++abi"]
-
-[target.aarch64-unknown-linux-gnu]
-linker = "/usr/local/bin/clang"
-rustflags = ["-C", "link-arg=-fuse-ld=lld", "-C", "link-arg=-Wl,-Bsymbolic", "-C", "link-arg=-lc++", "-C", "link-arg=-lc++abi"]
-
-[profile.release]
-rpath = true
-EOF
+ENV RUSTFLAGS="-C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -C link-arg=-Wl,-Bsymbolic -C link-arg=-lc++ -C link-arg=-lc++abi"
