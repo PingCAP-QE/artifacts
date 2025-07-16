@@ -46,4 +46,4 @@ ENV CC="clang"
 ENV CXX="clang++"
 
 # Set up Rust linker and flags
-ENV RUSTFLAGS="-C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -C link-arg=-Wl,-Bsymbolic -C link-arg=-lc++ -C link-arg=-lc++abi"
+ENV RUSTFLAGS="-C rpath -C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -C link-arg=-Wl,-Bsymbolic -C link-arg=-lc++ -C link-arg=-lc++abi"
