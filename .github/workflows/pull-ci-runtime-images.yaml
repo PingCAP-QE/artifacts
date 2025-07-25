@@ -25,6 +25,7 @@ jobs:
       jenkins-special: ${{ steps.filter.outputs.jenkins-special }}
       tici: ${{ steps.filter.outputs.tici }}
       skaffold: ${{ steps.filter.outputs.skaffold }}
+      workflow: ${{ steps.filter.outputs.workflow }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -43,11 +44,13 @@ jobs:
               - 'dockerfiles/ci/tici/**'
             skaffold:
               - 'dockerfiles/ci/skaffold.yaml'
+            workflow:
+              - '.github/workflows/pull-ci-runtime-images.yaml'
   skaffold-go:
     name: build go images with skaffold
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.base-jenkins == 'true' || needs.detect-changes.outputs.skaffold == 'true' }}
+    if: ${{ needs.detect-changes.outputs.base-jenkins == 'true' || needs.detect-changes.outputs.skaffold == 'true' || needs.detect-changes.outputs.workflow == 'true' }}
 
     permissions:
       contents: read
@@ -108,7 +111,7 @@ jobs:
     name: build jenkins nogo images with skaffold
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.jenkins-special == 'true' || needs.detect-changes.outputs.skaffold == 'true' }}
+    if: ${{ needs.detect-changes.outputs.jenkins-special == 'true' || needs.detect-changes.outputs.skaffold == 'true' || needs.detect-changes.outputs.workflow == 'true' }}
 
     permissions:
       contents: read
@@ -157,7 +160,7 @@ jobs:
     name: build common images with skaffold
     runs-on: [self-hosted, linux, amd64]
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.tici == 'true' || needs.detect-changes.outputs.skaffold == 'true' }}
+    if: ${{ needs.detect-changes.outputs.tici == 'true' || needs.detect-changes.outputs.skaffold == 'true' || needs.detect-changes.outputs.workflow == 'true' }}
 
     permissions:
       contents: read
