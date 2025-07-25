@@ -10,6 +10,7 @@ on:
       - "dockerfiles/ci/jenkins/**/*.Dockerfile"
       - "dockerfiles/ci/tici/**/Dockerfile"
       - "dockerfiles/ci/skaffold.yaml"
+      - ".github/workflows/pull-ci-runtime-images.yaml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
