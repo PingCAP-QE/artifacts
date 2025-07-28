@@ -69,6 +69,7 @@ image_copy_rules:
     # only delivey the master branch images and versions since v9.0.0-beta.1
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc
     - <<: *sync_ga_community
       dest_repositories:
@@ -120,6 +121,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb
         - docker.io/pingcap/tidb
     - <<: *sync_pre_enterprise
       dest_repositories:
@@ -138,6 +140,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/br
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/br
         - docker.io/pingcap/br
     - <<: *sync_ga_community
       dest_repositories:
@@ -156,6 +159,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb-lightning
         - docker.io/pingcap/tidb-lightning
     - <<: *sync_ga_community
       dest_repositories:
@@ -206,6 +210,7 @@ image_copy_rules:
   hub.pingcap.net/pingcap/tiflow/images/dm:
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/dm
         - docker.io/pingcap/dm
     - <<: *sync_ga_community
       dest_repositories:
@@ -244,6 +249,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tiflash
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiflash
         - docker.io/pingcap/tiflash
     - <<: *sync_ga_community
       dest_repositories:
@@ -320,6 +326,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tikv
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tikv
         - docker.io/pingcap/tikv
     - <<: *sync_ga_community
       dest_repositories:
@@ -338,6 +345,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/pd
     - <<: *sync_trunk_community
       dest_repositories:
+        - gcr.io/pingcap-public/dbaas/pd
         - docker.io/pingcap/pd
     - <<: *sync_pre_enterprise
       dest_repositories:
