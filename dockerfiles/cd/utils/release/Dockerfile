@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
 RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gomplate
-COPY --from=hairyhenderson/gomplate:v4.3.2-alpine /bin/gomplate /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:v4.3.3-alpine /bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
 COPY --from=ghcr.io/oras-project/oras:v1.2.3 --chown=0:0 /bin/oras /usr/local/bin/oras
