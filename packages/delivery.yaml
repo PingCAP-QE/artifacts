@@ -13,7 +13,7 @@ definitions:
   sync_trunk_next-gen: &sync_trunk_next-gen
     description: delivery next-gen images for developing branches.
     tags_regex:
-      - ^(master|dedicated|feature-next-gen.*)(-.*)?-next-gen$
+      - ^(master|dedicated|release-nextgen|feature-next-gen.*)(-.*)?-next-gen$
   sync_pre_community: &sync_pre_community
     description: delivery community images for release branches.
     tags_regex:
