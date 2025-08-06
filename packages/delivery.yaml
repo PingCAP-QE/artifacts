@@ -186,7 +186,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/dumpling
     - <<: *sync_trunk_enterprise
       dest_repositories:
-        - docker.io/pingcap/dumpling
+        - gcr.io/pingcap-public/dbaas/dumpling
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dumpling
