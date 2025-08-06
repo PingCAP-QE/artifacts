@@ -6,10 +6,12 @@ deprecated:
   - hub.pingcap.net/pingcap/tidb-tools/image
 definitions:
   sync_trunk_community: &sync_trunk_community
-    description: delivery the trunk branch images.
+    description: delivery the trunk branch community images.
     tags_regex: [^master(-experiment)?$]
     constant_tags: [nightly] # add new tags.
-  sync_trunk_enterprise: &sync_trunk_enterprise {}
+  sync_trunk_enterprise: &sync_trunk_enterprise
+    description: delivery the trunk branch enterprise edition images.
+    tags_regex: [^master-enterprise$]
   sync_trunk_next-gen: &sync_trunk_next-gen
     description: delivery next-gen images for developing branches.
     tags_regex:
@@ -119,9 +121,11 @@ image_copy_rules:
     - <<: *sync_trunk_next-gen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
-    - <<: *sync_trunk_community
+    - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
+    - <<: *sync_trunk_community
+      dest_repositories:
         - docker.io/pingcap/tidb
     - <<: *sync_pre_enterprise
       dest_repositories:
@@ -138,9 +142,11 @@ image_copy_rules:
     - <<: *sync_trunk_next-gen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
-    - <<: *sync_trunk_community
+    - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
+    - <<: *sync_trunk_community
+      dest_repositories:
         - docker.io/pingcap/br
     - <<: *sync_ga_community
       dest_repositories:
@@ -157,9 +163,11 @@ image_copy_rules:
     - <<: *sync_trunk_next-gen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
-    - <<: *sync_trunk_community
+    - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
+    - <<: *sync_trunk_community
+      dest_repositories:
         - docker.io/pingcap/tidb-lightning
     - <<: *sync_ga_community
       dest_repositories:
@@ -176,6 +184,9 @@ image_copy_rules:
     - <<: *sync_trunk_next-gen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
+    - <<: *sync_trunk_enterprise
+      dest_repositories:
+        - docker.io/pingcap/dumpling
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/dumpling
