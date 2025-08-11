@@ -49,7 +49,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 
-
 ########### stage: building
 FROM builder AS building
 
