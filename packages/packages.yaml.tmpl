@@ -2999,7 +2999,7 @@ components:
               - { name: tiup-server, src : { path: bin/tiup-server } }
             tiup:
               description: Bootstrap a local TiDB cluster for fun.
-              entrypoint: tiup-dm
+              entrypoint: tiup-playground
           - name: "server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - { name: tiup-server, src : { path: bin/tiup-server } }
