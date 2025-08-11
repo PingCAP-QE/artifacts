@@ -2940,3 +2940,69 @@ components:
             files: # prepare for context
               - { name: meta_service_server, src : { path: target/release/meta_service_server } }
               - { name: worker_node_server, src : { path: target/release/worker_node_server } }
+  tiup:
+    desc: tiup components tarballs and images
+    git:
+      # In the future, the repo will be open source in the `pingcap` ORG.
+      url: https://github.com/pingcap/tiup.git
+      ref: {{ .Git.ref | default "main" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: "{{ .Release.registry }}/pingcap/tiup/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    # binary builder, also we need it when build for mac to get build tools versions and other informations.
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/builders/tici:v2025.7.13-4-g801199f-centos7
+    routers:
+      - description: currently in demo stage
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                make build
+        artifacts:
+          - name: "tiup-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup, src : { path: bin/tiup } }
+            tiup:
+              description: >-
+                TiUP is a command-line component management tool that can help to download and install TiDB platform components to the local system.
+              entrypoint: tiup
+          - name: "client-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-client, src : { path: bin/tiup-client } }
+            tiup:
+              description: Client to connect playground.
+              entrypoint: tiup-client
+          - name: "cluster-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-cluster, src : { path: bin/tiup-cluster } }
+            tiup:
+              description: Deploy a TiDB cluster for production
+              entrypoint: tiup-cluster
+          - name: "dm-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-dm, src : { path: bin/tiup-dm } }
+            tiup:
+              description: Data Migration Platform manager
+              entrypoint: tiup-dm
+          - name: "playground-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-server, src : { path: bin/tiup-server } }
+            tiup:
+              description: Bootstrap a local TiDB cluster for fun.
+              entrypoint: tiup-playground
+          - name: "server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-server, src : { path: bin/tiup-server } }
+            tiup:
+              description: TiUP publish/cache server
+              entrypoint: tiup-server
