@@ -1804,11 +1804,13 @@ components:
           release:
             - os: linux
               script: |
+                rustup update
                 ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
             - os: darwin
               script: |
+                rustup update
                 ./release-darwin/build/build-release.sh
                 mkdir outputs
                 mv release-darwin/tiflash outputs/tiflash
@@ -1816,18 +1818,21 @@ components:
             - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
+                rustup update
                 ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
           failpoint:
             - os: linux
               script: |
+                rustup update
                 ./release-linux-llvm/scripts/build-debug.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
           next-gen:
             - os: linux
               script: |
+                rustup update
                 export TIFLASH_EDITION=Enterprise
                 export ENABLE_NEXT_GEN=true
                 ./release-linux-llvm/scripts/build-release.sh
