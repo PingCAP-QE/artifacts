@@ -25,21 +25,6 @@ RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
 # For rustup toolchain
 RUN rustup install nightly-2025-02-28
 
-# Install Go and build ticdc
-RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
-    wget -q https://go.dev/dl/go1.23.10.${OS}-${ARCH}.tar.gz && \
-    rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.10.${OS}-${ARCH}.tar.gz && \
-    go version && \
-    rm go1.23.10.${OS}-${ARCH}.tar.gz
-
-RUN git clone https://github.com/pingcap/ticdc.git && \
-    cd ticdc && \
-    git fetch origin pull/1403/head:pr-1403 && git checkout pr-1403 && \
-    make cdc && \
-    mv bin/cdc /usr/local/bin/cdc && \
-    cd .. && \
-    rm -rf ticdc
-
 ENV CXXFLAGS="-stdlib=libc++"
 ENV LDFLAGS="-stdlib=libc++"
 ENV CC="clang"
