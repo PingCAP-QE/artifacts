@@ -53,7 +53,7 @@ build:
         dockerfile: tools-base/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.9.2"
+      template: "v1.10.0"
   local:
     useDockerCLI: true
     useBuildkit: true
