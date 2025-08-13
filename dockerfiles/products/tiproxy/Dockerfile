@@ -4,6 +4,7 @@ FROM $BASE_IMG as base
 
 COPY tiproxy tiproxyctl /bin/
 COPY conf/* /etc/proxy/
+RUN chmod 755 /bin/tiproxy /bin/tiproxyctl && chmod 644 /etc/proxy/proxy.toml
 EXPOSE 3080
 EXPOSE 3081
 EXPOSE 6000
