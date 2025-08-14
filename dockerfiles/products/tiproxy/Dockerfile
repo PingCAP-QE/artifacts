@@ -1,11 +1,6 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
 FROM $BASE_IMG
-
-COPY tiproxy tiproxyctl /bin/
-COPY conf/* /etc/proxy/
-
-EXPOSE 3080
-EXPOSE 3081
-EXPOSE 6000
-
+COPY --chmod=0755 tiproxy tiproxyctl /bin/
+COPY --chmod=0644 conf/* /etc/proxy/
+EXPOSE 3080 3081 6000
 ENTRYPOINT ["/bin/tiproxy", "-conf", "/etc/proxy/proxy.toml"]

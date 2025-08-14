@@ -1,4 +1,5 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.9.2
+# syntax=docker/dockerfile:1
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.10.0
 FROM $BASE_IMG
 COPY pd-server /pd-server
 COPY pd-ctl /pd-ctl
