@@ -20,6 +20,14 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-cr
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-ecr-login  /usr/local/bin/docker-credential-ecr-login
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-acr-env    /usr/local/bin/docker-credential-acr-env
 
+# install tools: crane
+# renovate: datasource=github-release depName=google/go-containerregistry
+ARG CRANE_VER=0.20.2
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo x86_64 || echo arm64); \
+    wget -q -O - https://github.com/google/go-containerregistry/releases/download/v${CRANE_VER}/go-containerregistry_Linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
+    install /tmp/crane /usr/local/bin/crane && \
+    rm -rf /tmp/crane
+
 # install tools: k3sutil
 ARG KS3UTIL_VER=2.6.0
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
