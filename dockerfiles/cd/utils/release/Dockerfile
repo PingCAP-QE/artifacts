@@ -1,8 +1,8 @@
 FROM alpine:3.22.1
 
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "utils image for CD release"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="utils image for CD release"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install tools: bash, curl, git, jq, yq, uuidgen
 RUN apk add --no-cache bash git curl jq yq uuidgen

@@ -1,8 +1,8 @@
 # Ref: https://github.com/sqawasmi/trafficserver-docker/blob/master/Dockerfile
 FROM debian:12.11
 
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # renovate: datasource=github-tags depName=apache/trafficserver
 ARG TRAFFIC_SERVER_VERSION=9.2.4

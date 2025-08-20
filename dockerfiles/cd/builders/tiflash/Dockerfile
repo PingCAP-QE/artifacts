@@ -8,9 +8,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlash"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlash"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # FIXME: replace with official repo and tag.
 # renovate: datasource=github-tags depName=pingcap/tiflash

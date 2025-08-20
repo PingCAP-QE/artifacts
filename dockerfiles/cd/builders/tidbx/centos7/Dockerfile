@@ -6,9 +6,9 @@
 
 ########### stage: builder
 FROM ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-63-gb22476a-centos7 AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiDBx (experimental)"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiDBx (experimental)"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
