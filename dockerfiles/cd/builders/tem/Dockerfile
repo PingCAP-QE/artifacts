@@ -8,9 +8,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528 AS builder
-LABEL org.opencontainers.image.authors "shenhaibo@pingcap.com"
-LABEL org.opencontainers.image.description "builder with protobuf and Go toolchain for TEM cd"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="shenhaibo@pingcap.com"
+LABEL org.opencontainers.image.description="builder with protobuf and Go toolchain for TEM cd"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \

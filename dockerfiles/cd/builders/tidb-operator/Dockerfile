@@ -10,9 +10,9 @@
 ########### stage: builder
 ARG GOLANG_VERSION=1.23.12
 FROM golang:${GOLANG_VERSION} AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiDB Operator"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiDB Operator"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 LABEL go-version="${GOLANG_VERSION}"
 
 # install packages.

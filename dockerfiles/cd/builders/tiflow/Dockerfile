@@ -41,9 +41,9 @@ RUN node --version && npm --version && npm install -g yarn
 
 ########### stage: builder - total
 FROM builder-dm AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlow"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlow"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
