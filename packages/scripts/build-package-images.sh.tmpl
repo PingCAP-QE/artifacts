@@ -278,7 +278,7 @@ collect_and_push_multi_arch_images() {
         {{- range $i, $tag := $base_tags }}
             {{- if eq $i 0 }}
     if ! crane digest {{ $image.artifactory.repo }}:{{ $other_tag }}; then
-        echo "Image {{ $image.artifactory.repo }}:{{ $other_tag }} not found."
+        echo "🤷 Image {{ $image.artifactory.repo }}:{{ $other_tag }} not found."
         exit 0
     fi
     crane index append -m {{ $image.artifactory.repo }}:{{ $self_tag }} -m {{ $image.artifactory.repo }}:{{ $other_tag }} -t {{ $image.artifactory.repo }}:{{ $tag }}
