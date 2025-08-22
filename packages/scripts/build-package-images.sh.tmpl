@@ -29,6 +29,11 @@ main() {
     add_more_tags
   fi
 
+  # collect and push multi-arch images
+  if [ "$NEED_COLLECT_MULT_ARCH" = "true" ]; then
+    push_multi_arch_images
+  fi
+
   echo "✅ All done"
 }
 
