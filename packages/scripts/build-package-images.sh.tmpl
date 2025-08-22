@@ -29,6 +29,11 @@ main() {
     add_more_tags
   fi
 
+  # collect and push multi-arch images
+  if [ "$NEED_COLLECT_MULT_ARCH" = "true" ]; then
+    collect_and_push_multi_arch_images
+  fi
+
   echo "✅ All done"
 }
 
@@ -227,16 +232,16 @@ build_and_push_images() {
 {{- if ne .profile "release" }}
 {{- $tag_suffix = printf "-%s" .profile }}
 {{- end }}
-{{- $platform_tag_suffix := printf "%s_%s_%s" $tag_suffix .os .arch }}
 
 {{- $base_tags := coll.Slice }}
 {{- range $index, $tag := .artifactory.tags }}
 {{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
 {{- end }}
 
+{{- $platform_tag_suffix := printf "%s_%s" .os .arch }}
 {{- $tags := coll.Slice }}
 {{- range $index, $tag := $base_tags }}
-{{- $tags = append (printf "%s%s" $tag $platform_tag_suffix) $tags }}
+{{- $tags = append (printf "%s_%s" $tag $platform_tag_suffix) $tags }}
 {{- end }}
 
 # Write results to file.
