@@ -274,7 +274,7 @@ collect_and_push_multi_arch_images() {
 
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 
-    # 📦 try to collect and push multi-arch image: {{ $image.artifactory.repo }}:{{ index $tags 0 }}
+    # 📦 try to collect and push multi-arch image: {{ $image.artifactory.repo }}:{{ index $base_tags 0 }}
         {{- range $i, $tag := $base_tags }}
             {{- if eq $i 0 }}
     if ! crane digest {{ $image.artifactory.repo }}:{{ $other_tag }}; then
