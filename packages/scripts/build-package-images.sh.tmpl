@@ -304,8 +304,8 @@ collect_and_push_multi_arch_images() {
 
     # Use yq to add the image info to the result file
     # Create a temporary YAML snippet for this image
-    temp_yaml=$(mktemp)
-    cat <<EOF > "$temp_yaml"
+    temp_yaml_snippet=$(mktemp)
+    cat <<EOF > "$temp_yaml_snippet"
 - repo: {{ $image.artifactory.repo }}
   tags:
     {{- range $tag := $base_tags }}
@@ -314,13 +314,11 @@ collect_and_push_multi_arch_images() {
 EOF
 
     # Merge the temporary YAML into the result file
-    yq eval ".multi_arch_images += load(\"$temp_yaml\")" -i "$result_file"
-    rm -f "$temp_yaml"
+    yq eval ".multi_arch_images += load(\"$temp_yaml_snippet\")" -i "$result_file"
+    rm -f "$temp_yaml_snippet"
     {{- end }}
 
-    # Clean up temporary file
-    rm -f "$temp_yaml"
-    echo "✅ Multi-arch image tags of '{{ $image.artifactory.repo }}' recorded in file: $result_file"
+    echo "✅ Multi-arch images recorded in file: $result_file"
 }
 
 main "$@"
