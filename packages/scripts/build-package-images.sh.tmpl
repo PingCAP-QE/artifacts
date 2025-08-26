@@ -319,8 +319,8 @@ EOF
     {{- end }}
 
     # Clean up temporary file
-    rm -f "$temp_file"
-    echo "✅ Multi-arch images recorded in file: $result_file"
+    rm -f "$temp_yaml"
+    echo "✅ Multi-arch image tags of '{{ $image.artifactory.repo }}' recorded in file: $result_file"
 }
 
 main "$@"
