@@ -31,7 +31,7 @@ main() {
 
   # collect and push multi-arch images
   if [ "$NEED_COLLECT_MULT_ARCH" = "true" ]; then
-    collect_and_push_multi_arch_images
+    collect_and_push_multi_arch_images "${MULTI_ARCH_RESULT_SAVE_FILE}"
   fi
 
   echo "✅ All done"
@@ -45,6 +45,7 @@ parse_arguments() {
   NEED_COLLECT_MULT_ARCH="false" # Default value is false
   KANIKO_EXECUTOR="/kaniko/executor"
   PUSH_RESULT_SAVE_FILE="result-images.yaml"
+  MULTI_ARCH_RESULT_SAVE_FILE="multi-arch-images.yaml" # Default value for multi-arch results
 
   while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -80,6 +81,10 @@ parse_arguments() {
         PUSH_RESULT_SAVE_FILE="$2"
         shift 2
         ;;
+      -M)
+        MULTI_ARCH_RESULT_SAVE_FILE="$2"
+        shift 2
+        ;;
       -h)
         print_help
         exit 0
@@ -97,6 +102,7 @@ print_help() {
   echo "Options:"
   echo "  -w release_ws       Set the release workspace (default: 'build')"
   echo "  -o result_path      Set the result path (default: 'result-images.yaml')"
+  echo "  -M multi_arch_result Set the multi-arch result path (default: 'multi-arch-images.yaml')"
   echo "  -b                  Enable building binaries (default false)"
   echo "  -p                  Enable build and push images (default true)"
   echo "  -P                  Skip build and push images (default true)"
@@ -273,9 +279,13 @@ add_more_tags() {
 }
 
 collect_and_push_multi_arch_images() {
+    result_file="$1"
     {{- $self_tag := index $tags 0 }}
     {{- $other_arch := ternary "arm64" "amd64" (eq .arch "amd64") }}
     {{- $other_tag := printf "%s_%s_%s" (index $base_tags 0) .os $other_arch }}
+
+    # Initialize the result file with empty multi_arch_images array
+    echo "multi_arch_images: []" > "$result_file"
 
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 
@@ -291,7 +301,26 @@ collect_and_push_multi_arch_images() {
     crane tag {{ $image.artifactory.repo }}:{{ index $base_tags 0 }} {{ $tag }}
             {{- end }}
         {{- end }}
+
+    # Use yq to add the image info to the result file
+    # Create a temporary YAML snippet for this image
+    temp_yaml=$(mktemp)
+    cat <<EOF > "$temp_yaml"
+- repo: {{ $image.artifactory.repo }}
+  tags:
+    {{- range $tag := $base_tags }}
+    - "{{ $tag }}"
     {{- end }}
+EOF
+
+    # Merge the temporary YAML into the result file
+    yq eval ".multi_arch_images += load(\"$temp_yaml\")" -i "$result_file"
+    rm -f "$temp_yaml"
+    {{- end }}
+
+    # Clean up temporary file
+    rm -f "$temp_file"
+    echo "✅ Multi-arch images recorded in file: $result_file"
 }
 
 main "$@"
