@@ -293,7 +293,7 @@ collect_and_push_multi_arch_images() {
     crane tag {{ $image.artifactory.repo }}:{{ index $base_tags 0 }} {{ $tag }}
             {{- end }}
         {{- end }}
-    yq -i '.images[{{ $index }}].multi-arch-tags = ["{{ join $base_tags "\",\"" }}"]' "$result_file"
+    yq -i '.images[{{ $index }}].multi_arch_tags = ["{{ join $base_tags "\",\"" }}"]' "$result_file"
     {{- end }}
 
     echo "✅ Multi-arch images recorded in file: $result_file"
