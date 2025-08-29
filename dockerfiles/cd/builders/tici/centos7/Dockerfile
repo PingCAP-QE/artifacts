@@ -43,7 +43,7 @@ RUN /ws/output/tici/worker_node_server --version && /ws/output/tici/meta_service
 FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
 COPY --from=building /ws/output/tici /app/tici
 
-ENTRYPOINT ["/app/tici"]
+ENTRYPOINT ["/app/tici/worker_node_server"]
 
 # test it
 RUN /app/tici/worker_node_server --version && /app/tici/meta_service_server --version
