@@ -19,7 +19,9 @@ ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
 
 # Set up Rust linker and flags
-ENV RUSTFLAGS="-C rpath -C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi"
+RUN echo "export RUSTFLAGS='-C rpath -C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi'" > /etc/profile.d/rust_env.sh
+ENV BASH_ENV=/etc/profile.d/rust_env.sh
+SHELL ["/bin/bash", "-c"]
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
@@ -34,8 +36,8 @@ FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true make release -c /ws
-RUN mkdir /ws/output && mv /ws/target/release/worker_node_server /ws/output/tici && mv /ws/target/release/meta_service_server /ws/output/tici
-RUN /ws/output/worker_node_server --version && /ws/output/meta_service_server --version
+RUN mkdir -p /ws/output/tici && mv /ws/target/release/worker_node_server /ws/output/tici && mv /ws/target/release/meta_service_server /ws/output/tici
+RUN /ws/output/tici/worker_node_server --version && /ws/output/tici/meta_service_server --version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
