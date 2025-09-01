@@ -254,7 +254,6 @@ write_push_results() {
 images:
 {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 - repo: {{ $image.artifactory.repo }}
-  url: "{{ $image.artifactory.repo }}:$primary_tag"
   tag: "$primary_tag"
   digest: '$(sed -n "{{ add $index 1 }}p" $input_disgests_file)'
 {{- end }}
