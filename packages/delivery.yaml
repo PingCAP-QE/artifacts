@@ -23,7 +23,7 @@ definitions:
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+[.]pre$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre$
-  sync_pre_community_semver_sha: &sync_pre_community_semver
+  sync_pre_community_semver_sha: &sync_pre_community_semver_sha
     description: delivery community images that tagged with semver tag images for branches.
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-[0-9]+-g[0-9a-f]+)$
