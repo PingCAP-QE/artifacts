@@ -19,7 +19,7 @@ ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
 
 # Set up Rust linker and flags
-RUN echo "export RUSTFLAGS='-C rpath -C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi'" > /etc/profile.d/rust_env.sh
+RUN echo "export RUSTFLAGS='-C rpath -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi'" > /etc/profile.d/rust_env.sh
 ENV BASH_ENV=/etc/profile.d/rust_env.sh
 SHELL ["/bin/bash", "-c"]
 
@@ -36,14 +36,14 @@ FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true make release -c /ws
-RUN mkdir -p /ws/output/tici && mv /ws/target/release/worker_node_server /ws/output/tici && mv /ws/target/release/meta_service_server /ws/output/tici
-RUN /ws/output/tici/worker_node_server --version && /ws/output/tici/meta_service_server --version
+RUN mkdir -p /ws/output && mv /ws/target/release/tici-server /ws/output
+RUN /ws/output/tici-server --version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
-COPY --from=building /ws/output/tici /app/tici
+COPY --from=building /ws/output/tici-server /app/tici-server
 
-ENTRYPOINT ["/app/tici/worker_node_server"]
+ENTRYPOINT ["/app/tici-server"]
 
 # test it
-RUN /app/tici/worker_node_server --version && /app/tici/meta_service_server --version
+RUN /app/tici-server --version
