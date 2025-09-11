@@ -86,7 +86,7 @@ image_copy_rules:
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
-    - << *sync_pre_community_semver_sha
+    - <<: *sync_pre_community_semver_sha
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_ga_community_to_enterprise_repo
