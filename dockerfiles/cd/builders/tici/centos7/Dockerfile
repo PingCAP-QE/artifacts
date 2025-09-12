@@ -36,14 +36,13 @@ FROM builder AS building
 
 ADD . /ws
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=true make release -c /ws
-RUN mkdir -p /ws/output && mv /ws/target/release/tici-server /ws/output
-RUN /ws/output/tici-server --version
+RUN mkdir -p /ws/output && mv /ws/target/release/tici-server /ws/output && /ws/output/tici-server --version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
-COPY --from=building /ws/output/tici-server /app/tici-server
+COPY --from=building /ws/output/tici-server /tici-server
 
-ENTRYPOINT ["/app/tici-server"]
+ENTRYPOINT ["/tici-server"]
 
 # test it
-RUN /app/tici-server --version
+RUN /tici-server --version
