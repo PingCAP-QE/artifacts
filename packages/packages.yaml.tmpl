@@ -2933,7 +2933,7 @@ components:
 
                 make release
         artifacts:
-          - name: "tici-server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+          - name: "tici-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - { name: tici-server, src: { path: target/release/tici-server } }
             tiup:
