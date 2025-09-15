@@ -19,5 +19,6 @@ RUN --mount=type=cache,id=dnf-cache,target=/var/cache/dnf \
     # 🧰 Useful Misc
     file vim-common jq nmap-ncat socat tmux ripgrep
 
-# Install addition perf-tools
-ADD --chmod=755 https://raw.githubusercontent.com/brendangregg/perf-tools/master/iosnoop /usr/local/bin/
+# Install addition perf-tools into /opt/perf-tools folder.
+RUN curl -L https://github.com/brendangregg/perf-tools/archive/refs/heads/master.tar.gz | tar -xz -C /opt && \
+    mv /opt/perf-tools-master /opt/perf-tools
