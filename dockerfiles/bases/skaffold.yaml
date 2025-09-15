@@ -51,6 +51,13 @@ build:
           alias: PINGCAP_BASE
       docker:
         dockerfile: tools-base/Dockerfile
+    - image: debugging
+      platforms: [linux/amd64, linux/arm64]
+      requires:
+        - image: pingcap-base
+          alias: PINGCAP_BASE
+      docker:
+        dockerfile: debugging/Dockerfile
   tagPolicy:
     customTemplate:
       template: "v1.10.0"
