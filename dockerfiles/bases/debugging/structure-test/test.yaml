@@ -1,0 +1,138 @@
+# Container Structure Tests for debugging base image
+# File: artifacts/dockerfiles/bases/debugging/tests/debugging_image_test.yaml
+#
+# Purpose:
+# This suite is intentionally minimal right now because the Dockerfile
+# (debugging image) has not yet had the debugging / observability tools
+# installed. It establishes a foundation you can safely run in CI
+# immediately, then you can progressively (uncomment / add) tests as you
+# add each category of tooling.
+#
+# How to run (example):
+#   container-structure-test test \
+#     --image <your-built-image> \
+#     --config artifacts/dockerfiles/bases/debugging/structure-test/test.yaml
+#
+# Add new tests by:
+#  1. Installing tools in the Dockerfile.
+#  2. Uncommenting / adding relevant commandTests or fileExistenceTests.
+#  3. Keeping assertions narrowly scoped (e.g. just --version grep) so
+#     updates to package minor versions don't cause needless failures.
+#
+# Documentation:
+#   https://github.com/GoogleContainerTools/container-structure-test
+
+schemaVersion: 2.0.0
+
+commandTests:
+  #######################################################################
+  # 1. Future: Core text / navigation tools
+  #######################################################################
+  # Uncomment as you add these packages (e.g., via apt, yum, apk).
+  - name: "less installed"
+    command: ["sh", "-c", "command -v less"]
+    expectedError: []
+    exitCode: 0
+
+  - name: "vim minimal present"
+    command: ["sh", "-c", "command -v vim || command -v vi"]
+    exitCode: 0
+
+  - name: "ripgrep (rg) available"
+    command: ["sh", "-c", "command -v rg"]
+    exitCode: 0
+
+  #######################################################################
+  # 2. Future: System inspection & performance tools
+  #######################################################################
+  - name: "ps from procps present"
+    command: ["sh", "-c", "command -v ps"]
+    exitCode: 0
+
+  - name: "htop present"
+    command: ["sh", "-c", "command -v htop"]
+    exitCode: 0
+
+  - name: "lsof present"
+    command: ["sh", "-c", "command -v lsof"]
+    exitCode: 0
+
+  - name: "strace present"
+    command: ["sh", "-c", "command -v strace"]
+    exitCode: 0
+
+  #######################################################################
+  # 3. Future: CPU / perf / tracing
+  #######################################################################
+  - name: "perf tool installed"
+    command: ["sh", "-c", "command -v perf"]
+    exitCode: 0
+
+  - name: "bpftrace present"
+    command: ["sh", "-c", "command -v bpftrace"]
+    exitCode: 0
+
+  - name: "gdb present"
+    command: ["sh", "-c", "command -v gdb"]
+    exitCode: 0
+
+  #######################################################################
+  # 4. Future: Memory / IO / Disk
+  #######################################################################
+  - name: "smem present"
+    command: ["sh", "-c", "command -v smem"]
+    exitCode: 0
+
+  - name: "fio present"
+    command: ["sh", "-c", "command -v fio"]
+    exitCode: 0
+
+  - name: "iostat (sysstat) present"
+    command: ["sh", "-c", "command -v iostat"]
+    exitCode: 0
+
+  #######################################################################
+  # 5. Future: Network diagnostics
+  #######################################################################
+  - name: "curl present"
+    command: ["sh", "-c", "command -v curl"]
+    exitCode: 0
+
+  - name: "tcpdump present"
+    command: ["sh", "-c", "command -v tcpdump"]
+    exitCode: 0
+
+  - name: "iperf3 present"
+    command: ["sh", "-c", "command -v iperf3"]
+    exitCode: 0
+
+  #######################################################################
+  # 6. Future: JSON, hex, misc tools
+  #######################################################################
+  - name: "jq present"
+    command: ["sh", "-c", "command -v jq"]
+    exitCode: 0
+
+  - name: "xxd present"
+    command: ["sh", "-c", "command -v xxd || command -v hexdump"]
+    exitCode: 0
+
+  - name: "tmux present"
+    command: ["sh", "-c", "command -v tmux"]
+    exitCode: 0
+
+  #######################################################################
+  # 7. Future: TiUP & TiDB ecosystem utilities
+  #######################################################################
+  - name: "tiup present"
+    command: ["sh", "-c", "command -v tiup"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - tidb"
+    command: ["sh", "-c", "tiup ctl:v8.5.3 tidb help"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - pd"
+    command: ["sh", "-c", "tiup ctl:v8.5.3 pd help"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - tikv"
+    command: ["sh", "-c", "tiup ctl:v8.5.3 tikv help"]
+    exitCode: 0
