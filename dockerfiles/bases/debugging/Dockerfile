@@ -37,4 +37,5 @@ ARG TIUP_VER=1.16.2
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-v${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
-    mkdir -p "$HOME/.tiup/bin"
+    mkdir -p "$HOME/.tiup/bin" && \
+    tiup mirror set --reset
