@@ -75,6 +75,9 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
   hub.pingcap.net/pingcap/ticdc/image:
     # only delivey the master branch images and versions since v9.0.0-beta.1
+    - <<: *sync_trunk_next-gen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
