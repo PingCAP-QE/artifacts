@@ -2565,7 +2565,7 @@ components:
         if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, next-next]
+        profile: [release, next-gen]
         steps:
           release:
             - script: make cdc
