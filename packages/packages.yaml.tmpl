@@ -2565,10 +2565,12 @@ components:
         if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release, next-gen]
         steps:
           release:
             - script: make cdc
+          next-gen:
+            - script: NEXT_GEN=1 make cdc
         artifacts:
           - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
