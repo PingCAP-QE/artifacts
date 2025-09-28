@@ -1,35 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
-  ],
+  "extends": ["config:base"],
   "separateMinorPatch": true,
   "packageRules": [
     {
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
-      "matchDepNames": [
-        "golang",
-        "go"
-      ],
+      "matchDepNames": ["golang", "go"],
       "separateMinorPatch": true,
       "groupName": null
     },
     {
-      "matchUpdateTypes": [
-        "major",
-        "minor"
-      ],
-      "labels": [
-        "help wanted"
-      ]
+      "matchUpdateTypes": ["major", "minor"],
+      "labels": ["help wanted"]
+    },
+    {
+      "description": "Auto PR for cd builder images; ignore vYYYYMMDD-*; suffix kept via regex manager",
+      "matchDatasources": ["docker"],
+      "matchDepPatterns": ["^ghcr\\.io/pingcap-qe/cd/"],
+      "ignoreVersions": ["/^v\\d{8}-/"],
+      "prCreation": "immediate"
     }
   ],
   "customManagers": [
@@ -47,14 +40,14 @@
     },
     {
       "customType": "regex",
-      "fileMatch": [
-        ".*/packages.yaml.tmpl$$"
-      ],
+      "fileMatch": [".*/packages.yaml.tmpl$$"],
       "matchStrings": [
-        "\\bimage: (?<depName>ghcr.io/pingcap-qe/cd/.*?):(?<currentValue>.*)"
+        "\\bimage: (?<depName>ghcr.io/pingcap-qe/cd/.*?):(?<currentValue>(?<gitprefix>v[0-9][0-9.]*-[0-9]+-g[0-9a-f]+)-(?<suffix>[^\\s]+))"
       ],
       "datasourceTemplate": "docker",
-      "versioningTemplate": "semver-coerced"
+      "versioningTemplate": "semver-coerced",
+      "extractVersionTemplate": "^(?<version>v[0-9][0-9.]*-[0-9]+-g[0-9a-f]+)",
+      "autoReplaceStringTemplate": "image: {{depName}}:{{newValue}}-{{suffix}}"
     }
   ]
 }
