@@ -275,7 +275,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.8.17-4-g6fd188d-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -421,7 +421,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.8.17-4-g6fd188d-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
