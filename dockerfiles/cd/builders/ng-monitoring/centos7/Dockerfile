@@ -20,7 +20,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
     yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools"
+    yum groupinstall --nogpgcheck -y "Development Tools" && \
+    yum install --nogpgcheck -y wget
 
 # install golang toolchain
 ARG GOLANG_VERSION=1.21.13
