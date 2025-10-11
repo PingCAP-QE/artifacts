@@ -21,7 +21,7 @@
       "description": "Auto PR for cd builder images; ignore vYYYYMMDD-*; suffix kept via regex manager",
       "matchDatasources": ["docker"],
       "matchDepPatterns": ["^ghcr\\.io/pingcap-qe/cd/"],
-      "ignoreVersions": ["/^v\\d{8}-/"],
+      "allowedVersions": "!/^v\\d{8}-/",
       "prCreation": "immediate"
     }
   ],
