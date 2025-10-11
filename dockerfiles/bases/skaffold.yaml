@@ -51,9 +51,16 @@ build:
           alias: PINGCAP_BASE
       docker:
         dockerfile: tools-base/Dockerfile
+    - image: debugging
+      platforms: [linux/amd64, linux/arm64]
+      requires:
+        - image: pingcap-base
+          alias: PINGCAP_BASE
+      docker:
+        dockerfile: debugging/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.9.2"
+      template: "v1.10.0"
   local:
     useDockerCLI: true
     useBuildkit: true
@@ -73,7 +80,7 @@ build:
         dockerfile: tikv-base/fips.Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.9.2-fips"
+      template: "v1.10.0-fips"
   local:
     useDockerCLI: true
     useBuildkit: true

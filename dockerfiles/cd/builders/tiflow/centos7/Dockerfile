@@ -50,9 +50,9 @@ RUN node --version && npm --version && npm install -g yarn
 
 ########### stage: Builder - total
 FROM builder-dm AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlow"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlow"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
@@ -82,7 +82,7 @@ RUN /tiflow/bin/dm-syncer -V
 RUN /tiflow/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-cdc
 
 COPY --from=building-cdc /tiflow/bin/cdc /cdc
 EXPOSE 8300
@@ -93,7 +93,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-dm
 
 COPY --from=building-dm /tiflow/bin/dm-master /dm-master
 COPY --from=building-dm /tiflow/bin/dm-worker /dm-worker

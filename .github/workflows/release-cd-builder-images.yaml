@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: "0"
       - name: Parse changed scopes
@@ -66,7 +66,7 @@ jobs:
           # golang type builders
           JSON_ALL_GO_BUILDERS='["ng-monitoring", "pd", "tem", "ticdc", "tidb", "tidb-dashboard", "tidb-operator", "tiflow"]'
           JSON_ALL_RUST_BUILDERS='["tikv"]'
-          JSON_ALL_CPP_BUILDERS='["tiflash"]'
+          JSON_ALL_CPP_BUILDERS='["tiflash", "tici"]'
 
           ### Compute the building matrix on builder axies.
           # Get intersection of arrays: JSON_ALL_GO_BUILDERS, JSON_CHANGED_BUILDERS
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: "0"
           fetch-tags: "true"
@@ -166,7 +166,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: "0"
           fetch-tags: "true"
@@ -228,7 +228,7 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: "0"
           fetch-tags: "true"

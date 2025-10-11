@@ -275,7 +275,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.10.5-1-gf639b02-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -421,7 +421,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-51-g9b98efb-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.10.5-1-gf639b02-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -544,7 +544,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-51-g9b98efb-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -554,8 +554,80 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-103-g043adb3-go1.18
     routers:
-      - description: For range [v8.4.0, )
-        if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
+      - description: For range [v9.0.0-0, ), support next-gen build since the version.
+        if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
+        os: [linux, darwin]
+        arch: [amd64, arm64]
+        profile: [release, next-gen, enterprise, failpoint]
+        steps:
+          release:
+            - script: make build
+          next-gen:
+            - script: |
+                NEXT_GEN=1 PD_EDITION=Enterprise make build
+                bin/pd-server -V | grep -E "^Kernel Type:.*Next Generation"
+          enterprise:
+            - script: PD_EDITION=Enterprise make build tools
+          failpoint:
+            - script: FAILPOINT=1 make failpoint-enable build failpoint-disable
+        artifacts:
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+            tiup: # will publish to tiup.
+              description: >-
+                PD is the abbreviation for Placement Driver.
+                It is used to manage and schedule the TiKV cluster.
+              entrypoint: pd-server
+          - name: "pd-recover-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+            tiup:
+              description: >-
+                PD Recover is a disaster recovery tool of PD, used to recover
+                the PD cluster which cannot start or provide services normally.
+              entrypoint: pd-recover
+          - name: "pd-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "enterprise" .Release.profile }}
+            files:
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+          - name: "pd-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ eq "enterprise" .Release.profile }}
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-heartbeat-bench, src: { path: bin/pd-heartbeat-bench } }
+              - { name: pd-tso-bench, src: { path: bin/pd-tso-bench } }
+              - { name: regions-dump, src: { path: bin/regions-dump } }
+              - { name: stores-dump, src: { path: bin/stores-dump } }
+              - { if: {{ semver.CheckConstraint ">= 7.4.0-0" .Release.version }}, name: pd-api-bench, src: { path: bin/pd-api-bench } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/pd/image"
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            files: # prepare for context
+              - name: pd-server
+                src:
+                  path: bin/pd-server
+              - name: pd-recover
+                src:
+                  path: bin/pd-recover
+              - name: pd-ctl
+                src:
+                  path: bin/pd-ctl
+
+      - description: For range [v8.4.0, v9.0.0)
+        if: {{ semver.CheckConstraint ">= 8.4.0-0, < v9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, failpoint]
@@ -811,7 +883,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-129-ga6c42c5-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -865,6 +937,7 @@ components:
           next-gen: # only since v9.0.0
             - script: |
                 NEXT_GEN=1 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
+                bin/tidb-server -V | grep -E "^Kernel Type:.*Next Generation"
         artifacts:
           - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             if: {{ eq "enterprise" .Release.profile }}
@@ -1276,7 +1349,7 @@ components:
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - if: {{ eq "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-51-g7bd274e-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.17-13-ga5750d9-go1.23
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1324,7 +1397,7 @@ components:
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - if: (eq "experiment" .Release.profile)
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-129-ga6c42c5-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: (ne "experiment" .Release.profile)
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1450,7 +1523,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-51-g9b98efb-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.8.17-13-ga5750d9-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.21
     routers:
@@ -1596,7 +1669,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-51-g9b98efb-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -1718,7 +1791,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.2.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-135-g43bfc3c-centos7
+        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
     routers:
@@ -1731,11 +1804,13 @@ components:
           release:
             - os: linux
               script: |
+                cargo --version
                 ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
             - os: darwin
               script: |
+                cargo --version
                 ./release-darwin/build/build-release.sh
                 mkdir outputs
                 mv release-darwin/tiflash outputs/tiflash
@@ -1743,19 +1818,25 @@ components:
             - script: export TIFLASH_EDITION=Enterprise
             - os: linux
               script: |
+                cargo --version
                 ./release-linux-llvm/scripts/build-release.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
           failpoint:
             - os: linux
               script: |
+                cargo --version
                 ./release-linux-llvm/scripts/build-debug.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
           next-gen:
             - os: linux
               script: |
+                cargo --version
+                export TIFLASH_EDITION=Enterprise
+                export ENABLE_NEXT_GEN=true
                 ./release-linux-llvm/scripts/build-release.sh
+                release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
         artifacts:
@@ -2051,7 +2132,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-51-g9b98efb-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.8.17-13-ga5750d9-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-12-gb9ffe36-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -2478,16 +2559,18 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2024.10.8-78-gf83d845-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.8.17-13-ga5750d9-centos7-go1.23
     routers:
       - description: For range [v9.0.0, )
         if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release, next-gen]
         steps:
           release:
             - script: make cdc
+          next-gen:
+            - script: NEXT_GEN=1 make cdc
         artifacts:
           - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -2750,6 +2833,7 @@ components:
                 make release
                 mkdir -p bin
                 cp -v target/release/{tikv-server,cse-ctl,tikv-worker} bin/
+                bin/tikv-server -V | grep -E "^Edition:.*Cloud Storage Engine"
         artifacts:
           - name: "tikv-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -2788,7 +2872,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 1.3.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-129-ga6c42c5-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 0.1.2-0, < 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
     routers:
@@ -2836,16 +2920,15 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-139-g74d1fec-centos7-devtoolset10
+      - image: ghcr.io/pingcap-qe/cd/builders/tici:v2025.8.24-2-g31db9b6-centos7
     routers:
       - description: currently in demo stage
-        os: [linux]
+        os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
         steps:
           release:
             - script: |
-                source /opt/rh/devtoolset-10/enable
                 # Verify Rust environment
                 echo "Rust version: $(rustc --version)"
                 echo "Cargo version: $(cargo --version)"
@@ -2854,11 +2937,81 @@ components:
         artifacts:
           - name: "tici-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
-              - { name: tici, src: { path: target/release/tici } }
+              - { name: tici-server, src: { path: target/release/tici-server } }
+            tiup:
+              description: TiCI server
+              entrypoint: tici-server
+              standalone: true # new publish
           - name: container image
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tici/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tici/Dockerfile
             files: # prepare for context
-              - { name: tici, src: { path: target/release/tici } }
+              - { name: tici-server, src: { path: target/release/tici-server } }
+  tiup:
+    desc: tiup components tarballs and images
+    git:
+      # In the future, the repo will be open source in the `pingcap` ORG.
+      url: https://github.com/pingcap/tiup.git
+      ref: {{ .Git.ref | default "main" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      package_repo: "{{ .Release.registry }}/pingcap/tiup/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    # binary builder, also we need it when build for mac to get build tools versions and other informations.
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/builders/tici:v2025.7.13-4-g801199f-centos7
+    routers:
+      - description: currently in demo stage
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                make build
+        artifacts:
+          - name: "tiup-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup, src: { path: bin/tiup } }
+            tiup:
+              description: >-
+                TiUP is a command-line component management tool that can help to download and install TiDB platform components to the local system.
+              entrypoint: tiup
+          - name: "client-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-client, src: { path: bin/tiup-client } }
+            tiup:
+              description: Client to connect playground.
+              entrypoint: tiup-client
+          - name: "cluster-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-cluster, src: { path: bin/tiup-cluster } }
+            tiup:
+              description: Deploy a TiDB cluster for production
+              entrypoint: tiup-cluster
+          - name: "dm-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-dm, src: { path: bin/tiup-dm } }
+            tiup:
+              description: Data Migration Platform manager
+              entrypoint: tiup-dm
+          - name: "playground-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-server, src: { path: bin/tiup-server } }
+            tiup:
+              description: Bootstrap a local TiDB cluster for fun.
+              entrypoint: tiup-playground
+          - name: "server-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tiup-server, src: { path: bin/tiup-server } }
+            tiup:
+              description: TiUP publish/cache server
+              entrypoint: tiup-server

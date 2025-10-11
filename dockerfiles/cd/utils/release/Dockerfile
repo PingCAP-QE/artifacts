@@ -1,14 +1,14 @@
-FROM alpine:3.21.3
+FROM alpine:3.22.1
 
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "utils image for CD release"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="utils image for CD release"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install tools: bash, curl, git, jq, yq, uuidgen
 RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gomplate
-COPY --from=hairyhenderson/gomplate:v4.3.2-alpine /bin/gomplate /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:v4.3.3-alpine /bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
 COPY --from=ghcr.io/oras-project/oras:v1.2.3 --chown=0:0 /bin/oras /usr/local/bin/oras
@@ -19,6 +19,14 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.6 /etc/ssl/certs/ca-certificates
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-gcloud     /usr/local/bin/docker-credential-gcloud
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-ecr-login  /usr/local/bin/docker-credential-ecr-login
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-acr-env    /usr/local/bin/docker-credential-acr-env
+
+# install tools: crane
+# renovate: datasource=github-release depName=google/go-containerregistry
+ARG CRANE_VER=0.20.2
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo x86_64 || echo arm64); \
+    wget -q -O - https://github.com/google/go-containerregistry/releases/download/v${CRANE_VER}/go-containerregistry_Linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
+    install /tmp/crane /usr/local/bin/crane && \
+    rm -rf /tmp/crane
 
 # install tools: k3sutil
 ARG KS3UTIL_VER=2.6.0

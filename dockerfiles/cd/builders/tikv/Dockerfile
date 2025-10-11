@@ -8,9 +8,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiKV"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiKV"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
@@ -45,7 +45,7 @@ RUN --mount=type=cache,target=/tikv/target \
 RUN /tikv/bin/tikv-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.10.0
 
 ENV MALLOC_CONF="prof:true,prof_active:false"
 COPY --from=building /tikv/bin/tikv-server  /tikv-server

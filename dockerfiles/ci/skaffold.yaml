@@ -17,13 +17,6 @@ build:
       requires:
         - image: base
           alias: BASE_IMG
-    - image: tici
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: tici/Dockerfile
-      requires:
-        - image: base
-          alias: BASE_IMG
   tagPolicy:
     customTemplate:
       template: "{{ .GIT }}"
@@ -42,7 +35,7 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.24.3
+          GOLANG_VERSION: 1.24.7
   - name: go-1.23
     patches:
       - op: replace
@@ -52,7 +45,7 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.23.9
+          GOLANG_VERSION: 1.23.12
   - name: go-1.22
     patches:
       - op: replace
@@ -74,6 +67,25 @@ build:
       platforms: [linux/amd64, linux/arm64]
       docker:
         dockerfile: jenkins/tikv/Dockerfile
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}"
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: ci-tici
+build:
+  artifacts:
+    - image: tici
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: tici/Dockerfile
   tagPolicy:
     customTemplate:
       template: "{{ .GIT }}"

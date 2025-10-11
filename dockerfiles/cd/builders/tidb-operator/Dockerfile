@@ -8,11 +8,11 @@
 #   - docker build -t tidb-operator -f Dockerfile ./tidb-operator
 
 ########### stage: builder
-ARG GOLANG_VERSION=1.23.9
+ARG GOLANG_VERSION=1.23.12
 FROM golang:${GOLANG_VERSION} AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiDB Operator"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiDB Operator"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 LABEL go-version="${GOLANG_VERSION}"
 
 # install packages.
@@ -35,7 +35,7 @@ ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make build -C /ws && mv /ws/images/tidb-operator/bin/$(arch) /ws/bin
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
 
 COPY --from=building /ws/bin/tidb-scheduler /usr/local/bin/tidb-scheduler
 COPY --from=building /ws/bin/tidb-discovery /usr/local/bin/tidb-discovery

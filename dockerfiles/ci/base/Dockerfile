@@ -1,9 +1,9 @@
 # Base image
 FROM quay.io/rockylinux/rockylinux:8.10.20240528
 
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "CI Base image for building/testing"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="CI Base image for building/testing"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -41,7 +41,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.23.9
+ARG GOLANG_VERSION=1.23.12
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
@@ -72,7 +72,7 @@ RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip 
 ENV PATH=$PATH:/opt/gradle-${GRADLE_VER}/bin
 
 #   -> apache-maven
-ARG MAVEN_VER=3.8.8
+ARG MAVEN_VER=3.8.9
 RUN wget https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz && \
     tar -xf apache-maven-${MAVEN_VER}-bin.tar.gz -C /opt && \
     rm apache-maven-${MAVEN_VER}-bin.tar.gz
@@ -80,7 +80,7 @@ ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
 
 #### install tools: bazelisk, codecov, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
-ARG BAZELISK_VERSION=v1.26.0
+ARG BAZELISK_VERSION=v1.27.0
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 

@@ -20,7 +20,8 @@ RUN --mount=type=cache,target=/var/cache/yum \
     yum update --nogpgcheck -y && \
     yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools"
+    yum groupinstall --nogpgcheck -y "Development Tools" && \
+    yum install --nogpgcheck -y wget
 
 # install golang toolchain
 ARG GOLANG_VERSION=1.21.13
@@ -45,7 +46,7 @@ RUN GOPROXY=${GOPROXY} make default -C /ws
 RUN /ws/bin/ng-monitoring-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.10.0
 
 COPY --from=building /ws/bin/ng-monitoring-server /ng-monitoring-server
 

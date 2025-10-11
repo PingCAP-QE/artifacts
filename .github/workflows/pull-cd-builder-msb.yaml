@@ -1,24 +1,42 @@
 name: Build multi stage images
 on:
-  pull_request:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
+  check-comment:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      component: ${{ steps.check.outputs.component }}
+    steps:
+      - id: check
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          if [[ $COMMENT =~ ^/just[[:space:]](.+)$ ]]; then
+            echo "should-run=true" >> $GITHUB_OUTPUT
+            echo "task=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          else
+            echo "should-run=false" >> $GITHUB_OUTPUT
+          fi
+
   just-build:
-    if: ${{ github.event.label.name == 'run/msb' }}
+    needs: check-comment
+    if: needs.check-comment.outputs.should-run == 'true'
     name: test building with multi stages
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
+      pull-requests: write
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -40,29 +58,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Testing for tidb
-        run: just msb-tidb
+      - name: Run specific component build
+        working-directory: dockerfiles
+        run: |
+          TASK="${{ needs.check-comment.outputs.task }}"
+          if [ "$TASK" == "all" ]; then
+            echo "Run all tasks"
+            just msb-tidb
+            just msb-pd
+            just msb-cdc
+            just msb-dm
+            just msb-tidb-dashboard
+            just msb-tidb-operator
+            just msb-ng-monitoring
+            just msb-tiflash
+            just msb-tikv
+          else
+            echo "run Just task: $TASK"
+            just $TASK
+          fi
 
-      - name: Testing for pd
-        run: just msb-pd
+      - name: Comment on PR with results
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { issue: { number: issue_number }, repo: { owner, repo } } = context;
+            const task = '${{ needs.check-comment.outputs.task }}';
 
-      - name: Testing for new CDC
-        run: just msb-cdc
-
-      - name: Testing for DM of tiflow
-        run: just msb-dm
-
-      - name: Testing for TiDB Dashboard
-        run: just msb-tidb-dashboard
-
-      - name: Testing for TiDB Operator
-        run: just msb-tidb-operator
-
-      - name: Testing for ng-monitoring
-        run: just msb-ng-monitoring
-
-      - name: Testing for tiflash # slow
-        run: just msb-tiflash
-
-      - name: Testing for tikv # slow
-        run: just msb-tikv
+            github.rest.issues.createComment({
+              issue_number,
+              owner,
+              repo,
+              body: `✅ Task \`${task}\` completed successfully.`
+            });

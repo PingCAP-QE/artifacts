@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.24"
+          go-version: "1.25"
       - name: Install tools
         run: |
           # install gomplate
@@ -36,7 +36,7 @@ jobs:
           jq --version
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # - name: Verify the README.md
       #   run: |

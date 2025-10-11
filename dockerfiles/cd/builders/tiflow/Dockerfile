@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.23.9
+ARG GOLANG_VERSION=1.23.12
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
@@ -41,9 +41,9 @@ RUN node --version && npm --version && npm install -g yarn
 
 ########### stage: builder - total
 FROM builder-dm AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlow"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlow"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
@@ -71,7 +71,7 @@ RUN /ws/bin/dm-syncer -V
 RUN /ws/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-cdc
 COPY --from=building-cdc /ws/bin/cdc /cdc
 
 EXPOSE 8300
@@ -82,7 +82,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.9.2 AS final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-dm
 COPY --from=building-dm /ws/bin/dm-master /dm-master
 COPY --from=building-dm /ws/bin/dm-worker /dm-worker
 COPY --from=building-dm /ws/bin/dm-syncer /dm-syncer

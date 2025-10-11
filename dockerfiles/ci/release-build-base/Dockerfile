@@ -7,9 +7,9 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "CD Base image for building"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="CD Base image for building"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN yum update --nogpgcheck -y && \
@@ -56,7 +56,7 @@ RUN yum update --nogpgcheck -y && \
 
 ##### install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.23.9
+ARG GOLANG_VERSION=1.23.12
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
@@ -75,19 +75,19 @@ RUN npm install -g yarn pnpm
 
 ##### install tools: bazelisk, yq, oras
 # renovate: datasource=github-tags depName=bazelbuild/bazelisk
-ARG BAZELISK_VERSION=v1.26.0
+ARG BAZELISK_VERSION=v1.27.0
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL "https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-${OS}-${ARCH}" -o /usr/local/bin/bazel && chmod +x /usr/local/bin/bazel
 
 # yq tool
 # renovate: datasource=github-tags depName=mikefarah/yq
-ARG YQ_VERSION=v4.45.4
+ARG YQ_VERSION=v4.47.1
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
 # oras tool
 # renovate: datasource=github-tags depName=oras-project/oras
-ARG ORAS_VERSION=v1.2.3
+ARG ORAS_VERSION=v1.3.0
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
     mkdir -p oras-install/ && \
@@ -97,7 +97,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # go template tool
 # renovate: datasource=docker depName=hairyhenderson/gomplate
-COPY --from=hairyhenderson/gomplate:v4.3.2 /gomplate /usr/local/bin/gomplate
+COPY --from=hairyhenderson/gomplate:v4.3.3 /gomplate /usr/local/bin/gomplate
 
 # Set cmake3 as default cmake
 # renovate: datasource=github-tags depName=Kitware/CMake
@@ -139,7 +139,7 @@ RUN curl -sSL https://github.com/pingcap/tiflash/raw/${TIFLASH_TAG}/release-cent
     install_ccache ${CCACHE_VERSION}
 
 # renovate: datasource=github-tags depName=git/git
-ARG GIT_VERSION=2.49.0
+ARG GIT_VERSION=2.51.0
 RUN wget https://github.com/git/git/archive/refs/tags/v$GIT_VERSION.zip -O git.zip && \
     unzip git.zip && \
     cd git-$GIT_VERSION && \

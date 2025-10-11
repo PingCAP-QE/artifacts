@@ -9,9 +9,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiDB Dashboard"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiDB Dashboard"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
-ARG GOLANG_VERSION=1.23.9
+ARG GOLANG_VERSION=1.23.12
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
 ENV PATH /usr/local/go/bin/:$PATH
@@ -47,7 +47,7 @@ RUN GOPROXY=${GOPROXY} make package -C /ws
 RUN /ws/bin/tidb-dashboard --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pd-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.10.0
 
 COPY --from=building /ws/bin/tidb-dashboard /tidb-dashboard
 

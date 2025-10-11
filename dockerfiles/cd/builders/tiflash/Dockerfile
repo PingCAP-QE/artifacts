@@ -8,9 +8,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:8.10.20240528-ubi AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlash"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlash"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # FIXME: replace with official repo and tag.
 # renovate: datasource=github-tags depName=pingcap/tiflash
@@ -54,7 +54,7 @@ RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.10.0
 
 ENV LD_LIBRARY_PATH /tiflash
 COPY --from=building /ws/output/tiflash /tiflash

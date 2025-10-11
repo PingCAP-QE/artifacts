@@ -1,6 +1,6 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.9.2
+# syntax=docker/dockerfile:1
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.10.0
 FROM $BASE_IMG
+COPY --chmod=755 tici-server /
 
-COPY tici /app/tici
-
-ENTRYPOINT ["/app/tici"]
+ENTRYPOINT ["/tici-server"]

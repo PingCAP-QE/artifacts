@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.9.2
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.10.0
 FROM $BASE_IMG
 LABEL org.opencontainers.image.title="Next Generation Monitoring Server" \
     org.opencontainers.image.source="https://github.com/pingcap/ng-monitoring" \

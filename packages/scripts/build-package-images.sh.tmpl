@@ -26,7 +26,12 @@ main() {
 
   # push other tags
   if [ "$NEED_TAG_MORE" = "true" ]; then
-    add_more_tags
+    add_more_tags "${PUSH_RESULT_SAVE_FILE}"
+  fi
+
+  # collect and push multi-arch images
+  if [ "$NEED_COLLECT_MULT_ARCH" = "true" ]; then
+    collect_and_push_multi_arch_images "${PUSH_RESULT_SAVE_FILE}"
   fi
 
   echo "✅ All done"
@@ -37,6 +42,7 @@ parse_arguments() {
   NEED_BUILD_BIN="false" # Default value is false
   NEED_PUSH_IMAGE="true" # Default value is true
   NEED_TAG_MORE="false" # Default value is false
+  NEED_COLLECT_MULT_ARCH="false" # Default value is false
   KANIKO_EXECUTOR="/kaniko/executor"
   PUSH_RESULT_SAVE_FILE="result-images.yaml"
 
@@ -60,6 +66,10 @@ parse_arguments() {
         ;;
       -t)
         NEED_TAG_MORE="true"
+        shift
+        ;;
+      -m)
+        NEED_COLLECT_MULT_ARCH="true"
         shift
         ;;
       -k)
@@ -91,6 +101,7 @@ print_help() {
   echo "  -p                  Enable build and push images (default true)"
   echo "  -P                  Skip build and push images (default true)"
   echo "  -t                  Enable add more tags, else just pushed for first tag (default false)"
+  echo "  -m                  Enable collect and push multi-arch images (default false)"
   echo "  -k kaniko_executor  Set the Kaniko executor path (default: '/kaniko/executor')"
   echo "  -h                  Print this help message"
 }
@@ -217,14 +228,20 @@ build_and_push_images() {
     cat "$digests_file"
 }
 
-{{- $tag_suffix := printf "_%s_%s" .os .arch }}
+{{- $tag_suffix := "" }}
 {{- if ne .profile "release" }}
-{{- $tag_suffix = printf "-%s_%s_%s" .profile .os .arch }}
+{{- $tag_suffix = printf "-%s" .profile }}
 {{- end }}
 
-{{- $tags := coll.Slice }}
+{{- $base_tags := coll.Slice }}
 {{- range $index, $tag := .artifactory.tags }}
-{{- $tags = append (printf "%s%s" $tag $tag_suffix) $tags }}
+{{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
+{{- end }}
+
+{{- $platform_tag_suffix := printf "%s_%s" .os .arch }}
+{{- $tags := coll.Slice }}
+{{- range $index, $tag := $base_tags }}
+{{- $tags = append (printf "%s_%s" $tag $platform_tag_suffix) $tags }}
 {{- end }}
 
 # Write results to file.
@@ -237,7 +254,6 @@ write_push_results() {
 images:
 {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 - repo: {{ $image.artifactory.repo }}
-  url: "{{ $image.artifactory.repo }}:$primary_tag"
   tag: "$primary_tag"
   digest: '$(sed -n "{{ add $index 1 }}p" $input_disgests_file)'
 {{- end }}
@@ -245,14 +261,41 @@ EOF
 }
 
 add_more_tags() {
+    result_file="$1"
+
     {{- if gt (len $tags) 1 }}
-    # add other tags.
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     oras tag {{ $image.artifactory.repo }}:{{ join $tags " " }}
+    yq -i '.images[{{ $index }}].tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
     {{- end }}
     {{- else }}
     echo "🤷 No more tags need to be taged."
     {{- end }}
+}
+
+collect_and_push_multi_arch_images() {
+    result_file="$1"
+    {{- $self_tag := index $tags 0 }}
+    {{- $other_arch := ternary "arm64" "amd64" (eq .arch "amd64") }}
+    {{- $other_tag := printf "%s_%s_%s" (index $base_tags 0) .os $other_arch }}
+    {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
+
+    # 📦 try to collect and push multi-arch image: {{ $image.artifactory.repo }}:{{ index $base_tags 0 }}
+        {{- range $i, $tag := $base_tags }}
+            {{- if eq $i 0 }}
+    if ! crane digest {{ $image.artifactory.repo }}:{{ $other_tag }}; then
+        echo "🤷 Image {{ $image.artifactory.repo }}:{{ $other_tag }} not found."
+        exit 0
+    fi
+    crane index append -m {{ $image.artifactory.repo }}:{{ $self_tag }} -m {{ $image.artifactory.repo }}:{{ $other_tag }} -t {{ $image.artifactory.repo }}:{{ $tag }}
+            {{- else }}
+    crane tag {{ $image.artifactory.repo }}:{{ index $base_tags 0 }} {{ $tag }}
+            {{- end }}
+        {{- end }}
+    yq -i '.images[{{ $index }}].multi_arch_tags = ["{{ join $base_tags "\",\"" }}"]' "$result_file"
+    {{- end }}
+
+    echo "✅ Multi-arch images recorded in file: $result_file"
 }
 
 main "$@"

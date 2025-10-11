@@ -6,11 +6,11 @@ ci:
   autoupdate_commit_msg: "chore: pre-commit autoupdate"
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.25.1
+    rev: v8.28.0
     hooks:
       - id: gitleaks

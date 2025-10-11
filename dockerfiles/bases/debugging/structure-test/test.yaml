@@ -1,0 +1,247 @@
+# Container Structure Tests for debugging base image
+# File: artifacts/dockerfiles/bases/debugging/tests/debugging_image_test.yaml
+#
+# Purpose:
+# This suite is intentionally minimal right now because the Dockerfile
+# (debugging image) has not yet had the debugging / observability tools
+# installed. It establishes a foundation you can safely run in CI
+# immediately, then you can progressively (uncomment / add) tests as you
+# add each category of tooling.
+#
+# How to run (example):
+#   container-structure-test test \
+#     --image <your-built-image> \
+#     --config artifacts/dockerfiles/bases/debugging/structure-test/test.yaml
+#
+# Add new tests by:
+#  1. Installing tools in the Dockerfile.
+#  2. Uncommenting / adding relevant commandTests or fileExistenceTests.
+#  3. Keeping assertions narrowly scoped (e.g. just --version grep) so
+#     updates to package minor versions don't cause needless failures.
+#
+# Documentation:
+#   https://github.com/GoogleContainerTools/container-structure-test
+
+schemaVersion: 2.0.0
+
+commandTests:
+  #######################################################################
+  # Future: General System Inspection
+  #######################################################################
+  - name: "ps from procps present"
+    command: "command"
+    args: ["-v", "ps"]
+    exitCode: 0
+  - name: "top from procps present"
+    command: "command"
+    args: ["-v", "top"]
+    exitCode: 0
+  - name: "uptime from procps present"
+    command: "command"
+    args: ["-v", "uptime"]
+    exitCode: 0
+  - name: "vmstat from procps present"
+    command: "command"
+    args: ["-v", "vmstat"]
+    exitCode: 0
+  - name: "free from procps present"
+    command: "command"
+    args: ["-v", "free"]
+    exitCode: 0
+
+  - name: "htop present"
+    command: "command"
+    args: ["-v", "htop"]
+    exitCode: 0
+
+  - name: "iotop present"
+    command: "command"
+    args: ["-v", "iotop"]
+    exitCode: 0
+
+  - name: "atop present"
+    command: "command"
+    args: ["-v", "atop"]
+    exitCode: 0
+
+  - name: "lsof present"
+    command: "command"
+    args: ["-v", "lsof"]
+    exitCode: 0
+
+  - name: "strace present"
+    command: "command"
+    args: ["-v", "strace"]
+    exitCode: 0
+
+  - name: "perf present"
+    command: "command"
+    args: ["-v", "perf"]
+    exitCode: 0
+
+  - name: "dstat present"
+    command: "command"
+    args: ["-v", "dstat"]
+    exitCode: 0
+
+
+
+
+
+  #######################################################################
+  # Future: CPU / perf / tracing
+  #######################################################################
+  - name: "mpstat present"
+    command: "command"
+    args: ["-v", "mpstat"]
+
+  - name: "pidstat present"
+    command: "command"
+    args: ["-v", "pidstat"]
+
+  - name: "stress present"
+    command: "command"
+    args: ["-v", "stress"]
+
+  - name: "perf tool installed"
+    command: "command"
+    args: ["-v", "perf"]
+    exitCode: 0
+
+
+
+
+
+  #######################################################################
+  # Future: Memory
+  #######################################################################
+  - name: "free present"
+    command: "command"
+    args: ["-v", "free"]
+    exitCode: 0
+
+  - name: "pmap present"
+    command: "command"
+    args: ["-v", "pmap"]
+    exitCode: 0
+
+  - name: "numastat present"
+    command: "command"
+    args: ["-v", "numastat"]
+    exitCode: 0
+
+  - name: "smem present"
+    command: "command"
+    args: ["-v", "smem"]
+    exitCode: 0
+
+  - name: "valgrind present"
+    command: "command"
+    args: ["-v", "valgrind"]
+    exitCode: 0
+
+  #######################################################################
+  # Future: Debugging / Tracing
+  #######################################################################
+  - name: "gdb present"
+    command: "command"
+    args: ["-v", "gdb"]
+    exitCode: 0
+  - name: "bpftrace present"
+    command: "command"
+    args: ["-v", "bpftrace"]
+    exitCode: 0
+  - name: "strace present"
+    command: "command"
+    args: ["-v", "strace"]
+    exitCode: 0
+
+  #######################################################################
+  # 4. Future: Disk / IO
+  #######################################################################
+
+  - name: "fio present"
+    command: "command"
+    args: ["-v", "fio"]
+    exitCode: 0
+
+  - name: "iostat (sysstat) present"
+    command: "command"
+    args: ["-v", "iostat"]
+    exitCode: 0
+
+  #######################################################################
+  # 5. Future: Network diagnostics
+  #######################################################################
+  - name: "curl present"
+    command: "command"
+    args: ["-v", "curl"]
+    exitCode: 0
+
+  - name: "tcpdump present"
+    command: "command"
+    args: ["-v", "tcpdump"]
+    exitCode: 0
+
+  - name: "iperf3 present"
+    command: "command"
+    args: ["-v", "iperf3"]
+    exitCode: 0
+
+  #######################################################################
+  # 6. Future: JSON, hex, misc tools
+  #######################################################################
+  - name: "jq present"
+    command: "command"
+    args: ["-v", "jq"]
+    exitCode: 0
+
+  - name: "xxd present"
+    command: "sh"
+    args: ["sh", "-c", "command -v xxd || command -v hexdump"]
+    exitCode: 0
+
+  - name: "tmux present"
+    command: "sh"
+    args: ["sh", "-c", "command -v tmux"]
+    exitCode: 0
+
+  #######################################################################
+  # 7. Future: TiUP & TiDB ecosystem utilities
+  #######################################################################
+  - name: "tiup present"
+    command: "command"
+    args: ["-v", "tiup"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - tidb"
+    command: "tiup"
+    args: ["ctl:v8.5.3", "tidb", "help"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - pd"
+    command: "tiup"
+    args: ["ctl:v8.5.3", "pd", "help"]
+    exitCode: 0
+  - name: "tiup can install and run ctl components - tikv"
+    command: "tiup"
+    args: ["ctl:v8.5.3", "tikv", "help"]
+    exitCode: 0
+
+
+  #######################################################################
+  # Future: Core text / navigation tools
+  #######################################################################
+  # Uncomment as you add these packages (e.g., via apt, yum, apk).
+  - name: "less installed"
+    command: "command"
+    args: ["-v", "less"]
+    exitCode: 0
+
+  - name: "vim minimal present"
+    command: "sh"
+    args: ["-c", "command -v vim || command -v vi"]
+    exitCode: 0
+
+  - name: "ripgrep (rg) available"
+    command: "command"
+    args: ["-v", "rg"]
+    exitCode: 0

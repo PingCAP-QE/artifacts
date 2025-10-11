@@ -8,9 +8,9 @@
 
 ########### stage: builder
 FROM centos:7.9.2009 AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiFlash"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiFlash"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # CentOS 7 has reached EOL
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
@@ -49,7 +49,6 @@ RUN --mount=type=cache,target=/var/cache/yum \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 
-
 ########### stage: building
 FROM builder AS building
 
@@ -59,7 +58,7 @@ RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.9.2
+FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.10.0
 
 ENV LD_LIBRARY_PATH /tiflash
 COPY --from=building /ws/output/tiflash /tiflash
