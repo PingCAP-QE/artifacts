@@ -144,15 +144,26 @@ function getCopyCommandsForImage(
 async function parseImagesFromFile(imagesFilePath: string) {
   const imagesFileContent = await Deno.readTextFile(imagesFilePath);
   // yaml.parse can parse JSON as well since JSON is a subset of YAML.
-  const parsed = yaml.parse(imagesFileContent) as ImagesFile | null;
+  const parsed = yaml.parse(imagesFileContent) as
+    | ImagesFile
+    | ImageEntry[]
+    | null;
 
-  if (!parsed || typeof parsed !== "object" || !Array.isArray(parsed.images)) {
+  let images: ImageEntry[];
+  if (Array.isArray(parsed)) {
+    images = parsed as ImageEntry[];
+  } else if (
+    parsed && typeof parsed === "object" &&
+    Array.isArray((parsed as ImagesFile).images)
+  ) {
+    images = (parsed as ImagesFile).images;
+  } else {
     throw new Error(
-      `Invalid images input file: ${imagesFilePath}. Expected an object with an "images" array.`,
+      `Invalid images input file: ${imagesFilePath}. Expected an object with an "images" array or an array of image entries.`,
     );
   }
 
-  return parsed.images.flatMap((image) => {
+  return images.flatMap((image) => {
     if (!image || typeof image !== "object") return [];
 
     const repo = image.repo;
