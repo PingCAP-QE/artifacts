@@ -92,9 +92,7 @@ RUN folder=$([ "$(arch)" = "x86_64" ] && echo linux || echo aarch64); \
     chmod +x /usr/local/bin/codecov
 
 # oras tool
-# renovate: datasource=github-tags depName=oras-project/oras
-COPY --from=ghcr.io/oras-project/oras:v1.2.3 /bin/oras /usr/local/bin/oras
-RUN oras version
+COPY --from=ghcr.io/oras-project/oras:v1.3.0 /bin/oras /usr/local/bin/oras
 
 # gh-ost
 # linux amd64 only
