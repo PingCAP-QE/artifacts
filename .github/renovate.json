@@ -45,9 +45,8 @@
         "\\bimage: (?<depName>ghcr.io/pingcap-qe/cd/.*?):(?<currentValue>(?<gitprefix>v[0-9][0-9.]*-[0-9]+-g[0-9a-f]+)-(?<suffix>[^\\s]+))"
       ],
       "datasourceTemplate": "docker",
-      "versioningTemplate": "semver-coerced",
-      "extractVersionTemplate": "^(?<version>v[0-9][0-9.]*-[0-9]+-g[0-9a-f]+)",
-      "autoReplaceStringTemplate": "image: {{depName}}:{{newValue}}-{{suffix}}"
+      "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?-(?<build>\\d+)-g[0-9a-f]+(?:-(?<compatibility>.+))?$",
+      "autoReplaceStringTemplate": "image: {{depName}}:{{newValue}}"
     }
   ]
 }
