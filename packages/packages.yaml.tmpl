@@ -277,13 +277,13 @@ components:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.10.5-1-gf639b02-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.20
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.19
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
@@ -423,13 +423,13 @@ components:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.10.5-1-gf639b02-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.20
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.19
     routers:
       - description: Range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
