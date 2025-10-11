@@ -36,14 +36,14 @@ profiles:
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
-          # renovate: datasource=docker depName=golang
           GOLANG_VERSION: 1.23.12
-  - name: go-1.22
+  - name: go-1.25
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-non-root-go1.22"
+        value: "{{ .GIT }}-centos7-non-root-go1.25"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
-          GOLANG_VERSION: 1.22.10
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.25.2
