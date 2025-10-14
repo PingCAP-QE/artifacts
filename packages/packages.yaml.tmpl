@@ -885,11 +885,11 @@ components:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.20
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-103-g043adb3-go1.18
     routers:
@@ -1351,7 +1351,7 @@ components:
       - if: {{ eq "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.17-13-ga5750d9-go1.23
       - if: {{ ne "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
       - description: >
             for range [6.1.0, v9.0.0), it stop at v8.5.1. sync diff inspector tool is migrate to pingcap/tiflow repo.
@@ -1399,7 +1399,7 @@ components:
       - if: (eq "experiment" .Release.profile)
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: (ne "experiment" .Release.profile)
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
       - description: For all versions.
         os: [linux, darwin]
@@ -1436,11 +1436,11 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.20
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.20
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.19
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.19
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-103-g043adb3-go1.18
     routers:
@@ -2874,7 +2874,7 @@ components:
       - if: {{ semver.CheckConstraint ">= 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 0.1.2-0, < 1.3.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-12-gb9ffe36-centos7-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
       - description: From 0.1.2
         if: {{ semver.CheckConstraint ">= 0.1.2-0" .Release.version }}
