@@ -76,8 +76,18 @@ function getMatchingRulesFor(
     .filter((r) => r.tags_regex.length > 0);
 }
 
-async function appendLine(file: Deno.FsFile, line: string) {
-  await file.write(new TextEncoder().encode(`${line}\n`));
+async function writeCommandsToFile(outFile: string, commands: string[]) {
+  if (commands.length === 0) {
+    return;
+  }
+
+  using file = await Deno.open(outFile, {
+    create: true,
+    write: true,
+    truncate: true,
+  });
+
+  await file.write(new TextEncoder().encode(commands.join("\n")));
 }
 
 function copyCommandsForRule(
@@ -191,14 +201,7 @@ async function generateShellScriptSingle(
     return;
   }
 
-  using file = await Deno.open(outFile, {
-    create: true,
-    write: true,
-    truncate: true,
-  });
-  for (const command of commands) {
-    await appendLine(file, command);
-  }
+  await writeCommandsToFile(outFile, commands);
 }
 
 // Multi-image mode (YAML/JSON structured file)
@@ -216,14 +219,7 @@ async function generateShellScriptMulti(
     return;
   }
 
-  using file = await Deno.open(outFile, {
-    create: true,
-    write: true,
-    truncate: true,
-  });
-  for (const command of commands) {
-    await appendLine(file, command);
-  }
+  await writeCommandsToFile(outFile, commands);
 }
 
 async function main() {
