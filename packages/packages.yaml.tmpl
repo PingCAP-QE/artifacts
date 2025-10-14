@@ -1525,7 +1525,7 @@ components:
       - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.8.17-13-ga5750d9-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-14-g52a7228-go1.21
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-91-g6221afa-go1.21
     routers:
       - description: for range [v2.0.0, )
         if: {{ semver.CheckConstraint ">= 2.0.0-0" .Release.version }}
