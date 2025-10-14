@@ -68,15 +68,12 @@ function getMatchingRulesFor(
   tag: string,
   rulesConfig: Config,
 ): Rule[] {
-  const rules = (rulesConfig[imageUrl] || []).filter((r) =>
-    r.tags_regex.some((regex) => new RegExp(regex).test(tag))
-  );
-
-  rules.forEach((r) => {
-    r.tags_regex = r.tags_regex.filter((regex) => new RegExp(regex).test(tag));
-  });
-
-  return rules;
+  return (rulesConfig[imageUrl] || [])
+    .map((r) => ({
+      ...r,
+      tags_regex: r.tags_regex.filter((regex) => new RegExp(regex).test(tag)),
+    }))
+    .filter((r) => r.tags_regex.length > 0);
 }
 
 async function appendLine(file: Deno.FsFile, line: string) {
@@ -169,13 +166,15 @@ async function parseImagesFromFile(imagesFilePath: string) {
     const repo = image.repo;
     if (typeof repo !== "string" || repo.trim().length === 0) return [];
 
-    return Array.from(
-      new Set([
+    return [
+      ...new Set([
         image.tag,
         ...(image.tags ?? []),
         ...(image.multi_arch_tags ?? []),
       ]),
-    ).map((t) => ({ repo, tag: t }));
+    ]
+      .filter((t): t is string => typeof t === "string" && t.length > 0)
+      .map((t) => ({ repo, tag: t }));
   });
 }
 
