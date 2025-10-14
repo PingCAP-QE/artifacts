@@ -36,11 +36,12 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # install tools: tiup
 # renovate: datasource=github-release depName=pingcap/tiup
-ARG TIUP_VER=1.16.1
+ARG TIUP_VER=v1.16.3
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
-    wget -q -O - https://tiup-mirrors.pingcap.com/tiup-v${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
+    wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
-    mkdir -p "$HOME/.tiup/bin"
+    mkdir -p "$HOME/.tiup/bin" && \
+    tiup mirror set --reset
 
 # install tools: aws-cli
 RUN apk add --no-cache python3 aws-cli py3-pip  && \
