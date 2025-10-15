@@ -883,7 +883,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.10.5-2-ga827077-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
@@ -1349,7 +1349,7 @@ components:
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - if: {{ eq "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.17-13-ga5750d9-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.10.5-2-ga827077-go1.23
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
@@ -1397,7 +1397,7 @@ components:
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
       - if: (eq "experiment" .Release.profile)
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.10.5-2-ga827077-centos7-go1.23
       - if: (ne "experiment" .Release.profile)
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
@@ -2872,7 +2872,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 1.3.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.8.10-8-g63921ca-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.10.5-2-ga827077-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 0.1.2-0, < 1.3.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
