@@ -53,18 +53,16 @@ definitions:
     description: delivery community images for GA images.
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-(rc|beta)[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc|release)[.][0-9]+$
   sync_ga_enterprise: &sync_ga_enterprise
     description: delivery the enterprise GA images.
     tags_regex:
       - ^(v[0-9]+[.][0-9]+[.][0-9]+)-enterprise$
-      - ^(v[0-9]+[.][0-9]+[.][0-9]+-(rc|beta)[.][0-9]+)-enterprise$
+      - ^(v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc|release)[.][0-9]+)-enterprise$
     tag_regex_replace: "$1"
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
+    <<: *sync_ga_community
     description: delivery the community GA image to enterprise repos.
-    tags_regex:
-      - ^v[0-9]+[.][0-9]+[.][0-9]+$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-(rc|beta)[.][0-9]+$
 image_copy_rules:
   hub.pingcap.net/pingcap/advanced-statefulset:
     - description: delivery the version images.
