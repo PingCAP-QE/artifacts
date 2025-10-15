@@ -11,7 +11,7 @@ RUN apk add --no-cache bash git curl jq yq uuidgen
 COPY --from=hairyhenderson/gomplate:v4.3.3-alpine /bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
-COPY --from=ghcr.io/oras-project/oras:v1.2.3 --chown=0:0 /bin/oras /usr/local/bin/oras
+COPY --from=ghcr.io/oras-project/oras:v1.3.0 --chown=0:0 /bin/oras /usr/local/bin/oras
 
 # install tools: manifest-tool
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /manifest-tool /usr/local/bin/manifest-tool
