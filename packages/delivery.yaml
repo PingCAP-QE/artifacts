@@ -12,10 +12,14 @@ definitions:
   sync_trunk_enterprise: &sync_trunk_enterprise
     description: delivery the trunk branch enterprise edition images.
     tags_regex: [^master-enterprise$]
-  sync_trunk_next-gen: &sync_trunk_next-gen
-    description: delivery next-gen images for developing branches.
+  sync_nextgen: &sync_nextgen
+    description: delivery next-gen images
     tags_regex:
-      - ^(master|dedicated|release-nextgen|feature-next-gen.*)(-.*)?-next-gen$
+      # - branch naming tags: <branch>-next-gen
+      # - branch commit exact tags: <branch>-<short-git-sha>-next-gen
+      # - semver tags: vX.Y.Z(-*)-next-gen
+      - ^(master|dedicated|release-nextgen|v[0-9]+[.][0-9]+[.][0-9]+|feature-next-gen.*)(-.*)?-next-gen$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]{6}[.][0-9]+$
   sync_pre_community: &sync_pre_community
     description: delivery community images for release branches.
     tags_regex:
@@ -72,11 +76,6 @@ image_copy_rules:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
   hub.pingcap.net/pingcap/ticdc/image: # only delivey the master branch images and versions since v9.0.0-beta.1
-    - description: delivery next-gen images.
-      tags_regex:
-        - ^(master|release-nextgen|v[0-9]+[.][0-9]+[.][0-9]+)(-.*)?-next-gen$
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
@@ -129,9 +128,6 @@ image_copy_rules:
         - docker.io/pingcap/tidb-operator-prestop-checker
         - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
   hub.pingcap.net/pingcap/tidb/images/tidb-server:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/tidb
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
@@ -150,9 +146,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb
         - docker.io/pingcap/tidb-enterprise
   hub.pingcap.net/pingcap/tidb/images/br:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/br
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
@@ -171,9 +164,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/br
         - docker.io/pingcap/br-enterprise
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/tidb-lightning
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
@@ -192,9 +182,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
         - docker.io/pingcap/tidb-lightning-enterprise
   hub.pingcap.net/pingcap/tidb/images/dumpling:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/dumpling
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
@@ -266,9 +253,6 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/sync-diff-inspector
   hub.pingcap.net/pingcap/tiflash/image:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/tiflash
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tiflash
@@ -343,9 +327,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-binlog
         - docker.io/pingcap/tidb-binlog-enterprise
   hub.pingcap.net/tikv/tikv/image:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/tikv
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
@@ -362,9 +343,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tikv
         - docker.io/pingcap/tikv-enterprise
   hub.pingcap.net/tikv/pd/image:
-    - <<: *sync_trunk_next-gen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/pd
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/pd
@@ -402,3 +380,37 @@ image_copy_rules:
         - docker.io/pingcap/tidb-dashboard
         - uhub.service.ucloud.cn/pingcap/tidb-dashboard
         - gcr.io/pingcap-public/dbaas/tidb-dashboard
+
+  ### nextgen images built on cloud environments
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/pd
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tikv
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/br
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb-lightning
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/dumpling
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiflash
