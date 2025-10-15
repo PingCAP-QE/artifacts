@@ -287,9 +287,8 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tiflash
         - docker.io/pingcap/tiflash-enterprise
   hub.pingcap.net/pingcap/tiproxy/image:
-    - description: publish trunk and version images.
+    - description: publish trunk images.
       tags_regex:
-        - ^v\d+\.\d+\.\d
         - ^(main|master)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/tiproxy
@@ -298,6 +297,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tiproxy
     - <<: *sync_ga_community
       dest_repositories:
+        - docker.io/pingcap/tiproxy
         - gcr.io/pingcap-public/dbaas/tiproxy
   hub.pingcap.net/pingcap/monitoring/image:
     - <<: *sync_trunk_community
