@@ -19,7 +19,7 @@ definitions:
       # - branch commit exact tags: <branch>-<short-git-sha>-next-gen
       # - semver tags: vX.Y.Z(-*)-next-gen
       - ^(master|dedicated|release-nextgen|v[0-9]+[.][0-9]+[.][0-9]+|feature-next-gen.*)(-.*)?-next-gen$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen.[0-9]{6}[.][0-9]+$
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]{6}[.][0-9]+$
   sync_pre_community: &sync_pre_community
     description: delivery community images for release branches.
     tags_regex:
