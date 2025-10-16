@@ -93,12 +93,9 @@ jobs:
 
     strategy:
       matrix:
-        profile: [go-1.24, go-1.23, go-1.22]
+        profile: [go-1.25, go-1.24, go-1.23]
         platform: [linux/amd64, linux/arm64]
         builder: ${{ fromJSON(needs.define-matrix.outputs.changed_go_builder_folders) }}
-        exclude:
-          - builder: ticdc
-            profile: go-1.22
       max-parallel: 1
 
     steps:
