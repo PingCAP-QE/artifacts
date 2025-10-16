@@ -2558,11 +2558,11 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.10.5-2-ga827077-centos7-go1.23
     routers:
-      - description: For range [v9.0.0, )
-        if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
+      - description: For range [v8.5.4, )
+        if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, next-gen]
