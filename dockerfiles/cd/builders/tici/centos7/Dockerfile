@@ -19,7 +19,7 @@ ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
 
 # Set up Rust linker and flags
-RUN echo "export RUSTFLAGS='-C rpath -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi'" > /etc/profile.d/rust_env.sh
+RUN echo "export RUSTFLAGS='-C rpath -C linker=/usr/local/bin/clang -C link-arg=-fuse-ld=lld -L /usr/local/lib/$(arch)-unknown-linux-gnu -l static=c++ -l static=c++abi'" > /etc/profile.d/rust_env.sh
 ENV BASH_ENV=/etc/profile.d/rust_env.sh
 SHELL ["/bin/bash", "-c"]
 
