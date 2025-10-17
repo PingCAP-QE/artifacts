@@ -231,14 +231,20 @@ function prepare_artifact_config() {
     {{- end }}
 }
 
-{{- $tag_suffix := printf "_%s_%s"  .os .arch -}}
+{{- $no_profile_tag_suffix := printf "_%s_%s"  .os .arch -}}
+{{- $tag_suffix := $no_profile_tag_suffix -}}
 {{- if ne .profile "release" }}
-{{- $tag_suffix = printf "-%s_%s_%s" .profile .os .arch -}}
+{{- $tag_suffix = printf "-%s%s" .profile $no_profile_tag_suffix -}}
 {{- end }}
 
 {{- $tags := coll.Slice }}
+{{- $profile := .profile }}
 {{- range $index, $tag := .artifactory.tags }}
-{{- $tags = append (printf "%s%s" $tag $tag_suffix) $tags }}
+{{- $suffix := $tag_suffix }}
+{{- if or ($tag | strings.Contains $profile) ($tag | strings.Contains ($profile | strings.ReplaceAll "-" "")) }}
+{{- $suffix = $no_profile_tag_suffix }}
+{{- end }}
+{{- $tags = append (printf "%s%s" $tag $suffix) $tags }}
 {{- end }}
 
 function push_files() {
@@ -267,7 +273,7 @@ function push_files() {
 
 function write_push_results() {
     local result_file="$1"
-    local primary_tag="{{ index .artifactory.tags 0 }}{{ if ne .profile "release" }}-{{ .profile }}{{ end }}_{{ .os }}_{{ .arch }}"
+    local primary_tag="{{ index $tags 0 }}"
     local destination="{{ .artifactory.package_repo }}:$primary_tag"
 
     # You should login before call this script, default it use credential with docker `config`` file: ~/.docker/config.json
