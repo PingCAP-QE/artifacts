@@ -2132,7 +2132,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.8.17-13-ga5750d9-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.10.12-22-g0eba311-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-88-gf338368-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
