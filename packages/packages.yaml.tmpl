@@ -2143,8 +2143,8 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-103-g043adb3-go1.18
     routers:
       - description: |
-            For range [v9.0.0, ). Since v9.0.0 we build and publish cdc components from `pingcap/ticdc` repository.
-        if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
+            For range [v8.5.4, ). Since v8.5.4 we build and publish cdc components from `pingcap/ticdc` repository.
+        if: {{ semver.CheckConstraint ">= v8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
@@ -2266,8 +2266,8 @@ components:
             dockerfile: deployments/engine/docker/Dockerfile
             build_args:
               - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
-      - description: For range [v6.5.0, v9.0.0)
-        if: {{ semver.CheckConstraint ">= 6.5.0-0, < v9.0.0-0" .Release.version }}
+      - description: For range [v6.5.0, v8.5.4)
+        if: {{ semver.CheckConstraint ">= 6.5.0-0, < v8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release]
