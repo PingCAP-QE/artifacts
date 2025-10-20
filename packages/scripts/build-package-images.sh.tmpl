@@ -20,6 +20,7 @@
         {{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
     {{- end }}
 {{- end }}
+{{- $base_tags = ($base_tags | coll.Uniq) }}
 
 {{- $platform_tag_suffix := printf "%s_%s" .os .arch }}
 {{- $tags := coll.Slice }}
