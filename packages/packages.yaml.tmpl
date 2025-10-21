@@ -554,8 +554,8 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-103-g043adb3-go1.18
     routers:
-      - description: For range [v9.0.0-0, ), support next-gen build since the version.
-        if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
+      - description: For range [v8.5.4-0, ), support next-gen build since the version.
+        if: {{ semver.CheckConstraint ">= v8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, next-gen, enterprise, failpoint]
@@ -626,8 +626,8 @@ components:
                 src:
                   path: bin/pd-ctl
 
-      - description: For range [v8.4.0, v9.0.0)
-        if: {{ semver.CheckConstraint ">= 8.4.0-0, < v9.0.0-0" .Release.version }}
+      - description: For range [v8.4.0, v8.5.4)
+        if: {{ semver.CheckConstraint ">= 8.4.0-0, < v8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, failpoint]
