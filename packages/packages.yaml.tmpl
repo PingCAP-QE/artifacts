@@ -627,7 +627,7 @@ components:
                   path: bin/pd-ctl
 
       - description: For range [v8.4.0, v8.5.4)
-        if: {{ semver.CheckConstraint ">= 8.4.0-0, < v8.5.4-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, enterprise, failpoint]
