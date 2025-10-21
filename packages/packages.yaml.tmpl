@@ -555,7 +555,7 @@ components:
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-103-g043adb3-go1.18
     routers:
       - description: For range [v8.5.4-0, ), support next-gen build since the version.
-        if: {{ semver.CheckConstraint ">= v8.5.4-0" .Release.version }}
+        if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
         profile: [release, next-gen, enterprise, failpoint]
