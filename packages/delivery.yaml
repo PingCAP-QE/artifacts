@@ -18,8 +18,16 @@ definitions:
       # - branch naming tags: <branch>-next-gen
       # - branch commit exact tags: <branch>-<short-git-sha>-next-gen
       # - semver tags: vX.Y.Z(-*)-next-gen
-      - ^(master|dedicated|release-nextgen|v[0-9]+[.][0-9]+[.][0-9]+|feature-next-gen.*)(-.*)?-next-gen$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]{6}[.][0-9]+$
+      # - semver tags: vX.Y.Z-nextgen.YYYYMM.N
+      #
+      # we will not dup the tag with profile world.
+      - ^(master|dedicated)(-.*)?-next-gen$ # trunk branches
+      - ^release-nextgen(-[-0-9a-f]+)?$ # release branches
+      - ^feature-next-gen.*(-[-0-9a-f]+)?$ # feature branches
+      - ^v[0-9]+[.][0-9]+[.][0-9]+(-[-.0-9a-z]+)?-[0-9]+-g[0-9a-f]{6,10}-next-gen$ # semver tags built classic branches
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?-[0-9]+-g[0-9a-f]{6,10}$ # semver tags built nextgen branches after nextgen release tag.
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?$ # GA semver tags built from nextgen tags
+      - ^v[0-9]+[.][0-9]+[.][0-9]+-next-gen$ # GA semver tags built from classic tags
   sync_pre_community: &sync_pre_community
     description: delivery community images for release branches.
     tags_regex:
