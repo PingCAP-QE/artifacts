@@ -82,7 +82,7 @@ RUN /tiflow/bin/dm-syncer -V
 RUN /tiflow/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.1 AS final-cdc
 
 COPY --from=building-cdc /tiflow/bin/cdc /cdc
 EXPOSE 8300
@@ -93,7 +93,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0 AS final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.1 AS final-dm
 
 COPY --from=building-dm /tiflow/bin/dm-master /dm-master
 COPY --from=building-dm /tiflow/bin/dm-worker /dm-worker
