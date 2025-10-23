@@ -41,7 +41,7 @@ RUN GOPROXY=${GOPROXY} make cdc -C /ws
 RUN /ws/bin/cdc version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.0
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.1
 COPY --from=building /ws/bin/cdc /cdc
 
 EXPOSE 8300
