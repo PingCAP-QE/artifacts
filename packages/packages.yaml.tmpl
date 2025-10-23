@@ -1523,7 +1523,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.10.5-2-ga827077-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.10.19-14-g5152708-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-91-g6221afa-go1.21
     routers:
