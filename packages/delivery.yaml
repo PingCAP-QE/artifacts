@@ -289,6 +289,9 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tiproxy
         - gcr.io/pingcap-public/dbaas/tiproxy
+    - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiproxy
   hub.pingcap.net/pingcap/monitoring/image:
     - <<: *sync_trunk_community
       dest_repositories:
@@ -392,6 +395,12 @@ image_copy_rules:
   ### nextgen images built on cloud environments
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image:
     - <<: *sync_nextgen
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
+    - description: delivery next-gen images built from classic branches and tags
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+-next-gen$ # classic naming release branches
+        - ^v[0-9]+[.][0-9]+[.][0-9]+(-release[.][0-9]+)?-next-gen$ # GA semver tags built from classic tags
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image:
