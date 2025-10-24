@@ -74,8 +74,9 @@ function test_get_builder() {
     # next-gen profile
     local profile="next-gen"
     local components="tidb tiflash tikv pd ticdc"
+    local versions="v8.5.4 v9.0.0"
     for cm in $components; do
-        for version in "v8.5.4 v9.0.0"; do
+        for version in $versions; do
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version $profile:\t"
