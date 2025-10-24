@@ -325,6 +325,7 @@ function test_gen_package_images_script() {
 
     # next-gen profile
     local profile="next-gen"
+    local versions="v9.0.0 v8.5.4"
     local components="tidb tikv pd tiflash ticdc"
     for cm in $components; do
         for version in $versions; do
