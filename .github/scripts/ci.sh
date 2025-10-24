@@ -16,9 +16,10 @@ function check_image_existed() {
 }
 
 function test_get_builder() {
-    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
+    local profile="release"
     local script="./packages/scripts/get-package-builder-with-config.sh"
 
     # release profile
@@ -32,8 +33,8 @@ function test_get_builder() {
             fi
             for os in $operating_systems; do
                 for ac in $architectures; do
-                    echo -en "[🚢] $cm $os $ac $version release:\t"
-                    img=$($script "$cm" "$os" "$ac" "$version" release)
+                    echo -en "[🚢] $cm $os $ac $version $profile:\t"
+                    img=$($script "$cm" "$os" "$ac" "$version" "$profile")
                     echo $img
                     check_image_existed $img
                 done
@@ -41,14 +42,14 @@ function test_get_builder() {
         done
     done
 
-    # for cdc - only community edition
+    # for cdc
     local cm="ticdc"
-    local versions="v9.0.0"
+    local versions="v8.5.4 v9.0.0"
     for version in $versions; do
         for os in $operating_systems; do
             for ac in $architectures; do
-                echo -en "[🚢] $cm $os $ac $version release:\t"
-                img=$($script "$cm" "$os" "$ac" "$version" release)
+                echo -en "[🚢] $cm $os $ac $version $profile:\t"
+                img=$($script "$cm" "$os" "$ac" "$version" "$profile")
                 echo $img
                 check_image_existed $img
             done
@@ -63,6 +64,23 @@ function test_get_builder() {
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version enterprise:\t"
                     img=$($script "$cm" "$os" "$ac" "$version" enterprise)
+                    echo $img
+                    check_image_existed $img
+                done
+            done
+        done
+    done
+
+    # next-gen profile
+    local profile="next-gen"
+    local components="tidb tiflash tikv pd ticdc"
+    local versions="v8.5.4 v9.0.0"
+    for cm in $components; do
+        for version in $versions; do
+            for os in $operating_systems; do
+                for ac in $architectures; do
+                    echo -en "[🚢] $cm $os $ac $version $profile:\t"
+                    img=$($script "$cm" "$os" "$ac" "$version" $profile)
                     echo $img
                     check_image_existed $img
                 done
@@ -130,21 +148,10 @@ function test_get_builder_freedom_releasing() {
             done
         done
     done
-
-    # tikv next-gen profile
-    local cm="tikv"
-    for os in linux; do
-        for ac in $architectures; do
-            for version in v8.5.0 v9.0.0; do
-                echo -en "[🚢] $cm $os $ac $version next-gen:\t"
-                $script "$cm" "$os" "$ac" "$version" next-gen
-            done
-        done
-    done
 }
 
 function test_gen_package_artifacts_script() {
-    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0"
     local operating_systems="linux darwin"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-artifacts-with-config.sh"
@@ -165,19 +172,6 @@ function test_gen_package_artifacts_script() {
                     $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
-            done
-        done
-    done
-
-    # for cdc - only community edition
-    local cm="ticdc"
-    local versions="v9.0.0"
-    for version in $versions; do
-        for os in $operating_systems; do
-            for ac in $architectures; do
-                echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-                $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
-                shellcheck -S error packages/scripts/build-package-artifacts.sh
             done
         done
     done
@@ -206,6 +200,22 @@ function test_gen_package_artifacts_script() {
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
                     $script "$cm" "$os" "$ac" "$version" failpoint branch-xxx 123456789abcdef
+                    shellcheck -S error packages/scripts/build-package-artifacts.sh
+                done
+            done
+        done
+    done
+
+    # next-gen profile
+    local profile="next-gen"
+    local components="tidb tikv pd ticdc tiflash"
+    local versions="v9.0.0 v8.5.4"
+    for cm in $components; do
+        for version in $versions; do
+            for os in $operating_systems; do
+                for ac in $architectures; do
+                    echo -en "[📃📦] $cm $os $ac $version $profile:\t"
+                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -274,21 +284,10 @@ function test_gen_package_artifacts_script_freedom_releasing() {
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
-
-    # tikv next-gen profile, currently it only support linux.
-    local cm="tikv"
-    local os="linux"
-    for ac in $architectures; do
-        for version in v8.5.0 v9.0.0; do
-            echo -en "[📃📦] $cm $os $ac $version next-gen:\t"
-            $script "$cm" "$os" "$ac" "$version" next-gen branch-xxx 123456789abcdef
-            shellcheck -S error packages/scripts/build-package-artifacts.sh
-        done
-    done
 }
 
 function test_gen_package_images_script() {
-    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local os="linux"
     local architectures="amd64 arm64"
     local script="./packages/scripts/gen-package-images-with-config.sh"
@@ -311,20 +310,23 @@ function test_gen_package_images_script() {
         done
     done
 
-    # for cdc - only community edition
-    local cm="ticdc"
-    local versions="v9.0.0"
-    for version in $versions; do
-        for ac in $architectures; do
-            echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
-            shellcheck -S error packages/scripts/build-package-images.sh
-        done
-    done
-
     # enterprise profile
     local profile="enterprise"
     local components="tidb tikv pd tiflash"
+    for cm in $components; do
+        for version in $versions; do
+            for ac in $architectures; do
+                echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef
+                shellcheck -S error packages/scripts/build-package-images.sh
+            done
+        done
+    done
+
+    # next-gen profile
+    local profile="next-gen"
+    local versions="v9.0.0 v8.5.4"
+    local components="tidb tikv pd tiflash ticdc"
     for cm in $components; do
         for version in $versions; do
             for ac in $architectures; do
@@ -392,20 +394,10 @@ function test_gen_package_images_script_freedom_releasing() {
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
-
-    # tikv next-gen profile. currently it only support linux.
-    local cm="tikv"
-    for version in v8.5.0 v9.0.0; do
-        for ac in $architectures; do
-            echo -en "[📃💿] $cm $os $ac $version next-gen:\t"
-            $script "$cm" linux "$ac" "$version" next-gen branch-xxx 123456789abcdef
-            shellcheck -S error packages/scripts/build-package-images.sh
-        done
-    done
 }
 
 function test_gen_offline_package_artifacts_script() {
-    local versions="v9.0.0 v8.5.0 v8.4.0 v8.3.0 v8.2.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
+    local versions="v9.0.0 v8.5.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux"
     local architectures="amd64 arm64"
     local editions="community enterprise dm"
