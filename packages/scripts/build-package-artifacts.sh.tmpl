@@ -241,7 +241,7 @@ function prepare_artifact_config() {
     yq -p json -o json -i '.["net.pingcap.tibuild.git-sha"] = "{{ .git.sha }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] = []' "$save_file"
 
-    {{- if eq .profile "release" }}
+    {{- if has (coll.Slice "release" "next-gen") .profile }}
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}
     {{- with .tiup }}
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] += {{ . | toJSON }}' "$save_file"
