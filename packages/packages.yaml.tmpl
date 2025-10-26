@@ -1861,15 +1861,23 @@ components:
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
           next-gen:
-            - os: linux
-              script: |
+            - script: |
                 cargo --version
                 export TIFLASH_EDITION=Enterprise
                 export ENABLE_NEXT_GEN=true
+
+            - os: linux
+              script: |
                 ./release-linux-llvm/scripts/build-release.sh
                 release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+                release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files: # output files.
