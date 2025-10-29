@@ -1,10 +1,13 @@
-name: Pull test for packages cfg
+name: Pull - verify packages config
 on:
   pull_request:
     branches:
       - main
     paths:
-      - "packages/**"
+      - packages/scripts/**
+      - packages/offline-packages.yaml.tmpl
+      - packages/packages.yaml.tmpl
+      - packages/README.md
 
 jobs:
   test-packages-cfg:
