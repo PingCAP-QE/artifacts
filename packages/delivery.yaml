@@ -96,6 +96,11 @@ image_copy_rules:
     - <<: *sync_pre_community_to_enterprise_repo
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
+    - description: delivery classic release branch image tags
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
     - <<: *sync_pre_community_semver_sha
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
