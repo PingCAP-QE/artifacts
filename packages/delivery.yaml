@@ -61,6 +61,7 @@ definitions:
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+[.]pre$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre$
+      - ^release-[0-9]+[.][0-9]+$
   sync_ga_community: &sync_ga_community
     description: delivery community images for GA images.
     tags_regex:
