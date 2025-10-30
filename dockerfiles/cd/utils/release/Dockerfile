@@ -7,6 +7,14 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 # install tools: bash, curl, git, jq, yq, uuidgen
 RUN apk add --no-cache bash git curl jq yq uuidgen
 
+# install tools: gh (GitHub CLI)
+# renovate: datasource=github-release depName=cli/cli
+ARG GH_VER=2.65.0
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    wget -q -O - https://github.com/cli/cli/releases/download/v${GH_VER}/gh_${GH_VER}_linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
+    install /tmp/gh_${GH_VER}_linux_${ARCH}/bin/gh /usr/local/bin/gh && \
+    rm -rf /tmp/gh_${GH_VER}_linux_${ARCH}
+
 # install tools: gomplate
 COPY --from=hairyhenderson/gomplate:v4.3.3-alpine /bin/gomplate /usr/local/bin/gomplate
 
