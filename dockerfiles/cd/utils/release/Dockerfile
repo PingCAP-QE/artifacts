@@ -9,7 +9,7 @@ RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gh (GitHub CLI)
 # renovate: datasource=github-release depName=cli/cli
-ARG GH_VER=2.65.0
+ARG GH_VER=2.82.1
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://github.com/cli/cli/releases/download/v${GH_VER}/gh_${GH_VER}_linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
     install /tmp/gh_${GH_VER}_linux_${ARCH}/bin/gh /usr/local/bin/gh && \
