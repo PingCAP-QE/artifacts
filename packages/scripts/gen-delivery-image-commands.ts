@@ -76,8 +76,8 @@ function getMatchingRulesFor(
     .filter((r) => r.tags_regex.length > 0);
 }
 
-async function writeCommandsToFile(outFile: string, commands: string[]) {
-  if (commands.length === 0) {
+async function writeOutputFile(outFile: string, content: string | undefined) {
+  if (!content) {
     return;
   }
 
@@ -87,7 +87,7 @@ async function writeCommandsToFile(outFile: string, commands: string[]) {
     truncate: true,
   });
 
-  await file.write(new TextEncoder().encode(commands.join("\n")));
+  await file.write(new TextEncoder().encode(content));
 }
 
 function copyCommandsForRule(
@@ -103,17 +103,20 @@ function copyCommandsForRule(
     tags_regex = [],
   } = rule;
 
-  const ret: string[] = [];
+  const commands: string[] = [];
+  const targetImages: string[] = [];
   console.group(`🎯 Matching rule found for image URL '${repo}:${tag}':`);
   console.log(`📜 Description: ${description}`);
   console.log(`🛫 Source Repository: ${repo}`);
   for (const destRepo of dest_repositories) {
     console.group(`🛬 Destination Repository: ${destRepo}`);
 
-    ret.push(`crane copy ${repo}:${tag} ${destRepo}:${tag}`);
+    commands.push(`crane copy ${repo}:${tag} ${destRepo}:${tag}`);
+    targetImages.push(`${destRepo}:${tag}`);
     for (const constTag of constant_tags) {
       console.log(`📌 Additional tag: ${constTag}`);
-      ret.push(`crane tag ${destRepo}:${tag} ${constTag}`);
+      commands.push(`crane tag ${destRepo}:${tag} ${constTag}`);
+      targetImages.push(`${destRepo}:${constTag}`);
     }
     if (tag_regex_replace !== "" && tags_regex.length > 0) {
       const converted = tag.replace(
@@ -121,14 +124,15 @@ function copyCommandsForRule(
         tag_regex_replace,
       );
       console.log(`📌 Additional tag: ${converted}`);
-      ret.push(`crane tag ${destRepo}:${tag} ${converted}`);
+      commands.push(`crane tag ${destRepo}:${tag} ${converted}`);
+      targetImages.push(`${destRepo}:${converted}`);
     }
 
     console.groupEnd();
   }
   console.groupEnd();
 
-  return ret;
+  return { commands, targetImages };
 }
 
 // Single-image mode (backward compatible)
@@ -142,10 +146,18 @@ function getCopyCommandsForImage(
     console.info(
       `🤷 No delivery rule matched for image URL '${repo}:${tag}'.`,
     );
-    return [];
+    return { commands: [], targetImages: [] };
   }
 
-  return rules.flatMap((rule) => copyCommandsForRule(repo, tag, rule));
+  return rules.reduce(
+    (acc, rule) => {
+      const { commands, targetImages } = copyCommandsForRule(repo, tag, rule);
+      acc.commands.push(...commands);
+      acc.targetImages.push(...targetImages);
+      return acc;
+    },
+    { commands: [] as string[], targetImages: [] as string[] },
+  );
 }
 
 async function parseImagesFromFile(imagesFilePath: string) {
@@ -192,43 +204,75 @@ async function parseImagesFromFile(imagesFilePath: string) {
 async function generateShellScriptSingle(
   imageUrlWithTag: string,
   rulesFile: string,
-  outFile: string,
+  commandOutputFile: string,
+  targetImagesOutputFile: string,
 ) {
   const { repo, tag } = parseImageRef(imageUrlWithTag);
   const rulesConfig = await loadImageCopyRules(rulesFile);
-  const commands = getCopyCommandsForImage(repo, tag, rulesConfig);
+  const { commands, targetImages } = getCopyCommandsForImage(
+    repo,
+    tag,
+    rulesConfig,
+  );
   if (commands.length === 0) {
     return;
   }
 
-  await writeCommandsToFile(outFile, commands);
+  await writeOutputFile(commandOutputFile, commands.join("\n"));
+  await writeOutputFile(
+    targetImagesOutputFile,
+    yaml.stringify({ images: targetImages }),
+  );
 }
 
 // Multi-image mode (YAML/JSON structured file)
 async function generateShellScriptMulti(
   imagesFilePath: string,
   rulesFile: string,
-  outFile: string,
+  commandOutputFile: string,
+  targetImagesOutputFile: string,
 ) {
   const images = await parseImagesFromFile(imagesFilePath);
   const rulesConfig = await loadImageCopyRules(rulesFile);
-  const commands = images.flatMap((image) =>
-    getCopyCommandsForImage(image.repo, image.tag, rulesConfig)
+  const { commands, targetImages } = images.reduce(
+    (acc, image) => {
+      const result = getCopyCommandsForImage(
+        image.repo,
+        image.tag,
+        rulesConfig,
+      );
+      acc.commands.push(...result.commands);
+      acc.targetImages.push(...result.targetImages);
+      return acc;
+    },
+    { commands: [] as string[], targetImages: [] as string[] },
   );
+
   if (commands.length === 0) {
     return;
   }
 
-  await writeCommandsToFile(outFile, commands);
+  await writeOutputFile(commandOutputFile, commands.join("\n"));
+  await writeOutputFile(
+    targetImagesOutputFile,
+    yaml.stringify({ images: targetImages }),
+  );
 }
 
 async function main() {
   const flags = parseArgs(Deno.args, {
     boolean: ["help"],
-    string: ["image_url", "images_file", "yaml_file", "outfile"],
+    string: [
+      "image_url",
+      "images_file",
+      "yaml_file",
+      "outfile",
+      "images_outfile",
+    ],
     default: {
       yaml_file: "./packages/delivery.yaml",
       outfile: "./delivery-images.sh",
+      images_outfile: "./delivery-target-images.yaml",
     },
     alias: {
       help: "h",
@@ -245,6 +289,7 @@ Options:
   --images_file=<path/to/images.(yaml|json)>  images file
   --yaml_file=<path/to/delivery.yaml>         delivery rule yaml file
   --outfile=<path/to/delivery-images.sh>      command save to file
+  --images_outfile=<path/to/delivery-images.yaml>  output yaml list of '<repo>:<tag>' target images
 `);
   }
 
@@ -274,12 +319,14 @@ Options:
       flags.images_file,
       flags.yaml_file,
       flags.outfile,
+      flags.images_outfile,
     );
   } else if (flags.image_url) {
     await generateShellScriptSingle(
       flags.image_url,
       flags.yaml_file,
       flags.outfile,
+      flags.images_outfile,
     );
   }
 }
