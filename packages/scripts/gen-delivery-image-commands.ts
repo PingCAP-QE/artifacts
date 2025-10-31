@@ -149,12 +149,15 @@ function getCopyCommandsForImage(
     return { commands: [], targetImages: [] };
   }
 
-  const ret = rules.map((rule) => copyCommandsForRule(repo, tag, rule));
-
-  return {
-    commands: ret.flatMap((r) => r.commands),
-    targetImages: ret.flatMap((r) => r.targetImages),
-  };
+  return rules.reduce(
+    (acc, rule) => {
+      const { commands, targetImages } = copyCommandsForRule(repo, tag, rule);
+      acc.commands.push(...commands);
+      acc.targetImages.push(...targetImages);
+      return acc;
+    },
+    { commands: [] as string[], targetImages: [] as string[] },
+  );
 }
 
 async function parseImagesFromFile(imagesFilePath: string) {
@@ -231,12 +234,20 @@ async function generateShellScriptMulti(
 ) {
   const images = await parseImagesFromFile(imagesFilePath);
   const rulesConfig = await loadImageCopyRules(rulesFile);
-  const rets = images.flatMap((image) =>
-    getCopyCommandsForImage(image.repo, image.tag, rulesConfig)
+  const { commands, targetImages } = images.reduce(
+    (acc, image) => {
+      const result = getCopyCommandsForImage(
+        image.repo,
+        image.tag,
+        rulesConfig,
+      );
+      acc.commands.push(...result.commands);
+      acc.targetImages.push(...result.targetImages);
+      return acc;
+    },
+    { commands: [] as string[], targetImages: [] as string[] },
   );
 
-  const commands = rets.flatMap((ret) => ret.commands);
-  const targetImages = rets.flatMap((ret) => ret.targetImages);
   if (commands.length === 0) {
     return;
   }
