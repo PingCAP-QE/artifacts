@@ -1,5 +1,5 @@
 # base image dockerfile: cd/builders/tikv/Dockerfile
-ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-14-g52a7228
+ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset8
 FROM $BASE_IMG
 
 # create user jenkins and add it to sudoers.
@@ -15,7 +15,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # install python2.7 and other dependencies
 RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y python27 hostname wget procps-ng
+    dnf install -y python27 hostname wget procps-ng perl-IPC-Cmd perl-Data-Dumper
 RUN ln -s /usr/bin/python2 /usr/bin/python && \
     ln -s /usr/bin/pip2 /usr/bin/pip
 
