@@ -19,7 +19,7 @@
 {{- end }}
 {{- $tags = append (printf "%s%s" $tag $suffix) $tags }}
 {{- end }}
-{{- $tags = ($tags | coll.Uniq) -}}
+{{- $tags = ($tags | coll.Uniq) }}
 
 set -exo pipefail
 
