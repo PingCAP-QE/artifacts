@@ -2224,10 +2224,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-master/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dm-master/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dm-master
               description: >-
@@ -2243,10 +2243,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-worker/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dm-worker/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dm-worker
               description: >-
@@ -2262,10 +2262,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dmctl/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dmctl/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dmctl
               description: >-
@@ -2352,10 +2352,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-master/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dm-master/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dm-master
               description: >-
@@ -2371,10 +2371,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dm-worker/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dm-worker/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dm-worker
               description: >-
@@ -2390,10 +2390,10 @@ components:
                   path: dm/metrics/alertmanager/dm_worker.rules.yml
               - name: dmctl/scripts/DM-Monitor-Professional.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Professional.json"
+                  path: metrics/grafana/DM-Monitor-Professional.json
               - name: dmctl/scripts/DM-Monitor-Standard.json
                 src:
-                  path: "{{ if semver.CheckConstraint "< 6.6.0-0" .Release.version }}dm/{{ end }}metrics/grafana/DM-Monitor-Standard.json"
+                  path: metrics/grafana/DM-Monitor-Standard.json
             tiup:
               name: dmctl
               description: >-
