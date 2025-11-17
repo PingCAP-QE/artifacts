@@ -1697,7 +1697,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.10.12-22-g0eba311-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.11.9-1-ga8991fa-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
