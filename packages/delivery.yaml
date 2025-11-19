@@ -404,37 +404,39 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
-    - description: delivery next-gen images built from classic branches and tags
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+-next-gen$ # classic naming release branches
-        - ^v[0-9]+[.][0-9]+[.][0-9]+(-release[.][0-9]+)?-next-gen$ # GA semver tags built from classic tags
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/ticdc
+        - us.gcr.io/pingcap-public/tidbx/ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/pd
+        - us.gcr.io/pingcap-public/tidbx/pd
   us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
+        - us.gcr.io/pingcap-public/tidbx/tikv
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
+        - us.gcr.io/pingcap-public/tidbx/tidb
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
+        - us.gcr.io/pingcap-public/tidbx/br
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
+        - us.gcr.io/pingcap-public/tidbx/tidb-lightning
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
+        - us.gcr.io/pingcap-public/tidbx/dumpling
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image:
     - <<: *sync_nextgen
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tiflash
+        - us.gcr.io/pingcap-public/tidbx/tiflash
