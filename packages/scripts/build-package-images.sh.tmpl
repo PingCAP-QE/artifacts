@@ -276,7 +276,7 @@ add_more_tags() {
     yq -i '.images[{{ $index }}].tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
     {{- end }}
     {{- else }}
-    echo "🤷 No more tags need to be taged."
+    echo "🤷 No more tags need to be tagged."
     {{- end }}
 }
 

@@ -24,44 +24,54 @@
 set -exo pipefail
 
 function main() {
-    local release_ws="build"
-    local need_build="false" # true | false
-    local need_package="false" # true | false
-    local need_push="false" # true | false
-    local result_path="result.yaml"
     parse_arguments "$@"
 
-    if $need_build; then
+    if [ "$NEED_BUILD" = "true" ]; then
         build
     fi
-    if $need_package; then
-        archive "${release_ws}"
+    if [ "$NEED_PACKAGE" = "true" ]; then
+        archive "${RELEASE_WS}"
     fi
+
 {{- if has .artifactory "package_repo" }}
-    if $need_push; then
-        push_files "${release_ws}"
-        write_push_results "$result_path"
+    if [ "$NEED_PUSH_OCI" = "true" ]; then
+        push_files "${RELEASE_WS}"
+        write_push_results "$PUSH_RESULT_SAVE_FILE"
+    fi
+    # push other tags
+    if [ "$NEED_TAG_MORE" = "true" ]; then
+      add_more_tags "${PUSH_RESULT_SAVE_FILE}"
     fi
 {{- end }}
 }
 
 function parse_arguments() {
-  while getopts ":w:o:abph" opt; do
+  RELEASE_WS="build"
+  NEED_BUILD="false" # true | false
+  NEED_PACKAGE="false" # true | false
+  NEED_PUSH_OCI="false" # true | false
+  NEED_TAG_MORE="true" # true | false
+  PUSH_RESULT_SAVE_FILE="result.yaml"
+
+  while getopts ":w:o:abpth" opt; do
     case ${opt} in
       w)
-        release_ws=${OPTARG}
+        RELEASE_WS=${OPTARG}
         ;;
       o)
-        result_path=${OPTARG}
+        PUSH_RESULT_SAVE_FILE=${OPTARG}
         ;;
       a)
-        need_package=true
+        NEED_PACKAGE=true
         ;;
       b)
-        need_build=true
+        NEED_BUILD=true
         ;;
       p)
-        need_push=true
+        NEED_PUSH_OCI=true
+        ;;
+      t)
+        NEED_TAG_MORE=true
         ;;
       h)
         print_help
@@ -87,6 +97,7 @@ function print_help() {
   echo "  -b              Perform a build (default: false)"
   echo "  -a              Perform a package tarballs (default: false)"
   echo "  -p              Perform a push (default: false)"
+  echo "  -t              Enable add more tags, else just pushed for first tag (default ture)"
   echo "  -o RESULT_PATH  Set the result yaml path (default: result.yaml)"
   echo "  -h              Show this help message"
 }
@@ -268,12 +279,6 @@ function push_files() {
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s" .name }}{{- end }}
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
-
-
-    {{- if gt (len $tags) 1 }}
-    # add other tags.
-    oras tag {{ .artifactory.package_repo }}:{{ join $tags " " }}
-    {{- end }}
 }
 
 function write_push_results() {
@@ -298,6 +303,17 @@ files:
   {{ printf "- %s.sha256" .name }}
   {{- end }}
 EOF
+}
+
+add_more_tags() {
+    result_file="$1"
+    {{- if gt (len $tags) 1 }}
+    # add other tags.
+    oras tag {{ .artifactory.package_repo }}:{{ join $tags " " }}
+    yq -i '.oci.tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
+    {{- else }}
+    echo "🤷 No more tags need to be tagged."
+    {{- end }}
 }
 {{- end }}
 
