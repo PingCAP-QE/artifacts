@@ -53,7 +53,7 @@ function parse_arguments() {
   NEED_TAG_MORE="true" # true | false
   PUSH_RESULT_SAVE_FILE="result.yaml"
 
-  while getopts ":w:o:abph" opt; do
+  while getopts ":w:o:abpth" opt; do
     case ${opt} in
       w)
         RELEASE_WS=${OPTARG}
@@ -70,8 +70,8 @@ function parse_arguments() {
       p)
         NEED_PUSH_OCI=true
         ;;
-      -t)
-        NEED_TAG_MORE="true"
+      t)
+        NEED_TAG_MORE=true
         ;;
       h)
         print_help
