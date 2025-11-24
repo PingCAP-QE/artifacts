@@ -312,7 +312,7 @@ add_more_tags() {
     oras tag {{ .artifactory.package_repo }}:{{ join $tags " " }}
     yq -i '.oci.tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
     {{- else }}
-    echo "🤷 No more tags need to be taged."
+    echo "🤷 No more tags need to be tagged."
     {{- end }}
 }
 {{- end }}
