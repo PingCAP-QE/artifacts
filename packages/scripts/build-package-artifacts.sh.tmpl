@@ -37,10 +37,10 @@ function main() {
     if [ "$NEED_PUSH_OCI" = "true" ]; then
         push_files "${RELEASE_WS}"
         write_push_results "$PUSH_RESULT_SAVE_FILE"
-    fi
-    # push other tags
-    if [ "$NEED_TAG_MORE" = "true" ]; then
-      add_more_tags "${PUSH_RESULT_SAVE_FILE}"
+        # push other tags
+        if [ "$NEED_TAG_MORE" = "true" ]; then
+          add_more_tags "${PUSH_RESULT_SAVE_FILE}"
+        fi
     fi
 {{- end }}
 }
