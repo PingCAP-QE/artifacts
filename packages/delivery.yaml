@@ -7,11 +7,11 @@ deprecated:
 definitions:
   sync_trunk_community: &sync_trunk_community
     description: delivery the trunk branch community images.
-    tags_regex: [^master(-experiment)?$]
+    tags_regex: [^(master|main)(-experiment)?$]
     constant_tags: [nightly] # add new tags.
   sync_trunk_enterprise: &sync_trunk_enterprise
     description: delivery the trunk branch enterprise edition images.
-    tags_regex: [^master-enterprise$]
+    tags_regex: [^(master|main)-enterprise$]
   sync_nextgen: &sync_nextgen
     description: delivery next-gen images
     tags_regex:
