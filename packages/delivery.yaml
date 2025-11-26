@@ -23,7 +23,7 @@ definitions:
       # we will not dup the tag with profile world.
       - ^(master|dedicated)(-.*)?-next-gen$ # trunk branches
       - ^release-nextgen(-[-0-9a-f]+)?$ # next-gen release branches
-      - ^feature-next-gen.*(-[-0-9a-f]+)?$ # feature branches
+      - ^feature-fts(-[-0-9a-f]+)?-next-gen$ # feature branches
       - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?-[0-9]+-g[0-9a-f]{6,10}$ # semver tags built nextgen branches after nextgen release tag.
       - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?$ # GA semver tags built from nextgen tags
       - ^v[0-9]+[.][0-9]+[.][0-9]+-next-gen$ # GA semver tags built from classic tags
