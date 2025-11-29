@@ -19,6 +19,9 @@
                   "type": "string"
                 }
               },
+              "tag_regex_replace": {
+                "type": "string"
+              },
               "dest_repositories": {
                 "type": "array",
                 "items": {
@@ -35,6 +38,42 @@
               }
             },
             "required": ["description", "tags_regex", "dest_repositories"]
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tiup_publish_rules": {
+      "type": "object",
+      "patternProperties": {
+        "^.+$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "tags_regex": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "version_regex_replace": {
+                "description": "version value to force publish to mirrors",
+                "type": "string"
+              },
+              "dest_mirrors": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["staging", "prod"]
+                },
+                "minItems": 1
+              }
+            },
+            "required": ["description", "tags_regex", "dest_mirrors"]
           }
         }
       },
