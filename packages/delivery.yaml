@@ -435,30 +435,33 @@ image_copy_rules:
 tiup_publish_rules:
   ^hub.pingcap.net/.+/package$: &tiup_rules
     - description: for nightly builds
-      tags:
+      tags_regex:
         - ^(master|main)_(linux|darwin)_(amd64|arm64)$
-      mirrors:
-        - staging
-        - prod
       nightly: true
+      dest_mirrors: [staging, prod]
     - description: for pre release builds
-      tags:
+      tags_regex:
         - ^(release-[0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
-      mirrors:
-        - staging
+      dest_mirrors: [staging]
     - description: for classic EA/GA builds
-      tags:
+      tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-release[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
-      mirrors:
-        - staging
-        - prod
       version_regex_replace: "$1"
+      dest_mirrors: [staging, prod]
     - description: for nextgen EA/GA builds
-      tags:
+      tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
-      mirrors:
+      dest_mirrors:
         - staging
       version_regex_replace: "$1"
 
   ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
+  ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
+    - description: for nextgen EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
+      version_regex_replace: "$1"
