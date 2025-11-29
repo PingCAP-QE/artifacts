@@ -430,3 +430,38 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiflash
+
+# rules to publish tiup packages from OCI repositories
+tiup_publish_rules:
+  ^hub.pingcap.net/.+/package$: &tiup_rules
+    - description: for nightly builds
+      tags_regex:
+        - ^(master|main)_(linux|darwin)_(amd64|arm64)$
+      nightly: true
+      dest_mirrors: [staging, prod]
+    - description: for pre release builds
+      tags_regex:
+        - ^(release-[0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors: [staging]
+    - description: for classic EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-release[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      version_regex_replace: "$1"
+      dest_mirrors: [staging, prod]
+    - description: for nextgen EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
+      version_regex_replace: "$1"
+
+  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
+  ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
+    - description: for nextgen EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
+      version_regex_replace: "$1"
