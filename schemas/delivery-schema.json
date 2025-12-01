@@ -5,7 +5,7 @@
     "image_copy_rules": {
       "type": "object",
       "patternProperties": {
-        "^(us-docker[.]pkg[.]dev/pingcap-testing-account/hub|hub[.]pingcap[.]net)/(pingcap|tikv)": {
+        "^(us-docker[.]pkg[.]dev/pingcap-testing-account/.+|hub[.]pingcap[.]net)/(pingcap|tikv)": {
           "type": "array",
           "items": {
             "type": "object",

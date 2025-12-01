@@ -398,35 +398,44 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-dashboard
 
   ### nextgen images built on cloud environments
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image:
+  # TODO(wuhuizuo): remove the dest repositories `us-docker.pkg.dev/pingcap-testing-account/hub` when we finished the migration.
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/ticdc/image:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image
         - us.gcr.io/pingcap-public/tidbx/ticdc
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/tikv/pd/image:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image
         - us.gcr.io/pingcap-public/tidbx/pd
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/tikv/tikv/image:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image
         - us.gcr.io/pingcap-public/tidbx/tikv
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tidb/images/tidb-server:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server
         - us.gcr.io/pingcap-public/tidbx/tidb
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tidb/images/br:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br
         - us.gcr.io/pingcap-public/tidbx/br
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tidb/images/tidb-lightning:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning
         - us.gcr.io/pingcap-public/tidbx/tidb-lightning
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tidb/images/dumpling:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling
         - us.gcr.io/pingcap-public/tidbx/dumpling
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image:
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiflash/image:
     - <<: *sync_nextgen
       dest_repositories:
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image
         - us.gcr.io/pingcap-public/tidbx/tiflash
