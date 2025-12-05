@@ -2,16 +2,22 @@
 deprecated:
   # deprecated in v8.3 and removed in v8.4.
   - hub.pingcap.net/pingcap/tidb-binlog/image
+  - hub.pingcap.net/pingcap/tidb-binlog/package
+
   # deprecated and removed in v9.0.0, use hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector instead.
   - hub.pingcap.net/pingcap/tidb-tools/image
-definitions:
+  - hub.pingcap.net/pingcap/tidb-tools/package
+
+image_definitions:
   sync_trunk_community: &sync_trunk_community
-    description: delivery the trunk branch community images.
-    tags_regex: [^(master|main)(-experiment)?$]
-    constant_tags: [nightly] # add new tags.
+    description: "delivery the trunk branch community images."
+    tags_regex:
+      - ^(master|main)(-experiment)?$
+    constant_tags: [nightly]
   sync_trunk_enterprise: &sync_trunk_enterprise
     description: delivery the trunk branch enterprise edition images.
-    tags_regex: [^(master|main)-enterprise$]
+    tags_regex:
+      - ^(master|main)-enterprise$
   sync_nextgen: &sync_nextgen
     description: delivery next-gen images
     tags_regex:
@@ -75,6 +81,7 @@ definitions:
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
     <<: *sync_ga_community
     description: delivery the community GA image to enterprise repos.
+
 image_copy_rules:
   hub.pingcap.net/pingcap/advanced-statefulset:
     - description: delivery the version images.
@@ -439,3 +446,36 @@ image_copy_rules:
       dest_repositories:
         - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image
         - us.gcr.io/pingcap-public/tidbx/tiflash
+
+# rules to publish tiup packages from OCI repositories
+tiup_publish_rules:
+  ^hub.pingcap.net/(pingcap/tikv)/.+/package$: &tiup_rules
+    - description: for nightly builds
+      tags_regex:
+        - ^(master|main)_(linux|darwin)_(amd64|arm64)$
+      nightly: true
+      dest_mirrors: [staging, prod]
+    - description: for pre release builds
+      tags_regex:
+        - ^(release-[0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors: [staging]
+    - description: for classic EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+(-release[.][0-9]+)?)_(linux|darwin)_(amd64|arm64)$
+      version_regex_replace: "$1"
+      dest_mirrors: [staging, prod]
+    - description: for nextgen EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
+      version_regex_replace: "$1"
+  ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
+    - description: for nextgen EA/GA builds
+      tags_regex:
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+-nextgen[.][0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
+      version_regex_replace: "$1"
