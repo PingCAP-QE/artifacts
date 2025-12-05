@@ -8,7 +8,7 @@ deprecated:
   - hub.pingcap.net/pingcap/tidb-tools/image
   - hub.pingcap.net/pingcap/tidb-tools/package
 
-definitions:
+image_definitions:
   sync_trunk_community: &sync_trunk_community
     description: delivery the trunk branch community images.
     tags_regex: [^(master|main)(-experiment)?$]
@@ -79,6 +79,7 @@ definitions:
   sync_ga_community_to_enterprise_repo: &sync_ga_community_to_enterprise_repo
     <<: *sync_ga_community
     description: delivery the community GA image to enterprise repos.
+
 image_copy_rules:
   hub.pingcap.net/pingcap/advanced-statefulset:
     - description: delivery the version images.
