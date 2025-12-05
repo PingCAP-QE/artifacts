@@ -2,8 +2,12 @@
 deprecated:
   # deprecated in v8.3 and removed in v8.4.
   - hub.pingcap.net/pingcap/tidb-binlog/image
+  - hub.pingcap.net/pingcap/tidb-binlog/package
+
   # deprecated and removed in v9.0.0, use hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector instead.
   - hub.pingcap.net/pingcap/tidb-tools/image
+  - hub.pingcap.net/pingcap/tidb-tools/package
+
 definitions:
   sync_trunk_community: &sync_trunk_community
     description: delivery the trunk branch community images.
@@ -433,7 +437,7 @@ image_copy_rules:
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
-  ^hub.pingcap.net/.+/package$: &tiup_rules
+  ^hub.pingcap.net/(pingcap/tikv)/.+/package$: &tiup_rules
     - description: for nightly builds
       tags_regex:
         - ^(master|main)_(linux|darwin)_(amd64|arm64)$
@@ -455,9 +459,8 @@ tiup_publish_rules:
       dest_mirrors:
         - staging
       version_regex_replace: "$1"
-
-  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
   ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
   ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
     - description: for nextgen EA/GA builds
       tags_regex:
