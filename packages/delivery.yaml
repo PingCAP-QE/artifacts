@@ -449,7 +449,7 @@ image_copy_rules:
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
-  ^hub.pingcap.net/(pingcap/tikv)/.+/package$: &tiup_rules
+  ^hub.pingcap.net/.+/package$: &tiup_rules
     - description: for nightly builds
       tags_regex:
         - ^(master|main)_(linux|darwin)_(amd64|arm64)$
