@@ -470,6 +470,11 @@ tiup_publish_rules:
       dest_mirrors:
         - staging
       version_regex_replace: "$1"
+    - description: for FTS feature branches
+      tags_regex:
+        - ^(feature-fts)_(linux|darwin)_(amd64|arm64)$
+      dest_mirrors:
+        - staging
   ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
   ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: *tiup_rules
   ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
