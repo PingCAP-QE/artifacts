@@ -28,15 +28,6 @@ profiles:
         path: /build/artifacts/0/docker/buildArgs
         value:
           GOLANG_VERSION: 1.24.1
-  - name: go-1.23
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-go1.23"
-      - op: add
-        path: /build/artifacts/0/docker/buildArgs
-        value:
-          GOLANG_VERSION: 1.23.12
   - name: go-1.25
     patches:
       - op: replace
