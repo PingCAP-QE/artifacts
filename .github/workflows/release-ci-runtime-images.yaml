@@ -58,7 +58,7 @@ jobs:
     strategy:
       matrix:
         module: [ci]
-        go-profile: [go-1.25, go-1.24]
+        go-profile: [go-1.25]
 
     steps:
       - name: Checkout sources
