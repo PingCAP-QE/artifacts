@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
@@ -20,16 +19,6 @@ build:
     concurrency: 0
     tryImportMissing: true
 profiles:
-  - name: go-1.24
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-go1.24"
-      - op: add
-        path: /build/artifacts/0/docker/buildArgs
-        value:
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.24.11
   - name: go-1.25
     patches:
       - op: replace
