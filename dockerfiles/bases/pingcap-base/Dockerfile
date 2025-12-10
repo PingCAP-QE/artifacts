@@ -1,4 +1,4 @@
-FROM quay.io/rockylinux/rockylinux:9.5.20241118
+FROM quay.io/rockylinux/rockylinux:9.7.20251123
 COPY --from=busybox:1.37.0-musl /bin/busybox /bin/busybox
 RUN _date=20251022 dnf upgrade -y && dnf clean all
 

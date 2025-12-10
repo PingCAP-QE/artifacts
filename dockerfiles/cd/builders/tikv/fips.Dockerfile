@@ -6,7 +6,7 @@
 #   - docker build -t tikv -f Dockerfile ./tikv
 
 ########### stage: builder
-FROM quay.io/rockylinux/rockylinux:9.5.20241118 AS builder
+FROM quay.io/rockylinux/rockylinux:9.7.20251123 AS builder
 LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
 LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
