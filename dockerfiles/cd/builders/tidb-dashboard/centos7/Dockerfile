@@ -50,7 +50,7 @@ RUN GOPROXY=${GOPROXY} make package -C /ws
 RUN /ws/bin/tidb-dashboard --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pd-base:v1.10.1
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.11.0
 
 COPY --from=building /ws/bin/tidb-dashboard /tidb-dashboard
 
