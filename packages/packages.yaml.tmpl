@@ -2740,7 +2740,7 @@ components:
       - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.12.7-3-g1c0b8cf-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.4-0, < 8.5.5-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.11.9-1-ga8991fa-centos7-go1.23
+        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.12.7-3-g1c0b8cf-centos7-go1.23
     routers:
       - description: For range [v8.5.4, )
         if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
