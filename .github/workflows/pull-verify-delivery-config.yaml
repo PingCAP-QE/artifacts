@@ -1,0 +1,27 @@
+name: Pull - verify packages config
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - schemas/delivery-schema.json
+      - packages/delivery.yaml
+
+jobs:
+  test-packages-cfg:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Verify the json schema
+        run: |
+          jq . schemas/delivery-schema.json > /dev/null
+      - name: Verify the delivery yaml file
+        run: |
+          yamllint packages/delivery.yaml
+          yq . packages/delivery.yaml > /dev/null
+      - name: Validate YAML against JSON schema
+        uses: thiagodnf/yaml-schema-checker@v0.0.12
+        with:
+          jsonSchemaFile: schemas/delivery-schema.json
+          yamlFiles: packages/delivery.yaml
