@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.10.1
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pd-base:v1.11.0
 FROM $BASE_IMG
 COPY --chmod=755 tidb-dashboard /tidb-dashboard
 EXPOSE 12333
