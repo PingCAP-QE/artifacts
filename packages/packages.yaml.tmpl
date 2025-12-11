@@ -1383,7 +1383,7 @@ components:
     builders:
       # BUG: tidb-tools has not release branches and all tags taged on master branch.
       - if: {{ eq "experiment" .Release.profile }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-3-g1c0b8cf-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-10-gf44bb75-go1.25
       - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
     routers:
