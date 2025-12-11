@@ -71,7 +71,7 @@ RUN /ws/bin/dm-syncer -V
 RUN /ws/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.1 AS final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.11.0 AS final-cdc
 COPY --from=building-cdc /ws/bin/cdc /cdc
 
 EXPOSE 8300
@@ -82,7 +82,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.10.1 AS final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.11.0 AS final-dm
 COPY --from=building-dm /ws/bin/dm-master /dm-master
 COPY --from=building-dm /ws/bin/dm-worker /dm-worker
 COPY --from=building-dm /ws/bin/dm-syncer /dm-syncer
