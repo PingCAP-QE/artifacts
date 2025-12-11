@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tidb-base:v1.10.1
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tidb-base:v1.11.0
 FROM $BASE_IMG
 COPY tidb-server /tidb-server
 COPY audit-1.so /plugins/audit-1.so
