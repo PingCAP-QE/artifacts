@@ -26,7 +26,7 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "format": "hostname"
+                  "format": "uri"
                 },
                 "minItems": 1
               },
