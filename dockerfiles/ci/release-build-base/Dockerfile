@@ -81,7 +81,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 # yq tool
 # renovate: datasource=github-tags depName=mikefarah/yq
-ARG YQ_VERSION=v4.49.2
+ARG YQ_VERSION=v4.50.1
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && chmod +x /usr/local/bin/yq
 
