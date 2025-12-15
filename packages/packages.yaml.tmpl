@@ -2822,7 +2822,7 @@ components:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "10" "8" (eq .Release.profile "next-gen") }}"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.8.17-13-ga5750d9-fips
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.12.14-1-g33e22ac-fips
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
