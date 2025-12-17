@@ -164,6 +164,19 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
   hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/prestop-checker: *prestop-checker
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/prestop-checker: *prestop-checker
+  hub.pingcap.net/pingcap/tidb-operator/images/resource-syncer: &resource-syncer
+    - description: delivery the v2 version images.
+      tags_regex:
+        - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+      dest_repositories:
+        - docker.io/pingcap/tidb-operator-resource-syncer
+        - gcr.io/pingcap-public/dbaas/tidb-operator-resource-syncer
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/tidb-operator-resource-syncer
+        - gcr.io/pingcap-public/dbaas/tidb-operator-resource-syncer
+  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/resource-syncer: *resource-syncer
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/resource-syncer: *resource-syncer
   hub.pingcap.net/pingcap/tidb/images/tidb-server: &img_tidb-server
     - <<: *sync_trunk_enterprise
       dest_repositories:
