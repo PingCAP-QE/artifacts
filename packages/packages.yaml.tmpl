@@ -1595,16 +1595,8 @@ components:
             context: .
             dockerfile: image/Dockerfile
             target: tidb-backup-manager # target build stage in Dockerfile
-      - description: for range [v2.1.0-alpha.13, ), support resource-syncer
-        if: {{ semver.CheckConstraint ">= 2.1.0-alpha.13" .Release.version }}
-        os: [linux]
-        arch: [amd64, arm64]
-        profile: [release]
-        steps:
-          release:
-            - script: make build
-        artifacts:
           - name: container image - resource-syncer
+            if: {{ semver.CheckConstraint ">= 2.1.0-0" .Release.version }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/resource-syncer"
