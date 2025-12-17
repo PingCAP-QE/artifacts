@@ -90,8 +90,8 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
-  hub-zot.pingcap.net/hub/pingcap/advanced-statefulset: *img_advanced_statefulset
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/advanced-statefulset: *img_advanced_statefulset
+  hub-zot.pingcap.net/hub/pingcap/advanced-statefulset/image: *img_advanced_statefulset
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/advanced-statefulset/image: *img_advanced_statefulset
   hub.pingcap.net/pingcap/ticdc/image: &img_ticdc
     - <<: *sync_trunk_community
       dest_repositories:

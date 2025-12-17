@@ -50,7 +50,7 @@ components:
           - name: container image
             type: image
             artifactory:
-              repo: "{{ .Release.registry }}/pingcap/advanced-statefulset"
+              repo: "{{ .Release.registry }}/pingcap/advanced-statefulset/image"
             context: . # build under git repo.
             dockerfile: Dockerfile
   ctl:
