@@ -277,9 +277,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.21
@@ -433,9 +433,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2024.10.8-91-g6221afa-centos7-go1.21
@@ -558,9 +558,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-91-g6221afa-centos7-go1.21
@@ -905,9 +905,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-14-g6fd6d9d-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-3-g1c0b8cf-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
@@ -1714,9 +1714,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.12.7-3-g1c0b8cf-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.12.7-3-g1c0b8cf-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-91-g6221afa-centos7-go1.21
@@ -2194,9 +2194,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.12.7-3-g1c0b8cf-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.11.9-1-ga8991fa-centos7-go1.23
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-88-gf338368-centos7-go1.21
@@ -2745,9 +2745,9 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.12.7-3-g1c0b8cf-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.5.4-0, < 8.5.6-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 8.5.4-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.12.7-3-g1c0b8cf-centos7-go1.23
     routers:
       - description: For range [v8.5.4, )
