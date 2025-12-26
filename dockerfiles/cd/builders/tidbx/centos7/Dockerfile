@@ -5,10 +5,16 @@
 # compose from tikv, tidb, pd, and other components.
 
 ########### stage: builder
-FROM ghcr.io/pingcap-qe/cd/builders/tikv:v2024.10.8-63-gb22476a-centos7 AS builder
+FROM ghcr.io/pingcap-qe/cd/builders/tikv:v2025.12.14-1-g33e22ac-centos7-devtoolset8 AS builder
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="binary builder for TiDBx (experimental)"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
+
+# install OpenSSL headers required by TiDBx build
+RUN --mount=type=cache,target=/var/cache/yum \
+    yum update -y && \
+    yum install -y openssl-devel && \
+    yum clean all
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
