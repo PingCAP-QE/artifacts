@@ -27,7 +27,7 @@ Configuration template: [packages.yaml.tmpl](./packages.yaml.tmpl)
 - `[6.1 ~ 7.0)`: golang `v1.19`
 - `[7.0 ~ 7.3]`: golang `v1.20.x`
 - `[7.4 ～ 8.3]`: golang `v1.21.x`
-- `[8.4 ～ 8.5.4]`: golang `v1.23.x`
+- `[8.4 ~ 8.5.4]`: golang `v1.23.x`
 - `[8.5.5 ~ )`: golang `v1.25.x`
 
 ### Required context
