@@ -88,7 +88,7 @@ jobs:
           version: 2.16.0
 
       - name: Cache layers
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: "~/.skaffold/cache"
           key: skaffold/ci/${{ matrix.module }}/${{ matrix.go-profile }}-${{ github.sha }}
