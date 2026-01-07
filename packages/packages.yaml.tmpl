@@ -3024,6 +3024,7 @@ components:
                     export JEMALLOC_SYS_WITH_LG_PAGE=16
                 fi
             - script: |
+                cargo pkgid
                 make release
                 mkdir -p bin
                 cp -v target/release/{tikv-server,cse-ctl,tikv-worker} bin/
