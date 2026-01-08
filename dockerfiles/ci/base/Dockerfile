@@ -126,3 +126,9 @@ RUN if [ "$(arch)" = "x86_64" ]; then \
     else \
         echo "Architecture not supported: $(arch)"; \
     fi
+
+# Add Tini
+ARG TINI_VERSION=v0.19.0
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL -o /usr/local/bin/tini https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-${ARCH} && \
+    chmod +x /usr/local/bin/tini
