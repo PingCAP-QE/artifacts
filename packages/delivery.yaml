@@ -116,6 +116,11 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc-enterprise
+    - description: delviery fast hotfix images
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-release[.][0-9]+-[0-9]+-[0-9a-f]{6,}$
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/ticdc
   hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: *img_ticdc
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
@@ -131,8 +136,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-operator
   hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/tidb-operator: *img_tidb-operator
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-operator: *img_tidb-operator
-  hub.pingcap.net/pingcap/tidb-operator/images/tidb-backup-manager:
-    &tidb-backup-manager
+  hub.pingcap.net/pingcap/tidb-operator/images/tidb-backup-manager: &tidb-backup-manager
     - description: delivery the version images, include pre release types.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(pre(\.|$).*)|$)$
@@ -309,8 +313,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/tidbcloud/tiflow
   hub-zot.pingcap.net/hub/pingcap/tiflow/images/tiflow: *img_tiflow
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/tiflow: *img_tiflow
-  hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector:
-    &img_sync_diff_inspector
+  hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector: &img_sync_diff_inspector
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/sync-diff-inspector
