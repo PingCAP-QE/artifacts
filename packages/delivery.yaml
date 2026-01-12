@@ -353,9 +353,6 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tiproxy
         - gcr.io/pingcap-public/dbaas/tiproxy
-    - <<: *sync_nextgen
-      dest_repositories:
-        - gcr.io/pingcap-public/dbaas/tiproxy
   hub-zot.pingcap.net/hub/pingcap/tiproxy/image: *img_tiproxy
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiproxy/image: *img_tiproxy
   hub.pingcap.net/pingcap/monitoring/image: &img_monitoring
@@ -506,6 +503,11 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiflash
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiproxy/image:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - us.gcr.io/pingcap-public/tidbx/tiproxy
+        - gcr.io/pingcap-public/dbaas/tiproxy
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
