@@ -508,7 +508,6 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiproxy
-        - gcr.io/pingcap-public/dbaas/tiproxy
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
