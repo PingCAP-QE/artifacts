@@ -121,6 +121,7 @@ image_copy_rules:
         - ^v[0-9]+[.][0-9]+[.][0-9]+-release[.][0-9]+-[0-9]+-[0-9a-f]{6,}$
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
+        - docker.io/pingcap/ticdc
   hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: *img_ticdc
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
