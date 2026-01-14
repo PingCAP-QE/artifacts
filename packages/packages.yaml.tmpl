@@ -2333,8 +2333,6 @@ components:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
             context: . # just build under git repo folder.
             dockerfile: deployments/engine/docker/Dockerfile
-            build_args:
-              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
       - description: |
             For range [v8.5.4, v8.6.0). Since v8.5.4 we build and publish cdc components from `pingcap/ticdc` repository.
         if: {{ semver.CheckConstraint "~8.5.4-0" .Release.version }}
@@ -2442,8 +2440,6 @@ components:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
             context: . # just build under git repo folder.
             dockerfile: deployments/engine/docker/Dockerfile
-            build_args:
-              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
       - description: For range [v6.5.0, v8.5.4)
         if: {{ semver.CheckConstraint ">= 6.5.0-0, < v8.5.4-0" .Release.version }}
         os: [linux, darwin]
@@ -2569,8 +2565,6 @@ components:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
             context: . # just build under git repo folder.
             dockerfile: deployments/engine/docker/Dockerfile
-            build_args:
-              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
       - description: For range [v6.5.6, v6.6.0) && fips profile
         if: {{ semver.CheckConstraint "~6.5.6-0" .Release.version }}
         os: [linux]
@@ -2726,8 +2720,6 @@ components:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
             context: . # just build under git repo folder.
             dockerfile: deployments/engine/docker/Dockerfile
-            build_args:
-              - GOPROXY=http://goproxy.pingcap.net,https://goproxy.cn,direct
   ticdc:
     desc: ticdc components
     git:
