@@ -1558,9 +1558,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ semver.CheckConstraint ">= 1.7.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 1.6.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.12.7-13-gadaea9a-go1.25
-      - if: {{ semver.CheckConstraint ">= 1.6.0-0, < 1.7.0-0" .Release.version }}
+      - if: {{ semver.CheckConstraint ">= 1.6.0-0, < 1.6.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.11.9-1-ga8991fa-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-91-g6221afa-go1.21
