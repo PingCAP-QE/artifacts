@@ -125,9 +125,9 @@ image_copy_rules:
   hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: *img_ticdc
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
-    - description: delivery the version images, except pre release types.
+    - description: delivery the version images, exclude pre release types.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/tidb-operator
         - gcr.io/pingcap-public/dbaas/tidb-operator
@@ -144,9 +144,9 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-backup-manager
         - gcr.io/pingcap-public/dbaas/tidb-backup-manager
-    - description: delivery the version images, except pre release types.
+    - description: delivery the version images, execlude the pre release types.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/tidb-backup-manager
         - gcr.io/pingcap-public/dbaas/tidb-backup-manager
@@ -157,9 +157,9 @@ image_copy_rules:
   hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/tidb-backup-manager: *tidb-backup-manager
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-backup-manager: *tidb-backup-manager
   hub.pingcap.net/pingcap/tidb-operator/images/br-federation-manager: &br-federation-manager
-    - description: delivery the version images, except pre release types.
+    - description: delivery the version images, execlude the pre release types.
       tags_regex:
-        - ^(v1[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+        - ^(v1[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/br-federation-manager
         - gcr.io/pingcap-public/dbaas/br-federation-manager
@@ -168,7 +168,7 @@ image_copy_rules:
   hub.pingcap.net/pingcap/tidb-operator/images/prestop-checker: &prestop-checker
     - description: delivery the v2 version images.
       tags_regex:
-        - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+        - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/tidb-operator-prestop-checker
         - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
@@ -181,7 +181,7 @@ image_copy_rules:
   hub.pingcap.net/pingcap/tidb-operator/images/resource-syncer: &resource-syncer
     - description: delivery the v2 version images.
       tags_regex:
-        - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$)).*)?$
+        - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/tidb-operator-resource-syncer
         - gcr.io/pingcap-public/dbaas/tidb-operator-resource-syncer
