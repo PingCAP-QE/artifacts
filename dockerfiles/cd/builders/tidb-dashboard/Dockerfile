@@ -27,9 +27,9 @@ ENV PATH /usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 # Install nodejs.
-RUN curl -fsSL https://rpm.nodesource.com/setup_18.x | bash -
-RUN yum -y install nodejs && yum clean all
-RUN npm install -g pnpm@9.7.0
+RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && \
+    yum -y install nodejs && yum clean all && \
+    npm install -g pnpm@9.12.2
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
