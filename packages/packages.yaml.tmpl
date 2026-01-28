@@ -1654,6 +1654,14 @@ components:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-backup-manager
             dockerfile: Dockerfile
+          - name: container image - br-federation-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/br-federation-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/br-federation-manager
+            dockerfile: Dockerfile
       - description: before 1.5.0
         if: {{ semver.CheckConstraint "< 1.5.0-0" .Release.version }}
         os: [linux]
@@ -1697,6 +1705,14 @@ components:
             build_args:
               - TARGETARCH={{ .Release.arch }}
             context: images/tidb-backup-manager
+            dockerfile: Dockerfile
+          - name: container image - br-federation-manager
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/tidb-operator/images/br-federation-manager"
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            context: images/br-federation-manager
             dockerfile: Dockerfile
   tidb-dashboard:
     desc: ''
