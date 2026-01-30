@@ -528,7 +528,7 @@ tiup_publish_rules:
       dest_mirrors: [staging, prod]
     - description: for pre release builds
       tags_regex:
-        - ^(release-[0-9]+[.][0-9]+)_(linux|darwin)_(amd64|arm64)$
+        - ^(release-[0-9]+[.][0-9]+)(-beta[.][0-9]+)?_(linux|darwin)_(amd64|arm64)$
       dest_mirrors: [staging]
     - description: for classic EA/GA builds
       tags_regex:
