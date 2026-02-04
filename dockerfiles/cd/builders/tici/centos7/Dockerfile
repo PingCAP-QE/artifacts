@@ -39,7 +39,7 @@ RUN CARGO_NET_GIT_FETCH_WITH_CLI=true make release -c /ws
 RUN mkdir -p /ws/output && mv /ws/target/release/tici-server /ws/output && /ws/output/tici-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.11.0
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.11.1
 COPY --from=building /ws/output/tici-server /tici-server
 
 ENTRYPOINT ["/tici-server"]
