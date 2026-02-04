@@ -124,42 +124,6 @@ image_copy_rules:
         - docker.io/pingcap/ticdc
   hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: *img_ticdc
-  hub.pingcap.net/pingcap/ticdc/images/kafka-consumer:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-kafka-consumer
-    - <<: *sync_ga_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-kafka-consumer
-    - description: delivery classic release branch image tags
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
-      dest_repositories:
-        - docker.io/pingcap/ticdc-kafka-consumer
-  hub.pingcap.net/pingcap/ticdc/images/pulsar-consumer:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-pulsar-consumer
-    - <<: *sync_ga_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-pulsar-consumer
-    - description: delivery classic release branch image tags
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
-      dest_repositories:
-        - docker.io/pingcap/ticdc-pulsar-consumer
-  hub.pingcap.net/pingcap/ticdc/images/storage-consumer:
-    - <<: *sync_trunk_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-storage-consumer
-    - <<: *sync_ga_community
-      dest_repositories:
-        - docker.io/pingcap/ticdc-storage-consumer
-    - description: delivery classic release branch image tags
-      tags_regex:
-        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
-      dest_repositories:
-        - docker.io/pingcap/ticdc-storage-consumer
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
     - description: delivery the version images, exclude pre release types.
       tags_regex:
