@@ -2786,6 +2786,27 @@ components:
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/Dockerfile
             files: # context files
               - { name: cdc, src: { path: bin/cdc } }
+          - name: container image - kafka-consumer
+            if: {{ eq .Release.os "linux" }}
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/ticdc/images/kafka-consumer"
+            context: . # build under git repo.
+            dockerfile: deployments/kafka-consumer.Dockerfile
+          - name: container image - pulsar-consumer
+            if: {{ eq .Release.os "linux" }}
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/ticdc/images/pulsar-consumer"
+            context: . # build under git repo.
+            dockerfile: deployments/pulsar-consumer.Dockerfile
+          - name: container image - storage-consumer
+            if: {{ eq .Release.os "linux" }}
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/pingcap/ticdc/images/storage-consumer"
+            context: . # build under git repo.
+            dockerfile: deployments/storage-consumer.Dockerfile
   tiflow-operator:
     desc: tiflow operator components tarball
     git:

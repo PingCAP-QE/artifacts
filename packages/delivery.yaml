@@ -124,6 +124,48 @@ image_copy_rules:
         - docker.io/pingcap/ticdc
   hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: *img_ticdc
+  hub.pingcap.net/pingcap/ticdc/images/kafka-consumer: &img_ticdc_kafka_consumer
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-kafka-consumer
+    - <<: *sync_ga_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-kafka-consumer
+    - description: delivery classic release branch image tags
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
+      dest_repositories:
+        - docker.io/pingcap/ticdc-kafka-consumer
+  hub-zot.pingcap.net/hub/pingcap/ticdc/images/kafka-consumer: *img_ticdc_kafka_consumer
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/images/kafka-consumer: *img_ticdc_kafka_consumer
+  hub.pingcap.net/pingcap/ticdc/images/pulsar-consumer: &img_ticdc_pulsar_consumer
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-pulsar-consumer
+    - <<: *sync_ga_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-pulsar-consumer
+    - description: delivery classic release branch image tags
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
+      dest_repositories:
+        - docker.io/pingcap/ticdc-pulsar-consumer
+  hub-zot.pingcap.net/hub/pingcap/ticdc/images/pulsar-consumer: *img_ticdc_pulsar_consumer
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/images/pulsar-consumer: *img_ticdc_pulsar_consumer
+  hub.pingcap.net/pingcap/ticdc/images/storage-consumer: &img_ticdc_storage_consumer
+    - <<: *sync_trunk_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-storage-consumer
+    - <<: *sync_ga_community
+      dest_repositories:
+        - docker.io/pingcap/ticdc-storage-consumer
+    - description: delivery classic release branch image tags
+      tags_regex:
+        - ^release-[0-9]+[.][0-9]+(-[0-9a-f]{7,10})?$
+      dest_repositories:
+        - docker.io/pingcap/ticdc-storage-consumer
+  hub-zot.pingcap.net/hub/pingcap/ticdc/images/storage-consumer: *img_ticdc_storage_consumer
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/images/storage-consumer: *img_ticdc_storage_consumer
   hub.pingcap.net/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
     - description: delivery the version images, exclude pre release types.
       tags_regex:
