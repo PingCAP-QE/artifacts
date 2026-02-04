@@ -60,7 +60,7 @@ build:
         dockerfile: debugging/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.11.0"
+      template: "v1.11.1"
   local:
     useDockerCLI: true
     useBuildkit: true
