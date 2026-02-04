@@ -1,0 +1,135 @@
+name: Artifact build requirement request
+description: Request to add or update build and delivery requirements for artifacts.
+title: "[Artifact Build] <component>: <version>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We will review this issue and update `packages/packages.yaml.tmpl` and, if needed, `packages/delivery.yaml`.
+        Please provide build and delivery details so we can add or update the artifact configuration.
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      options:
+        - New component build
+        - Update build requirements
+        - Delivery rules change only
+        - Build rules change only
+    validations:
+      required: true
+
+  - type: input
+    id: component_key
+    attributes:
+      label: Component key
+      description: The key under `components:` in `packages/packages.yaml.tmpl` (e.g. `tidb`, `tikv`, `tiflow`).
+      placeholder: tidb
+    validations:
+      required: true
+
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Artifacts to build
+      description: List image/package artifacts to add or update (one per line).
+      placeholder: |
+        image `abc` as a ABC component service
+        binary tarball for DEF component binary
+    validations:
+      required: true
+
+  - type: input
+    id: repo_url
+    attributes:
+      label: Git repository URL
+      placeholder: https://github.com/pingcap/tidb.git
+    validations:
+      required: true
+
+  - type: dropdown
+    id: release_profile
+    attributes:
+      label: Release profile
+      multiple: true
+      options:
+        - community
+        - enterprise
+        - next-gen
+        - other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: build_requirements
+    attributes:
+      label: Build requirements
+      description: Provide Dockerfile path/URL, build context, build args, builder image, build scripts/targets, and any extra files to include.
+      placeholder: |
+        Dockerfile: docker/Dockerfile
+        Context: .
+        Build args: BUILD_VERSION=${VERSION}
+        Builder image: ghcr.io/pingcap-qe/cd/builders/tidb:...
+        Build script/targets:
+        - make server build_tools
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Build platforms
+      multiple: true
+      options:
+        - linux/amd64
+        - linux/arm64
+        - darwin/amd64
+        - darwin/arm64
+        - other (describe below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_requirements
+    attributes:
+      label: Delivery requirements
+      description: Specify source registry/repo, destination registries/repos, and tag patterns or rules (trunk/RC/GA/hotfix/failpoint). Mention if it should mirror to hub-zot or us-docker.
+      placeholder: |
+        Source image: `tidb-server`
+        Dest repos:
+        - hub-zot.pingcap.net/hub/pingcap/tidb/images/tidb-server
+        - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server
+        Tags: release branch semver and rc tags; include failpoint tags
+    validations:
+      required: true
+
+  - type: textarea
+    id: delivery_rules_reference
+    attributes:
+      label: Similar existing rules (optional)
+      description: Link to a component or rule in this repo that should be mirrored or used as reference.
+      placeholder: packages/delivery.yaml#L194
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Anything else we should know (links to docs, CI jobs, or prior builds).
+      placeholder: Link to upstream release notes or existing CI build logs
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I confirmed the repository and release version(s) are correct.
+          required: true
+        - label: I provided delivery destinations and tag expectations.
+          required: true
+        - label: I understand the artifacts team will update packages and delivery templates based on this request.
+          required: true
