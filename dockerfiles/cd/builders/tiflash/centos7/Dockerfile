@@ -58,7 +58,7 @@ RUN mkdir /ws/output && mv /ws/release-linux-llvm/tiflash /ws/output/tiflash
 RUN /ws/output/tiflash/tiflash version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.0
+FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.1
 
 ENV LD_LIBRARY_PATH /tiflash
 COPY --from=building /ws/output/tiflash /tiflash
