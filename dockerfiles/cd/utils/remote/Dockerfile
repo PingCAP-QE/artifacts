@@ -1,4 +1,4 @@
-FROM alpine:3.23.2
+FROM alpine:3.23.3
 
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="utils image for remote building"
