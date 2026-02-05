@@ -1559,7 +1559,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.5-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2026.2.1-8-gb7f6793-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2026.2.1-19-g6374cbf-go1.25
       - if: {{ semver.CheckConstraint ">= 1.6.0-0, < 1.6.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.11.9-1-ga8991fa-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
