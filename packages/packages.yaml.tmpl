@@ -2787,21 +2787,18 @@ components:
             files: # context files
               - { name: cdc, src: { path: bin/cdc } }
           - name: testing container image - kafka-consumer
-            if: {{ eq .Release.os "linux" }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/kafka-consumer"
             context: . # build under git repo.
             dockerfile: deployments/kafka-consumer.Dockerfile
           - name: testing container image - pulsar-consumer
-            if: {{ eq .Release.os "linux" }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/pulsar-consumer"
             context: . # build under git repo.
             dockerfile: deployments/pulsar-consumer.Dockerfile
           - name: testing container image - storage-consumer
-            if: {{ eq .Release.os "linux" }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/storage-consumer"
