@@ -150,7 +150,7 @@ build_and_push_images() {
 
     ################# build and push image ################
     tag="{{ index $tags 0 }}"
-    kaniko_global_options="--cleanup --cache=false --label net.pingcap.tibuild.new=yes --label net.pingcap.tibuild.git-sha={{.git.sha}}"
+    kaniko_global_options="--cleanup --cache=false --label net.pingcap.tibuild.new=yes --label net.pingcap.tibuild.git-sha={{ .git.sha }} --label org.opencontainers.image.title={{ .component }} --label org.opencontainers.image.licenses={{ .license }} --label org.opencontainers.image.source={{ .git.url }} --label org.opencontainers.image.ref.name={{ .git.ref }}{{ if .git.sha }} --label org.opencontainers.image.revision={{ .git.sha }}{{ end }}"
     :> "$digests_file"
 {{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>

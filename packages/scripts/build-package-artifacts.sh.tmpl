@@ -246,6 +246,13 @@ function prepare_artifact_config() {
 
     :> "$save_file"
     yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.title"] = "{{ .component }}"' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.licenses"] = "{{ .license }}"' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.source"] = "{{ .git.url }}"' "$save_file"
+    yq -p json -o json -i '.["org.opencontainers.image.ref.name"] = "{{ .git.ref }}"' "$save_file"
+    {{ if .git.sha }}
+    yq -p json -o json -i '.["org.opencontainers.image.revision"] = "{{ .git.sha }}"' "$save_file"
+    {{ end }}
     yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
     yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"
