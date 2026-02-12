@@ -153,7 +153,9 @@ build_and_push_images() {
     # Inject OCI standard metadata labels and PingCAP build labels.
     kaniko_global_options="--cleanup --cache=false"
     kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.new=yes"
+    {{ if .git.sha }}
     kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.git-sha={{ .git.sha }}"
+    {{ end }}
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.title={{ .component }}"
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}"
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.source={{ .git.url }}"
