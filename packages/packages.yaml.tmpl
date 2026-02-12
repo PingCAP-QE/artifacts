@@ -2765,7 +2765,7 @@ components:
         profile: [release, next-gen]
         steps:
           release:
-            - script: make cdc
+            - script: make cdc kafka_consumer pulsar_consumer storage_consumer
           next-gen:
             - script: NEXT_GEN=1 make cdc
         artifacts:
@@ -2791,22 +2791,25 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/kafka-consumer"
-            context: . # build under git repo.
-            dockerfile: deployments/kafka-consumer.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/kafka-consumer.Dockerfile
+            files: # context files
+              - { name: cdc_kafka_consumer, src: { path: bin/cdc_kafka_consumer } }
           - name: testing container image - pulsar-consumer
             if: {{ eq "release" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/pulsar-consumer"
-            context: . # build under git repo.
-            dockerfile: deployments/pulsar-consumer.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/pulsar-consumer.Dockerfile
+            files: # context files
+              - { name: cdc_pulsar_consumer, src: { path: bin/cdc_pulsar_consumer } }
           - name: testing container image - storage-consumer
             if: {{ eq "release" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/storage-consumer"
-            context: . # build under git repo.
-            dockerfile: deployments/storage-consumer.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/storage-consumer.Dockerfile
+            files: # context files
+              - { name: cdc_storage_consumer, src: { path: bin/cdc_storage_consumer } }
   tiflow-operator:
     desc: tiflow operator components tarball
     git:
