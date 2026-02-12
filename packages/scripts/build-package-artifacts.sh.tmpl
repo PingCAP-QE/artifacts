@@ -245,11 +245,13 @@ function prepare_artifact_config() {
     local save_file="$1"
 
     :> "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.title"] = "{{ .component }}"' "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.licenses"] = "{{ .license }}"' "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.source"] = "{{ .git.url }}"' "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.ref.name"] = "{{ .git.ref }}"' "$save_file"
+    yq -p json -o json -i '
+        .["org.opencontainers.image.version"] = "{{ .version }}" |
+        .["org.opencontainers.image.title"] = "{{ .component }}" |
+        .["org.opencontainers.image.licenses"] = "{{ .license }}" |
+        .["org.opencontainers.image.source"] = "{{ .git.url }}" |
+        .["org.opencontainers.image.ref.name"] = "{{ .git.ref }}"
+    ' "$save_file"
     {{ if .git.sha }}
     yq -p json -o json -i '.["org.opencontainers.image.revision"] = "{{ .git.sha }}"' "$save_file"
     {{ end }}

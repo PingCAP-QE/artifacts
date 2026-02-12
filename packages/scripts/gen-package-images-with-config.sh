@@ -57,11 +57,13 @@ function main() {
     yq ".routers[0].git = .git | .routers[0].license = .license" release-package.yaml | yq ".routers[0]" >release-router.yaml
 
     # generate package build script
-    yq -i ".component = \"$component\"" release-router.yaml
-    yq -i ".license = (.license // \"Apache-2.0\")" release-router.yaml
-    yq -i ".os = \"$os\"" release-router.yaml
-    yq -i ".arch = \"$arch\"" release-router.yaml
-    yq -i ".profile = \"$profile\"" release-router.yaml
+    yq -i "
+        .component = \"$component\" |
+        .license = (.license // \"Apache-2.0\") |
+        .os = \"$os\" |
+        .arch = \"$arch\" |
+        .profile = \"$profile\"
+    " release-router.yaml
     yq -i ".steps = .steps[.profile]" release-router.yaml
     yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml
