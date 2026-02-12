@@ -54,12 +54,16 @@ function main() {
         echo "❌ No package routes matched for the target($target_info)."
         exit 1
     fi
-    yq ".routers[0].git = .git" release-package.yaml | yq ".routers[0]" >release-router.yaml
+    yq ".routers[0].git = .git | .routers[0].license = .license" release-package.yaml | yq ".routers[0]" >release-router.yaml
 
     # generate package build script
-    yq -i ".os = \"$os\"" release-router.yaml
-    yq -i ".arch = \"$arch\"" release-router.yaml
-    yq -i ".profile = \"$profile\"" release-router.yaml
+    yq -i "
+        .component = \"$component\" |
+        .license = (.license // \"Apache-2.0\") |
+        .os = \"$os\" |
+        .arch = \"$arch\" |
+        .profile = \"$profile\"
+    " release-router.yaml
     yq -i ".steps = .steps[.profile]" release-router.yaml
     yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml

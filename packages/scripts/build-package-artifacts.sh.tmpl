@@ -245,12 +245,20 @@ function prepare_artifact_config() {
     local save_file="$1"
 
     :> "$save_file"
-    yq -p json -o json -i '.["org.opencontainers.image.version"] = "{{ .version }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.os"] = "{{ .os }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.architecture"] = "{{ .arch }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.profile"] = "{{ .profile }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.git-sha"] = "{{ .git.sha }}"' "$save_file"
-    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] = []' "$save_file"
+    # Inject OCI standard metadata labels and PingCAP build labels.
+    yq -p json -o json -i '
+        .["org.opencontainers.image.version"] = "{{ .version }}" |
+        .["org.opencontainers.image.title"] = "{{ .component }}" |
+        .["org.opencontainers.image.licenses"] = "{{ .license | default "Apache-2.0" }}" |
+        .["org.opencontainers.image.source"] = "{{ .git.url }}" |
+        .["org.opencontainers.image.ref.name"] = "{{ .git.ref }}" |
+        .["org.opencontainers.image.revision"] = "{{ .git.sha }}" |
+        .["net.pingcap.tibuild.os"] = "{{ .os }}" |
+        .["net.pingcap.tibuild.architecture"] = "{{ .arch }}" |
+        .["net.pingcap.tibuild.profile"] = "{{ .profile }}" |
+        .["net.pingcap.tibuild.git-sha"] = "{{ .git.sha }}" |
+        .["net.pingcap.tibuild.tiup"] = []
+    ' "$save_file"
 
     {{- if has (coll.Slice "release" "next-gen") .profile }}
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}
