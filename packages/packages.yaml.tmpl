@@ -2787,7 +2787,7 @@ components:
             files: # context files
               - { name: cdc, src: { path: bin/cdc } }
           - name: testing container image - kafka-consumer
-            if: {{ eq "release" .Release.profile }}
+            if: {{ and (eq "release" .Release.profile) (eq "amd64" .Release.arch) }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/kafka-consumer"
@@ -2795,7 +2795,7 @@ components:
             files: # context files
               - { name: cdc_kafka_consumer, src: { path: bin/cdc_kafka_consumer } }
           - name: testing container image - pulsar-consumer
-            if: {{ eq "release" .Release.profile }}
+            if: {{ and (eq "release" .Release.profile) (eq "amd64" .Release.arch) }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/pulsar-consumer"
@@ -2803,7 +2803,7 @@ components:
             files: # context files
               - { name: cdc_pulsar_consumer, src: { path: bin/cdc_pulsar_consumer } }
           - name: testing container image - storage-consumer
-            if: {{ eq "release" .Release.profile }}
+            if: {{ and (eq "release" .Release.profile) (eq "amd64" .Release.arch) }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/storage-consumer"
