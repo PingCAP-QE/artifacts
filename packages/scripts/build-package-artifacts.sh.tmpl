@@ -252,9 +252,7 @@ function prepare_artifact_config() {
         .["org.opencontainers.image.licenses"] = "{{ .license | default "Apache-2.0" }}" |
         .["org.opencontainers.image.source"] = "{{ .git.url }}" |
         .["org.opencontainers.image.ref.name"] = "{{ .git.ref }}" |
-        {{ if .git.sha }}
         .["org.opencontainers.image.revision"] = "{{ .git.sha }}" |
-        {{ end }}
         .["net.pingcap.tibuild.os"] = "{{ .os }}" |
         .["net.pingcap.tibuild.architecture"] = "{{ .arch }}" |
         .["net.pingcap.tibuild.profile"] = "{{ .profile }}" |
