@@ -106,7 +106,7 @@ function print_help() {
 function build() {
     {{- $root := . -}}
     {{- if .steps }}{{- range .steps }}
-    {{- if and (or (not (has . "os")) (eq .os $root.os)) (or (not (has . "os")) (eq .arch $root.arch))  }}
+    {{- if and (or (not (has . "os")) (eq .os $root.os)) (or (not (has . "arch")) (eq .arch $root.arch))  }}
 {{ .script | indent 4 }}
     {{- end }}
     {{- end }}
