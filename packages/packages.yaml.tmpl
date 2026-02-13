@@ -2765,7 +2765,10 @@ components:
         profile: [release, next-gen]
         steps:
           release:
-            - script: make cdc kafka_consumer pulsar_consumer storage_consumer
+            - script: make cdc
+            - os: linux
+              arch: amd64
+              script: make kafka_consumer pulsar_consumer storage_consumer # for test tools
           next-gen:
             - script: NEXT_GEN=1 make cdc
         artifacts:
