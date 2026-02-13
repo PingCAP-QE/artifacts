@@ -24,7 +24,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-go1.25"
+        value: "{{ .GIT }}-go1.25-node22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
