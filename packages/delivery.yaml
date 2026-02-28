@@ -75,7 +75,7 @@ image_definitions:
   sync_ga_community_fts: &sync_ga_community_fts
     description: delivery community FTS images for GA images.
     tags_regex:
-      - ^v8.5.6-20260228-[0-9a-f]+$
+      - ^v8[.]5[.]6-20260228-[0-9a-f]+$
   sync_ga_enterprise: &sync_ga_enterprise
     description: delivery the enterprise GA images.
     tags_regex:
