@@ -72,6 +72,10 @@ image_definitions:
     tags_regex:
       - ^v[0-9]+[.][0-9]+[.][0-9]+$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-(beta|rc|release)[.][0-9]+$
+  sync_ga_community_fts: &sync_ga_community_fts
+    description: delivery community FTS images for GA images.
+    tags_regex:
+      - ^v8[.]5[.]6-20260228-[0-9a-f]+$
   sync_ga_enterprise: &sync_ga_enterprise
     description: delivery the enterprise GA images.
     tags_regex:
@@ -209,6 +213,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
         - docker.io/pingcap/tidb-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb
   hub-zot.pingcap.net/hub/pingcap/tidb/images/tidb-server: *img_tidb-server
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server: *img_tidb-server
   hub.pingcap.net/pingcap/tidb/images/br: &img_br
@@ -229,6 +236,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
         - docker.io/pingcap/br-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/br
   hub-zot.pingcap.net/hub/pingcap/tidb/images/br: *img_br
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br: *img_br
   hub.pingcap.net/pingcap/tidb/images/tidb-lightning: &img_tidb_lightning
@@ -249,6 +259,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
         - docker.io/pingcap/tidb-lightning-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tidb-lightning
   hub-zot.pingcap.net/hub/pingcap/tidb/images/tidb-lightning: *img_tidb_lightning
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning: *img_tidb_lightning
   hub.pingcap.net/pingcap/tidb/images/dumpling: &img_dumpling
@@ -269,6 +282,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
         - docker.io/pingcap/dumpling-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/dumpling
   hub-zot.pingcap.net/hub/pingcap/tidb/images/dumpling: *img_dumpling
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling: *img_dumpling
   hub.pingcap.net/pingcap/tiflow/images/cdc: &img_tiflow_cdc
@@ -348,6 +364,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tiflash
         - docker.io/pingcap/tiflash-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tiflash
   hub-zot.pingcap.net/hub/pingcap/tiflash/image: *img_tiflash
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image: *img_tiflash
   hub.pingcap.net/pingcap/tiproxy/image: &img_tiproxy
@@ -432,6 +451,9 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
         - docker.io/pingcap/tikv-enterprise
+    - <<: *sync_ga_community_fts
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tikv
   hub-zot.pingcap.net/hub/tikv/tikv/image: *img_tikv
   us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image: *img_tikv
   hub.pingcap.net/tikv/pd/image: &img_pd
@@ -517,6 +539,14 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiproxy
+
+  ### TICI classic release images
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tici/image:
+    - description: delivery tici GA release images
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+$
+      dest_repositories:
+        - gcr.io/pingcap-public/dbaas/tici
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
