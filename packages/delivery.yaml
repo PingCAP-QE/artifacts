@@ -540,7 +540,7 @@ image_copy_rules:
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiproxy
 
-  ### TICI classic relese images
+  ### TICI classic release images
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tici/image:
     - description: delivery tici GA release images
       tags_regex:
