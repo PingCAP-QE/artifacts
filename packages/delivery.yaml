@@ -542,7 +542,9 @@ image_copy_rules:
 
   ### TICI classic relese images
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tici/image:
-    - <<: *sync_ga_community_fts
+    - description: delivery tici GA release images
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+$
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tici
 
