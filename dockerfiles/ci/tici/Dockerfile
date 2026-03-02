@@ -1,10 +1,19 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-135-g43bfc3c-centos7
+
+# yq tool
+# renovate: datasource=docker depName=mikefarah/yq
 ARG YQ_VERSION=4.52.2
+# oras tool
+# renovate: datasource=github-tags depName=oras-project/oras
 ARG ORAS_VERSION=v1.3.0
 
 FROM mikefarah/yq:${YQ_VERSION} AS yq
 FROM ghcr.io/oras-project/oras:${ORAS_VERSION} AS oras
 FROM $BASE_IMG
+
+# yq and oras tools
+COPY --from=yq /usr/bin/yq /usr/local/bin/yq
+COPY --from=oras /bin/oras /usr/local/bin/oras
 
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
 
@@ -18,10 +27,6 @@ RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     chmod +x mc && \
     mv minio /usr/local/bin/minio && \
     mv mc /usr/local/bin/mc
-
-# yq and oras tools
-COPY --from=yq /usr/bin/yq /usr/local/bin/yq
-COPY --from=oras /bin/oras /usr/local/bin/oras
 
 # TiUP
 RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
