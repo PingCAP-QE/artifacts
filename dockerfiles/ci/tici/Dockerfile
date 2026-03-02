@@ -1,4 +1,9 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-135-g43bfc3c-centos7
+ARG YQ_VERSION=4.52.2
+ARG ORAS_VERSION=v1.3.0
+
+FROM mikefarah/yq:${YQ_VERSION} AS yq
+FROM ghcr.io/oras-project/oras:${ORAS_VERSION} AS oras
 FROM $BASE_IMG
 
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
@@ -14,17 +19,9 @@ RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     mv minio /usr/local/bin/minio && \
     mv mc /usr/local/bin/mc
 
-# yq、oras tool
-ARG YQ_VERSION=v4.52.2
-ARG ORAS_VERSION=v1.3.0
-RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
-    curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && \
-    chmod +x /usr/local/bin/yq && \
-    curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
-    mkdir -p oras-install/ && \
-    tar -zxf oras_*_${OS}_${ARCH}.tar.gz -C oras-install/ && \
-    install oras-install/oras /usr/local/bin/ && \
-    rm -rf oras_*_${OS}_${ARCH}.tar.gz oras-install/
+# yq and oras tools
+COPY --from=yq /usr/bin/yq /usr/local/bin/yq
+COPY --from=oras /bin/oras /usr/local/bin/oras
 
 # TiUP
 RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
