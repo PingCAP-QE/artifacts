@@ -14,6 +14,18 @@ RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     mv minio /usr/local/bin/minio && \
     mv mc /usr/local/bin/mc
 
+# yq、oras tool
+ARG YQ_VERSION=v4.52.2
+ARG ORAS_VERSION=v1.3.0
+RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_${OS}_${ARCH}" -o /usr/local/bin/yq && \
+    chmod +x /usr/local/bin/yq && \
+    curl -LO "https://github.com/oras-project/oras/releases/download/${ORAS_VERSION}/oras_${ORAS_VERSION#?}_${OS}_${ARCH}.tar.gz" && \
+    mkdir -p oras-install/ && \
+    tar -zxf oras_*_${OS}_${ARCH}.tar.gz -C oras-install/ && \
+    install oras-install/oras /usr/local/bin/ && \
+    rm -rf oras_*_${OS}_${ARCH}.tar.gz oras-install/
+
 # TiUP
 RUN curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
 ENV PATH=/root/.tiup/bin:$PATH
