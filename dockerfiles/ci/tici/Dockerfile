@@ -1,19 +1,6 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/cd/builders/tiflash:v2024.10.8-135-g43bfc3c-centos7
 
-# yq tool
-# renovate: datasource=docker depName=mikefarah/yq
-ARG YQ_VERSION=4.52.2
-# oras tool
-# renovate: datasource=github-tags depName=oras-project/oras
-ARG ORAS_VERSION=v1.3.0
-
-FROM mikefarah/yq:${YQ_VERSION} AS yq
-FROM ghcr.io/oras-project/oras:${ORAS_VERSION} AS oras
 FROM $BASE_IMG
-
-# yq and oras tools
-COPY --from=yq /usr/bin/yq /usr/local/bin/yq
-COPY --from=oras /bin/oras /usr/local/bin/oras
 
 RUN yum install -y wget lsof openssh-server openssh-clients sudo mysql protobuf-compiler perl-core openssl-devel
 
@@ -35,6 +22,12 @@ ENV PATH=/root/.tiup/bin:$PATH
 # To run python test scripts
 RUN yum install -y python3 python3-devel mysql-devel
 RUN pip3 install protobuf==3.6.1 mysql mysql-connector-python==8.0.23
+
+# yq and oras tools
+# renovate: datasource=docker depName=mikefarah/yq
+COPY --from=mikefarah/yq:4.52.2 /usr/bin/yq /usr/local/bin/yq
+# renovate: datasource=github-tags depName=oras-project/oras
+COPY --from=ghcr.io/oras-project/oras:v1.3.0 /bin/oras /usr/local/bin/oras
 
 # For rustup toolchain
 RUN rustup install nightly-2025-02-28
