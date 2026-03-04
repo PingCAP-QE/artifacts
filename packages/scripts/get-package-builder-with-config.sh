@@ -23,6 +23,7 @@ function main() {
     yq -i '.Release.registry = "localhost"' release-context.yaml
     yq -i '.Git.ref = ""' release-context.yaml
     yq -i '.Git.sha = ""' release-context.yaml
+    yq -i '.Git.url = ""' release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
     yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml
