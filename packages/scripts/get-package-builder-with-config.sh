@@ -12,6 +12,7 @@ function main() {
     local profile=$5
     local template_file="${6:-${PROJECT_ROOT_DIR}/packages/packages.yaml.tmpl}"
     local out_file="${7:-build-package-builder.txt}"
+    local git_url="${8:-}"
     local target_info="component: $component, os: $os, arch: $arch, version: $version, profile: $profile"
 
     # prepare template file's context.
@@ -23,6 +24,7 @@ function main() {
     yq -i '.Release.registry = "localhost"' release-context.yaml
     yq -i '.Git.ref = ""' release-context.yaml
     yq -i '.Git.sha = ""' release-context.yaml
+    yq -i ".Git.url = \"$git_url\"" release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
     yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml

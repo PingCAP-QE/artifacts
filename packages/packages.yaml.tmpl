@@ -26,7 +26,7 @@ components:
   advanced-statefulset:
     desc:
     git:
-      url: https://github.com/pingcap/advanced-statefulset.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/advanced-statefulset.git" }}'
       ref: '{{ .Git.ref | default "master" }}'
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
@@ -56,7 +56,7 @@ components:
   ctl:
     desc: ctl components
     git:
-      url: https://github.com/pingcap/tidb.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
@@ -263,7 +263,7 @@ components:
   monitoring:
     desc:
     git:
-      url: https://github.com/pingcap/monitoring.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/monitoring.git" }}'
       ref: '{{ .Git.ref | default "master" }}'
       sha: '{{ .Git.sha | default "" }}'
     version: {{ .Release.version }} # segment version.
@@ -420,7 +420,7 @@ components:
   ng-monitoring:
     desc: ng-monitoring component
     git:
-      url: https://github.com/pingcap/ng-monitoring.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/ng-monitoring.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -544,7 +544,7 @@ components:
   pd:
     desc: pd server component tarball
     git:
-      url: https://github.com/tikv/pd.git
+      url: '{{ .Git.url | default "https://github.com/tikv/pd.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -891,7 +891,7 @@ components:
   tidb:
     desc: tidb server component tarball
     git:
-      url: https://github.com/pingcap/tidb.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1368,7 +1368,7 @@ components:
   tidb-tools:
     desc: tidb tools component tarball
     git:
-      url: https://github.com/pingcap/tidb-tools.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb-tools.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1416,7 +1416,7 @@ components:
   tidb-ctl:
     desc: tidb ctl component tarball
     git:
-      url: https://github.com/pingcap/tidb-ctl.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb-ctl.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1455,7 +1455,7 @@ components:
       [Deprecated] Delcared Deprecation in v8.3.0, removed in v8.4.0
       tidb binlog component tarball
     git:
-      url: https://github.com/pingcap/tidb-binlog.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb-binlog.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1545,7 +1545,7 @@ components:
   tidb-operator:
     desc: tidb opreator component tarball
     git:
-      url: https://github.com/pingcap/tidb-operator.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb-operator.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1717,7 +1717,7 @@ components:
   tidb-dashboard:
     desc: ''
     git:
-      url: https://github.com/pingcap/tidb-dashboard.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tidb-dashboard.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -1844,7 +1844,7 @@ components:
   tiflash:
     desc: tiflash components tarball
     git:
-      url: https://github.com/pingcap/tiflash.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tiflash.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -2196,7 +2196,7 @@ components:
   tiflow:
     desc: tiflow components
     git:
-      url: https://github.com/pingcap/tiflow.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tiflow.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -2739,7 +2739,7 @@ components:
   ticdc:
     desc: ticdc components
     git:
-      url: https://github.com/pingcap/ticdc.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/ticdc.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -2816,7 +2816,7 @@ components:
   tiflow-operator:
     desc: tiflow operator components tarball
     git:
-      url: https://github.com/pingcap/tiflow-operator.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tiflow-operator.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -2848,7 +2848,7 @@ components:
   tikv:
     desc: tikv components tarball
     git:
-      url: https://github.com/tikv/tikv.git
+      url: '{{ .Git.url | default "https://github.com/tikv/tikv.git" }}'
       ref: {{ .Git.ref | default "master" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -3096,7 +3096,7 @@ components:
   tiproxy:
     desc: tiproxy components tarballs and images
     git:
-      url: https://github.com/pingcap/tiproxy.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tiproxy.git" }}'
       ref: {{ .Git.ref | default "main" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -3148,7 +3148,7 @@ components:
     desc: tici components tarballs and images
     git:
       # In the future, the repo will be open source in the `pingcap` ORG.
-      url: https://github.com/pingcap-inc/tici.git
+      url: '{{ .Git.url | default "https://github.com/pingcap-inc/tici.git" }}'
       ref: {{ .Git.ref | default "main" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
@@ -3195,7 +3195,7 @@ components:
     desc: tiup components tarballs and images
     git:
       # In the future, the repo will be open source in the `pingcap` ORG.
-      url: https://github.com/pingcap/tiup.git
+      url: '{{ .Git.url | default "https://github.com/pingcap/tiup.git" }}'
       ref: {{ .Git.ref | default "main" }}
       sha: {{ .Git.sha | default "" }}
     version: {{ .Release.version }} # segment version.
