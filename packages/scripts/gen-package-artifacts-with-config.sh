@@ -20,14 +20,14 @@ function main() {
 
     # prepare template file's context.
     : >release-context.yaml
-    RELEASE_OS="$os" yq -i '.Release.os = strenv(RELEASE_OS)' release-context.yaml
-    RELEASE_ARCH="$arch" yq -i '.Release.arch = strenv(RELEASE_ARCH)' release-context.yaml
-    RELEASE_VERSION="$version" yq -i '.Release.version = strenv(RELEASE_VERSION)' release-context.yaml
-    RELEASE_PROFILE="$profile" yq -i '.Release.profile = strenv(RELEASE_PROFILE)' release-context.yaml
-    RELEASE_REGISTRY="$registry" yq -i '.Release.registry = strenv(RELEASE_REGISTRY)' release-context.yaml
-    GIT_REF="$git_ref" yq -i '.Git.ref = strenv(GIT_REF)' release-context.yaml
-    GIT_SHA="$git_sha" yq -i '.Git.sha = strenv(GIT_SHA)' release-context.yaml
-    GIT_URL="$git_url" yq -i '.Git.url = strenv(GIT_URL)' release-context.yaml
+    yq -i ".Release.os = \"$os\"" release-context.yaml
+    yq -i ".Release.arch = \"$arch\"" release-context.yaml
+    yq -i ".Release.version = \"$version\"" release-context.yaml
+    yq -i ".Release.profile = \"$profile\"" release-context.yaml
+    yq -i ".Release.registry = \"$registry\"" release-context.yaml
+    yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
+    yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
+    yq -i ".Git.url = \"$git_url\"" release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
     yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml

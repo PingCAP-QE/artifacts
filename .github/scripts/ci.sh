@@ -37,7 +37,7 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version $profile:\t"
-                    img=$($script "$cm" "$os" "$ac" "$version" "$profile" "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL")
+                    img=$($script "$cm" "$os" "$ac" "$version" "$profile" "" "" "$DEFAULT_GIT_URL")
                     echo $img
                     check_image_existed $img
                 done
@@ -52,7 +52,7 @@ function test_get_builder() {
         for os in $operating_systems; do
             for ac in $architectures; do
                 echo -en "[🚢] $cm $os $ac $version $profile:\t"
-                img=$($script "$cm" "$os" "$ac" "$version" "$profile" "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL")
+                img=$($script "$cm" "$os" "$ac" "$version" "$profile" "" "" "$DEFAULT_GIT_URL")
                 echo $img
                 check_image_existed $img
             done
@@ -66,7 +66,7 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version enterprise:\t"
-                    img=$($script "$cm" "$os" "$ac" "$version" enterprise "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL")
+                    img=$($script "$cm" "$os" "$ac" "$version" enterprise "" "" "$DEFAULT_GIT_URL")
                     echo $img
                     check_image_existed $img
                 done
@@ -83,7 +83,7 @@ function test_get_builder() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[🚢] $cm $os $ac $version $profile:\t"
-                    img=$($script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL")
+                    img=$($script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL")
                     echo $img
                     check_image_existed $img
                 done
@@ -105,7 +105,7 @@ function test_get_builder_freedom_releasing() {
     for ac in $architectures; do
         for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[🚢] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL"
         done
     done
 
@@ -116,7 +116,7 @@ function test_get_builder_freedom_releasing() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo -en "[🚢] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL"
         done
     done
 
@@ -126,7 +126,7 @@ function test_get_builder_freedom_releasing() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo -en "[🚢] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL"
         done
     done
 
@@ -136,7 +136,7 @@ function test_get_builder_freedom_releasing() {
         for ac in $architectures; do
             for version in v0.1.2 v0.1.3; do
                 echo -en "[🚢] $cm $os $ac $version $profile:\t"
-                $script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL"
+                $script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL"
             done
         done
     done
@@ -147,7 +147,7 @@ function test_get_builder_freedom_releasing() {
         for ac in $architectures; do
             for version in v0.1.0 v0.2.0; do
                 echo -en "[🚢] $cm $os $ac $version $profile:\t"
-                $script "$cm" "$os" "$ac" "$version" $profile "./packages/packages.yaml.tmpl" "build-package-builder.txt" "$DEFAULT_GIT_URL"
+                $script "$cm" "$os" "$ac" "$version" $profile "" "" "$DEFAULT_GIT_URL"
             done
         done
     done
@@ -172,7 +172,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -187,7 +187,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-                    $script "$cm" "$os" "$ac" "$version" enterprise branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                    $script "$cm" "$os" "$ac" "$version" enterprise branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -202,7 +202,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-                    $script "$cm" "$os" "$ac" "$version" failpoint branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                    $script "$cm" "$os" "$ac" "$version" failpoint branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -218,7 +218,7 @@ function test_gen_package_artifacts_script() {
             for os in $operating_systems; do
                 for ac in $architectures; do
                     echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                    $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                     shellcheck -S error packages/scripts/build-package-artifacts.sh
                 done
             done
@@ -239,7 +239,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -250,7 +250,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -261,7 +261,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v0.5.0 v0.6.0; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -272,7 +272,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v0.1.2 v0.1.3; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -283,7 +283,7 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v0.1.0 v0.2.0; do
             echo -en "[📃📦] $cm $os $ac $version $profile:\t"
-            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-artifacts.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" "$os" "$ac" "$version" $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-artifacts.sh
         done
     done
@@ -307,7 +307,7 @@ function test_gen_package_images_script() {
             fi
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-                $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
@@ -320,7 +320,7 @@ function test_gen_package_images_script() {
         for version in $versions; do
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
@@ -334,7 +334,7 @@ function test_gen_package_images_script() {
         for version in $versions; do
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+                $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
@@ -353,7 +353,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -363,7 +363,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -373,7 +373,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for version in v0.5.0 v0.6.0; do
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -383,7 +383,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for ac in $architectures; do
         for version in v0.1.2 v0.1.3; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
@@ -393,7 +393,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for version in v0.1.0 v0.2.0; do
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
-            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "./packages/packages.yaml.tmpl" "./packages/scripts/build-package-images.sh" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
     done
