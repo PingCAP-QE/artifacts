@@ -158,7 +158,7 @@ build_and_push_images() {
     {{ end }}
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.title={{ .component }}"
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.source={{ .git.url }}"
+    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.source={{ .git.url | default "https://github.com/unknown/unknown.git" }}"
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.ref.name={{ .git.ref }}"
     {{ if .git.sha }}
     kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.revision={{ .git.sha }}"

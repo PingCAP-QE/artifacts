@@ -250,7 +250,7 @@ function prepare_artifact_config() {
         .["org.opencontainers.image.version"] = "{{ .version }}" |
         .["org.opencontainers.image.title"] = "{{ .component }}" |
         .["org.opencontainers.image.licenses"] = "{{ .license | default "Apache-2.0" }}" |
-        .["org.opencontainers.image.source"] = "{{ .git.url }}" |
+        .["org.opencontainers.image.source"] = "{{ .git.url | default "https://github.com/unknown/unknown.git" }}" |
         .["org.opencontainers.image.ref.name"] = "{{ .git.ref }}" |
         .["org.opencontainers.image.revision"] = "{{ .git.sha }}" |
         .["net.pingcap.tibuild.os"] = "{{ .os }}" |
