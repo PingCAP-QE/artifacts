@@ -305,9 +305,6 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
-                if [[ $cm == "migration" ]]; then
-                    yq '.artifacts[].artifactory.repo' release-router.yaml
-                fi
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
