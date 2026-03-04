@@ -1,7 +1,8 @@
 #! /usr/bin/env bash
 set -euo pipefail
 
-readonly DEFAULT_GIT_URL="https://github.com/pingcap/tidb.git"
+# Keep empty so each component uses its own default repository URL.
+readonly DEFAULT_GIT_URL=""
 
 function check_image_existed() {
     local img=$1
