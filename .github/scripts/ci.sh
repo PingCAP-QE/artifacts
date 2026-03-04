@@ -23,7 +23,7 @@ function test_get_builder() {
     local script="./packages/scripts/get-package-builder-with-config.sh"
 
     # release profile
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
+    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools migration"
     for cm in $components; do
         for version in $versions; do
             # Skip tidb-tools for version v9.0.0
@@ -294,7 +294,7 @@ function test_gen_package_images_script() {
 
     # release profile
     local profile="release"
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
+    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools migration"
     for cm in $components; do
         for version in $versions; do
             # Skip tidb-tools for version v9.0.0
@@ -305,6 +305,9 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
+                if [[ $cm == "migration" ]]; then
+                    yq '.artifacts[].artifactory.repo' release-router.yaml
+                fi
                 shellcheck -S error packages/scripts/build-package-images.sh
             done
         done
