@@ -23,7 +23,7 @@ function test_get_builder() {
     local script="./packages/scripts/get-package-builder-with-config.sh"
 
     # release profile
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools migration"
+    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
     for cm in $components; do
         for version in $versions; do
             # Skip tidb-tools for version v9.0.0
@@ -136,6 +136,17 @@ function test_get_builder_freedom_releasing() {
                 $script "$cm" "$os" "$ac" "$version" $profile
             done
         done
+    done
+
+    # migration
+    local cm="migration"
+    local os="linux"
+    local version="v9.0.0"
+    for ac in $architectures; do
+        echo -en "[🚢] $cm $os $ac $version $profile:\t"
+        img=$($script "$cm" "$os" "$ac" "$version" $profile)
+        echo $img
+        check_image_existed $img
     done
 
     # tici, currently it only support linux.
@@ -294,7 +305,7 @@ function test_gen_package_images_script() {
 
     # release profile
     local profile="release"
-    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools migration"
+    local components="tidb tiflow tiflash tikv pd ctl monitoring ng-monitoring tidb-tools"
     for cm in $components; do
         for version in $versions; do
             # Skip tidb-tools for version v9.0.0
@@ -383,6 +394,15 @@ function test_gen_package_images_script_freedom_releasing() {
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
             shellcheck -S error packages/scripts/build-package-images.sh
         done
+    done
+
+    # migration
+    local cm="migration"
+    local version="v9.0.0"
+    for ac in $architectures; do
+        echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+        $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
+        shellcheck -S error packages/scripts/build-package-images.sh
     done
 
     # tici. currently it only support linux.
