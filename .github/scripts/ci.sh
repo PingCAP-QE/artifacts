@@ -141,6 +141,17 @@ function test_get_builder_freedom_releasing() {
         done
     done
 
+    # migration
+    local cm="migration"
+    local os="linux"
+    local version="v9.0.0"
+    for ac in $architectures; do
+        echo -en "[🚢] $cm $os $ac $version $profile:\t"
+        img=$($script "$cm" "$os" "$ac" "$version" $profile)
+        echo $img
+        check_image_existed $img
+    done
+
     # tici, currently it only support linux.
     local cm="tici"
     for os in linux; do
@@ -386,6 +397,15 @@ function test_gen_package_images_script_freedom_releasing() {
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
             shellcheck -S error packages/scripts/build-package-images.sh
         done
+    done
+
+    # migration
+    local cm="migration"
+    local version="v9.0.0"
+    for ac in $architectures; do
+        echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+        $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
+        shellcheck -S error packages/scripts/build-package-images.sh
     done
 
     # tici. currently it only support linux.

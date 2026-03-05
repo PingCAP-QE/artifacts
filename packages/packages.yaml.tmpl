@@ -3263,3 +3263,44 @@ components:
               name: server
               description: TiUP publish/cache server
               entrypoint: tiup-server
+  migration:
+    desc: tikv/migration - tikv-br, tikv-cdc, kafka-consumer
+    git:
+      url: '{{ .Git.url | default "https://github.com/tikv/migration.git" }}'
+      ref: {{ .Git.ref | default "main" }}
+      sha: {{ .Git.sha | default "" }}
+    version: {{ .Release.version }} # segment version.
+    artifactory:
+      tags:
+        {{- if .Git.sha }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+        - latest
+    builders:
+      - image: ghcr.io/pingcap-qe/cd/utils/release:v2026.2.1-3-gb0438c3
+    routers:
+      - description: main branch docker images
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        artifacts:
+          - name: tikv-br image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/migration/images/tikv-br"
+            context: br
+            dockerfile: deployments/docker/Dockerfile
+          - name: tikv-cdc image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/migration/images/tikv-cdc"
+            context: cdc
+            dockerfile: deployments/tikv-cdc/docker/Dockerfile
+          - name: kafka-consumer image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tikv/migration/images/kafka-consumer"
+            context: cdc
+            dockerfile: deployments/tikv-cdc/docker/kafka-consumer.Dockerfile
