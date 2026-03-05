@@ -37,6 +37,7 @@ You can get them by run:
 $ grep -oE "{{\s*\..*?}}" packages/packages.yaml.tmpl | grep -oE "\.\w+(\.\w+)*" | sort -u
 .Git.ref
 .Git.sha
+.Git.url
 .Release.arch
 .Release.os
 .Release.version
