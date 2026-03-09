@@ -7,9 +7,9 @@
 
 ########### stage: builder
 FROM quay.io/rockylinux/rockylinux:9.7.20251123 AS builder
-LABEL org.opencontainers.image.authors "wuhui.zuo@pingcap.com"
-LABEL org.opencontainers.image.description "binary builder for TiKV with FIPS support"
-LABEL org.opencontainers.image.source "https://github.com/PingCAP-QE/artifacts"
+LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
+LABEL org.opencontainers.image.description="binary builder for TiKV with FIPS support"
+LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install packages.
 RUN --mount=type=cache,target=/var/cache/dnf \
@@ -25,7 +25,7 @@ RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aar
 
 # install rust toolchain
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s - -y --default-toolchain none
-ENV PATH /root/.cargo/bin/:$PATH
+ENV PATH=/root/.cargo/bin/:$PATH
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder

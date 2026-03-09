@@ -25,7 +25,7 @@ RUN TAR_DIR="tiflash-${TIFLASH_REF}"; \
     popd && \
     rm -rf tiflash.tar.gz "$TAR_DIR"
 
-ENV TZ Asia/Shanghai
+ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ENV PATH="/opt/cmake/bin:/usr/local/bin/:${PATH}:/usr/local/go/bin:/root/.cargo/bin" \
@@ -56,7 +56,7 @@ RUN /ws/output/tiflash/tiflash version
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.1
 
-ENV LD_LIBRARY_PATH /tiflash
+ENV LD_LIBRARY_PATH=/tiflash
 COPY --from=building /ws/output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]

@@ -32,14 +32,14 @@ RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo "x86_64" || echo "aarch64"); \
     tar -xzvf buf-Linux-${ARCH}.tar.gz -C /usr/local/bin && \
     chmod +x /usr/local/bin/buf && \
     rm -f buf-Linux-${ARCH}.tar.gz
-ENV PATH /usr/local/bin/buf/bin/:$PATH
+ENV PATH=/usr/local/bin/buf/bin/:$PATH
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
 ARG GOLANG_VERSION=1.25.7
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
-ENV PATH /usr/local/go/bin/:$PATH
+ENV PATH=/usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 # Install go tools
@@ -48,7 +48,7 @@ RUN go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
 RUN go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.23.0
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1
-ENV PATH /root/go/bin/:$PATH
+ENV PATH=/root/go/bin/:$PATH
 
 # install tools: tiup
 # renovate: datasource=github-release depName=pingcap/tiup
