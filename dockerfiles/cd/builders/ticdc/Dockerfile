@@ -35,15 +35,18 @@ USER builder
 
 ########### stage: building
 FROM builder AS building
+
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make cdc -C /ws
+# only for verify the builder.
+RUN GOPROXY=${GOPROXY} make kafka_consumer pulsar_consumer storage_consumer -C /ws
 RUN /ws/bin/cdc version
 
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tools-base:v1.11.1
-COPY --from=building /ws/bin/cdc /cdc
 
+COPY --from=building /ws/bin/cdc /cdc
 EXPOSE 8300
 CMD ["/cdc"]
 
