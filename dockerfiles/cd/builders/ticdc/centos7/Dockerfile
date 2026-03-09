@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
     yum install --nogpgcheck -y epel-release deltarpm && \
     yum update --nogpgcheck -y && \
     yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install --nogpgcheck -y binutils-gold cyrus-sasl-dev libsasl
+    yum install --nogpgcheck -y binutils cyrus-sasl-lib cyrus-sasl-devel
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
