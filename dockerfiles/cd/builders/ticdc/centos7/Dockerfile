@@ -30,7 +30,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
 ARG GOLANG_VERSION=1.25.7
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
-ENV PATH /usr/local/go/bin/:$PATH
+ENV PATH=/usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
@@ -41,12 +41,14 @@ RUN --mount=type=cache,target=/var/cache/yum \
     echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
 USER builder
 
-########### stage: Buiding
+########### stage: building
 FROM builder AS building
 
 COPY . /ws
 ARG GOPROXY
 RUN GOPROXY=${GOPROXY} make cdc -C /ws
+# only for verify the builder.
+RUN GOPROXY=${GOPROXY} make kafka_consumer pulsar_consumer storage_consumer -C /ws
 RUN /ws/bin/cdc version
 
 ########### stage: Final image

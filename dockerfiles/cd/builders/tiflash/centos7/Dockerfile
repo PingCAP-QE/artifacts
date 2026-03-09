@@ -60,7 +60,7 @@ RUN /ws/output/tiflash/tiflash version
 ########### stage: Final image
 FROM ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.1
 
-ENV LD_LIBRARY_PATH /tiflash
+ENV LD_LIBRARY_PATH=/tiflash
 COPY --from=building /ws/output/tiflash /tiflash
 
 ENTRYPOINT ["/tiflash/tiflash", "server"]

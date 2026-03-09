@@ -1,6 +1,6 @@
 ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.1
 FROM $BASE_IMG
-ENV LD_LIBRARY_PATH /tiflash
+ENV LD_LIBRARY_PATH=/tiflash
 COPY --chmod=755 tiflash /tiflash
 # Enable jemalloc profiling, inactive by default.
 # See https://jemalloc.net/jemalloc.3.html for details.
