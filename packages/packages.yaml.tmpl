@@ -301,9 +301,6 @@ components:
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-monitor-reloader/image"
               tags:
-                {{- if .Git.sha }}
-                - {{ strings.TrimPrefix "reloader/" .Git.ref }}-{{ strings.Trunc 7 .Git.sha }}
-                {{- end }}
                 - {{ strings.TrimPrefix "reloader/" .Git.ref }}
             context: .
             dockerfile: reload/Dockerfile_buildx
