@@ -384,6 +384,14 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tiproxy
   hub-zot.pingcap.net/hub/pingcap/tiproxy/image: *img_tiproxy
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiproxy/image: *img_tiproxy
+  hub.pingcap.net/pingcap/tidb-monitor-reloader/image: &img_tidb_monitor_reloader
+    - description: delivery the version images.
+      tags_regex:
+        - ^v[0-9]+[.][0-9]+[.][0-9]+$
+      dest_repositories:
+        - docker.io/pingcap/tidb-monitor-reloader
+  hub-zot.pingcap.net/hub/pingcap/tidb-monitor-reloader/image: *img_tidb_monitor_reloader
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-monitor-reloader/image: *img_tidb_monitor_reloader
   hub.pingcap.net/pingcap/monitoring/image: &img_monitoring
     - <<: *sync_trunk_community
       dest_repositories:
