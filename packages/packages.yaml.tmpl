@@ -582,6 +582,7 @@ components:
           next-gen:
             - script: |
                 NEXT_GEN=1 PD_EDITION=Enterprise make build
+                bin/pd-server -V
                 bin/pd-server -V | grep -E "^Kernel Type:.*Next Generation"
           enterprise:
             - script: PD_EDITION=Enterprise make build tools
@@ -962,6 +963,7 @@ components:
           next-gen: # only since v8.5.4-0
             - script: |
                 NEXT_GEN=1 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
+                bin/tidb-server -V
                 bin/tidb-server -V | grep -E "^Kernel Type:.*Next Generation"
         artifacts:
           - name: "plugins-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
