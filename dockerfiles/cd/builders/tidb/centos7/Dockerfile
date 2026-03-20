@@ -15,12 +15,29 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 
 # install packages with BuildKit cache mount
-# This prevents package cache from being stored in image layers
+# This prevents package cache from being stored in image layers.
+# CentOS7 repo only ships git 1.8.x, so build a newer git from source.
+ARG GIT_VERSION=2.45.2
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools"
+    yum install --nogpgcheck -y \
+      ca-certificates \
+      curl \
+      expat-devel \
+      gcc \
+      gcc-c++ \
+      libcurl-devel \
+      make \
+      openssl-devel \
+      tar \
+      xz \
+      zlib-devel && \
+    curl -fsSL "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.xz" -o /tmp/git.tar.xz && \
+    tar -xf /tmp/git.tar.xz -C /tmp && \
+    make -j"$(nproc)" -C /tmp/git-${GIT_VERSION} prefix=/usr/local NO_TCLTK=YesPlease NO_GETTEXT=YesPlease NO_PERL=YesPlease CFLAGS="-std=gnu99" all && \
+    make -C /tmp/git-${GIT_VERSION} prefix=/usr/local NO_TCLTK=YesPlease NO_GETTEXT=YesPlease NO_PERL=YesPlease CFLAGS="-std=gnu99" install && \
+    yum clean all && \
+    rm -rf /tmp/git-${GIT_VERSION} /tmp/git.tar.xz && \
+    git --version
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
