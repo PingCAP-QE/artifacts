@@ -18,6 +18,7 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
 # This prevents package cache from being stored in image layers.
 # CentOS7 repo only ships git 1.8.x, so build a newer git from source.
 ARG GIT_VERSION=2.45.2
+ARG GIT_TAR_XZ_SHA256=51bfe87eb1c02fed1484051875365eeab229831d30d0cec5d89a14f9e40e9adb
 RUN --mount=type=cache,target=/var/cache/yum \
     yum install --nogpgcheck -y \
       ca-certificates \
@@ -32,6 +33,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
       xz \
       zlib-devel && \
     curl -fsSL "https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.xz" -o /tmp/git.tar.xz && \
+    echo "${GIT_TAR_XZ_SHA256}  /tmp/git.tar.xz" | sha256sum -c - && \
     tar -xf /tmp/git.tar.xz -C /tmp && \
     make -j"$(nproc)" -C /tmp/git-${GIT_VERSION} prefix=/usr/local NO_TCLTK=YesPlease NO_GETTEXT=YesPlease NO_PERL=YesPlease CFLAGS="-std=gnu99" all && \
     make -C /tmp/git-${GIT_VERSION} prefix=/usr/local NO_TCLTK=YesPlease NO_GETTEXT=YesPlease NO_PERL=YesPlease CFLAGS="-std=gnu99" install && \
