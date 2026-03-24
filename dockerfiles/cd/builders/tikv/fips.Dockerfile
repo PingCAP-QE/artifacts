@@ -15,7 +15,15 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf --enablerepo=crb install -y --allowerasing \
     git findutils gcc gcc-c++ make cmake dwz curl openssl-devel perl python3 \
-    libstdc++-static go
+    libstdc++-static
+
+# install golang toolchain
+# renovate: datasource=docker depName=golang
+ARG GOLANG_VERSION=1.25.8
+RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
+    curl -fsSL https://dl.google.com/go/go${GOLANG_VERSION}.linux-${ARCH}.tar.gz | tar -C /usr/local -xz
+ENV PATH=/usr/local/go/bin/:$PATH
+LABEL go-version="${GOLANG_VERSION}"
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
