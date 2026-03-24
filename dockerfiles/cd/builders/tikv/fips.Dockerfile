@@ -15,7 +15,7 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 RUN --mount=type=cache,target=/var/cache/dnf \
     dnf --enablerepo=crb install -y --allowerasing \
     git findutils gcc gcc-c++ make cmake dwz curl openssl-devel perl python3 \
-    libstdc++-static
+    libstdc++-static go
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf

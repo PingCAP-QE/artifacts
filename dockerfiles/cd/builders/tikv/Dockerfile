@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf upgrade-minimal -y && \
     dnf --enablerepo=powertools install -y \
     git findutils gcc gcc-c++ make cmake curl dwz openssl-devel perl python3  \
-    libstdc++-static
+    libstdc++-static go
 
 # install protoc.
 # renovate: datasource=github-release depName=protocolbuffers/protobuf
