@@ -931,6 +931,9 @@ components:
                 make server build_tools build_dumpling
           enterprise:
             - script: |
+                GO_TC="go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)"
+                export GOTOOLCHAIN="$GO_TC"
+                echo "using GOTOOLCHAIN=${GOTOOLCHAIN}"
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
             - script: |
                 # git checkout the enterprise-plugin code.
@@ -946,12 +949,22 @@ components:
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
                 # go plugin audit
-                pushd ../enterprise-plugin/audit && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/audit && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
             - script: |
                 # go plugin whitelist
-                pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/whitelist && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                server_go="$(go version -m bin/tidb-server | awk 'NR==1{print $2}')"
+                audit_go="$(go version -m bin/audit-1.so | awk 'NR==1{print $2}')"
+                whitelist_go="$(go version -m bin/whitelist-1.so | awk 'NR==1{print $2}')"
+                if [ "$server_go" != "$audit_go" ] || [ "$server_go" != "$whitelist_go" ]; then
+                  echo "go toolchain mismatch: tidb-server=${server_go}, audit=${audit_go}, whitelist=${whitelist_go}"
+                  exit 1
+                fi
+                echo "go toolchain aligned: ${server_go}"
           enterprise-without-plugins:
             - script: |
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
@@ -1080,6 +1093,9 @@ components:
                 make server build_tools build_dumpling
           enterprise:
             - script: |
+                GO_TC="go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)"
+                export GOTOOLCHAIN="$GO_TC"
+                echo "using GOTOOLCHAIN=${GOTOOLCHAIN}"
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
             - script: |
                 # git checkout the enterprise-plugin code.
@@ -1095,12 +1111,22 @@ components:
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
                 # go plugin audit
-                pushd ../enterprise-plugin/audit && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/audit && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
             - script: |
                 # go plugin whitelist
-                pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/whitelist && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                server_go="$(go version -m bin/tidb-server | awk 'NR==1{print $2}')"
+                audit_go="$(go version -m bin/audit-1.so | awk 'NR==1{print $2}')"
+                whitelist_go="$(go version -m bin/whitelist-1.so | awk 'NR==1{print $2}')"
+                if [ "$server_go" != "$audit_go" ] || [ "$server_go" != "$whitelist_go" ]; then
+                  echo "go toolchain mismatch: tidb-server=${server_go}, audit=${audit_go}, whitelist=${whitelist_go}"
+                  exit 1
+                fi
+                echo "go toolchain aligned: ${server_go}"
           enterprise-without-plugins:
             - script: |
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
@@ -1224,6 +1250,9 @@ components:
                 make server build_tools build_dumpling
           enterprise:
             - script: |
+                GO_TC="go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)"
+                export GOTOOLCHAIN="$GO_TC"
+                echo "using GOTOOLCHAIN=${GOTOOLCHAIN}"
                 TIDB_EDITION=Enterprise make server build_tools build_dumpling
             - script: |
                 # git checkout the enterprise-plugin code.
@@ -1239,12 +1268,22 @@ components:
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
                 # go plugin audit
-                pushd ../enterprise-plugin/audit && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/audit && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
             - script: |
                 # go plugin whitelist
-                pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
-                go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                GO_TC="${GO_TC:-go$(awk '/^go[[:space:]]+[0-9]/{print $2; exit}' go.mod)}"
+                pushd ../enterprise-plugin/whitelist && GOTOOLCHAIN="$GO_TC" go mod tidy &&  popd
+                GOTOOLCHAIN="$GO_TC" go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+                server_go="$(go version -m bin/tidb-server | awk 'NR==1{print $2}')"
+                audit_go="$(go version -m bin/audit-1.so | awk 'NR==1{print $2}')"
+                whitelist_go="$(go version -m bin/whitelist-1.so | awk 'NR==1{print $2}')"
+                if [ "$server_go" != "$audit_go" ] || [ "$server_go" != "$whitelist_go" ]; then
+                  echo "go toolchain mismatch: tidb-server=${server_go}, audit=${audit_go}, whitelist=${whitelist_go}"
+                  exit 1
+                fi
+                echo "go toolchain aligned: ${server_go}"
           failpoint:
             - script: |
                 make failpoint-enable
