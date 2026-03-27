@@ -23,7 +23,7 @@ profiles:
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-non-root-go1.25"
+        value: "{{ .GIT }}-centos7-non-root-go1.25-node22"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
