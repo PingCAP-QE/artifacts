@@ -19,13 +19,13 @@ build:
     concurrency: 0
     tryImportMissing: true
 profiles:
-  - name: go-1.25
+  - name: go-1.26
     patches:
       - op: replace
         path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-centos7-go1.25"
+        value: "{{ .GIT }}-centos7-go1.26"
       - op: add
         path: /build/artifacts/0/docker/buildArgs
         value:
           # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.25.8
+          GOLANG_VERSION: 1.26.1
