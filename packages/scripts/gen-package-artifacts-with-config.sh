@@ -4,12 +4,38 @@ set -euo pipefail
 RELEASE_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
 PROJECT_ROOT_DIR=$(realpath "${RELEASE_SCRIPTS_DIR}/../..")
 
+function normalize_profile_for_match() {
+    local profile="${1:-}"
+    case "$profile" in
+        nextgen|next-gen)
+            echo "next-gen"
+            ;;
+        *)
+            echo "$profile"
+            ;;
+    esac
+}
+
+function normalize_profile_for_output() {
+    local profile="${1:-}"
+    case "$profile" in
+        nextgen|next-gen)
+            echo "nextgen"
+            ;;
+        *)
+            echo "$profile"
+            ;;
+    esac
+}
+
 function main() {
     local component=$1
     local os=$2
     local arch=$3
     local version=$4
     local profile=$5
+    local profile_match
+    local profile_output
     local git_ref=$6
     local git_sha=$7
     local template_file="${8:-${PROJECT_ROOT_DIR}/packages/packages.yaml.tmpl}"
@@ -18,12 +44,15 @@ function main() {
     local git_url="${11:-}"
     local target_info="component: $component, os: $os, arch: $arch, version: $version, profile: $profile"
 
+    profile_match="$(normalize_profile_for_match "$profile")"
+    profile_output="$(normalize_profile_for_output "$profile")"
+
     # prepare template file's context.
     : >release-context.yaml
     yq -i ".Release.os = \"$os\"" release-context.yaml
     yq -i ".Release.arch = \"$arch\"" release-context.yaml
     yq -i ".Release.version = \"$version\"" release-context.yaml
-    yq -i ".Release.profile = \"$profile\"" release-context.yaml
+    yq -i ".Release.profile = \"$profile_match\"" release-context.yaml
     yq -i ".Release.registry = \"$registry\"" release-context.yaml
     yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
     yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
@@ -37,7 +66,7 @@ function main() {
             (.if == null or .if)
             and ([\"$os\"] - .os | length == 0)
             and ([\"$arch\"] - .arch | length == 0)
-            and ([\"$profile\"] - .profile | length == 0)
+            and ([\"$profile_match\"] - .profile | length == 0)
         ))" release-package.yaml
     yq -i '.routers[].artifactory = .artifactory' release-package.yaml
 
@@ -58,10 +87,11 @@ function main() {
         .license = (.license // \"Apache-2.0\") |
         .os = \"$os\" |
         .arch = \"$arch\" |
-        .profile = \"$profile\" |
+        .profile = \"$profile_output\" |
+        .profile_match = \"$profile_match\" |
         .version = \"$version\"
     " release-router.yaml
-    yq -i ".steps = .steps[.profile]" release-router.yaml
+    yq -i ".steps = .steps[\"$profile_match\"]" release-router.yaml
     yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml
     yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-router.yaml

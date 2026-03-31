@@ -23,7 +23,7 @@ image_definitions:
     tags_regex:
       # - branch naming tags: <branch>-next-gen
       # - branch commit exact tags: <branch>-<short-git-sha>-next-gen
-      # - semver tags: vX.Y.Z(-*)-next-gen
+      # - semver tags: vX.Y.Z(-*)-nextgen
       # - semver tags: vX.Y.Z-nextgen.YYYYMM.N
       # - calendar-style nextgen tags: v26.3.1-nextgen / v26.3.1-2-g<sha>-nextgen
       #
