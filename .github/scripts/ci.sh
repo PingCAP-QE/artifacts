@@ -74,8 +74,8 @@ function test_get_builder() {
         done
     done
 
-    # next-gen profile
-    local profile="next-gen"
+    # nextgen profile
+    local profile="nextgen"
     local components="tidb tiflash tikv pd ticdc"
     local versions="v8.5.4 v9.0.0"
     for cm in $components; do
@@ -220,8 +220,8 @@ function test_gen_package_artifacts_script() {
         done
     done
 
-    # next-gen profile
-    local profile="next-gen"
+    # nextgen profile
+    local profile="nextgen"
     local components="tidb tikv pd ticdc tiflash"
     local versions="v9.0.0 v8.5.4"
     for cm in $components; do
@@ -337,8 +337,8 @@ function test_gen_package_images_script() {
         done
     done
 
-    # next-gen profile
-    local profile="next-gen"
+    # nextgen profile
+    local profile="nextgen"
     local versions="v9.0.0 v8.5.4"
     local components="tidb tikv pd tiflash ticdc"
     for cm in $components; do

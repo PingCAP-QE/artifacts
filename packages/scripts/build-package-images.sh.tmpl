@@ -6,19 +6,29 @@
 # crane: https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md
 # oras: https://oras.land/docs/category/oras-commands/
 
-{{- $tag_suffix := "" }}
-{{- if ne .profile "release" }}
-{{- $tag_suffix = printf "-%s" .profile }}
-{{- end }}
-
 {{- $profile := .profile }}
+{{- $profile_match := (default $profile .profile_match) }}
+{{- $is_nextgen_profile := or (eq $profile "nextgen") (eq $profile "next-gen") (eq $profile_match "next-gen") }}
 {{- $base_tags := coll.Slice }}
 {{- range $index, $tag := .artifactory.tags }}
-    {{- if or ($tag | strings.Contains $profile) ($tag | strings.Contains ($profile | strings.ReplaceAll "-" "")) }}
-        {{- $base_tags = append $tag $base_tags }}
-    {{- else }}
-        {{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
+    {{- $tag_has_profile := or
+          ($tag | strings.Contains $profile)
+          ($tag | strings.Contains ($profile | strings.ReplaceAll "-" ""))
+          ($tag | strings.Contains $profile_match)
+          ($tag | strings.Contains ($profile_match | strings.ReplaceAll "-" "")) }}
+    {{- $tag_suffix := "" }}
+    {{- if and (ne $profile "release") (not $tag_has_profile) }}
+        {{- if $is_nextgen_profile }}
+            {{- if ($tag | regexp.Match `^v[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9]+-g[0-9a-f]{6,10})?$`) }}
+                {{- $tag_suffix = "-nextgen" }}
+            {{- else }}
+                {{- $tag_suffix = "-next-gen" }}
+            {{- end }}
+        {{- else }}
+            {{- $tag_suffix = printf "-%s" $profile }}
+        {{- end }}
     {{- end }}
+    {{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
 {{- end }}
 {{- $base_tags = ($base_tags | coll.Uniq) }}
 
