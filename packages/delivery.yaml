@@ -418,7 +418,7 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/tidb-binlog
         - docker.io/pingcap/tidb-binlog-enterprise
   hub-zot.pingcap.net/hub/pingcap/tidb-binlog/image: *img_tidb_binlog
-  hub.pingcap.net/tikv/tikv/image: &img_tikv
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image: &img_tikv
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
@@ -438,8 +438,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
   hub-zot.pingcap.net/hub/tikv/tikv/image: *img_tikv
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image: *img_tikv
-  hub.pingcap.net/tikv/pd/image: &img_pd
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image: &img_pd
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/pd
@@ -456,7 +455,6 @@ image_copy_rules:
         - gcr.io/pingcap-public/dbaas/pd
         - docker.io/pingcap/pd-enterprise
   hub-zot.pingcap.net/hub/tikv/pd/image: *img_pd
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image: *img_pd
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow-operator/image: &img_tiflow_operator
     - description: delivery the trunk branch extractly images.
       tags_regex:
