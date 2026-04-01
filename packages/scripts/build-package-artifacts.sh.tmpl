@@ -4,32 +4,30 @@
 # It needs oras tools, but it can be run in different containers for separated stages.
 # oras: https://oras.land/docs/category/oras-commands/
 
-{{- $no_profile_tag_suffix := printf "_%s_%s"  .os .arch -}}
-{{- $tags := coll.Slice }}
+{{- $tag_suffix := "" }}
+{{- if ne .profile "release" }}
+{{- $tag_suffix = printf "-%s" .profile }}
+{{- end }}
+
 {{- $profile := .profile }}
-{{- $profile_match := (default $profile .profile_match) }}
-{{- $is_nextgen_profile := or (eq $profile "nextgen") (eq $profile "next-gen") (eq $profile_match "next-gen") }}
+{{- $base_tags := coll.Slice }}
 {{- range $index, $tag := .artifactory.tags }}
-{{- $tag_has_profile := or
-      ($tag | strings.Contains $profile)
-      ($tag | strings.Contains ($profile | strings.ReplaceAll "-" ""))
-      ($tag | strings.Contains $profile_match)
-      ($tag | strings.Contains ($profile_match | strings.ReplaceAll "-" "")) }}
-{{- $suffix := $no_profile_tag_suffix }}
-{{- if and (ne $profile "release") (not $tag_has_profile) }}
-  {{- if $is_nextgen_profile }}
-    {{- if ($tag | regexp.Match `^v[0-9]+[.][0-9]+[.][0-9]+(?:-[0-9]+-g[0-9a-f]{6,10})?$`) }}
-{{- $suffix = printf "-nextgen%s" $no_profile_tag_suffix }}
+    {{- if or ($tag | strings.Contains $profile) ($tag | strings.Contains ($profile | strings.ReplaceAll "-" "")) }}
+        {{- $base_tags = append $tag $base_tags }}
     {{- else }}
-{{- $suffix = printf "-next-gen%s" $no_profile_tag_suffix }}
+        {{- $base_tags = append (printf "%s%s" $tag $tag_suffix) $base_tags }}
+        {{- if eq $profile "nextgen" }}
+            {{- $base_tags = append (printf "%s%s" $tag "-next-gen") $base_tags }}
+        {{- end }}
     {{- end }}
-  {{- else }}
-{{- $suffix = printf "-%s%s" $profile $no_profile_tag_suffix }}
-  {{- end }}
 {{- end }}
-{{- $tags = append (printf "%s%s" $tag $suffix) $tags }}
+{{- $base_tags = ($base_tags | coll.Uniq) }}
+
+{{- $platform_tag_suffix := printf "%s_%s" .os .arch }}
+{{- $tags := coll.Slice }}
+{{- range $index, $tag := $base_tags }}
+{{- $tags = append (printf "%s_%s" $tag $platform_tag_suffix) $tags }}
 {{- end }}
-{{- $tags = ($tags | coll.Uniq) }}
 
 set -exo pipefail
 
@@ -276,7 +274,7 @@ EOF
     ' "$save_file"
     SOURCE_URL="$source_url" yq -p json -o json -i '.["org.opencontainers.image.source"] = strenv(SOURCE_URL)' "$save_file"
 
-    {{- if or (has (coll.Slice "release" "nextgen" "next-gen") .profile) (has (coll.Slice "release" "next-gen") .profile_match) }}
+    {{- if has (coll.Slice "release" "nextgen" "next-gen") .profile }}
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}
     {{- with .tiup }}
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] += {{ . | toJSON }}' "$save_file"

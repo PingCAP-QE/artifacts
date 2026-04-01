@@ -8,7 +8,7 @@ function normalize_profile_for_match() {
     local profile="${1:-}"
     case "$profile" in
         nextgen|next-gen)
-            echo "next-gen"
+            echo "nextgen"
             ;;
         *)
             echo "$profile"

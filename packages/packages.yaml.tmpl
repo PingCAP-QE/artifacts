@@ -573,15 +573,15 @@ components:
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v20240325-103-g043adb3-go1.18
     routers:
-      - description: For range [v8.5.4-0, ), support next-gen build since the version.
+      - description: For range [v8.5.4-0, ), support nextgen build since the version.
         if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, next-gen, enterprise, failpoint]
+        profile: [release, nextgen, enterprise, failpoint]
         steps:
           release:
             - script: make build
-          next-gen:
+          nextgen:
             - script: |
                 NEXT_GEN=1 PD_EDITION=Enterprise make build
                 bin/pd-server -V
@@ -928,7 +928,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, enterprise-without-plugins, failpoint, next-gen]
+        profile: [release, enterprise, enterprise-without-plugins, failpoint, nextgen]
         steps:
           release:
             - script: |
@@ -964,7 +964,7 @@ components:
                 make failpoint-enable
                 make server build_tools build_dumpling # failpoint
                 make failpoint-disable
-          next-gen: # only since v8.5.4-0
+          nextgen: # only since v8.5.4-0
             - script: |
                 NEXT_GEN=1 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
                 bin/tidb-server -V
@@ -1872,7 +1872,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint, next-gen]
+        profile: [release, enterprise, failpoint, nextgen]
         steps:
           release:
             - os: linux
@@ -1902,7 +1902,7 @@ components:
                 ./release-linux-llvm/scripts/build-debug.sh
                 mkdir outputs
                 mv release-linux-llvm/tiflash outputs/tiflash
-          next-gen:
+          nextgen:
             - script: |
                 cargo --version
                 export TIFLASH_EDITION=Enterprise
@@ -2895,14 +2895,14 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.4-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, next-gen]
+        profile: [release, nextgen]
         steps:
           release:
             - script: make cdc
             - os: linux
               arch: amd64
               script: make kafka_consumer pulsar_consumer storage_consumer # for test tools
-          next-gen:
+          nextgen:
             - script: NEXT_GEN=1 make cdc
         artifacts:
           - name: "cdc-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -2996,7 +2996,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
-        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "10" "8" (eq .Release.profile "next-gen") }}"
+        image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "10" "8" (eq .Release.profile "nextgen") }}"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.12.14-1-g33e22ac-fips
     routers:
@@ -3179,9 +3179,9 @@ components:
       - description: For Next-Gen
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [next-gen]
+        profile: [nextgen]
         steps:
-          next-gen:
+          nextgen:
             - os: linux
               script: |
                 latest_devtoolset_dir=$(ls -d /opt/rh/devtoolset-* | sort -t- -k2,2nr | head -1)
