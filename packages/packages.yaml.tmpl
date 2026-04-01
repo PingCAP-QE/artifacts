@@ -22,6 +22,16 @@ lt6.5.12/
 {{- end }}
 {{- end -}}
 
+{{ define "get_artifactory_exact_git_ref_tag" -}}
+{{- $ref := (strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower) -}}
+{{- $shortSha := (strings.Trunc 7 .Git.sha) -}}
+{{- if or (eq $shortSha "") (regexp.Match (printf "(^|-)g?%s$" $shortSha) $ref) -}}
+{{ $ref }}
+{{- else -}}
+{{ printf "%s-%s" $ref $shortSha }}
+{{- end -}}
+{{- end -}}
+
 components:
   advanced-statefulset:
     desc:
@@ -33,7 +43,7 @@ components:
     artifactory:
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -64,7 +74,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/ctl/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -271,7 +281,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/monitoring/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -428,7 +438,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/ng-monitoring/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -552,7 +562,7 @@ components:
       package_repo: "{{ .Release.registry }}/tikv/pd/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -902,7 +912,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1382,7 +1392,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb-tools/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1430,7 +1440,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb-ctl/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1469,7 +1479,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb-binlog/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1559,7 +1569,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb-operator/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1731,7 +1741,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -1858,7 +1868,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tiflash/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -2210,7 +2220,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tiflow/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -2880,7 +2890,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/ticdc/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -2957,7 +2967,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tiflow-operator/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -2989,7 +2999,7 @@ components:
       package_repo: "{{ .Release.registry }}/tikv/tikv/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -3237,7 +3247,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tiproxy/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -3289,7 +3299,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tici/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -3336,7 +3346,7 @@ components:
       package_repo: "{{ .Release.registry }}/pingcap/tiup/package"
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
@@ -3406,7 +3416,7 @@ components:
     artifactory:
       tags:
         {{- if .Git.sha }}
-        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}-{{ strings.Trunc 7 .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
         {{- end }}
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}

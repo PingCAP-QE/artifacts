@@ -439,6 +439,51 @@ function test_gen_offline_package_artifacts_script() {
     done
 }
 
+function assert_generated_tag_without_duplicate_sha() {
+    local script_path=$1
+    local expected_tag=$2
+    local duplicated_tag=$3
+
+    if ! grep -qF -- "$expected_tag" "$script_path"; then
+        echo "Expected tag '$expected_tag' not found in $script_path"
+        exit 1
+    fi
+
+    if grep -qF -- "$duplicated_tag" "$script_path"; then
+        echo "Duplicated tag '$duplicated_tag' unexpectedly found in $script_path"
+        exit 1
+    fi
+}
+
+function test_git_tag_short_sha_dedup() {
+    local component="tidb"
+    local os="linux"
+    local arch="amd64"
+    local profile="release"
+    local git_sha="bfa749d1234567890abcdef1234567890abcd"
+    local registry="us-docker.pkg.dev/pingcap-testing-account/hub"
+    local image_script="./packages/scripts/gen-package-images-with-config.sh"
+    local artifact_script="./packages/scripts/gen-package-artifacts-with-config.sh"
+    local cases=(
+        "v8.5.6-20260331-bfa749d|v8.5.6-20260331-bfa749d|v8.5.6-20260331-bfa749d-bfa749d"
+        "v26.3.1-2-gbfa749d|v26.3.1-2-gbfa749d|v26.3.1-2-gbfa749d-bfa749d"
+    )
+
+    for test_case in "${cases[@]}"; do
+        IFS='|' read -r git_ref expected_tag duplicated_tag <<< "$test_case"
+
+        echo -en "[🏷️📦] $component $git_ref:\t"
+        "$artifact_script" "$component" "$os" "$arch" "$git_ref" "$profile" "$git_ref" "$git_sha" "" "" "$registry" "$DEFAULT_GIT_URL"
+        shellcheck -S error packages/scripts/build-package-artifacts.sh
+        assert_generated_tag_without_duplicate_sha packages/scripts/build-package-artifacts.sh "$expected_tag" "$duplicated_tag"
+
+        echo -en "[🏷️💿] $component $git_ref:\t"
+        "$image_script" "$component" "$os" "$arch" "$git_ref" "$profile" "$git_ref" "$git_sha" "" "" "$registry" "$DEFAULT_GIT_URL"
+        shellcheck -S error packages/scripts/build-package-images.sh
+        assert_generated_tag_without_duplicate_sha packages/scripts/build-package-images.sh "$expected_tag" "$duplicated_tag"
+    done
+}
+
 function pre_checks() {
     which shellcheck || (
         echo "The script need 'shellcheck' tool, please install it!"
@@ -463,6 +508,10 @@ function main() {
     test_gen_package_images_script
     test_gen_package_images_script_freedom_releasing
     echo "<<<<<<<< test_gen_package_images_script <<<<<<<<<<"
+
+    echo ">>>>>>>> test_git_tag_short_sha_dedup >>>>>>>>>>>"
+    test_git_tag_short_sha_dedup
+    echo "<<<<<<<< test_git_tag_short_sha_dedup <<<<<<<<<<<"
 
     echo ">>>> test_gen_offline_package_artifacts_script >>>"
     test_gen_offline_package_artifacts_script
