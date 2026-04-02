@@ -15,6 +15,20 @@
       "enabled": false
     },
     {
+      "description": "Only allow patch-level Go toolchain updates",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchDepNames": [
+        "golang",
+        "go"
+      ],
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "enabled": false
+    },
+    {
       "matchDepNames": [
         "golang",
         "go"
