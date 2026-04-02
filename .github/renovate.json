@@ -24,6 +24,7 @@
         "go"
       ],
       "matchUpdateTypes": [
+        "major",
         "minor"
       ],
       "enabled": false
