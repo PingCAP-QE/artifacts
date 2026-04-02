@@ -80,7 +80,7 @@ build:
         dockerfile: tikv-base/fips.Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.11.0-fips"
+      template: "v1.11.2-fips"
   local:
     useDockerCLI: true
     useBuildkit: true
