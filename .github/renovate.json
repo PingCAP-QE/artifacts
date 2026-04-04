@@ -38,6 +38,15 @@
       "groupName": null
     },
     {
+      "description": "Do not update Dockerfiles for release-6.5 and lower image paths",
+      "matchFileNames": [
+        "dockerfiles/bases/**/release-6.5.Dockerfile",
+        "dockerfiles/products/**/~6.5.12/**",
+        "dockerfiles/products/**/lt6.5.12/**"
+      ],
+      "enabled": false
+    },
+    {
       "matchUpdateTypes": [
         "major",
         "minor"
