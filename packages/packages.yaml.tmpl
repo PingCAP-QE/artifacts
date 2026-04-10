@@ -2287,7 +2287,7 @@ components:
                 node --version && npm --version
                 npm install -g yarn
             - script: |
-                NEXT_GEN=1 make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
+                NEXT_GEN=1 make dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
           - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
@@ -2347,6 +2347,7 @@ components:
                 dmctl component of Data Migration Platform.
               entrypoint: dmctl/dmctl
           - name: "sync-diff-inspector-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            if: {{ ne "nextgen" .Release.profile }}
             files:
               - name: sync_diff_inspector
                 src:
@@ -2357,6 +2358,7 @@ components:
                 sync-diff-inspector is a tool used to verify the consistency across different MySQL-compatible data sources.
               entrypoint: sync_diff_inspector
           - name: container image - sync-diff-inspector
+            if: {{ ne "nextgen" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/sync-diff-inspector"
@@ -2381,6 +2383,7 @@ components:
                 src:
                   path: bin/dmctl
           - name: container image - tiflow-engine
+            if: {{ ne "nextgen" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/tiflow"
