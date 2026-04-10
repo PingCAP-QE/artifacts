@@ -2244,7 +2244,7 @@ components:
         if: {{ semver.CheckConstraint ">= v9.0.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release]
+        profile: [release, nextgen]
         steps:
           release:
             - os: darwin
@@ -2267,6 +2267,27 @@ components:
                 npm install -g yarn
             - script: |
                 make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
+          nextgen:
+            - os: darwin
+              description: install nodejs toolchain.
+              script: |
+                NODE_VERSION="v16.20.2"
+                NVM_VERSION="v0.39.5"
+                NVM_DIR="$HOME/.nvm"
+                mkdir -p $NVM_DIR
+
+                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash
+                fi
+                . $NVM_DIR/nvm.sh
+                nvm install ${NODE_VERSION}
+                nvm use ${NODE_VERSION}
+                nvm alias default ${NODE_VERSION}
+
+                node --version && npm --version
+                npm install -g yarn
+            - script: |
+                NEXT_GEN=1 make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
         artifacts:
           - name: "dm-master-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:

@@ -35,6 +35,7 @@ function srcImages(
     "pingcap/tiflash/image",
     "pingcap/tiflow/images/cdc",
     "pingcap/tiflow/images/dm",
+    "pingcap/tiflow/images/sync-diff-inspector",
     "pingcap/tiflow/images/tiflow",
     "tikv/pd/image",
     "tikv/tikv/image",

@@ -486,6 +486,18 @@ image_copy_rules:
     - <<: *sync_nextgen
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/ticdc
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiflow/images/dm:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - us.gcr.io/pingcap-public/tidbx/dm
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiflow/images/tiflow:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - us.gcr.io/pingcap-public/tidbx/tiflow
+  us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiflow/images/sync-diff-inspector:
+    - <<: *sync_nextgen
+      dest_repositories:
+        - us.gcr.io/pingcap-public/tidbx/sync-diff-inspector
   us-docker.pkg.dev/pingcap-testing-account/tidbx/tikv/pd/image:
     - <<: *sync_nextgen
       dest_repositories:
