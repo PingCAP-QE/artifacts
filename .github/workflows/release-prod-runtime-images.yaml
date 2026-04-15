@@ -9,6 +9,9 @@ on:
       - "dockerfiles/bases/**/*.Dockerfile"
       - "dockerfiles/bases/skaffold.yaml"
 
+permissions:
+  contents: read
+
 jobs:
   skaffold:
     name: publish images with skaffold
@@ -24,28 +27,29 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          persist-credentials: false
           fetch-depth: "0"
           fetch-tags: "true"
 
       # https://github.com/docker/setup-qemu-action
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a
       # https://github.com/docker/setup-buildx-action
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup skaffold
-        uses: heypigeonhq/setup-skaffold@v1.1.0
+        uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
           version: 2.16.0
 
@@ -55,7 +59,7 @@ jobs:
           sudo install manifest-tool-linux-amd64 /usr/local/bin/manifest-tool
 
       - name: Cache layers
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           path: "~/.skaffold/cache"
           key: skaffold/prod-bases-${{ github.sha }}
@@ -85,7 +89,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner on pingcap-base
         if: matrix.module == 'default'
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
         with:
           image-ref: ghcr.io/pingcap-qe/bases/pingcap-base:${{ steps.pingcap-base-tag.outputs.tag }}
           format: table

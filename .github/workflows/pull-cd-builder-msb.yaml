@@ -7,22 +7,42 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.issue.number }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   check-comment:
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.check.outputs.should-run }}
-      component: ${{ steps.check.outputs.component }}
+      task: ${{ steps.check.outputs.task }}
     steps:
       - id: check
-        run: |
-          COMMENT="${{ github.event.comment.body }}"
-          if [[ $COMMENT =~ ^/just[[:space:]](.+)$ ]]; then
-            echo "should-run=true" >> $GITHUB_OUTPUT
-            echo "task=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
-          else
-            echo "should-run=false" >> $GITHUB_OUTPUT
-          fi
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        with:
+          script: |
+            const comment = context.payload.comment?.body ?? "";
+            const match = comment.match(/^\/just\s+([A-Za-z0-9._-]+)$/);
+            const allowedTasks = new Set([
+              "all",
+              "msb-tidb",
+              "msb-pd",
+              "msb-cdc",
+              "msb-dm",
+              "msb-tidb-dashboard",
+              "msb-tidb-operator",
+              "msb-ng-monitoring",
+              "msb-tiflash",
+              "msb-tikv",
+            ]);
+
+            if (!match || !allowedTasks.has(match[1])) {
+              core.setOutput("should-run", "false");
+              return;
+            }
+
+            core.setOutput("should-run", "true");
+            core.setOutput("task", match[1]);
 
   just-build:
     needs: check-comment
@@ -36,23 +56,25 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Set up just tool
-        uses: extractions/setup-just@v3
+        uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           just-version: 1.34.0 # optional semver specification, otherwise latest
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v4
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -61,6 +83,7 @@ jobs:
       - name: Run specific component build
         working-directory: dockerfiles
         run: |
+          set -euo pipefail
           TASK="${{ needs.check-comment.outputs.task }}"
           if [ "$TASK" == "all" ]; then
             echo "Run all tasks"
@@ -75,11 +98,11 @@ jobs:
             just msb-tikv
           else
             echo "run Just task: $TASK"
-            just $TASK
+            just "$TASK"
           fi
 
       - name: Comment on PR with results
-        uses: actions/github-script@v8
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
