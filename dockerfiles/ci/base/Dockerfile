@@ -73,7 +73,7 @@ ENV PATH=$PATH:/opt/gradle-${GRADLE_VER}/bin
 
 #   -> apache-maven
 ARG MAVEN_VER=3.8.9
-RUN wget https://downloads.apache.org/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz && \
+RUN wget https://archive.apache.org/dist/maven/maven-3/${MAVEN_VER}/binaries/apache-maven-${MAVEN_VER}-bin.tar.gz && \
     tar -xf apache-maven-${MAVEN_VER}-bin.tar.gz -C /opt && \
     rm apache-maven-${MAVEN_VER}-bin.tar.gz
 ENV PATH=$PATH:/opt/apache-maven-${MAVEN_VER}/bin
