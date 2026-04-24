@@ -43,6 +43,7 @@ jobs:
             jenkins-special:
               - 'dockerfiles/ci/jenkins/tikv/**'
               - 'dockerfiles/ci/jenkins/tiflash/**'
+              - 'dockerfiles/ci/jenkins/docker/**'
             tici:
               - 'dockerfiles/ci/tici/**'
             skaffold:
@@ -121,7 +122,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [ci-jenkins-tiflash, ci-jenkins-tikv]
+        module: [ci-jenkins-tiflash, ci-jenkins-tikv, ci-jenkins-docker-build-essential-java]
         platform: [linux/amd64, linux/arm64]
     steps:
       - name: Checkout sources
