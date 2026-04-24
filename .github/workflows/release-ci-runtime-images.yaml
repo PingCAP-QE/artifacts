@@ -42,6 +42,7 @@ jobs:
             jenkins-special:
               - 'dockerfiles/ci/jenkins/tikv/**'
               - 'dockerfiles/ci/jenkins/tiflash/**'
+              - 'dockerfiles/ci/jenkins/docker/**'
             tici:
               - 'dockerfiles/ci/tici/**'
             skaffold:
@@ -128,7 +129,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        module: [ci-jenkins-tiflash, ci-jenkins-tikv]
+        module: [ci-jenkins-tiflash, ci-jenkins-tikv, ci-jenkins-docker-build-essential-java]
     steps:
       - name: Checkout sources
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -165,6 +166,15 @@ jobs:
             --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/ci/jenkins \
             --module ${{ matrix.module }}
+
+      - name: Tag stable build-essential-java
+        if: ${{ matrix.module == 'ci-jenkins-docker-build-essential-java' }}
+        run: |
+          set -euo pipefail
+          git_version="$(git describe --tags --always)"
+          src="ghcr.io/pingcap-qe/ci/jenkins/docker:build-essential-java-${git_version}"
+          dst="ghcr.io/pingcap-qe/ci/jenkins/docker:build-essential-java"
+          docker buildx imagetools create -t "${dst}" "${src}"
 
   skaffold-common:
     name: publish images with skaffold
