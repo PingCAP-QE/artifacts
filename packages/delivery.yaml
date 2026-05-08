@@ -49,13 +49,7 @@ image_definitions:
       - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-[0-9]+-g[0-9a-f]+)$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+[.]pre(-[0-9]+-g[0-9a-f]+)$
       - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre(-[0-9]+-g[0-9a-f]+)$
-  sync_pre_community_and_failpoint: &sync_pre_community_and_failpoint
-    description: delivery community and failpoint images for release branches.
-    tags_regex:
-      - ^release-[0-9]+[.][0-9]+(-beta[.][0-9]+)?(-failpoint)?$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-pre(-failpoint)?$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-beta[.][0-9]+[.]pre(-failpoint)?$
-      - ^v[0-9]+[.][0-9]+[.][0-9]+-rc[.][0-9]+[.]pre(-failpoint)?$
+
   sync_pre_enterprise: &sync_pre_enterprise
     description: delivery the enterprise RC images.
     tags_regex:
@@ -90,15 +84,14 @@ image_definitions:
     description: delivery the community GA image to enterprise repos.
 
 image_copy_rules:
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/advanced-statefulset/image: &img_advanced_statefulset
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/advanced-statefulset/image:
     - description: delivery the version images.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-.+)?$
       dest_repositories:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
-  hub-zot.pingcap.net/hub/pingcap/advanced-statefulset/image: *img_advanced_statefulset
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image: &img_ticdc
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
@@ -128,8 +121,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc
-  hub-zot.pingcap.net/hub/pingcap/ticdc/image: *img_ticdc
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-operator: &img_tidb-operator
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-operator:
     - description: delivery the version images, exclude pre release types.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
@@ -140,8 +132,7 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-operator
         - gcr.io/pingcap-public/dbaas/tidb-operator
-  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/tidb-operator: *img_tidb-operator
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-backup-manager: &tidb-backup-manager
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/tidb-backup-manager:
     - description: delivery the version images, include pre release types.
       tags_regex:
         - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(pre(\.|$).*)|$)$
@@ -158,16 +149,14 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-backup-manager
         - gcr.io/pingcap-public/dbaas/tidb-backup-manager
-  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/tidb-backup-manager: *tidb-backup-manager
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/br-federation-manager: &br-federation-manager
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/br-federation-manager:
     - description: delivery the version images, execlude the pre release types.
       tags_regex:
         - ^(v1[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
       dest_repositories:
         - docker.io/pingcap/br-federation-manager
         - gcr.io/pingcap-public/dbaas/br-federation-manager
-  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/br-federation-manager: *br-federation-manager
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/prestop-checker: &prestop-checker
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/prestop-checker:
     - description: delivery the v2 version images.
       tags_regex:
         - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
@@ -178,8 +167,7 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-operator-prestop-checker
         - gcr.io/pingcap-public/dbaas/tidb-operator-prestop-checker
-  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/prestop-checker: *prestop-checker
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/resource-syncer: &resource-syncer
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-operator/images/resource-syncer:
     - description: delivery the v2 version images.
       tags_regex:
         - ^(v2[.][0-9]+[.][0-9]+)(-(?!pre(\.|$))(?![0-9a-f]{7,}(?:_|$)).*)?$
@@ -190,8 +178,7 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tidb-operator-resource-syncer
         - gcr.io/pingcap-public/dbaas/tidb-operator-resource-syncer
-  hub-zot.pingcap.net/hub/pingcap/tidb-operator/images/resource-syncer: *resource-syncer
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server: &img_tidb-server
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-server:
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
@@ -212,8 +199,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb
-  hub-zot.pingcap.net/hub/pingcap/tidb/images/tidb-server: *img_tidb-server
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br: &img_br
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/br:
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
@@ -234,8 +220,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/br
-  hub-zot.pingcap.net/hub/pingcap/tidb/images/br: *img_br
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning: &img_tidb_lightning
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/tidb-lightning:
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
@@ -256,8 +241,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-lightning
-  hub-zot.pingcap.net/hub/pingcap/tidb/images/tidb-lightning: *img_tidb_lightning
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling: &img_dumpling
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb/images/dumpling:
     - <<: *sync_trunk_enterprise
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
@@ -278,8 +262,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dumpling
-  hub-zot.pingcap.net/hub/pingcap/tidb/images/dumpling: *img_dumpling
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/cdc: &img_tiflow_cdc
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/cdc:
     # We switch the `master` tag image building from `pingcap/tiflow` to `pingcap/ticdc` repo.
     # Since v9.0.0-beta.1, the image is built and synced from the pingcap/ticdc repo
     # - <<: *sync_trunk_community
@@ -296,8 +279,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ticdc
         - docker.io/pingcap/ticdc-enterprise
-  hub-zot.pingcap.net/hub/pingcap/tiflow/images/cdc: *img_tiflow_cdc
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/dm: &img_dm
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/dm:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dm
@@ -313,8 +295,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/dm
         - docker.io/pingcap/dm-enterprise
-  hub-zot.pingcap.net/hub/pingcap/tiflow/images/dm: *img_dm
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/tiflow: &img_tiflow
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/tiflow:
     - description: delivery the trunk branch extractly images.
       tags_regex:
         - ^master-[0-9a-f]+$
@@ -327,16 +308,14 @@ image_copy_rules:
     - <<: *sync_ga_community
       dest_repositories:
         - gcr.io/pingcap-public/tidbcloud/tiflow
-  hub-zot.pingcap.net/hub/pingcap/tiflow/images/tiflow: *img_tiflow
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/sync-diff-inspector: &img_sync_diff_inspector
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/sync-diff-inspector:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/sync-diff-inspector
     - <<: *sync_ga_community
       dest_repositories:
         - docker.io/pingcap/sync-diff-inspector
-  hub-zot.pingcap.net/hub/pingcap/tiflow/images/sync-diff-inspector: *img_sync_diff_inspector
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image: &img_tiflash
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflash/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tiflash
@@ -355,8 +334,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tiflash
-  hub-zot.pingcap.net/hub/pingcap/tiflash/image: *img_tiflash
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiproxy/image: &img_tiproxy
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiproxy/image:
     - description: publish trunk images.
       tags_regex:
         - ^(main|master)(-.+)?$
@@ -369,8 +347,7 @@ image_copy_rules:
       dest_repositories:
         - docker.io/pingcap/tiproxy
         - gcr.io/pingcap-public/dbaas/tiproxy
-  hub-zot.pingcap.net/hub/pingcap/tiproxy/image: *img_tiproxy
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/monitoring/image: &img_monitoring
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/monitoring/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-monitor-initializer
@@ -385,8 +362,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-monitor-initializer
         - docker.io/pingcap/tidb-monitor-initializer-enterprise
-  hub-zot.pingcap.net/hub/pingcap/monitoring/image: *img_monitoring
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ng-monitoring/image: &img_ng_monitoring
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ng-monitoring/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/ng-monitoring
@@ -401,8 +377,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/ng-monitoring
         - docker.io/pingcap/ng-monitoring-enterprise
-  hub-zot.pingcap.net/hub/pingcap/ng-monitoring/image: *img_ng_monitoring
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-binlog/image: &img_tidb_binlog
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-binlog/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-binlog
@@ -417,8 +392,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tidb-binlog
         - docker.io/pingcap/tidb-binlog-enterprise
-  hub-zot.pingcap.net/hub/pingcap/tidb-binlog/image: *img_tidb_binlog
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image: &img_tikv
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/tikv/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
@@ -437,8 +411,7 @@ image_copy_rules:
     - <<: *sync_ga_community_fts
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/tikv
-  hub-zot.pingcap.net/hub/tikv/tikv/image: *img_tikv
-  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image: &img_pd
+  us-docker.pkg.dev/pingcap-testing-account/hub/tikv/pd/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/pd
@@ -454,8 +427,7 @@ image_copy_rules:
       dest_repositories:
         - gcr.io/pingcap-public/dbaas/pd
         - docker.io/pingcap/pd-enterprise
-  hub-zot.pingcap.net/hub/tikv/pd/image: *img_pd
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow-operator/image: &img_tiflow_operator
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow-operator/image:
     - description: delivery the trunk branch extractly images.
       tags_regex:
         - ^master-[0-9a-f]+$
@@ -468,8 +440,7 @@ image_copy_rules:
     - <<: *sync_ga_community
       dest_repositories:
         - gcr.io/pingcap-public/tidbcloud/tiflow-operator
-  hub-zot.pingcap.net/hub/pingcap/tiflow-operator/image: *img_tiflow_operator
-  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-dashboard/image: &img_tidb_dashboard
+  us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-dashboard/image:
     - <<: *sync_trunk_community
       dest_repositories:
         - docker.io/pingcap/tidb-dashboard
@@ -478,7 +449,6 @@ image_copy_rules:
         - docker.io/pingcap/tidb-dashboard
         - uhub.service.ucloud.cn/pingcap/tidb-dashboard
         - gcr.io/pingcap-public/dbaas/tidb-dashboard
-  hub-zot.pingcap.net/hub/pingcap/tidb-dashboard/image: *img_tidb_dashboard
 
   ### nextgen images built on cloud environments
   # TODO(wuhuizuo): remove the dest repositories `us-docker.pkg.dev/pingcap-testing-account/hub` when we finished the migration.
@@ -533,7 +503,7 @@ image_copy_rules:
 
 # rules to publish tiup packages from OCI repositories
 tiup_publish_rules:
-  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$: &tiup_rules
+  ^us-docker.pkg.dev/pingcap-testing-account/hub/.+/package$:
     - description: for nightly builds
       tags_regex:
         - ^(master|main)_(linux|darwin)_(amd64|arm64)$
@@ -553,7 +523,6 @@ tiup_publish_rules:
         - ^(feature-fts)_(linux|darwin)_(amd64|arm64)$
       dest_mirrors:
         - staging
-  ^hub-zot.pingcap.net/hub/.+/package$: *tiup_rules
   ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
     - description: for nextgen EA/GA builds
       tags_regex:
