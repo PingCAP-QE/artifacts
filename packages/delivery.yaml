@@ -489,9 +489,22 @@ image_copy_rules:
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiflash
   us-docker.pkg.dev/pingcap-testing-account/tidbx/pingcap/tiproxy/image:
-    - <<: *sync_nextgen
+    - description: delivery nextgen images, CD will build tiproxy for nextgen with classic profile.
       dest_repositories:
         - us.gcr.io/pingcap-public/tidbx/tiproxy
+      tags_regex:
+        # - branch naming tags: <branch>-nextgen
+        # - branch commit exact tags: <branch>-<short-git-sha>-nextgen
+        # - semver tags: vX.Y.Z(-*)-nextgen
+        # - semver tags: vX.Y.Z-nextgen.YYYYMM.N
+        # - calendar-style nextgen tags: v26.3.1-nextgen / v26.3.1-2-g<sha>-nextgen
+        #
+        # we will not dup the tag with profile world.
+        - ^release-nextgen(-[-0-9a-f]+)?$ # nextgen release branches
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?-[0-9]+-g[0-9a-f]{6,10}$ # semver tags built nextgen branches after nextgen release tag.
+        - ^v[0-9]+[.][0-9]+[.][0-9]+-nextgen([.][0-9]{6}[.][0-9]+)?$ # GA semver tags built from nextgen tags
+        - ^v[1-9][0-9]+[.][0-9]+[.][0-9]+-[0-9]+-g[0-9a-f]{6,10}$ # calendar-style tags built after a GA nextgen tag.
+        - ^v[1-9][0-9]+[.][0-9]+[.][0-9]+$ # calendar-style nextgen GA tags
 
   ### TICI classic release images
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tici/image:
