@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   create-release:
@@ -60,19 +60,30 @@ jobs:
       - name: Create new tag and release
         if: steps.check-changes.outputs.has_changes == 'true'
         run: |
-          # Create tag name with date
+          set -euo pipefail
+
           TAG_NAME="v${{ steps.date.outputs.date }}"
 
-          # Create a new tag
+          # Configure git
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git tag -a $TAG_NAME -m "Weekly release $TAG_NAME"
+
+          # Delete tag if it exists locally
+          if git tag -l "$TAG_NAME" > /dev/null 2>&1; then
+            git tag -d "$TAG_NAME" || true
+          fi
+
+          # Create a new tag
+          git tag -a "$TAG_NAME" -m "Weekly release $TAG_NAME"
+
+          # Delete remote tag if it exists to handle re-runs
+          git push origin :refs/tags/"$TAG_NAME" 2>/dev/null || true
 
           # Push the tag
-          git push origin $TAG_NAME
+          git push origin "$TAG_NAME"
 
           # Create GitHub release
-          gh release create $TAG_NAME \
+          gh release create "$TAG_NAME" \
             --title "Weekly Release $TAG_NAME" \
             --notes "Weekly automatic release created on $(date +'%Y-%m-%d')"
         env:
