@@ -78,6 +78,25 @@ build:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
+  name: ci-docs-merged-update
+build:
+  artifacts:
+    - image: docs-merged-update-runtime
+      platforms: [linux/amd64, linux/arm64]
+      docker:
+        dockerfile: docs-merged-update/Dockerfile
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}"
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
   name: ci-jenkins-tiflash
 build:
   artifacts:
