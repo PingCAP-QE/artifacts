@@ -78,13 +78,13 @@ build:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: ci-docs-merged-update
+  name: ci-docs-pdf-runtime
 build:
   artifacts:
-    - image: docs-merged-update-runtime
+    - image: docs-pdf-runtime
       platforms: [linux/amd64, linux/arm64]
       docker:
-        dockerfile: docs-merged-update/Dockerfile
+        dockerfile: docs-pdf-runtime/Dockerfile
   tagPolicy:
     customTemplate:
       template: "{{ .GIT }}"
