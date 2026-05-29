@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="Docs PDF runtime with pandoc, xelatex, rclone, and WenQuanYi fonts"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
-COPY --from=rclone/rclone@sha256:d5971950c2b370fb04dd3292541b5bda6d9103143fd7e345aeb435a399388afc /usr/local/bin/rclone /usr/local/bin/rclone
+COPY --from=rclone/rclone@sha256:9ce0d49b611d3781233e25334e9e23d7af01e5546da7087f90d55f034ef13637 /usr/local/bin/rclone /usr/local/bin/rclone
 
 RUN set -eux; \
     export DEBIAN_FRONTEND=noninteractive; \
