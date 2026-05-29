@@ -21,17 +21,6 @@ build:
     useBuildkit: true
     concurrency: 0
     tryImportMissing: true
-profiles:
-  - name: go-1.25
-    patches:
-      - op: replace
-        path: /build/tagPolicy/customTemplate/template
-        value: "{{ .GIT }}-go1.25"
-      - op: add
-        path: /build/artifacts/0/docker/buildArgs
-        value:
-          # renovate: datasource=docker depName=golang
-          GOLANG_VERSION: 1.25.10
 ---
 apiVersion: skaffold/v4beta6
 kind: Config
