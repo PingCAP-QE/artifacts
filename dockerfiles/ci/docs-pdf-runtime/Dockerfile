@@ -1,4 +1,4 @@
-FROM pandoc/extra@sha256:07f33f3c77fdde0eede08e2e145de82a048f35ff3e642546cb6e85da9b414498
+FROM pandoc/extra@sha256:dfae5cf73a0e0ad40acf23d2d2c4adf5715e560aeea3324aa87e68faaa2e70c9
 
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="Docs PDF runtime with pandoc, xelatex, rclone, and WenQuanYi fonts"
