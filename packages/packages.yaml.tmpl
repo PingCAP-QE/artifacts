@@ -1873,7 +1873,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.2.0-0" .Release.version }}
+      - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (has (coll.Slice "nextgen" "experiment") .Release.profile) }}
+        image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.4.15-rocky8-llvm-17.0.6-v2
+      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (has (coll.Slice "nextgen" "experiment") .Release.profile)) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
