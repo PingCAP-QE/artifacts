@@ -78,25 +78,6 @@ build:
 apiVersion: skaffold/v4beta6
 kind: Config
 metadata:
-  name: ci-docs-pdf-runtime
-build:
-  artifacts:
-    - image: docs-pdf-runtime
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: docs-pdf-runtime/Dockerfile
-  tagPolicy:
-    customTemplate:
-      template: "{{ .GIT }}"
-  local:
-    useDockerCLI: true
-    useBuildkit: true
-    concurrency: 0
-    tryImportMissing: true
----
-apiVersion: skaffold/v4beta6
-kind: Config
-metadata:
   name: ci-jenkins-tiflash
 build:
   artifacts:

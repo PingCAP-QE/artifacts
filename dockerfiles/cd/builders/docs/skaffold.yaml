@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: docs-builder
+build:
+  artifacts:
+    - image: docs
+      platforms: [linux/amd64]
+      docker:
+        dockerfile: Dockerfile
+        target: builder
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}"
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+    concurrency: 0
+    tryImportMissing: true
+profiles:
+  - name: test
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: test
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-test_linux_amd64"
+  - name: release
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: final
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}_linux_amd64"
