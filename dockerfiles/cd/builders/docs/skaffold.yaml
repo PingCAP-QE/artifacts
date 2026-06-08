@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://github.com/GoogleContainerTools/skaffold/raw/refs/heads/main/docs-v2/content/en/schemas/v4beta6.json
+---
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: builder
+build:
+  artifacts:
+    - image: docs-builder
+      context: dockerfiles/cd/builders/docs
+      platforms: [linux/amd64]
+      kaniko:
+        dockerfile: Dockerfile
+        target: builder
+        cache:
+          ttl: 168h
+  tagPolicy:
+    customTemplate:
+      template: "{{ .GIT }}"
+  cluster:
+    concurrency: 1
+    timeout: 120m
+    nodeSelector:
+      kubernetes.io/arch: amd64
+    randomPullSecret: true
+    randomDockerConfigSecret: true
+    resources:
+      requests:
+        cpu: "2"
+        memory: 8Gi
+        ephemeralStorage: 20Gi
+      limits:
+        cpu: "8"
+        memory: 16Gi
+        ephemeralStorage: 50Gi
+profiles:
+  - name: test
+    patches:
+      - op: replace
+        path: /build/artifacts/0/kaniko/target
+        value: test
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-test"
+  - name: final
+    patches:
+      - op: replace
+        path: /build/artifacts/0/kaniko/target
+        value: final
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-final"

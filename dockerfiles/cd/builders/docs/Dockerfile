@@ -26,9 +26,11 @@ RUN apt-get update \
       fontconfig \
       git \
       locales \
+      lmodern \
       texlive-xetex \
       texlive-latex-extra \
       texlive-lang-cjk \
+      texlive-lang-chinese \
       fonts-wqy-microhei \
  && curl -fsSL -o /tmp/pandoc.deb \
       "https://github.com/jgm/pandoc/releases/download/1.19.2/pandoc-1.19.2-1-amd64.deb" \
