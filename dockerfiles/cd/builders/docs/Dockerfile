@@ -6,69 +6,63 @@
 #   - docker build --platform=linux/amd64 --target builder -t docs-builder -f dockerfiles/cd/builders/docs/Dockerfile .
 #   - docker build --platform=linux/amd64 --target test -t docs-builder-test -f dockerfiles/cd/builders/docs/Dockerfile .
 
-########### stage: docs-base
-FROM python:3.10-slim-bookworm AS docs-base
-
-ENV DEBIAN_FRONTEND=noninteractive \
-    LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    PIP_NO_CACHE_DIR=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    RCLONE_VERSION=v1.69.0
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-      bash \
-      ca-certificates \
-      curl \
-      fontconfig \
-      git \
-      locales \
-      lmodern \
-      texlive-xetex \
-      texlive-latex-extra \
-      texlive-lang-cjk \
-      texlive-lang-chinese \
-      fonts-wqy-microhei \
- && curl -fsSL -o /tmp/pandoc.deb \
-      "https://github.com/jgm/pandoc/releases/download/1.19.2/pandoc-1.19.2-1-amd64.deb" \
- && apt-get install -y --no-install-recommends /tmp/pandoc.deb \
- && pandoc --version | head -n 1 \
- && rm -f /tmp/pandoc.deb \
- && rm -rf /var/lib/apt/lists/* \
- && ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
- && (locale-gen C.UTF-8 || true)
-
-########### stage: test
-FROM docs-base AS test
-ARG DOCS_REPO=https://github.com/pingcap/docs.git
-WORKDIR /work
-RUN git clone --depth=1 "${DOCS_REPO}" docs
-WORKDIR /work/docs
-RUN python3 scripts/merge_by_toc.py \
- && bash scripts/generate_pdf.sh \
- && test -s doc.md \
- && test -s output.pdf
-
 ########### stage: builder
-FROM docs-base AS builder
+FROM python:3.6.2 AS builder
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="builder for PingCAP docs PDF generation"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8
+
+# Fix EOL of the jessie sources
+RUN printf '%s\n' \
+      'deb [trusted=yes] http://archive.debian.org/debian jessie main' \
+      'deb [trusted=yes] http://archive.debian.org/debian-security jessie/updates main' \
+      >/etc/apt/sources.list \
+ && printf '%s\n' \
+      'Acquire::Check-Valid-Until "false";' \
+      'Acquire::AllowInsecureRepositories "true";' \
+      'APT::Get::AllowUnauthenticated "true";' \
+      >/etc/apt/apt.conf.d/99archive
+
+# Install tools for generating the PDF documents.
+ARG PANDOC_VERSION=1.19.2
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      jq \
+      ca-certificates \
+      curl \
+      git \
+      locales \
+      lmodern \
       openssh-client \
+      texlive-fonts-recommended \
+      texlive-xetex \
+      texlive-latex-extra \
+      texlive-lang-cjk \
+      etoolbox \
+      ttf-wqy-microhei \
       unzip \
+ && ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
+ && (locale-gen C.UTF-8 || true) \
+ && curl -fsSL -o /tmp/pandoc.deb \
+      "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb" \
+ && dpkg -i /tmp/pandoc.deb \
+ && pandoc --version | head -n 1 \
+ && rm -f /tmp/pandoc.deb \
  && rm -rf /var/lib/apt/lists/*
 
-RUN python -m pip install \
-      boto3==1.23.10 \
-      awscli==1.24.10
+ARG BOTO3_VERSION=1.23.10
+ARG AWSCLI_VERSION=1.24.10
+RUN pip --trusted-host pypi.org \
+        --trusted-host pypi.python.org \
+        --trusted-host files.pythonhosted.org \
+        install \
+          boto3==${BOTO3_VERSION} \
+          awscli==${AWSCLI_VERSION}
 
+ARG RCLONE_VERSION=v1.69.0
 RUN curl -fsSL -o /tmp/rclone.zip \
       "https://downloads.rclone.org/${RCLONE_VERSION}/rclone-${RCLONE_VERSION}-linux-amd64.zip" \
  && unzip -q /tmp/rclone.zip -d /tmp \
@@ -77,8 +71,19 @@ RUN curl -fsSL -o /tmp/rclone.zip \
       /usr/local/bin/rclone \
  && rm -rf /tmp/rclone.zip "/tmp/rclone-${RCLONE_VERSION}-linux-amd64"
 
+ENTRYPOINT ["/bin/bash"]
+
+########### stage: test
+FROM builder AS test
+ARG DOCS_REPO=https://github.com/pingcap/docs.git
 WORKDIR /work
-CMD ["/bin/sh"]
+RUN git clone --depth=1 "${DOCS_REPO}" docs
+WORKDIR /work/docs
+RUN python3 scripts/merge_by_toc.py \
+ && bash scripts/generate_pdf.sh \
+ && ls -lh doc.md output.pdf \
+ && test -s doc.md \
+ && test -s output.pdf
 
 ########### stage: final
 FROM builder AS final
