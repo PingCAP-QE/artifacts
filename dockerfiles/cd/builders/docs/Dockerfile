@@ -64,7 +64,6 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install \
-      qiniu \
       boto3==1.23.10 \
       awscli==1.24.10
 
