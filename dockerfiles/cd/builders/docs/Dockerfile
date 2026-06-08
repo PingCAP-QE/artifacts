@@ -7,7 +7,7 @@
 #   - docker build --platform=linux/amd64 --target test -t docs-builder-test -f dockerfiles/cd/builders/docs/Dockerfile .
 
 ########### stage: builder
-FROM python:3.6.2 AS builder
+FROM python:3.6.15 AS builder
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="builder for PingCAP docs PDF generation"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
@@ -16,15 +16,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-# Fix EOL of the jessie sources
+# Fix EOL of the bullseye sources
 RUN printf '%s\n' \
-      'deb [trusted=yes] http://archive.debian.org/debian jessie main' \
-      'deb [trusted=yes] http://archive.debian.org/debian-security jessie/updates main' \
+      'deb http://deb.debian.org/debian bullseye main' \
+      'deb http://deb.debian.org/debian-security bullseye-security main' \
+      'deb http://deb.debian.org/debian bullseye-updates main' \
       >/etc/apt/sources.list \
  && printf '%s\n' \
       'Acquire::Check-Valid-Until "false";' \
-      'Acquire::AllowInsecureRepositories "true";' \
-      'APT::Get::AllowUnauthenticated "true";' \
       >/etc/apt/apt.conf.d/99archive
 
 # Install tools for generating the PDF documents.
@@ -41,8 +40,7 @@ RUN apt-get update \
       texlive-xetex \
       texlive-latex-extra \
       texlive-lang-cjk \
-      etoolbox \
-      ttf-wqy-microhei \
+      fonts-wqy-microhei \
       unzip \
  && ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime \
  && (locale-gen C.UTF-8 || true) \
