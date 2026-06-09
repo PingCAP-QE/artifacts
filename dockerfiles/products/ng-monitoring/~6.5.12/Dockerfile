@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.11.3
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/ng-monitoring-base:v1.11.2
 FROM $BASE_IMG
 COPY ng-monitoring-server /ng-monitoring-server
 EXPOSE 12020
