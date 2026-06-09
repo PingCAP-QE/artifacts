@@ -37,6 +37,7 @@ RUN apt-get update \
       lmodern \
       openssh-client \
       texlive-fonts-recommended \
+      texlive-lang-chinese \
       texlive-xetex \
       texlive-latex-extra \
       texlive-lang-cjk \
