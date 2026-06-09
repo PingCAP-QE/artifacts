@@ -144,7 +144,7 @@ build:
             path: tools-base/release-6.5.Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.0.1-old"
+      template: "v1.0.2-old"
   local:
     useDockerCLI: true
     useBuildkit: true
