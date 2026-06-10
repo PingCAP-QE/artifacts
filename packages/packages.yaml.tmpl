@@ -1936,6 +1936,7 @@ components:
                   mkdir -p outputs/tiflash/binaries
                   mv release-linux-llvm/tiflash outputs/tiflash/binaries/tiflash
                   mv release-linux-llvm/tiflash-columnar outputs/tiflash/binaries/tiflash-columnar
+                  wget -O outputs/tiflash/tiflash https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/tiflash-wrapper
                 else
                   # Legacy build produces only the tiflash directory.
                   mv release-linux-llvm/tiflash outputs/tiflash
@@ -1946,6 +1947,8 @@ components:
                 release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
                 mv release-darwin/tiflash outputs/tiflash
+            - script: |
+                chmod -R +x outputs/tiflash
 
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
