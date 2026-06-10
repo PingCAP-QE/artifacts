@@ -1879,9 +1879,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (has (coll.Slice "nextgen" "experiment") .Release.profile) }}
+      - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (eq "nextgen" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.4.15-rocky8-llvm-17.0.6-v2
-      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (has (coll.Slice "nextgen" "experiment") .Release.profile)) }}
+      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (eq "nextgen" .Release.profile)) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
@@ -1961,7 +1961,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/experiment.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -3276,7 +3276,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/next-gen.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/nextgen.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: cse-ctl, src: { path: bin/cse-ctl } }
