@@ -1890,7 +1890,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint, nextgen, experiment]
+        profile: [release, enterprise, failpoint, nextgen]
         steps:
           release:
             - os: linux
@@ -1930,24 +1930,6 @@ components:
                 ./release-linux-llvm/scripts/build-release.sh
                 release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
-                mv release-linux-llvm/tiflash outputs/tiflash
-            - os: darwin
-              script: |
-                ./release-darwin/build/build-release.sh
-                release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
-                mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
-          experiment:
-            - script: |
-                cargo --version
-                export TIFLASH_EDITION=Enterprise
-                export ENABLE_NEXT_GEN=true
-            - os: linux
-              script: |
-                ./release-linux-llvm/scripts/build-release.sh
-                release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
-                mkdir outputs
-
                 # Handle both legacy single-binary output and next-gen split-binary output.
                 if [ -d release-linux-llvm/tiflash ] && [ -d release-linux-llvm/tiflash-columnar ]; then
                   # Next-gen build produces both row-store and columnar binaries.
@@ -1958,6 +1940,12 @@ components:
                   # Legacy build produces only the tiflash directory.
                   mv release-linux-llvm/tiflash outputs/tiflash
                 fi
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+                release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
 
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -1970,17 +1958,6 @@ components:
               description: The TiFlash Columnar Storage Engine
               entrypoint: tiflash/tiflash
           - name: container image
-            if: {{ ne "experiment" .Release.profile }}
-            type: image
-            artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
-            files:
-              - name: tiflash/
-                src:
-                  path: outputs/tiflash/
-          - name: container image
-            if: {{ eq "experiment" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
