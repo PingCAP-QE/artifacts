@@ -15,7 +15,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 TIFLASH_DIR="${SCRIPT_DIR}/binaries/tiflash"
 TIFLASH_COLUMNAR_DIR="${SCRIPT_DIR}/binaries/tiflash-columnar"
 
