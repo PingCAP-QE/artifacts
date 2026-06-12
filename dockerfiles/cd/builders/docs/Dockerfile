@@ -52,6 +52,9 @@ RUN apt-get update \
  && rm -f /tmp/pandoc.deb \
  && rm -rf /var/lib/apt/lists/*
 
+COPY pandoc-horizontal-rule-filter.py /usr/local/bin/pandoc-horizontal-rule-filter
+RUN chmod 0755 /usr/local/bin/pandoc-horizontal-rule-filter
+
 ARG BOTO3_VERSION=1.23.10
 ARG AWSCLI_VERSION=1.24.10
 RUN pip --trusted-host pypi.org \
