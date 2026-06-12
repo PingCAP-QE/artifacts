@@ -53,7 +53,10 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY pandoc-horizontal-rule-filter.py /usr/local/bin/pandoc-horizontal-rule-filter
-RUN chmod 0755 /usr/local/bin/pandoc-horizontal-rule-filter
+COPY pandoc-wrapper.sh /usr/local/bin/pandoc
+RUN chmod 0755 \
+      /usr/local/bin/pandoc \
+      /usr/local/bin/pandoc-horizontal-rule-filter
 
 ARG BOTO3_VERSION=1.23.10
 ARG AWSCLI_VERSION=1.24.10
