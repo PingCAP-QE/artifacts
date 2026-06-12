@@ -23,6 +23,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          fetch-tags: true
           # Fetch all history for proper comparison
           fetch-depth: 0
 
@@ -64,23 +65,28 @@ jobs:
 
           TAG_NAME="v${{ steps.date.outputs.date }}"
 
-          # Configure git
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-
-          # Delete tag if it exists locally
-          if git tag -l "$TAG_NAME" > /dev/null 2>&1; then
-            git tag -d "$TAG_NAME" || true
-          fi
-
-          # Create a new tag
-          git tag -a "$TAG_NAME" -m "Weekly release $TAG_NAME"
-
           # Delete remote tag if it exists to handle re-runs
-          git push origin :refs/tags/"$TAG_NAME" 2>/dev/null || true
+          gh api \
+            --method DELETE \
+            "repos/${GITHUB_REPOSITORY}/git/refs/tags/${TAG_NAME}" \
+            >/dev/null 2>&1 || true
 
-          # Push the tag
-          git push origin "$TAG_NAME"
+          # Create a new annotated tag
+          TAG_SHA=$(gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/git/tags" \
+            -f tag="$TAG_NAME" \
+            -f message="Weekly release $TAG_NAME" \
+            -f object="$GITHUB_SHA" \
+            -f type=commit \
+            --jq .sha)
+
+          # Push the tag ref
+          gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/git/refs" \
+            -f ref="refs/tags/$TAG_NAME" \
+            -f sha="$TAG_SHA"
 
           # Create GitHub release
           gh release create "$TAG_NAME" \

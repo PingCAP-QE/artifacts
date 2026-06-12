@@ -1879,9 +1879,9 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (has (coll.Slice "nextgen" "experiment") .Release.profile) }}
+      - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (eq "nextgen" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.4.15-rocky8-llvm-17.0.6-v2
-      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (has (coll.Slice "nextgen" "experiment") .Release.profile)) }}
+      - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (eq "nextgen" .Release.profile)) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: hub.pingcap.net/ee/ci/release-build-base-tiflash:v20231106
@@ -1890,7 +1890,7 @@ components:
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
         os: [linux, darwin]
         arch: [amd64, arm64]
-        profile: [release, enterprise, failpoint, nextgen, experiment]
+        profile: [release, enterprise, failpoint, nextgen]
         steps:
           release:
             - os: linux
@@ -1930,34 +1930,25 @@ components:
                 ./release-linux-llvm/scripts/build-release.sh
                 release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
                 mkdir outputs
-                mv release-linux-llvm/tiflash outputs/tiflash
-            - os: darwin
-              script: |
-                ./release-darwin/build/build-release.sh
-                release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
-                mkdir outputs
-                mv release-darwin/tiflash outputs/tiflash
-          experiment:
-            - script: |
-                cargo --version
-                export TIFLASH_EDITION=Enterprise
-                export ENABLE_NEXT_GEN=true
-            - os: linux
-              script: |
-                ./release-linux-llvm/scripts/build-release.sh
-                release-linux-llvm/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
-                mkdir outputs
-
                 # Handle both legacy single-binary output and next-gen split-binary output.
                 if [ -d release-linux-llvm/tiflash ] && [ -d release-linux-llvm/tiflash-columnar ]; then
                   # Next-gen build produces both row-store and columnar binaries.
                   mkdir -p outputs/tiflash/binaries
                   mv release-linux-llvm/tiflash outputs/tiflash/binaries/tiflash
                   mv release-linux-llvm/tiflash-columnar outputs/tiflash/binaries/tiflash-columnar
+                  wget -O outputs/tiflash/tiflash https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/tiflash-wrapper
                 else
                   # Legacy build produces only the tiflash directory.
                   mv release-linux-llvm/tiflash outputs/tiflash
                 fi
+            - os: darwin
+              script: |
+                ./release-darwin/build/build-release.sh
+                release-darwin/tiflash/tiflash version | grep -E 'Enable Features.*next-gen'
+                mkdir outputs
+                mv release-darwin/tiflash outputs/tiflash
+            - script: |
+                chmod -R +x outputs/tiflash
 
         artifacts:
           - name: "tiflash-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
@@ -1970,21 +1961,10 @@ components:
               description: The TiFlash Columnar Storage Engine
               entrypoint: tiflash/tiflash
           - name: container image
-            if: {{ ne "experiment" .Release.profile }}
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
             dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
-            files:
-              - name: tiflash/
-                src:
-                  path: outputs/tiflash/
-          - name: container image
-            if: {{ eq "experiment" .Release.profile }}
-            type: image
-            artifactory:
-              repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/experiment.Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -3299,7 +3279,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/next-gen.Dockerfile
+            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/nextgen.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: cse-ctl, src: { path: bin/cse-ctl } }

@@ -1,13 +1,3 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tiflash-base:v1.11.2
-FROM $BASE_IMG
-ENV LD_LIBRARY_PATH=/tiflash
-COPY --chmod=755 tiflash /tiflash
-
-
-# Wrapper at /tiflash/tiflash to keep compatibility with legacy TiFlash deployments
-# that hardcode this path. Actual binaries live under
-# /tiflash/binaries/{tiflash,tiflash-columnar}/tiflash.
-RUN if [ ! -e /tiflash/tiflash ]; then cat > /tiflash/tiflash <<'EOF' && chmod 755 /tiflash/tiflash; fi
 #!/usr/bin/env bash
 # Copyright 2026 PingCAP, Inc.
 #
@@ -25,11 +15,12 @@ RUN if [ ! -e /tiflash/tiflash ]; then cat > /tiflash/tiflash <<'EOF' && chmod 7
 
 set -euo pipefail
 
-TIFLASH_DIR=/tiflash/binaries/tiflash
-TIFLASH_COLUMNAR_DIR=/tiflash/binaries/tiflash-columnar
+SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+TIFLASH_DIR="${SCRIPT_DIR}/binaries/tiflash"
+TIFLASH_COLUMNAR_DIR="${SCRIPT_DIR}/binaries/tiflash-columnar"
 
-# TIFLASH_COLUMNAR unset or "false" -> classic tiflash under /tiflash/binaries/tiflash.
-# "true" -> columnar build under /tiflash/binaries/tiflash-columnar when the binary exists.
+# TIFLASH_COLUMNAR unset or "false" -> classic tiflash under ../binaries/tiflash.
+# "true" -> columnar build under ../binaries/tiflash-columnar when the binary exists.
 tiflash_columnar="${TIFLASH_COLUMNAR:-false}"
 tiflash_columnar_lower="$(echo "${tiflash_columnar}" | tr '[:upper:]' '[:lower:]')"
 
@@ -42,9 +33,3 @@ fi
 # Reached only when columnar mode is off, or columnar binary is missing.
 export LD_LIBRARY_PATH="${TIFLASH_DIR}"
 exec "${TIFLASH_DIR}/tiflash" "$@"
-EOF
-
-# Enable jemalloc profiling, inactive by default.
-# See https://jemalloc.net/jemalloc.3.html for details.
-ENV MALLOC_CONF="prof:true,prof_active:false"
-ENTRYPOINT ["/tiflash/tiflash", "server"]
