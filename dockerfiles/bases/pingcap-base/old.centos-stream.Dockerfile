@@ -1,4 +1,3 @@
-# docker build . -t hub.pingcap.net/jenkins/centos-stream:8
 FROM centos:8
 # jq is only for pd
 RUN set -e && \

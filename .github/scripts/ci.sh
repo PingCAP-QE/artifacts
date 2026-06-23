@@ -6,10 +6,6 @@ readonly DEFAULT_GIT_URL=""
 
 function check_image_existed() {
     local img=$1
-    # skip the check if the image starts with "hub.pingcap.net" which is the internal image.
-    if [[ $img == hub.pingcap.net* ]]; then
-        return
-    fi
     if crane digest $img > /dev/null; then
         echo "The image $img is existed."
     else

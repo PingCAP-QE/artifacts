@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=../schemas/delivery-schema.json
 deprecated:
   # deprecated in v8.3 and removed in v8.4.
-  - hub.pingcap.net/pingcap/tidb-binlog/image
-  - hub.pingcap.net/pingcap/tidb-binlog/package
+  - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-binlog/image
+  - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-binlog/package
 
-  # deprecated and removed in v9.0.0, use hub.pingcap.net/pingcap/tiflow/images/sync-diff-inspector instead.
-  - hub.pingcap.net/pingcap/tidb-tools/image
-  - hub.pingcap.net/pingcap/tidb-tools/package
+  # deprecated and removed in v9.0.0, use us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiflow/images/sync-diff-inspector instead.
+  - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-tools/image
+  - us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tidb-tools/package
 
 image_definitions:
   sync_trunk_community: &sync_trunk_community
