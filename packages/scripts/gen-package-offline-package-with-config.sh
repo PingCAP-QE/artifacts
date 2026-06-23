@@ -12,7 +12,7 @@ function main() {
     local template_file="${5:-${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl}"
     local out_file="${6:-${RELEASE_SCRIPTS_DIR}/compose-offline-packages-artifacts.sh}"
     local tiup_mirror="${7:---reset}"
-    local registry="${8:-hub.pingcap.net}"
+    local registry="${8:-us-docker.pkg.dev/pingcap-testing-account/hub}"
 
     local target_info="os: $os, arch: $arch, version: $version, edition: $edition"
 

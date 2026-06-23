@@ -2,11 +2,7 @@
 import * as yaml from "jsr:@std/yaml@1.0.5";
 import { parseArgs } from "jsr:@std/cli@1.0.9";
 import { retryAsync } from "https://deno.land/x/retry@v2.0.0/mod.ts";
-import {
-  parse,
-  parseRange,
-  satisfies,
-} from "jsr:@std/semver@^1.0.3";
+import { parse, parseRange, satisfies } from "jsr:@std/semver@^1.0.3";
 
 interface Rule {
   description?: string;
@@ -144,7 +140,7 @@ async function main(
 // Parse command-line arguments
 const {
   version,
-  registry = "hub.pingcap.net",
+  registry = "us-docker.pkg.dev/pingcap-testing-account/hub",
   config = "./packages/delivery.yaml",
   save_to = "./delivery-target-images.yaml",
 } = parseArgs(Deno.args);
