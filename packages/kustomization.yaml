@@ -8,3 +8,9 @@ configMapGenerator:
       - delivery.yaml
       - packages.yaml.tmpl
       - offline-packages.yaml.tmpl
+  - name: delivery-config
+    options:
+      disableNameSuffixHash: true
+    files:
+      - delivery.yaml
+      - scripts/gen-delivery-image-commands.ts
