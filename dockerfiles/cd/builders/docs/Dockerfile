@@ -7,7 +7,7 @@
 #   - docker build --platform=linux/amd64 --target test -t docs-builder-test -f dockerfiles/cd/builders/docs/Dockerfile .
 
 ########### stage: builder
-FROM python:3.6.15 AS builder
+FROM python:3.14.6 AS builder
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="builder for PingCAP docs PDF generation"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
