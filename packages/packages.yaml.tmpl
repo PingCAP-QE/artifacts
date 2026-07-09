@@ -473,7 +473,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -496,7 +496,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -521,7 +521,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ng-monitoring/Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -545,7 +545,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ng-monitoring/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ng-monitoring/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ng-monitoring/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: ng-monitoring-server
                 src:
@@ -650,7 +650,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -719,7 +719,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -788,7 +788,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -833,7 +833,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/pd/Dockerfile
             files: # prepare for context
               - name: pd-server
                 src:
@@ -900,7 +900,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/pd/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/pd/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/pd/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - { name: pd-server, src: { path: bin/pd-server } }
               - { name: pd-ctl, src: { path: bin/pd-ctl } }
@@ -1043,7 +1043,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1060,7 +1060,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/br.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -1069,7 +1069,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/dumpling.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -1078,7 +1078,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -1187,7 +1187,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ ternary "tidb.enterprise.Dockerfile" "tidb.Dockerfile" (eq .Release.profile "enterprise") }}
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1204,7 +1204,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/br.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -1213,7 +1213,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/dumpling.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -1222,7 +1222,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -1331,7 +1331,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1341,7 +1341,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-server"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.enterprise.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb.enterprise.Dockerfile
             files: # prepare for context
               - name: tidb-server
                 src:
@@ -1356,7 +1356,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/br"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}br.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}br.Dockerfile
             files: # prepare for context
               - name: br
                 src:
@@ -1365,7 +1365,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/dumpling"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}dumpling.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}dumpling.Dockerfile
             files: # prepare for context
               - name: dumpling
                 src:
@@ -1374,7 +1374,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb/images/tidb-lightning"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb-lightning.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb/{{ template "image_dockerfile_folder" .Release.version }}tidb-lightning.Dockerfile
             files: # prepare for context
               - name: tidb-lightning
                 src:
@@ -1428,7 +1428,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-tools/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-tools/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-tools/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -1548,7 +1548,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-binlog/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-binlog/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-binlog/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # context files
               - name: pump
                 src:
@@ -1781,7 +1781,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1808,7 +1808,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1835,7 +1835,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-dashboard/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1858,7 +1858,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tidb-dashboard/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tidb-dashboard/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tidb-dashboard/Dockerfile
             files: # prepare for context
               - name: tidb-dashboard
                 src:
@@ -1936,7 +1936,7 @@ components:
                   mkdir -p outputs/tiflash/binaries
                   mv release-linux-llvm/tiflash outputs/tiflash/binaries/tiflash
                   mv release-linux-llvm/tiflash-columnar outputs/tiflash/binaries/tiflash-columnar
-                  wget -O outputs/tiflash/tiflash https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/tiflash-wrapper
+                  wget -O outputs/tiflash/tiflash https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflash/tiflash-wrapper
                 else
                   # Legacy build produces only the tiflash directory.
                   mv release-linux-llvm/tiflash outputs/tiflash
@@ -1964,7 +1964,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflash/Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -2014,7 +2014,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflash/Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -2134,7 +2134,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -2225,7 +2225,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflash/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflash/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files:
               - name: tiflash/
                 src:
@@ -2385,7 +2385,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/sync-diff-inspector"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}sync-diff-inspector.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}sync-diff-inspector.Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -2394,7 +2394,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2513,7 +2513,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/sync-diff-inspector"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}sync-diff-inspector.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}sync-diff-inspector.Dockerfile
             files:
               - name: sync_diff_inspector
                 src:
@@ -2522,7 +2522,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2629,7 +2629,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2745,7 +2745,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}ticdc.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -2754,7 +2754,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/{{ template "image_dockerfile_folder" .Release.version }}dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2795,7 +2795,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/~6.5.12/ticdc.Dockerfile # same as new base.
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/~6.5.12/ticdc.Dockerfile # same as new base.
             files: # context files
               - name: cdc
                 src:
@@ -2899,7 +2899,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/cdc"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/lt6.5.12/ticdc.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/lt6.5.12/ticdc.Dockerfile
             files: # context files
               - name: cdc
                 src:
@@ -2908,7 +2908,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiflow/images/dm"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiflow/lt6.5.12/dm.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiflow/lt6.5.12/dm.Dockerfile
             files:
               - name: dm-master
                 src:
@@ -2978,7 +2978,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ticdc/Dockerfile
             files: # context files
               - { name: cdc, src: { path: bin/cdc } }
           - name: testing container image - kafka-consumer
@@ -2986,7 +2986,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/kafka-consumer"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/kafka-consumer.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ticdc/test-tools/kafka-consumer.Dockerfile
             files: # context files
               - { name: cdc_kafka_consumer, src: { path: bin/cdc_kafka_consumer } }
           - name: testing container image - pulsar-consumer
@@ -2994,7 +2994,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/pulsar-consumer"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/pulsar-consumer.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ticdc/test-tools/pulsar-consumer.Dockerfile
             files: # context files
               - { name: cdc_pulsar_consumer, src: { path: bin/cdc_pulsar_consumer } }
           - name: testing container image - storage-consumer
@@ -3002,7 +3002,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/ticdc/test-images/storage-consumer"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/ticdc/test-tools/storage-consumer.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/ticdc/test-tools/storage-consumer.Dockerfile
             files: # context files
               - { name: cdc_storage_consumer, src: { path: bin/cdc_storage_consumer } }
   tiflow-operator:
@@ -3138,7 +3138,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/Dockerfile
             files:
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
@@ -3203,7 +3203,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/{{ template "image_dockerfile_folder" .Release.version }}Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
@@ -3231,7 +3231,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/fips.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/fips.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }
@@ -3279,7 +3279,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tikv/nextgen.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/nextgen.Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: cse-ctl, src: { path: bin/cse-ctl } }
@@ -3331,7 +3331,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tiproxy/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tiproxy/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tiproxy/Dockerfile
             files: # prepare for context
               - { name: tiproxy, src: { path: bin/tiproxy } }
               - { name: tiproxyctl, src: { path: bin/tiproxyctl } }
@@ -3380,7 +3380,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/pingcap/tici/image"
-            dockerfile: https://github.com/PingCAP-QE/artifacts/raw/main/dockerfiles/products/tici/Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tici/Dockerfile
             files: # prepare for context
               - { name: tici-server, src: { path: target/release/tici-server } }
   tiup:
