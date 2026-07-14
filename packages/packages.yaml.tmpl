@@ -3231,7 +3231,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tikv/tikv/image"
-            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/fips.Dockerfile
+            dockerfile: https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/dockerfiles/products/tikv/Dockerfile
             files: # prepare for context
               - { name: tikv-server, src: { path: bin/tikv-server } }
               - { name: tikv-ctl, src: { path: bin/tikv-ctl } }

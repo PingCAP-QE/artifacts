@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 ARG BASE_IMG=ghcr.io/pingcap-qe/bases/tikv-base:v1.0.2-old
 FROM $BASE_IMG
 COPY tikv-server /tikv-server
