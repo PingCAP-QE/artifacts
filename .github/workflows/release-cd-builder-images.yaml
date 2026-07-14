@@ -130,7 +130,7 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
-          version: 2.16.0
+          version: 2.23.0
 
       - name: Publish root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -194,7 +194,7 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
-          version: 2.16.0
+          version: 2.23.0
 
       - name: Publish root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -257,7 +257,7 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
-          version: 2.16.0
+          version: 2.23.0
 
       - name: Publish root images
         working-directory: dockerfiles/cd/builders/${{ matrix.builder }}
@@ -309,7 +309,7 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
-          version: 2.16.0
+          version: 2.23.0
 
       - name: Publish docs builder
         working-directory: dockerfiles/cd/builders/docs
