@@ -60,32 +60,13 @@ build:
         dockerfile: debugging/Dockerfile
   tagPolicy:
     customTemplate:
-      template: "v1.11.3"
+      template: "v1.12.0"
   local:
     useDockerCLI: true
     useBuildkit: true
     concurrency: 0
     tryImportMissing: true
 
----
-apiVersion: skaffold/v4beta6
-kind: Config
-metadata:
-  name: fips
-build:
-  artifacts:
-    - image: tikv-base
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: tikv-base/fips.Dockerfile
-  tagPolicy:
-    customTemplate:
-      template: "v1.11.3-fips"
-  local:
-    useDockerCLI: true
-    useBuildkit: true
-    concurrency: 0
-    tryImportMissing: true
 ---
 apiVersion: skaffold/v4beta6
 kind: Config

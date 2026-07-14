@@ -26,7 +26,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [default, fips, release-6-5]
+        module: [default, release-6-5]
         platform: [linux/amd64, linux/arm64]
 
     steps:
@@ -52,7 +52,7 @@ jobs:
       - name: Setup skaffold
         uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
         with:
-          version: 2.16.0
+          version: 2.23.0
 
       - name: Setup manifest-tool
         run: |

@@ -1,9 +1,9 @@
-FROM quay.io/rockylinux/rockylinux:9.7.20251123
-COPY --from=busybox:1.37.0-musl /bin/busybox /bin/busybox
-RUN _date=20260609 dnf upgrade -y && dnf clean all
+FROM quay.io/rockylinux/rockylinux:9.8.20260525.0
+COPY --from=busybox:1.38.0-musl /bin/busybox /bin/busybox
 
-# Add user and group to support run it with non-root.
+ARG _date=20260714
 ARG PINGCAP_UID=1000
 ARG PINGCAP_GID=2000
-RUN groupadd -g ${PINGCAP_GID} pingcap && \
+RUN dnf upgrade -y && dnf clean all && \
+    groupadd -g ${PINGCAP_GID} pingcap && \
     useradd -u ${PINGCAP_UID} -g ${PINGCAP_GID} -m pingcap
