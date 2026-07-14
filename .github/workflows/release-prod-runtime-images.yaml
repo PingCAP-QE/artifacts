@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        module: [default, fips, release-6-5]
+        module: [default, release-6-5]
 
     steps:
       - name: Checkout sources
