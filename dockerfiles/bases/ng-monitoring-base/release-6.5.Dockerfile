@@ -11,4 +11,4 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
-ADD https://github.com/golang/go/raw/go1.23.1/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
+ADD https://cdn.jsdelivr.net/gh/golang/go@go1.23.1/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
