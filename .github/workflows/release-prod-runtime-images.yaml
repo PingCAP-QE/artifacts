@@ -75,24 +75,44 @@ jobs:
             --default-repo ghcr.io/pingcap-qe/bases \
             --module ${{ matrix.module }}
 
-      - name: Get pingcap-base image tag
+      - name: Get image tag from skaffold
         if: matrix.module == 'default'
-        id: pingcap-base-tag
+        id: tag
         working-directory: dockerfiles/bases
         run: |
           tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
           if [ -z "${tag}" ]; then
-            echo "ERROR: could not extract pingcap-base image tag from skaffold.yaml" >&2
+            echo "ERROR: could not extract image tag from skaffold.yaml" >&2
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
-      - name: Run Trivy vulnerability scanner on pingcap-base
+      - name: Install trivy from official APT repo
         if: matrix.module == 'default'
-        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1
-        with:
-          image-ref: ghcr.io/pingcap-qe/bases/pingcap-base:${{ steps.pingcap-base-tag.outputs.tag }}
-          format: table
-          severity: HIGH,CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+
+      - name: Run Trivy vulnerability scanner on base images
+        if: matrix.module == 'default'
+        run: |
+          images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
+          has_vulns=false
+          for img in $images; do
+            echo "=== Scanning $img ==="
+            output=$(trivy image \
+              --severity MEDIUM,HIGH,CRITICAL \
+              --ignore-unfixed \
+              --format table \
+              "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" || true)
+            echo "$output"
+            if echo "$output" | grep -q '^Total:'; then
+              has_vulns=true
+            fi
+          done
+          if [ "$has_vulns" = true ]; then
+            echo "Vulnerabilities found in base images. Check scan results above."
+            exit 1
+          fi
