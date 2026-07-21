@@ -103,8 +103,6 @@ jobs:
           for img in $images; do
             echo "=== Scanning $img ==="
             output=$(trivy image \
-              --severity MEDIUM,HIGH,CRITICAL \
-              --ignore-unfixed \
               --format table \
               "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" || true)
             echo "$output"
