@@ -1,4 +1,4 @@
-ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.0
+ARG BASE_IMG=ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.1
 FROM $BASE_IMG
 COPY --chmod=0755 tiproxy tiproxyctl /bin/
 COPY --chmod=0644 conf/* /etc/proxy/
