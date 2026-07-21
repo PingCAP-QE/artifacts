@@ -94,3 +94,54 @@ jobs:
             --notes "Weekly automatic release created on $(date +'%Y-%m-%d')"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  image-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Extract image tag from skaffold
+        id: tag
+        working-directory: dockerfiles/bases
+        run: |
+          tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Install trivy from official APT repo
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+
+      - name: Scan all base images and build summary
+        run: |
+          images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
+          has_vulns=false
+          for img in $images; do
+            echo "=== Scanning $img ==="
+            output=$(trivy image \
+              --severity MEDIUM,HIGH,CRITICAL \
+              --ignore-unfixed \
+              --format table \
+              "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" || true)
+            echo "$output"
+            if echo "$output" | grep -q '^Total:'; then
+              has_vulns=true
+            fi
+          done
+          echo "has_vulns=${has_vulns}" >> "$GITHUB_OUTPUT"
+
+      - name: Send scan report via email
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          to: ci@pingcap.com
+          from: GitHub Actions <actions@github.com>
+          subject: Weekly Trivy scan report - bases (default)
+          body: |
+            Weekly vulnerability scan completed for base images (tag: ${{ steps.tag.outputs.tag }}).
+
+            Results are shown in the workflow log above.
+            See: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
