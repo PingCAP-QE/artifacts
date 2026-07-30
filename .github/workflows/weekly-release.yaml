@@ -139,7 +139,7 @@ jobs:
 
       - name: Send scan report via email
         if: always()
-        uses: dawidd6/action-send-mail@4226df7daafa6fc901a43789c49bf7ab309066e7 # v3
+        uses: dawidd6/action-send-mail@94de994a9f6fffee200243214e17002e2920bb59 # v18
         with:
           to: ci@pingcap.com
           from: GitHub Actions <actions@github.com>
