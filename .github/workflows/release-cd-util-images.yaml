@@ -58,6 +58,5 @@ jobs:
         run: |
           skaffold build \
             --build-concurrency 1 \
-            --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/cd/utils \
             --module ${{ matrix.module }}

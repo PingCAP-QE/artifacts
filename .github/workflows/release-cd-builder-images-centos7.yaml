@@ -135,7 +135,6 @@ jobs:
           skaffold build \
             --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
-            --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --profile=${{ matrix.profile }}
 
@@ -146,7 +145,6 @@ jobs:
             skaffold build \
               --filename=skaffold.centos7.non-root.yaml \
               --build-concurrency=1 \
-              --cache-artifacts \
               --default-repo=ghcr.io/pingcap-qe/cd/builders \
               --profile=${{ matrix.profile }}
           else
@@ -199,7 +197,6 @@ jobs:
           skaffold build \
             --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
-            --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders \
             --profile=${{ matrix.profile }}
 
@@ -210,7 +207,6 @@ jobs:
             skaffold build \
               --filename=skaffold.centos7.non-root.yaml \
               --build-concurrency=1 \
-              --cache-artifacts \
               --default-repo=ghcr.io/pingcap-qe/cd/builders \
               --profile=${{ matrix.profile }}
           else
@@ -263,7 +259,6 @@ jobs:
           skaffold build \
             --filename=skaffold.centos7.yaml \
             --build-concurrency=1 \
-            --cache-artifacts \
             --default-repo=ghcr.io/pingcap-qe/cd/builders
 
       - name: Publish non-root images
@@ -273,7 +268,6 @@ jobs:
             skaffold build \
               --filename=skaffold.centos7.non-root.yaml \
               --build-concurrency=1 \
-              --cache-artifacts \
               --default-repo=ghcr.io/pingcap-qe/cd/builders
           else
             echo "Non-root skaffold config not found, skipping"
