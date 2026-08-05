@@ -15,12 +15,14 @@ LABEL org.opencontainers.image.description="binary builder for TiDB Operator"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 LABEL go-version="${GOLANG_VERSION}"
 
+ENV GOTOOLCHAIN=auto
 # install packages.
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && apt-get install -y uuid-runtime
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
+ENV GOTOOLCHAIN=auto
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && \
     apt-get install -y sudo && \
