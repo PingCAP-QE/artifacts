@@ -101,6 +101,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -138,9 +142,13 @@ jobs:
           echo "has_vulns=${has_vulns}" >> "$GITHUB_OUTPUT"
 
       - name: Send scan report via email
-        if: always()
+        if: always() && env.SMTP_SERVER != ''
         uses: dawidd6/action-send-mail@94de994a9f6fffee200243214e17002e2920bb59 # v18
         with:
+          server_address: ${{ env.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT || 465 }}
+          username: ${{ env.SMTP_USERNAME }}
+          password: ${{ env.SMTP_PASSWORD }}
           to: ci@pingcap.com
           from: GitHub Actions <actions@github.com>
           subject: Weekly Trivy scan report - bases (default)
@@ -149,3 +157,8 @@ jobs:
 
             Results are shown in the workflow log above.
             See: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Notify email report skipped
+        if: always() && env.SMTP_SERVER == ''
+        run: |
+          echo "::warning::SMTP_SERVER secret is not configured; scan report email skipped. Set SMTP_SERVER / SMTP_USERNAME / SMTP_PASSWORD repo secrets to enable email delivery."
