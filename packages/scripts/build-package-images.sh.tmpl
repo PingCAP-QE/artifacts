@@ -303,23 +303,44 @@ collect_and_push_multi_arch_images() {
     {{- $self_tag := index $tags 0 }}
     {{- $other_arch := ternary "arm64" "amd64" (eq .arch "amd64") }}
     {{- $other_tag := printf "%s_%s_%s" (index $base_tags 0) .os $other_arch }}
+
+    # Pre-flight: all images must have the other-arch image, otherwise skip the whole multi-arch tagging.
+    missing="false"
+    {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
+    if ! crane digest {{ $image.artifactory.repo }}:{{ $other_tag }}; then
+        echo "🤷 Image {{ $image.artifactory.repo }}:{{ $other_tag }} not found."
+        missing="true"
+    fi
+    {{- end }}
+    if [ "$missing" = "true" ]; then
+        echo "🤷 Not all images have the other-arch image ready, skip multi-arch tagging."
+        return 0
+    fi
+
+    # Apply multi-arch tags for all images; on failure, just discard the result file (tags are kept).
+    rollback() {
+        rm -f "$result_file"
+    }
+    trap rollback EXIT
+
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
 
     # 📦 try to collect and push multi-arch image: {{ $image.artifactory.repo }}:{{ index $base_tags 0 }}
+    primary_multi_tag="{{ $image.artifactory.repo }}:{{ index $base_tags 0 }}"
+    crane index append -m {{ $image.artifactory.repo }}:{{ $self_tag }} -m {{ $image.artifactory.repo }}:{{ $other_tag }} -t "$primary_multi_tag"
         {{- range $i, $tag := $base_tags }}
-            {{- if eq $i 0 }}
-    if ! crane digest {{ $image.artifactory.repo }}:{{ $other_tag }}; then
-        echo "🤷 Image {{ $image.artifactory.repo }}:{{ $other_tag }} not found."
-        exit 0
-    fi
-    crane index append -m {{ $image.artifactory.repo }}:{{ $self_tag }} -m {{ $image.artifactory.repo }}:{{ $other_tag }} -t {{ $image.artifactory.repo }}:{{ $tag }}
-            {{- else }}
-    crane tag {{ $image.artifactory.repo }}:{{ index $base_tags 0 }} {{ $tag }}
+            {{- if ne $i 0 }}
+    crane tag "$primary_multi_tag" {{ $tag }}
             {{- end }}
         {{- end }}
+    {{- end }}
+
+    # Update the result file only after all multi-arch tags were pushed successfully.
+    {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     yq -i '.images[{{ $index }}].multi_arch_tags = ["{{ join $base_tags "\",\"" }}"]' "$result_file"
     {{- end }}
 
+    trap - EXIT
     echo "✅ Multi-arch images recorded in file: $result_file"
 }
 
