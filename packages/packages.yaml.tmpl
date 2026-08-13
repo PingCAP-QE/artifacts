@@ -972,6 +972,12 @@ components:
                 # go plugin whitelist
                 pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+            - script: |
+                # test loading the plugins with tidb-server.
+                bin/tidb-server -plugin-dir=./bin -plugin-load=audit-1,whitelist-1 | tee ./loading-plugin.log &
+                sleep 30
+                pgrep -x tidb-server
+                pkill -9 -x tidb-server
           enterprise-without-plugins:
             - script: |
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
@@ -1121,6 +1127,12 @@ components:
                 # go plugin whitelist
                 pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+            - script: |
+                # test loading the plugins with tidb-server.
+                bin/tidb-server -plugin-dir=./bin -plugin-load=audit-1,whitelist-1 | tee ./loading-plugin.log &
+                sleep 30
+                pgrep -x tidb-server
+                pkill -9 -x tidb-server
           enterprise-without-plugins:
             - script: |
                 TIDB_EDITION=Enterprise make enterprise-prepare enterprise-server-build build_tools build_dumpling
@@ -1265,6 +1277,12 @@ components:
                 # go plugin whitelist
                 pushd ../enterprise-plugin/whitelist && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/whitelist -out-dir bin/
+            - script: |
+                # test loading the plugins with tidb-server.
+                bin/tidb-server -plugin-dir=./bin -plugin-load=audit-1,whitelist-1 | tee ./loading-plugin.log &
+                sleep 30
+                pgrep -x tidb-server
+                pkill -9 -x tidb-server
           failpoint:
             - script: |
                 make failpoint-enable
