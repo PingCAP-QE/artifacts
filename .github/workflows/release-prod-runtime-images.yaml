@@ -86,14 +86,20 @@ jobs:
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
-      - name: Add image version labels
+      - name: Set image labels and version
         if: matrix.module == 'default'
         run: |
           set -euo pipefail
-          GOBIN=/usr/local/bin go install github.com/google/go-containerregistry/cmd/crane@v0.21.9
+          GOBIN=/usr/local/bin go install github.com/regclient/regclient/cmd/regctl@v0.11.5
           images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
           for img in $images; do
-            crane mutate "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" \
+            regctl image mod "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" \
+              --label io.buildah.version \
+              --label license \
+              --label name \
+              --label summary \
+              --label vendor \
+              --label version \
               --label "org.opencontainers.image.version=${{ steps.tag.outputs.tag }}"
           done
 
