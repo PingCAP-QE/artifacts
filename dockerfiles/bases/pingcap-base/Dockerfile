@@ -19,7 +19,7 @@ LABEL org.opencontainers.image.authors="Flare Zuo <wuhui.zuo@pingcap.com>" \
       org.opencontainers.image.title="pingcap-base" \
       org.opencontainers.image.vendor="PingCAP" \
       org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts" \
-      org.opencontainers.image.licenses="Apache-2.0"
+      org.opencontainers.image.licenses="Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only"
 
 ARG _date=20260817
 ARG PINGCAP_UID=1000
