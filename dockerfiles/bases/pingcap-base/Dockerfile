@@ -5,7 +5,12 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       org.opencontainers.image.title="pingcap-base" \
       org.opencontainers.image.vendor="PingCAP" \
       org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts" \
-      org.opencontainers.image.licenses="Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only"
+      org.opencontainers.image.licenses="Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only" \
+      license="Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only" \
+      name="pingcap-base" \
+      summary="PingCAP QE base image built on Rocky Linux 9" \
+      vendor="PingCAP" \
+      version="9.8"
 
 ARG _date=20260817
 ARG PINGCAP_UID=1000
