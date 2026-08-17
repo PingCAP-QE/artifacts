@@ -15,7 +15,7 @@ LABEL --remove=io.buildah.version \
       --remove=vendor \
       --remove=version
 
-LABEL org.opencontainers.image.authors="Flare Zuo <wuhui.zuo@pingcap.com>" \
+LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       org.opencontainers.image.title="pingcap-base" \
       org.opencontainers.image.vendor="PingCAP" \
       org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts" \

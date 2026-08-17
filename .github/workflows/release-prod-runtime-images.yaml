@@ -90,7 +90,7 @@ jobs:
         if: matrix.module == 'default'
         run: |
           set -euo pipefail
-          GOBIN=/usr/local/bin go install github.com/google/go-containerregistry/cmd/crane@v0.20.2
+          GOBIN=/usr/local/bin go install github.com/google/go-containerregistry/cmd/crane@v0.21.9
           images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
           for img in $images; do
             crane mutate "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" \
