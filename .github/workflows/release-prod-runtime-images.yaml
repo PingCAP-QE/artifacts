@@ -94,7 +94,8 @@ jobs:
           images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
           for img in $images; do
             crane mutate "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" \
-              --label "org.opencontainers.image.version=${{ steps.tag.outputs.tag }}"
+              --label "org.opencontainers.image.version=${{ steps.tag.outputs.tag }}" \
+              --label "version=${{ steps.tag.outputs.tag }}"
           done
 
       - name: Install trivy from official APT repo

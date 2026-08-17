@@ -9,8 +9,7 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       license="Apache-2.0 AND BSD-3-Clause AND GPL-2.0-only" \
       name="pingcap-base" \
       summary="PingCAP QE base image built on Rocky Linux 9" \
-      vendor="PingCAP" \
-      version="9.8"
+      vendor="PingCAP"
 
 ARG _date=20260817
 ARG PINGCAP_UID=1000
