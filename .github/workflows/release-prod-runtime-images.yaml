@@ -53,11 +53,6 @@ jobs:
         with:
           version: 2.23.0
 
-      - name: Setup manifest-tool
-        run: |
-          curl -L https://github.com/estesp/manifest-tool/releases/download/v2.1.7/binaries-manifest-tool-2.1.7.tar.gz | tar -zxvf - manifest-tool-linux-amd64
-          sudo install manifest-tool-linux-amd64 /usr/local/bin/manifest-tool
-
       - name: Cache layers
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
@@ -85,18 +80,6 @@ jobs:
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-
-      - name: Set image version labels
-        if: matrix.module == 'default'
-        run: |
-          set -euo pipefail
-          GOBIN=/usr/local/bin go install github.com/google/go-containerregistry/cmd/crane@v0.21.9
-          images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
-          for img in $images; do
-            crane mutate "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" \
-              --label "org.opencontainers.image.version=${{ steps.tag.outputs.tag }}" \
-              --label "version=${{ steps.tag.outputs.tag }}"
-          done
 
       - name: Install trivy from official APT repo
         if: matrix.module == 'default'
