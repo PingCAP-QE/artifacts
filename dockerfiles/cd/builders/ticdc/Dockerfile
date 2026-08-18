@@ -44,7 +44,7 @@ RUN GOPROXY=${GOPROXY} make kafka_consumer pulsar_consumer storage_consumer -C /
 RUN /ws/bin/cdc version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.2
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.3
 
 COPY --from=building /ws/bin/cdc /cdc
 EXPOSE 8300
