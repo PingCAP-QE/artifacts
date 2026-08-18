@@ -37,7 +37,7 @@ FROM builder-cdc AS builder-dm
 # renovate: datasource=docker depName=node
 ARG NODE_VERSION=16.20.2
 # renovate: datasource=github-releases depName=nvm-sh/nvm
-ARG NVM_VERSION=v0.40.5
+ARG NVM_VERSION=v0.40.7
 ARG NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR && \
     curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash && \
