@@ -116,8 +116,9 @@ editions:
                 src: { type: tiup-clone, version: "{{ .Release.version }}" }
               - name: etcdctl
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
 
@@ -185,8 +186,9 @@ editions:
                 src: { type: tiup-clone, version: "{{ .Release.version }}" }
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
 
@@ -259,8 +261,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
 
@@ -357,8 +360,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
 
@@ -454,8 +458,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.1.0 until v7.5"
@@ -553,8 +558,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
@@ -658,8 +664,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
@@ -774,8 +781,9 @@ editions:
                 src: { type: tiup-clone, version: "{{ .Release.version }}" }
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v8.5.6 until v9.0.0"
@@ -877,8 +885,9 @@ editions:
                 src: { type: tiup-clone, version: "{{ .Release.version }}" }
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v8.4.0 until v8.5.6"
@@ -985,8 +994,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.5.15/etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.5.15_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.5.15-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.6.0 until v8.4.0"
@@ -1118,8 +1128,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
 
@@ -1251,8 +1262,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
       - description: "Started from v7.1.0 until v7.5"
@@ -1386,8 +1398,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
@@ -1527,8 +1540,9 @@ editions:
                   extract_inner_path: sync_diff_inspector
               - name: etcdctl	# New in v6.0.0
                 src:
-                  type: http
-                  url: "https://github.com/etcd-io/etcd/releases/download/v3.4.30/etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  type: oci
+                  url: "{{ .Release.registry }}/pingcap/third-party/etcd:v3.4.30_{{ .Release.os }}_{{ .Release.arch }}"
+                  path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
                   extract: true
                   extract_inner_path: "etcd-v3.4.30-{{ .Release.os }}-{{ .Release.arch }}/etcdctl"
               - name: mydumper # New in v6.0.0
