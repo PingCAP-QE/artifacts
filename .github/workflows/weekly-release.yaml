@@ -143,7 +143,7 @@ jobs:
 
       - name: Send scan report via email
         if: always() && env.SMTP_SERVER != ''
-        uses: dawidd6/action-send-mail@94de994a9f6fffee200243214e17002e2920bb59 # v18
+        uses: dawidd6/action-send-mail@ca8dbb4d4f91ca7f75e7f2feea5339e76ce70c90 # v20
         with:
           server_address: ${{ env.SMTP_SERVER }}
           server_port: ${{ secrets.SMTP_PORT || 465 }}
