@@ -108,8 +108,73 @@ function main() {
         exit 0
     fi
 
+    # The multi-arch collection is atomic over the images that are built for both
+    # architectures. Derive that set by rendering the same router for the other
+    # architecture: images missing there are single-arch and get `multi_arch:
+    # false`, so they neither block nor take part in the multi-arch collection.
+    # Deriving it here keeps it in sync when the artifacts' arch conditions change.
+    mark_single_arch_images "$component" "$os" "$arch" "$profile_match" "$template_file" release-router.yaml
+
     gomplate --context .=release-router.yaml -f "$RELEASE_SCRIPTS_DIR/build-package-images.sh.tmpl" --chmod "755" --out "$out_file"
     echo "✅ Generated shell script: $out_file"
+}
+
+function other_arch_of() {
+    case "$1" in
+        amd64) echo "arm64" ;;
+        arm64) echo "amd64" ;;
+        *) echo "" ;;
+    esac
+}
+
+function mark_single_arch_images() {
+    local component=$1
+    local os=$2
+    local arch=$3
+    local profile_match=$4
+    local template_file=$5
+    local router_file=$6
+
+    local other_arch
+    other_arch="$(other_arch_of "$arch")"
+    if [ -z "$other_arch" ]; then
+        return 0
+    fi
+
+    # Render the component for the other architecture and collect its image repos.
+    local other_context_file="release-context-${other_arch}.yaml"
+    local other_packages_file="release-packages-${other_arch}.yaml"
+    cp release-context.yaml "$other_context_file"
+    yq -i ".Release.arch = \"$other_arch\"" "$other_context_file"
+    gomplate --context .="$other_context_file" -f "$template_file" --out "$other_packages_file"
+    rm -f "$other_context_file"
+
+    local other_repos
+    other_repos="$(
+        yq -r ".components[\"${component}\"].routers[]
+            | select(
+                (.if == null or .if)
+                and ([\"$os\"] - .os | length == 0)
+                and ([\"$other_arch\"] - .arch | length == 0)
+                and ([\"$profile_match\"] - .profile | length == 0)
+              )
+            | (.artifacts // [])[]
+            | select((.if == null or .if) and .type == \"image\")
+            | .artifactory.repo" "$other_packages_file" 2>/dev/null || true
+    )"
+    rm -f "$other_packages_file"
+
+    local artifact_index=0
+    local artifact_count
+    artifact_count="$(yq '.artifacts | length' "$router_file")"
+    while [ "$artifact_index" -lt "$artifact_count" ]; do
+        local repo
+        repo="$(yq ".artifacts[$artifact_index].artifactory.repo" "$router_file")"
+        if ! printf '%s\n' "$other_repos" | grep -qxF -- "$repo"; then
+            yq -i ".artifacts[$artifact_index].multi_arch = false" "$router_file"
+        fi
+        artifact_index=$((artifact_index + 1))
+    done
 }
 
 main "$@"
