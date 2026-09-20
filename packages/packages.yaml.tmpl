@@ -963,6 +963,21 @@ components:
                 {{- end }}
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
+                # Align the Go toolchain with the one that built tidb-server. A Go plugin
+                # must be built with the exact same toolchain as its host, otherwise it
+                # fails to load at runtime with:
+                #   plugin.Open(...): plugin was built with a different version of package runtime
+                # The tidb Makefile pins GOTOOLCHAIN for its own make recipes only, while this
+                # plugin build runs outside make, so set it explicitly here.
+                plugin_toolchain="$(go version bin/tidb-server 2>/dev/null | awk '{print $NF}' || true)"
+                if ! echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  plugin_toolchain="$(sed -nE 's/^[[:space:]]*export[[:space:]]+GOTOOLCHAIN[[:space:]]*:?=[[:space:]]*//p' Makefile.common | tail -n1 || true)"
+                fi
+                if echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  export GOTOOLCHAIN="$plugin_toolchain"
+                fi
+                echo "plugin build GOTOOLCHAIN=${GOTOOLCHAIN:-<image default>}"
+            - script: |
                 # go plugin audit
                 pushd ../enterprise-plugin/audit && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
@@ -1118,6 +1133,21 @@ components:
                 {{- end }}
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
             - script: |
+                # Align the Go toolchain with the one that built tidb-server. A Go plugin
+                # must be built with the exact same toolchain as its host, otherwise it
+                # fails to load at runtime with:
+                #   plugin.Open(...): plugin was built with a different version of package runtime
+                # The tidb Makefile pins GOTOOLCHAIN for its own make recipes only, while this
+                # plugin build runs outside make, so set it explicitly here.
+                plugin_toolchain="$(go version bin/tidb-server 2>/dev/null | awk '{print $NF}' || true)"
+                if ! echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  plugin_toolchain="$(sed -nE 's/^[[:space:]]*export[[:space:]]+GOTOOLCHAIN[[:space:]]*:?=[[:space:]]*//p' Makefile.common | tail -n1 || true)"
+                fi
+                if echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  export GOTOOLCHAIN="$plugin_toolchain"
+                fi
+                echo "plugin build GOTOOLCHAIN=${GOTOOLCHAIN:-<image default>}"
+            - script: |
                 # go plugin audit
                 pushd ../enterprise-plugin/audit && go mod tidy &&  popd
                 go run ./cmd/pluginpkg -pkg-dir ../enterprise-plugin/audit -out-dir bin/
@@ -1267,6 +1297,21 @@ components:
                 # plugin_branch="{{ printf "release-%d.%d" $sv.Major $sv.Minor }}"
                 {{- end }}
                 # git clone https://github.com/pingcap-inc/enterprise-plugin.git -b "$plugin_branch" ../enterprise-plugin
+            - script: |
+                # Align the Go toolchain with the one that built tidb-server. A Go plugin
+                # must be built with the exact same toolchain as its host, otherwise it
+                # fails to load at runtime with:
+                #   plugin.Open(...): plugin was built with a different version of package runtime
+                # The tidb Makefile pins GOTOOLCHAIN for its own make recipes only, while this
+                # plugin build runs outside make, so set it explicitly here.
+                plugin_toolchain="$(go version bin/tidb-server 2>/dev/null | awk '{print $NF}' || true)"
+                if ! echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  plugin_toolchain="$(sed -nE 's/^[[:space:]]*export[[:space:]]+GOTOOLCHAIN[[:space:]]*:?=[[:space:]]*//p' Makefile.common | tail -n1 || true)"
+                fi
+                if echo "$plugin_toolchain" | grep -qE '^go[0-9]'; then
+                  export GOTOOLCHAIN="$plugin_toolchain"
+                fi
+                echo "plugin build GOTOOLCHAIN=${GOTOOLCHAIN:-<image default>}"
             - script: |
                 # go plugin audit
                 pushd ../enterprise-plugin/audit && go mod tidy &&  popd
