@@ -960,12 +960,15 @@ components:
                 # honours rust/Cargo.lock. Default features (jemalloc) are kept.
                 #
                 # crates/tidb-proto/build.rs runs prost-build, which shells out
-                # to protoc; the official Rust image does not ship it.
+                # to protoc; the archive step below uses uuidgen. The official
+                # Rust image ships neither, so install them here.
                 apt-get update
-                apt-get install -y --no-install-recommends protobuf-compiler
+                apt-get install -y --no-install-recommends protobuf-compiler uuid-runtime
                 protoc --version
-                cd rust
-                cargo build --release --locked -p tidb-server
+                # Build in a subshell: `build()` and `archive()` run in the same
+                # shell, so a bare `cd rust` would break the artifact's
+                # `rust/target/release/tidb-server` path in the archive step.
+                (cd rust && cargo build --release --locked -p tidb-server)
         artifacts:
           - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
