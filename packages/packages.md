@@ -65,6 +65,10 @@ _This document is maintained by the release engineering team. Updates should ali
 ### Notes
 
 - `pd-api-bench` binary is exclusive to the `enterprise` profile for PD versions 7.4.0 and above.
+- The `rust` profile is not part of the release/enterprise/nextgen analysis above: it builds
+  only the standalone Rust SQL node (`tidb-server`) for `pingcap/tidb@hparser-integration` on
+  `linux/amd64` and `linux/arm64`, publishes the `tidb` tiup package to the staging mirror
+  only, and builds no container images.
 
 ## Component Change Log on Artifacts
 
@@ -73,6 +77,7 @@ _This document is maintained by the release engineering team. Updates should ali
 | tidb          | v6.1.0+       | master            | release    | Initial: tidb-server, br, dumpling, tidb-lightning                              | Initial: tidb-server, br, dumpling, tidb-lightning images                  |
 | tidb          | v7.1.0+       | master            | enterprise | Added plugins (audit-1.so, whitelist-1.so) to tidb-server image                 | tidb-server image includes audit-1.so, whitelist-1.so                      |
 | tidb          | v9.0.0+       | master            | nextgen   | (N/A)                                                                           | Images only, no TiUP packages                                              |
+| tidb          | v9.0.0-beta.2.pre.rust | hparser-integration | rust      | Added rust profile: `tidb-server` only, staging mirror                          | No images                                                                  |
 | pd            | v6.1.0+       | master            | release    | Initial: pd-server, pd-recover TiUP packages                                    | Initial: pd-server, pd-recover, pd-ctl images                              |
 | pd            | v7.4.0+       | master            | enterprise | Added pd-api-bench, pd-heartbeat-bench, pd-tso-bench, regions-dump, stores-dump | Enterprise image includes extra binaries                                   |
 | ctl           | v6.1.0+       | master            | release    | Initial: ctl TiUP package (controller suite)                                    | (N/A)                                                                      |
