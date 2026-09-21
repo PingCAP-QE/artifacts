@@ -922,25 +922,26 @@ components:
     builders:
       # The Rust SQL node (pingcap/tidb@hparser-integration) builds with the
       # official Rust image pinned to the toolchain date in rust/rust-toolchain.toml.
-      # It is the only builder that matches profile=rust; every Go builder below is
-      # guarded with `ne .Release.profile "rust"` so exactly one builder matches.
+      # The rust profile only exists from v8.5.8 on, so only the `>= 8.5.8-0` Go
+      # builder (the one whose range would also match a rust version) is guarded
+      # with `ne .Release.profile "rust"`; the older ranges can never match it.
       - if: {{ eq .Release.profile "rust" }}
         image: docker.io/rustlang/rust:nightly-2026-08-22
       - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.8-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.7.19-6-gfc3279c-centos7-go1.25
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.4.12-31-g809b8b4-centos7-go1.25
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-14-g6fd6d9d-centos7-go1.25
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-3-g1c0b8cf-centos7-go1.23
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.20
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.19
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint "< 6.1.0-0" .Release.version) }}
+      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-103-g043adb3-go1.18
     routers:
       # Rust SQL node profile (pingcap/tidb@hparser-integration): build only the
