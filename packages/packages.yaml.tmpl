@@ -958,6 +958,12 @@ components:
                 # The builder is the official Rust image (glibc); the pinned
                 # nightly comes from rust/rust-toolchain.toml and --locked
                 # honours rust/Cargo.lock. Default features (jemalloc) are kept.
+                #
+                # crates/tidb-proto/build.rs runs prost-build, which shells out
+                # to protoc; the official Rust image does not ship it.
+                apt-get update
+                apt-get install -y --no-install-recommends protobuf-compiler
+                protoc --version
                 cd rust
                 cargo build --release --locked -p tidb-server
         artifacts:
