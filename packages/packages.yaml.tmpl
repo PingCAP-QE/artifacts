@@ -920,23 +920,56 @@ components:
         - {{ .Release.version }}
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
-      - if: {{ semver.CheckConstraint ">= 8.5.8-0" .Release.version }}
+      # The Rust SQL node (pingcap/tidb@hparser-integration) builds with the
+      # official Rust image pinned to the toolchain date in rust/rust-toolchain.toml.
+      # It is the only builder that matches profile=rust; every Go builder below is
+      # guarded with `ne .Release.profile "rust"` so exactly one builder matches.
+      - if: {{ eq .Release.profile "rust" }}
+        image: docker.io/rustlang/rust:nightly-2026-08-22
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.8-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.7.19-6-gfc3279c-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.4.12-31-g809b8b4-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-14-g6fd6d9d-centos7-go1.25
-      - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-3-g1c0b8cf-centos7-go1.23
-      - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
-      - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.20
-      - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.19
-      - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint "< 6.1.0-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v20240325-103-g043adb3-go1.18
     routers:
+      # Rust SQL node profile (pingcap/tidb@hparser-integration): build only the
+      # standalone tidb-server for linux, and publish only to the tiup staging
+      # mirror. No container images are built for this profile.
+      - description: Rust SQL node (tidb-server) for the hparser-integration branch.
+        if: {{ eq .Release.profile "rust" }}
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [rust]
+        steps:
+          rust:
+            - script: |
+                # The builder is the official Rust image (glibc); the pinned
+                # nightly comes from rust/rust-toolchain.toml and --locked
+                # honours rust/Cargo.lock. Default features (jemalloc) are kept.
+                cd rust
+                cargo build --release --locked -p tidb-server
+        artifacts:
+          - name: "tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - name: tidb-server
+                src:
+                  path: rust/target/release/tidb-server
+            tiup:
+              name: tidb
+              description: >-
+                TiDB is an open source distributed HTAP database compatible with the MySQL protocol.
+              entrypoint: tidb-server
       - description: For range [v8.4.0, )
         # fips profile only invalid in v6.5.x
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
