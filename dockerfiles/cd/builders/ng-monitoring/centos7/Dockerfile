@@ -31,6 +31,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH=/usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
+
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
 RUN --mount=type=cache,target=/var/cache/yum \
