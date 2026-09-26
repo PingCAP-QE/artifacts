@@ -29,6 +29,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH=/usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
+
 # Install nodejs.
 RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
 RUN yum -y install nodejs && yum clean all
