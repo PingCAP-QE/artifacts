@@ -928,9 +928,9 @@ components:
       - if: {{ eq .Release.profile "rust" }}
         image: docker.io/rustlang/rust:nightly-2026-08-22
       - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.8-0" .Release.version) }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.7.19-6-gfc3279c-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.9.20-7-g5292897-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.4.12-31-g809b8b4-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.9.20-7-g5292897-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-14-g6fd6d9d-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
