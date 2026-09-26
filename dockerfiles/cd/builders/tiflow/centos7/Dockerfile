@@ -30,6 +30,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 ENV PATH=/usr/local/go/bin/:$PATH
 LABEL go-version="${GOLANG_VERSION}"
 
+
 ########### stage: Builder - dm
 FROM builder-cdc AS builder-dm
 
