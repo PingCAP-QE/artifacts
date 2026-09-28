@@ -286,7 +286,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2026.8.16-7-gf85e332-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2026.9.20-6-g15219b4-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
@@ -444,7 +444,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2026.8.16-7-gf85e332-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2026.9.20-6-g15219b4-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ng-monitoring:v2025.12.7-9-ga45d5b1-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
@@ -571,7 +571,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.8.16-12-g33dc456-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.9.20-7-g5292897-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
@@ -922,12 +922,13 @@ components:
     builders:
       # The Rust SQL node (pingcap/tidb@hparser-integration) builds with the
       # official Rust image pinned to the toolchain date in rust/rust-toolchain.toml.
-      # The rust profile only exists from v8.5.8 on, so only the `>= 8.5.8-0` Go
-      # builder (the one whose range would also match a rust version) is guarded
-      # with `ne .Release.profile "rust"`; the older ranges can never match it.
+      # The rust profile exists from v8.5.8 on, so Go builder ranges covering
+      # v8.5.8 or later must be guarded with `ne .Release.profile "rust"`.
       - if: {{ eq .Release.profile "rust" }}
         image: docker.io/rustlang/rust:nightly-2026-08-22
-      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.8-0" .Release.version) }}
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.9-0" .Release.version) }}
+        image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.9.20-7-g5292897-centos7-go1.25
+      - if: {{ and (ne .Release.profile "rust") (semver.CheckConstraint ">= 8.5.8-0, < 8.5.9-0" .Release.version) }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.7.19-6-gfc3279c-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 8.5.8-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.4.12-31-g809b8b4-centos7-go1.25
@@ -1857,7 +1858,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.7.19-6-gfc3279c-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.9.27-1-ge30fb59-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.12.7-3-g1c0b8cf-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
@@ -2354,7 +2355,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.8.16-3-g0b492ea-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.9.27-1-ge30fb59-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.12.14-3-g63aefbf-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
@@ -3050,7 +3051,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2026.8.2-15-gee6beb9-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2026.9.20-7-g5292897-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2025.12.14-3-g63aefbf-centos7-go1.25
       - if: {{ semver.CheckConstraint ">= 8.5.4-0, < 8.5.5-0" .Release.version }}
