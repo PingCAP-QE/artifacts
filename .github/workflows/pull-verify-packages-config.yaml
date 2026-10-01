@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   test-packages-cfg:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Set up Go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
