@@ -48,7 +48,7 @@ jobs:
     needs: check-comment
     if: needs.check-comment.outputs.should-run == 'true'
     name: test building with multi stages
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       packages: write
