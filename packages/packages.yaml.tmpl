@@ -573,32 +573,21 @@ components:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.8.16-12-g33dc456-centos7-go1.25
         # macOS native (darwin) toolchain for this component+range; only the mac agent reads it.
-        # Content is mise's [tools] table (backend-qualified where helpful). See packages/README.md.
+        # Only version-specific tools belong here (mise [tools]); generic CLI tools
+        # (deno/yq/jq/oras/...) are worker-global (bootstrap). See packages/README.md.
         macos:
           tools:
             go: "1.25"
-            deno: "2"
-            "aqua:mikefarah/yq": "4"
-            "aqua:jqlang/jq": "1.7"
-            "aqua:oras-project/oras": "1"
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.25
         macos:
           tools:
             go: "1.25"
-            deno: "2"
-            "aqua:mikefarah/yq": "4"
-            "aqua:jqlang/jq": "1.7"
-            "aqua:oras-project/oras": "1"
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.23
         macos:
           tools:
             go: "1.23"
-            deno: "2"
-            "aqua:mikefarah/yq": "4"
-            "aqua:jqlang/jq": "1.7"
-            "aqua:oras-project/oras": "1"
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}

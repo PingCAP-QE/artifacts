@@ -34,8 +34,11 @@ Configuration template: [packages.yaml.tmpl](./packages.yaml.tmpl)
 
 For macOS (`darwin`) **native** builds, a builder entry may carry a `macos.tools` mapping. It is read **only**
 by the mac agent (`mac-builder-operator`); Linux builds ignore it (they run the builder image, which already
-pins the toolchain). Its content is a [mise](https://mise.jdx.dev) `[tools]` table (backend-qualified where
-helpful) — no new format:
+pins the toolchain). Its content is a [mise](https://mise.jdx.dev) `[tools]` table — no new format.
+
+**Only version-specific tools belong here.** Generic CLI tools that are the same for every component/version
+(`deno`, `yq`, `jq`, `oras`, `gomplate`, …) are **worker-global** (installed once via bootstrap), not declared
+per component. Today this is effectively just the `go` toolchain:
 
 ```yaml
     builders:
@@ -44,17 +47,14 @@ helpful) — no new format:
         macos:
           tools:
             go: "1.25"
-            deno: "2"
-            "aqua:mikefarah/yq": "4"
-            "aqua:jqlang/jq": "1.7"
-            "aqua:oras-project/oras": "1"
 ```
 
 The mac agent resolves the single matching builder for a build (component + semver range + profile) and
-provisions exactly these tool versions **per build** (isolated), instead of relying on tools installed
-globally on the worker OS. If a component/builder has no `macos.tools`, the agent falls back to the builder
-image's labels (e.g. `go-version`), then to the worker's global tools. The `[tools]` versions should mirror
-the builder image's toolchain (the table above) so native output matches Linux.
+provisions these tool versions **per build** (isolated), instead of relying on them being installed globally
+on the worker OS. If a component/builder has no `macos.tools`, the agent falls back to the builder image's
+labels (e.g. `go-version`), then to the worker's global tools. The `[tools]` versions should mirror the
+builder image's toolchain (the table above) so native output matches Linux.
+
 
 ### Required context
 
