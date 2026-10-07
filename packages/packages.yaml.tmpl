@@ -572,10 +572,22 @@ components:
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.9.20-7-g5292897-centos7-go1.25
+        # macOS native (darwin) toolchain for this component+range; only the mac agent reads it.
+        # Only version-specific tools belong here (mise [tools]); generic CLI tools
+        # (deno/yq/jq/oras/...) are worker-global (bootstrap). See packages/README.md.
+        macos:
+          tools:
+            go: "1.25"
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.25
+        macos:
+          tools:
+            go: "1.25"
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.23
+        macos:
+          tools:
+            go: "1.23"
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/pd:v2024.10.8-91-g6221afa-centos7-go1.21
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
