@@ -38,7 +38,8 @@ pins the toolchain). Its content is a [mise](https://mise.jdx.dev) `[tools]` tab
 
 **Only version-specific tools belong here.** Generic CLI tools that are the same for every component/version
 (`deno`, `yq`, `jq`, `oras`, `gomplate`, …) are **worker-global** (installed once via bootstrap), not declared
-per component. Today this is effectively just the `go` toolchain:
+per component — they are declared in [`macos/bootstrap/mise.toml`](./macos/bootstrap/mise.toml). Today this is
+effectively just the `go` toolchain:
 
 ```yaml
     builders:

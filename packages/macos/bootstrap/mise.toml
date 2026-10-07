@@ -1,0 +1,22 @@
+# Worker-global (bootstrap) tools for the macOS native build agent.
+#
+# These are shared runtime dependencies of the artifacts scripts and the version
+# resolver, independent of any single component/version — hence they are NOT
+# declared per component. Per-component declarations live in `macos.tools` in
+# packages.yaml.tmpl and carry only version-specific tools (e.g. `go`).
+#
+#   - gomplate, yq, jq : render/filter packages.yaml.tmpl (gen-*-with-config.sh)
+#   - deno             : resolve the build version (versioning-strategy)
+#   - oras             : publish/pull OCI artifacts
+#
+# Read only by the macOS native path; Linux builder images provide their own
+# toolchain. Installed once per worker via mise (see PingCAP-QE/ee-apps
+# mac-builder-operator hack/worker-bootstrap.sh). Backends follow mise's registry
+# (https://mise.jdx.dev).
+
+[tools]
+gomplate = "4"
+yq = "4"
+jq = "1.7"
+deno = "2"
+oras = "1"
