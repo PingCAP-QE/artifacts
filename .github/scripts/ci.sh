@@ -296,6 +296,34 @@ function test_gen_package_artifacts_script_freedom_releasing() {
     done
 }
 
+# Extract the body of the multi-arch collection function from a generated build script.
+function extract_multi_arch_body() {
+    local script_path=$1
+    awk '/^collect_and_push_multi_arch_images\(\) \{/{f=1} f{print} f&&/^\}/{exit}' "$script_path"
+}
+
+function assert_image_in_multi_arch() {
+    local script_path=$1
+    local repo=$2
+    local body
+    body="$(extract_multi_arch_body "$script_path")"
+    if ! grep -qF -- "$repo" <<<"$body"; then
+        echo "❌ Repo '$repo' should take part in the multi-arch collection of $script_path"
+        exit 1
+    fi
+}
+
+function assert_image_excluded_from_multi_arch() {
+    local script_path=$1
+    local repo=$2
+    local body
+    body="$(extract_multi_arch_body "$script_path")"
+    if grep -qF -- "$repo" <<<"$body"; then
+        echo "❌ Repo '$repo' should be excluded from the multi-arch collection of $script_path"
+        exit 1
+    fi
+}
+
 function test_gen_package_images_script() {
     local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local os="linux"
@@ -316,6 +344,28 @@ function test_gen_package_images_script() {
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
                 shellcheck -S error packages/scripts/build-package-images.sh
+            done
+        done
+    done
+
+    # ticdc release images. The amd64-only test tools are auto-excluded from the atomic multi-arch collection.
+    local cm="ticdc"
+    local cdc_image="us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/image"
+    local ticdc_test_images=(
+        "us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/test-images/kafka-consumer"
+        "us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/test-images/pulsar-consumer"
+        "us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/ticdc/test-images/storage-consumer"
+    )
+    local ticdc_versions="v8.5.4 v9.0.0"
+    for version in $ticdc_versions; do
+        for ac in $architectures; do
+            echo -en "[📃💿] $cm $os $ac $version $profile:\t"
+            $script "$cm" "$os" "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
+            shellcheck -S error packages/scripts/build-package-images.sh
+            assert_image_in_multi_arch packages/scripts/build-package-images.sh "$cdc_image"
+            local test_image
+            for test_image in "${ticdc_test_images[@]}"; do
+                assert_image_excluded_from_multi_arch packages/scripts/build-package-images.sh "$test_image"
             done
         done
     done

@@ -536,6 +536,12 @@ tiup_publish_rules:
         - ^(feature-fts)_(linux|darwin)_(amd64|arm64)$
       dest_mirrors:
         - staging
+    - description: for the Rust SQL node builds (staging only); matches the branch-style artifact tag and publishes a fixed version
+      tags_regex:
+        - ^(hparser-integration-rust)_(linux)_(amd64|arm64)$
+      version_regex_replace: "v9.0.0-beta.2.pre.rust"
+      dest_mirrors:
+        - staging
   ^us-docker.pkg.dev/pingcap-testing-account/tidbx/.+/package$:
     - description: for nextgen EA/GA builds
       tags_regex:

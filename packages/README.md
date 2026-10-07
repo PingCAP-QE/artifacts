@@ -16,6 +16,10 @@ Central declarative congfigurations for artifacts delivering.
 - `enterprise`: enterprise release profile, it will not publish any tiup pkgs.
 - `failpoint`: enable failpoint switch on community profile.
 - `fips`: fips feature release without enterprise plugins.
+- `rust`: builds only the standalone Rust SQL node (`tidb-server`) for
+  `pingcap/tidb@hparser-integration` on `linux/amd64` and `linux/arm64`, and publishes the
+  `tidb` tiup package to the **staging** mirror only. Uses the official Rust image
+  (`docker.io/rustlang/rust:nightly-2026-08-22`, glibc) and builds no container images.
 
 ## For component binaries packages and container images
 
