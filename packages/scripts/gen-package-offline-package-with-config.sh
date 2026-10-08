@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-RELEASE_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
-PROJECT_ROOT_DIR=$(realpath "${RELEASE_SCRIPTS_DIR}/../..")
+RELEASE_SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd -P)
+PROJECT_ROOT_DIR=$(cd "${RELEASE_SCRIPTS_DIR}/../.." && pwd -P)
 
 function main() {
     local os=$1

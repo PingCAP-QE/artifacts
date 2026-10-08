@@ -142,7 +142,7 @@ function fetch_file_from_oci_artifact() {
 function archive() {
     local release_ws="$1"
     mkdir -p ${release_ws}
-    release_ws=$(realpath $release_ws)
+    release_ws=$(cd "$release_ws" && pwd -P)
 
     ################# create tarballs ################
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}
