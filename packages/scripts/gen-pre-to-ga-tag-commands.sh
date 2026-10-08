@@ -5,8 +5,8 @@ function add_ga_tag_on_from_pre() {
     local rc_ver=$1
     local ga_ver=$2
 
-    RELEASE_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
-    PROJECT_ROOT_DIR=$(realpath "${RELEASE_SCRIPTS_DIR}/../..")
+    RELEASE_SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd -P)
+    PROJECT_ROOT_DIR=$(cd "${RELEASE_SCRIPTS_DIR}/../.." && pwd -P)
 
     local outfile="${3:-${RELEASE_SCRIPTS_DIR}/pre-to-ga-tag.sh}"
 
