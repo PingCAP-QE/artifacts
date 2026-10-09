@@ -243,7 +243,11 @@ function archive() {
     {{- end }}
 
     echo "$save_file"
-    sha256sum -b "$save_file" | cut -d ' ' -f1 > "$save_file.sha256"
+    if command -v sha256sum >/dev/null 2>&1; then
+      sha256sum -b "$save_file" | cut -d ' ' -f1 > "$save_file.sha256"
+    else
+      shasum -a 256 "$save_file" | cut -d ' ' -f1 > "$save_file.sha256"
+    fi
     # <<<<<<<<<<<<<<<< file: {{ .name }} <<<<<<<<<<<<<<<<
     {{- end }}
 }
