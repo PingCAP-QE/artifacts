@@ -19,6 +19,6 @@
 [tools]
 gomplate = "4"
 yq = "4"
-jq = "1.7"
+jq = "1.8"
 deno = "2"
 oras = "1"
