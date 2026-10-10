@@ -17,7 +17,7 @@
 # follow mise's registry (https://mise.jdx.dev).
 
 [tools]
-gomplate = "4"
+gomplate = "5.2.0"
 yq = "4"
 jq = "1.7"
 deno = "2"
