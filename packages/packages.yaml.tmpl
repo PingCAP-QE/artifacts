@@ -2102,10 +2102,19 @@ components:
     builders:
       - if: {{ and (semver.CheckConstraint ">= 8.5.0-0" .Release.version) (eq "nextgen" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.4.15-rocky8-llvm-17.0.6-v2
+        macos:
+          tools:
+            rust: "nightly-2024-12-11"
       - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (eq "nextgen" .Release.profile)) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
+        macos:
+          tools:
+            rust: "nightly-2023-12-27"
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v20231106
+        macos:
+          tools:
+            rust: "nightly-2023-11-05"
     routers:
       - description: For range [v8.5.0, ) it changed the build script path.
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
@@ -3301,6 +3310,9 @@ components:
     builders:
       - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
         image: "ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset{{ ternary "10" "8" (eq .Release.profile "nextgen") }}"
+        macos:
+          tools:
+            rust: "nightly-2026-01-30"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.12.14-1-g33e22ac-fips
     routers:
