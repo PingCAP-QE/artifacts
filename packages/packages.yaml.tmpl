@@ -2105,16 +2105,19 @@ components:
         macos:
           tools:
             rust: "nightly-2024-12-11"
+            cmake: "3"
       - if: {{ and (semver.CheckConstraint ">= 8.2.0-0" .Release.version) (not (eq "nextgen" .Release.profile)) }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v2025.8.10-2-gc9e3144-centos7
         macos:
           tools:
             rust: "nightly-2023-12-27"
+            cmake: "3"
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 8.2.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflash:v20231106
         macos:
           tools:
             rust: "nightly-2023-11-05"
+            cmake: "3"
     routers:
       - description: For range [v8.5.0, ) it changed the build script path.
         if: {{ semver.CheckConstraint ">= 8.5.0-0" .Release.version }}
@@ -3313,6 +3316,7 @@ components:
         macos:
           tools:
             rust: "nightly-2026-01-30"
+            cmake: "3"
       - if: {{ and (semver.CheckConstraint "~6.5.6-0" .Release.version) (eq "fips" .Release.profile) }}
         image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.12.14-1-g33e22ac-fips
     routers:
