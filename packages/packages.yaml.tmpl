@@ -1950,35 +1950,35 @@ components:
           tools:
             go: "1.25"
             node: "22"
-            pnpm: "8.6.12"
+            pnpm: "8.6"
       - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 9.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.9.27-1-ge30fb59-centos7-go1.25
         macos:
           tools:
             go: "1.25"
-            node: "18.16.0"
-            pnpm: "8.6.12"
+            node: "18.16"
+            pnpm: "8.6"
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.12.7-3-g1c0b8cf-centos7-go1.25
         macos:
           tools:
             go: "1.25"
-            node: "18.16.0"
-            pnpm: "8.6.12"
+            node: "18.16"
+            pnpm: "8.6"
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2025.12.7-3-g1c0b8cf-centos7-go1.23
         macos:
           tools:
             go: "1.23"
-            node: "18.16.0"
-            pnpm: "8.6.12"
+            node: "18.16"
+            pnpm: "8.6"
       - if: {{ semver.CheckConstraint ">= 6.5.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2024.10.8-91-g6221afa-centos7-go1.21
         macos:
           tools:
             go: "1.21"
-            node: "18.16.0"
-            pnpm: "8.6.12"
+            node: "18.16"
+            pnpm: "8.6"
     routers:
       - description: For range [v8.4.0, )
         if: {{ semver.CheckConstraint ">= 8.4.0-0" .Release.version }}
