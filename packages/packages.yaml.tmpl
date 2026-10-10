@@ -3609,6 +3609,9 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - image: ghcr.io/pingcap-qe/cd/builders/tici:v2025.12.7-13-gadaea9a-centos7
+        macos:
+          tools:
+            rust: "nightly-2025-04-15"
     routers:
       - description: currently in demo stage
         os: [linux, darwin]
