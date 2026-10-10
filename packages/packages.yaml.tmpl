@@ -1632,12 +1632,12 @@ components:
         - {{ .Release.version }}
     builders:
       # BUG: tidb-ctl has not release branches and all tags taged on master branch.
-      - if: (eq "experiment" .Release.profile)
+      - if: {{ eq "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.12.7-14-g6fd6d9d-centos7-go1.25
         macos:
           tools:
             go: "1.25"
-      - if: (ne "experiment" .Release.profile)
+      - if: {{ ne "experiment" .Release.profile }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb:v2024.10.8-91-g6221afa-centos7-go1.21
         macos:
           tools:
