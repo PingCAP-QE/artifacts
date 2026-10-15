@@ -1,17 +1,23 @@
 name: Build multi stage images
+# Triggered by adding a `just/<task>` label to a pull request (e.g. `just/msb-tikv`).
+# Adding a label requires write/triage access, so the run is gated by a privileged
+# user; a `pull_request` trigger (not `pull_request_target`) keeps fork PRs away
+# from repository secrets and write tokens. This replaces the previous
+# `issue_comment` trigger, which is a fundamentally dangerous trigger.
 on:
-  issue_comment:
-    types: [created]
+  pull_request:
+    types: [labeled]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
-  check-comment:
+  check-label:
+    if: ${{ startsWith(github.event.label.name, 'just/') }}
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.check.outputs.should-run }}
@@ -21,8 +27,8 @@ jobs:
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
         with:
           script: |
-            const comment = context.payload.comment?.body ?? "";
-            const match = comment.match(/^\/just\s+([A-Za-z0-9._-]+)$/);
+            const label = context.payload.label?.name ?? "";
+            const match = label.match(/^just\/([A-Za-z0-9._-]+)$/);
             const allowedTasks = new Set([
               "all",
               "msb-tidb",
@@ -45,8 +51,8 @@ jobs:
             core.setOutput("task", match[1]);
 
   just-build:
-    needs: check-comment
-    if: needs.check-comment.outputs.should-run == 'true'
+    needs: check-label
+    if: needs.check-label.outputs.should-run == 'true'
     name: test building with multi stages
     runs-on: ubuntu-24.04
     permissions:
@@ -84,7 +90,7 @@ jobs:
         working-directory: dockerfiles
         run: |
           set -euo pipefail
-          TASK="${{ needs.check-comment.outputs.task }}"
+          TASK="${{ needs.check-label.outputs.task }}"
           if [ "$TASK" == "all" ]; then
             echo "Run all tasks"
             just msb-tidb
@@ -106,8 +112,8 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const { issue: { number: issue_number }, repo: { owner, repo } } = context;
-            const task = '${{ needs.check-comment.outputs.task }}';
+            const { pull_request: { number: issue_number }, repo: { owner, repo } } = context;
+            const task = '${{ needs.check-label.outputs.task }}';
 
             github.rest.issues.createComment({
               issue_number,
