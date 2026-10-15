@@ -4,6 +4,7 @@ on:
     branches:
       - main
     paths:
+      - .github/scripts/**
       - packages/scripts/**
       - packages/offline-packages.yaml.tmpl
       - packages/packages.yaml.tmpl

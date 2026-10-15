@@ -545,6 +545,10 @@ function main() {
     test_get_builder_freedom_releasing
     echo "<<<<<<<< test_get_builder <<<<<<<<<<<<<<<<<<<<<<<<"
 
+    echo ">>>>>>>> verify_macos_tools_coverage >>>>>>>>>>>>"
+    ./packages/scripts/verify-macos-tools-coverage.sh
+    echo "<<<<<<<< verify_macos_tools_coverage <<<<<<<<<<<<"
+
     echo ">>>>>>>> test_gen_package_artifacts_script >>>>>>>"
     test_gen_package_artifacts_script
     test_gen_package_artifacts_script_freedom_releasing
