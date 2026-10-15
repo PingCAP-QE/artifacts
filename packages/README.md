@@ -40,10 +40,25 @@ For macOS (`darwin`) **native** builds, a builder entry may carry a `macos.tools
 by the mac agent (`mac-builder-operator`); Linux builds ignore it (they run the builder image, which already
 pins the toolchain). Its content is a [mise](https://mise.jdx.dev) `[tools]` table — no new format.
 
-**Only version-specific tools belong here.** Generic CLI tools that are the same for every component/version
-(`deno`, `yq`, `jq`, `oras`, `gomplate`, …) are **worker-global** (installed once via bootstrap), not declared
-per component — they are declared in [`macos/bootstrap/mise.toml`](./macos/bootstrap/mise.toml). Today this is
-effectively just the `go` toolchain:
+**One `macos.tools` per `builders[].image` entry**, covering that image's `if:` range — a single config governs
+multiple versions, the same granularity as "one Linux builder image governs multiple versions". Only
+`darwin`-capable ranges on maintained lines (TiDB `>= v7.1`, plus trunk/dev branches treated as `>= v9.0.0`)
+are declared. **Profile-keyed builders** (`experiment`, `rust`, `nextgen`, …) must hang `macos.tools` on the
+**same `if:`**.
+
+Sources of truth per tool (do **not** guess; leave unverified tools to the ambient fallback):
+
+- `go` — the builder **image tag** (mirrors Linux).
+- `node`/`pnpm`/`yarn` ("node series") — the **component branch** (e.g. `ui/package.json` `engines.node` /
+  `packageManager`, `.nvmrc`), **not** the image's fixed value.
+- `rust` — the branch `rust-toolchain` / `rust-toolchain.toml`.
+- C++ build tools (`tikv`, `tiflash`) — `cmake` (pinned `3`, to avoid CMake 4 breakage); `tikv` also needs
+  `ccache` (rocksdb's CMake auto-enables it as the compiler launcher via `find_program(ccache)` when present).
+  Declare a tool only on the components that actually use it.
+
+**Only per-component build tools belong here.** Generic CLI tools shared by every component/version
+(`gomplate`, `yq`, `jq`, `deno`, `oras`) are **worker-global** — declared once in
+[`macos/bootstrap/mise.toml`](./macos/bootstrap/mise.toml).
 
 ```yaml
     builders:
@@ -52,6 +67,13 @@ effectively just the `go` toolchain:
         macos:
           tools:
             go: "1.25"
+      - if: {{ semver.CheckConstraint ">= 6.1.0-0" .Release.version }}
+        image: ghcr.io/pingcap-qe/cd/builders/tikv:v2025.4.24-10-g9c32f77-centos7-devtoolset10
+        macos:
+          tools:
+            rust: "nightly-2026-01-30"
+            cmake: "3"
+            ccache: "4"
 ```
 
 The mac agent resolves the single matching builder for a build (component + semver range + profile) and
@@ -59,6 +81,11 @@ provisions these tool versions **per build** (isolated), instead of relying on t
 on the worker OS. If a component/builder has no `macos.tools`, the agent falls back to the builder image's
 labels (e.g. `go-version`), then to the worker's global tools. The `[tools]` versions should mirror the
 builder image's toolchain (the table above) so native output matches Linux.
+
+**Clone parity with Tekton (`pingcap-git-clone`):** alongside the toolchain, the mac agent injects git
+credentials from a Secret (`spec.source.gitSecretRef`) so it can clone **private** repos, and initializes
+**submodules** (`git submodule update --init --recursive`; `spec.source.submodules`, default on) — several
+components (e.g. `tiflash`) vendor their C/C++ deps (`contrib/` Boost/Poco/re2/gRPC) as submodules.
 
 
 ### Required context
