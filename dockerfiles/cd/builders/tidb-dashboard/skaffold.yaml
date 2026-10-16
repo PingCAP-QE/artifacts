@@ -20,6 +20,16 @@ build:
     concurrency: 0
     tryImportMissing: true
 profiles:
+  - name: go-1.27
+    patches:
+      - op: replace
+        path: /build/tagPolicy/customTemplate/template
+        value: "{{ .GIT }}-go1.27"
+      - op: add
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          # renovate: datasource=docker depName=golang
+          GOLANG_VERSION: 1.27.2
   - name: go-1.26
     patches:
       - op: replace
