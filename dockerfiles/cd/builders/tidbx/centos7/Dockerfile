@@ -11,7 +11,12 @@ LABEL org.opencontainers.image.description="binary builder for TiDBx (experiment
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # install OpenSSL headers required by TiDBx build
+# Repair the pinned TiKV base's ARM64 Vault sources before accessing yum metadata.
 RUN --mount=type=cache,target=/var/cache/yum \
+    if [ "$(arch)" = "aarch64" ]; then \
+        sed -i 's#http://vault\.centos\.org/altarch/\(\$releasever\|7\)/#https://mirrors.aliyun.com/centos-vault/altarch/7.9.2009/#g' /etc/yum.repos.d/*.repo && \
+        yum clean all; \
+    fi && \
     yum update -y && \
     yum install -y openssl-devel && \
     yum clean all
