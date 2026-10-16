@@ -19,6 +19,7 @@ build:
     useBuildkit: true
     concurrency: 0
     tryImportMissing: true
+
 profiles:
   - name: go-1.27
     patches:
