@@ -19,7 +19,7 @@ permissions:
 jobs:
   define-matrix:
     name: Define building matrix
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       changed_folders: ${{ steps.changed.outputs.folders || '[]' }}
       changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders || '[]' }}
@@ -91,7 +91,7 @@ jobs:
 
   skaffold-docs:
     name: validate docs builder
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: define-matrix
     if: needs.define-matrix.outputs.docs_changed == 'true'
     permissions:

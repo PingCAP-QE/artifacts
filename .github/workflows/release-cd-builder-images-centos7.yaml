@@ -20,7 +20,7 @@ permissions:
 jobs:
   define-matrix:
     name: Define building matrix - CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       changed_folders: ${{ steps.changed.outputs.folders || '[]' }}
       changed_go_builder_folders: ${{ steps.changed.outputs.go_builder_folders || '[]' }}
@@ -89,7 +89,7 @@ jobs:
 
   skaffold-golang:
     name: push golang builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_go_builder_folders != '[]' }}
     permissions:
@@ -153,7 +153,7 @@ jobs:
 
   skaffold-rust:
     name: push rust builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_rust_builder_folders != '[]' }}
     permissions:
@@ -215,7 +215,7 @@ jobs:
 
   skaffold-cpp:
     name: build cpp builders - base CentOS7
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: define-matrix
     if: ${{ needs.define-matrix.outputs.changed_cpp_builder_folders != '[]' }}
     permissions:
