@@ -539,6 +539,7 @@ function pre_checks() {
 
 function main() {
     pre_checks
+    ./.github/scripts/test-serverless.sh
 
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
     test_get_builder

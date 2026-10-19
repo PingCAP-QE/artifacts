@@ -9,6 +9,8 @@ on:
       - packages/offline-packages.yaml.tmpl
       - packages/packages.yaml.tmpl
       - packages/README.md
+      - packages/SERVERLESS.md
+      - dockerfiles/products/serverless/**
 
 permissions:
   contents: read
