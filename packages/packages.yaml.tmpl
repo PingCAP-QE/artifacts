@@ -10,7 +10,7 @@ lt6.5.12/
 {{- end -}}
 
 {{ define "get_monitoring_target_from_git_ref" -}}
-{{- if strings.HasPrefix "v" . -}}
+{{- if regexp.Match "^v[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?([+][0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$" . -}}
 {{- $v := semver.Semver . -}}
 {{- if and (semver.CheckConstraint ">9.0.0-0" .) (regexp.Match "^v[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+$" .) -}}
 {{ printf "release-%d.%d-beta.%s" $v.Major $v.Minor (index (strings.Split "." .) 3) }}
