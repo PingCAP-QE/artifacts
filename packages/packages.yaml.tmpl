@@ -10,7 +10,7 @@ lt6.5.12/
 {{- end -}}
 
 {{ define "get_monitoring_target_from_git_ref" -}}
-{{- if strings.HasPrefix "v" . -}}
+{{- if regexp.Match "^v[0-9]+[.][0-9]+[.][0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?([+][0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$" . -}}
 {{- $v := semver.Semver . -}}
 {{- if and (semver.CheckConstraint ">9.0.0-0" .) (regexp.Match "^v[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+$" .) -}}
 {{ printf "release-%d.%d-beta.%s" $v.Major $v.Minor (index (strings.Split "." .) 3) }}
@@ -3770,3 +3770,227 @@ components:
               repo: "{{ .Release.registry }}/tikv/migration/images/kafka-consumer"
             context: cdc
             dockerfile: deployments/tikv-cdc/docker/kafka-consumer.Dockerfile
+
+  # Dedicated Serverless components; registry selects release or devbuild storage.
+  tidb-cse:
+    desc: Serverless tidb-cse binaries and image
+    git:
+      url: '{{ .Git.url | default "https://github.com/tidbcloud/tidb-cse.git" }}'
+      ref: '{{ .Git.ref }}'
+      sha: '{{ .Git.sha }}'
+    version: {{ .Release.version }}
+    artifactory:
+      package_repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    builders:
+      - image: docker.io/library/golang:1.24.2-bullseye@sha256:f50ff25f8331682b44c1582974eb9e620fcb08052fc6ed434f93ca24636fc4d6
+    routers:
+      - description: Serverless Linux release (no TiUP delivery)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                export GOPRIVATE=github.com/tidbcloud/*,github.com/pingcap-inc/*
+                export GOTOOLCHAIN=local
+                export MIN_TIKV_VERSION=6.1.0 REGISTER_METRICS_INIT=false
+                export TIDB_GIT_HASH=$(git rev-parse HEAD)
+                export TIDB_GIT_BRANCH=${GIT_BRANCH:-$(git symbolic-ref --short -q HEAD || echo detached)}
+                make
+        artifacts:
+          - name: "tidb-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-server, src: { path: bin/tidb-server } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/tidb-server"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/Dockerfile
+            files:
+              - { name: tidb-server, src: { path: bin/tidb-server } }
+  pd-cse:
+    desc: Serverless pd-cse binaries and image
+    git:
+      url: '{{ .Git.url | default "https://github.com/tidbcloud/pd-cse.git" }}'
+      ref: '{{ .Git.ref }}'
+      sha: '{{ .Git.sha }}'
+    version: {{ .Release.version }}
+    artifactory:
+      package_repo: "{{ .Release.registry }}/tidbcloud/pd-cse/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    builders:
+      - image: docker.io/library/golang:1.23.12-bullseye@sha256:161b8513c09cbfa4c174fd32e46eddc5eddf487a43958b9cf8b07d628e9e0f85
+    routers:
+      - description: Serverless Linux release (no TiUP delivery)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                export GOPRIVATE=github.com/tidbcloud/*,github.com/pingcap-inc/*
+                export GOTOOLCHAIN=local
+                SWAGGER=0 DASHBOARD=0 make build
+        artifacts:
+          - name: "pd-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/pd-cse/image"
+            dockerfile: dockerfiles/products/serverless/pd-cse/Dockerfile
+            files:
+              - { name: pd-server, src: { path: bin/pd-server } }
+              - { name: pd-ctl, src: { path: bin/pd-ctl } }
+              - { name: pd-recover, src: { path: bin/pd-recover } }
+  tidb-operator-cse:
+    desc: Serverless tidb-operator-cse binaries and image
+    git:
+      url: '{{ .Git.url | default "https://github.com/tidbcloud/tidb-operator-cse.git" }}'
+      ref: '{{ .Git.ref }}'
+      sha: '{{ .Git.sha }}'
+    version: {{ .Release.version }}
+    artifactory:
+      package_repo: "{{ .Release.registry }}/tidbcloud/tidb-operator-cse/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    builders:
+      - image: docker.io/library/golang:1.21.13-bullseye@sha256:40a67e6626bead90d5c7957bd0354cfeb8400e61acc3adc256e03252630014a6
+    routers:
+      - description: Serverless Linux release (no TiUP delivery)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                export GOTOOLCHAIN=local
+                make controller-manager scheduler discovery admission-webhook GOOS=linux GOARCH={{ .Release.arch }}
+        artifacts:
+          - name: "tidb-operator-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-scheduler, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler } }
+              - { name: tidb-discovery, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery } }
+              - { name: tidb-controller-manager, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager } }
+              - { name: tidb-admission-webhook, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-operator-cse/images/tidb-operator"
+            dockerfile: dockerfiles/products/serverless/tidb-operator-cse/Dockerfile
+            build_args:
+              - TARGETARCH={{ .Release.arch }}
+            files:
+              - { name: bin/{{ .Release.arch }}/tidb-scheduler, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-scheduler } }
+              - { name: bin/{{ .Release.arch }}/tidb-discovery, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-discovery } }
+              - { name: bin/{{ .Release.arch }}/tidb-controller-manager, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-controller-manager } }
+              - { name: bin/{{ .Release.arch }}/tidb-admission-webhook, src: { path: images/tidb-operator/bin/{{ .Release.arch }}/tidb-admission-webhook } }
+  cassandra-on-mysql:
+    desc: Serverless cassandra-on-mysql binaries and image
+    git:
+      url: '{{ .Git.url | default "https://github.com/tidbcloud/cassandra-on-mysql.git" }}'
+      ref: '{{ .Git.ref }}'
+      sha: '{{ .Git.sha }}'
+    version: {{ .Release.version }}
+    artifactory:
+      package_repo: "{{ .Release.registry }}/tidbcloud/cassandra-on-mysql/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    builders:
+      - image: docker.io/library/golang:1.23.12-bookworm@sha256:167053a2bb901972bf2c1611f8f52c44d5fe7e762e5cab213708d82c421614db
+    routers:
+      - description: Serverless Linux release (no TiUP delivery)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                export GOTOOLCHAIN=local
+                mkdir -p bin
+                CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bin/proxy ./cmd/proxy
+        artifacts:
+          - name: "cassandra-on-mysql-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: proxy, src: { path: bin/proxy } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/cassandra-on-mysql/image"
+            dockerfile: dockerfiles/products/serverless/cassandra-on-mysql/Dockerfile
+            files:
+              - { name: proxy, src: { path: bin/proxy } }
+  qdrant-on-tidb:
+    desc: Serverless qdrant-on-tidb binaries and image
+    git:
+      url: '{{ .Git.url | default "https://github.com/tidbcloud/qdrant-on-tidb.git" }}'
+      ref: '{{ .Git.ref }}'
+      sha: '{{ .Git.sha }}'
+    version: {{ .Release.version }}
+    artifactory:
+      package_repo: "{{ .Release.registry }}/tidbcloud/qdrant-on-tidb/package"
+      tags:
+        {{- if .Git.sha }}
+        - {{ template "get_artifactory_exact_git_ref_tag" . }}
+        {{- end }}
+        - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
+        - {{ .Release.version }}
+    builders:
+      - image: public.ecr.aws/amazonlinux/amazonlinux:2023.5.20240805.0@sha256:03c807fdc5d40ab06b21c2e6d158c63c37d5149a127b7fdfa9e3c1150352ff20
+    routers:
+      - description: Serverless Linux release (no TiUP delivery)
+        os: [linux]
+        arch: [amd64, arm64]
+        profile: [release]
+        steps:
+          release:
+            - script: |
+                dnf install -y tar gzip bzip2 clang openssl-devel gcc gcc-c++ make perl findutils git
+                case "$(uname -m)" in
+                  x86_64) rust_host=x86_64-unknown-linux-gnu ;;
+                  aarch64) rust_host=aarch64-unknown-linux-gnu ;;
+                  *) echo "unsupported Rust host" >&2; exit 1 ;;
+                esac
+                curl --fail --location --retry 3 "https://static.rust-lang.org/rustup/archive/1.28.2/${rust_host}/rustup-init" -o /tmp/rustup-init
+                chmod +x /tmp/rustup-init
+                /tmp/rustup-init -y --profile minimal --default-toolchain nightly-2024-12-28
+                export PATH="${HOME}/.cargo/bin:${PATH}"
+                export CARGO_NET_GIT_FETCH_WITH_CLI=true
+                cargo build --release --locked
+        artifacts:
+          - name: "qdrant-on-tidb-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: serving-service, src: { path: target/release/serving-service } }
+              - { name: qdrant-api, src: { path: target/release/qdrant-api } }
+              - { name: ctl, src: { path: target/release/ctl } }
+          - name: container image
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/qdrant-on-tidb/image"
+            dockerfile: dockerfiles/products/serverless/qdrant-on-tidb/Dockerfile
+            files:
+              - { name: serving-service, src: { path: target/release/serving-service } }
+              - { name: qdrant-api, src: { path: target/release/qdrant-api } }
+              - { name: ctl, src: { path: target/release/ctl } }

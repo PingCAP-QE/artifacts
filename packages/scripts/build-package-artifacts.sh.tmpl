@@ -158,7 +158,8 @@ function archive() {
     {{- else }}
 
     echo "Start composing artifact: {{ .name }} ..."
-    local archive_dir="$release_ws/$(uuidgen)"
+    local archive_dir
+    archive_dir="$(mktemp -d "$release_ws/package.XXXXXX")"
     mkdir -p "$archive_dir"
 
     {{- $files := (.files | jq `map(select(.if != false ))`) -}}
