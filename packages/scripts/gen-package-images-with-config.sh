@@ -101,6 +101,9 @@ function main() {
     yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml
     yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-router.yaml
     yq -i '.artifacts = (.artifacts | map(select(.type == "image")))' release-router.yaml
+    # Without a source context, local Dockerfiles belong to this artifacts checkout.
+    # Resolve them before the generated script runs from the component source directory.
+    # Entries with context keep source-relative paths; HTTP(S) Dockerfiles stay URLs.
     yq -i ".artifacts[] |= (with(select((.context == null) and (.dockerfile | test(\"^http(s)?://\") | not)); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-router.yaml
 
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then

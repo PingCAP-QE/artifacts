@@ -3,6 +3,21 @@ set -euo pipefail
 root=$(cd "$(dirname "$0")/../.." && pwd)
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
+cat > "$tmp/kaniko" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+dockerfile= digest_file=
+for arg in "$@"; do
+  case "$arg" in
+    --dockerfile=*) dockerfile=${arg#--dockerfile=} ;;
+    --digest-file=*) digest_file=${arg#--digest-file=} ;;
+  esac
+done
+test "$dockerfile" = "$EXPECTED_DOCKERFILE"
+test -f "$dockerfile"
+printf '%s\n' 'sha256:test-digest' > "$digest_file"
+EOF
+chmod +x "$tmp/kaniko"
 cd "$tmp"
 for cm in tidb-cse pd-cse tidb-operator-cse cassandra-on-mysql qdrant-on-tidb; do
   case "$cm" in
@@ -31,7 +46,18 @@ for cm in tidb-cse pd-cse tidb-operator-cse cassandra-on-mysql qdrant-on-tidb; d
         *) suffix=image ;;
       esac
       test "$(yq '.artifacts[0].artifactory.repo' release-router.yaml)" = "$prefix/tidbcloud/$cm/$suffix"
-      test -f "$(yq '.artifacts[0].dockerfile' release-router.yaml)"
+      expected_dockerfile="$root/dockerfiles/products/serverless/$cm/Dockerfile"
+      test "$(yq '.artifacts[0].dockerfile' release-router.yaml)" = "$expected_dockerfile"
+      # Execute from a source checkout containing a decoy at the same relative path.
+      # Kaniko must still receive the Dockerfile from the selected artifacts checkout.
+      source_dir="$tmp/source"
+      mkdir -p "$source_dir/dockerfiles/products/serverless/$cm"
+      printf '%s\n' 'FROM invalid-source-dockerfile' > "$source_dir/dockerfiles/products/serverless/$cm/Dockerfile"
+      while IFS= read -r path; do
+        mkdir -p "$source_dir/$(dirname "$path")"
+        : > "$source_dir/$path"
+      done < <(yq -r '.artifacts[].files[].src.path' release-router.yaml)
+      (cd "$source_dir" && EXPECTED_DOCKERFILE="$expected_dockerfile" bash "$tmp/images.sh" -w "$tmp/build" -k "$tmp/kaniko")
       grep -q "validation-serverless-aabbccd_linux_$arch" "$tmp/images.sh"
       grep -q 'crane index append' "$tmp/images.sh"
       if [ "$cm" = tidb-operator-cse ]; then
