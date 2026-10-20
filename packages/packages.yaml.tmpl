@@ -3973,9 +3973,9 @@ components:
                   aarch64) rust_host=aarch64-unknown-linux-gnu ;;
                   *) echo "unsupported Rust host" >&2; exit 1 ;;
                 esac
-                curl --fail --location --retry 3 "https://static.rust-lang.org/rustup/archive/1.28.2/${rust_host}/rustup-init" -o /tmp/serverless-rustup-init
-                chmod +x /tmp/serverless-rustup-init
-                /tmp/serverless-rustup-init -y --profile minimal --default-toolchain nightly-2024-12-28
+                curl --fail --location --retry 3 "https://static.rust-lang.org/rustup/archive/1.28.2/${rust_host}/rustup-init" -o /tmp/rustup-init
+                chmod +x /tmp/rustup-init
+                /tmp/rustup-init -y --profile minimal --default-toolchain nightly-2024-12-28
                 export PATH="${HOME}/.cargo/bin:${PATH}"
                 export CARGO_NET_GIT_FETCH_WITH_CLI=true
                 cargo build --release --locked
