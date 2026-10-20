@@ -42,3 +42,9 @@ provisioning is managed by `PingCAP-QE/ee-infra`, execution by `PingCAP-QE/ci`,
 product mappings by `PingCAP-QE/ee-ops`, and formal distribution by
 `tidbcloud/docker-image-controller`. Native regional Qdrant, TiKV and TiFlash are
 outside this change.
+
+TiDB/PD use the official Debian Bullseye runtime by digest directly. The former
+keyspace Harbor alias and Docker Hub contain the identical multi-architecture
+manifest `sha256:acc5810124f0929ab44fc7913c0ad936b074cbd3eadf094ac120190862ba36c4`;
+using Docker Hub preserves every base layer and avoids private Harbor routing
+from GCP build workers.
