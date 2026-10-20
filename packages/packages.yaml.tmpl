@@ -2485,28 +2485,42 @@ components:
         macos:
           tools:
             go: "1.25"
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint ">= 8.5.5-0, < 8.5.6-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.12.14-3-g63aefbf-centos7-go1.25
         macos:
           tools:
             go: "1.25"
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint ">= 8.4.0-0, < 8.5.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2025.12.7-3-g1c0b8cf-centos7-go1.23
         macos:
           tools:
             go: "1.23"
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint ">= 7.4.0-0, < 8.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-88-gf338368-centos7-go1.21
         macos:
           tools:
             go: "1.21"
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint ">= 7.0.0-0, < 7.4.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-88-gf338368-centos7-go1.20
         macos:
           tools:
             go: "1.20"
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint ">= 6.1.0-0, < 7.0.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2024.10.8-88-gf338368-centos7-go1.19
+        macos:
+          tools:
+            node: "16.20.2"
+            yarn: "1.22.22"
       - if: {{ semver.CheckConstraint "< 6.1.0-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tiflow:v20240325-103-g043adb3-go1.18
     routers:
@@ -2518,45 +2532,9 @@ components:
         profile: [release, nextgen]
         steps:
           release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
           nextgen:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 NEXT_GEN=1 make dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
@@ -2669,24 +2647,6 @@ components:
         profile: [release]
         steps:
           release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 make dm-master-with-webui dm-worker dmctl dm-syncer sync-diff-inspector
         artifacts:
@@ -2795,24 +2755,6 @@ components:
         profile: [release]
         steps:
           release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 make dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
@@ -2901,24 +2843,6 @@ components:
         profile: [release]
         steps:
           release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
@@ -3055,24 +2979,6 @@ components:
         profile: [release]
         steps:
           release:
-            - os: darwin
-              description: install nodejs toolchain.
-              script: |
-                NODE_VERSION="v16.20.2"
-                NVM_VERSION="v0.39.5"
-                NVM_DIR="$HOME/.nvm"
-                mkdir -p $NVM_DIR
-
-                if [ ! -s "$NVM_DIR/nvm.sh" ]; then
-                  curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash
-                fi
-                . $NVM_DIR/nvm.sh
-                nvm install ${NODE_VERSION}
-                nvm use ${NODE_VERSION}
-                nvm alias default ${NODE_VERSION}
-
-                node --version && npm --version
-                npm install -g yarn
             - script: |
                 make cdc dm-master-with-webui dm-worker dmctl dm-syncer
         artifacts:
