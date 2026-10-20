@@ -48,3 +48,17 @@ keyspace Harbor alias and Docker Hub contain the identical multi-architecture
 manifest `sha256:acc5810124f0929ab44fc7913c0ad936b074cbd3eadf094ac120190862ba36c4`;
 using Docker Hub preserves every base layer and avoids private Harbor routing
 from GCP build workers.
+
+## Native validation evidence
+
+See [the 2026-10-20 validation record](validation/serverless-20261020.json) for
+all five Linux amd64/arm64 PipelineRuns, pinned source/config revisions, image
+and complete manifest digests, downloaded package SHA-256 values and ELF machine
+checks. The same record includes isolated HTTP API → CloudEvents → Tekton →
+Dashboard reconciliation devbuild checks for branch, PR and commit inputs.
+
+These runs used local checkout-only baseline tags and the existing dev GAR.
+They do not create remote baselines, provision the formal GAR, deploy service
+images, send Lark messages or validate distribution into ECR/AliCloud. Those
+checks remain explicit rollout gates. TiDB's divergent maintenance branches have
+separate cutover PRs and reserved reachable prerelease baselines in the CI guide.

@@ -1,0 +1,900 @@
+{
+  "recordedAt": "2026-10-20T03:59:34.831442+00:00",
+  "scope": [
+    "tidb-cse",
+    "pd-cse",
+    "tidb-operator-cse",
+    "cassandra-on-mysql",
+    "qdrant-on-tidb"
+  ],
+  "nativeValidation": {
+    "status": "PASS",
+    "platformRuns": 10,
+    "artifactVerificationTask": "serverless-verify-10-115555",
+    "checks": [
+      "package pulled by OCI digest",
+      "SHA-256 file matches downloaded tarball",
+      "ELF e_machine matches requested architecture",
+      "image digest matches pipeline result",
+      "image config OS and architecture",
+      "OCI revision label matches fixed source SHA",
+      "complete amd64 and arm64 manifest with matching platform digests"
+    ],
+    "records": [
+      {
+        "run": "sl-validate-cassandra-on-mysql-amd64-mqxzq",
+        "product": "cassandra-on-mysql",
+        "arch": "amd64",
+        "revision": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "gitVersion": "v0.1.0-alpha.0",
+        "artifactsRevision": "39db48e8759ef8ae15bbb9697fc63bdf743ce6f1",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/image:validation-20261019-cassandra-on-mysql-bfd3319_linux_amd64",
+            "digest": "sha256:49d1645e55d9ab8932573ef9147f5fcbe97dc25454969a184755eecd0eacdda3",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/image:validation-20261019-cassandra-on-mysql-bfd3319",
+            "manifestDigest": "sha256:886ac295bc045ad05f747c2a1f05eea0afd8115e61fcfefc066218574d2b5f92",
+            "platforms": {
+              "amd64": "sha256:49d1645e55d9ab8932573ef9147f5fcbe97dc25454969a184755eecd0eacdda3",
+              "arm64": "sha256:82d597d26d581452b04ff8029061d72966c0e46f84617edef47c5331e9bf0c44"
+            },
+            "revisionLabel": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+            "user": "65532:65532",
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "cassandra-on-mysql-v0.1.0-alpha.0-linux-amd64.tar.gz",
+            "sha256": "7c5dda672fafe4bca1a6f431af12279f3c8f58723a0745fb85dfd982a0099fc4",
+            "size": 5673033,
+            "members": [
+              "proxy"
+            ],
+            "elf": [
+              {
+                "name": "proxy",
+                "machine": 62
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/package@sha256:f0dee5aa568a021d39bf4c2da3bc0341bf1eaea005224eb975398e5721d111f1",
+            "checksumFile": "cassandra-on-mysql-v0.1.0-alpha.0-linux-amd64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-cassandra-on-mysql-amd64-mqxzq"
+      },
+      {
+        "run": "sl-validate-cassandra-on-mysql-arm64-n9zlh",
+        "product": "cassandra-on-mysql",
+        "arch": "arm64",
+        "revision": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "gitVersion": "v0.1.0-alpha.0",
+        "artifactsRevision": "39db48e8759ef8ae15bbb9697fc63bdf743ce6f1",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/image:validation-20261019-cassandra-on-mysql-bfd3319_linux_arm64",
+            "digest": "sha256:82d597d26d581452b04ff8029061d72966c0e46f84617edef47c5331e9bf0c44",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/image:validation-20261019-cassandra-on-mysql-bfd3319",
+            "manifestDigest": "sha256:886ac295bc045ad05f747c2a1f05eea0afd8115e61fcfefc066218574d2b5f92",
+            "platforms": {
+              "amd64": "sha256:49d1645e55d9ab8932573ef9147f5fcbe97dc25454969a184755eecd0eacdda3",
+              "arm64": "sha256:82d597d26d581452b04ff8029061d72966c0e46f84617edef47c5331e9bf0c44"
+            },
+            "revisionLabel": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+            "user": "65532:65532",
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "cassandra-on-mysql-v0.1.0-alpha.0-linux-arm64.tar.gz",
+            "sha256": "3acc8b4b4c8a74855302426ecd89f1b988cdd6d4cda8c713d546cc667ca376ad",
+            "size": 5187312,
+            "members": [
+              "proxy"
+            ],
+            "elf": [
+              {
+                "name": "proxy",
+                "machine": 183
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/cassandra-on-mysql/package@sha256:ce526e7003d5a34fdfd7ce23ee5845482532cfbdeb64259cc06e1ce0513f0584",
+            "checksumFile": "cassandra-on-mysql-v0.1.0-alpha.0-linux-arm64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-cassandra-on-mysql-arm64-n9zlh"
+      },
+      {
+        "run": "sl-validate-pd-cse-amd64-pvktl",
+        "product": "pd-cse",
+        "arch": "amd64",
+        "revision": "9ff180aff1ca36840ca23a8dce50a0c0718a0037",
+        "gitVersion": "v8.5.0-alpha.0",
+        "artifactsRevision": "2f0b135c24162e0c3a6c3a1b72630e97f26ba2ed",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/image:validation-20261019-pd-cse-9ff180a_linux_amd64",
+            "digest": "sha256:46144007ca2fdff5d70a005ff6d3a0ef36923226a14bc8e41c207e28c4f6b221",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/image:validation-20261019-pd-cse-9ff180a",
+            "manifestDigest": "sha256:4739351ffce2aa43c1c1fd3b547a0981c678ee4c8f093ace15131b148077ab68",
+            "platforms": {
+              "arm64": "sha256:f6304d716560687416fc0576dc6795d867ba6223c574b1e8a0486c0d1386e089",
+              "amd64": "sha256:46144007ca2fdff5d70a005ff6d3a0ef36923226a14bc8e41c207e28c4f6b221"
+            },
+            "revisionLabel": "9ff180aff1ca36840ca23a8dce50a0c0718a0037",
+            "user": null,
+            "entrypoint": [
+              "/pd-server"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "pd-cse-v8.5.0-alpha.0-linux-amd64.tar.gz",
+            "sha256": "30e46ffa130a5dfb372707bafa19746d9b6a805d93fe45c6b9496b081efa5fac",
+            "size": 68122109,
+            "members": [
+              "pd-server",
+              "pd-ctl",
+              "pd-recover"
+            ],
+            "elf": [
+              {
+                "name": "pd-server",
+                "machine": 62
+              },
+              {
+                "name": "pd-ctl",
+                "machine": 62
+              },
+              {
+                "name": "pd-recover",
+                "machine": 62
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/package@sha256:0df65a3afb158719cb0af369f5b4514114f60d396483c687c327738a162a48e2",
+            "checksumFile": "pd-cse-v8.5.0-alpha.0-linux-amd64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-pd-cse-amd64-pvktl"
+      },
+      {
+        "run": "sl-validate-pd-cse-arm64-npbwp",
+        "product": "pd-cse",
+        "arch": "arm64",
+        "revision": "9ff180aff1ca36840ca23a8dce50a0c0718a0037",
+        "gitVersion": "v8.5.0-alpha.0",
+        "artifactsRevision": "2f0b135c24162e0c3a6c3a1b72630e97f26ba2ed",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/image:validation-20261019-pd-cse-9ff180a_linux_arm64",
+            "digest": "sha256:f6304d716560687416fc0576dc6795d867ba6223c574b1e8a0486c0d1386e089",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/image:validation-20261019-pd-cse-9ff180a",
+            "manifestDigest": "sha256:4739351ffce2aa43c1c1fd3b547a0981c678ee4c8f093ace15131b148077ab68",
+            "platforms": {
+              "arm64": "sha256:f6304d716560687416fc0576dc6795d867ba6223c574b1e8a0486c0d1386e089",
+              "amd64": "sha256:46144007ca2fdff5d70a005ff6d3a0ef36923226a14bc8e41c207e28c4f6b221"
+            },
+            "revisionLabel": "9ff180aff1ca36840ca23a8dce50a0c0718a0037",
+            "user": null,
+            "entrypoint": [
+              "/pd-server"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "pd-cse-v8.5.0-alpha.0-linux-arm64.tar.gz",
+            "sha256": "a9b77aa3a96793d4c69eb4e026bec6af32c998741315e4d874d34577b9896619",
+            "size": 63584149,
+            "members": [
+              "pd-server",
+              "pd-ctl",
+              "pd-recover"
+            ],
+            "elf": [
+              {
+                "name": "pd-server",
+                "machine": 183
+              },
+              {
+                "name": "pd-ctl",
+                "machine": 183
+              },
+              {
+                "name": "pd-recover",
+                "machine": 183
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/pd-cse/package@sha256:80f2a2a68530a4ecf98f754047acf3a091a629bbda54f4b20d27acbda728e6cc",
+            "checksumFile": "pd-cse-v8.5.0-alpha.0-linux-arm64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-pd-cse-arm64-npbwp"
+      },
+      {
+        "run": "sl-validate-qdrant-on-tidb-amd64-rrlpf",
+        "product": "qdrant-on-tidb",
+        "arch": "amd64",
+        "revision": "a2205371923b87a362282e6afeb3a23aa87487c2",
+        "gitVersion": "v1.3.4-alpha.0",
+        "artifactsRevision": "36de7f8d75ca8c981833f0b8ad3aa55a9bea4360",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/image:validation-20261019-qdrant-on-tidb-a220537_linux_amd64",
+            "digest": "sha256:cf9b029a851b3f7de6a40e827a0e7394e014d3d34575530264f71dbb39ae203b",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/image:validation-20261019-qdrant-on-tidb-a220537",
+            "manifestDigest": "sha256:ad6b22f1b427795835f7a1be61cac5bfbcb2ef439106f94ab073818920580e58",
+            "platforms": {
+              "arm64": "sha256:35db1997e5e411b6df57f2080b34da3987c75117dfd59975998206c1c2bf9b1c",
+              "amd64": "sha256:cf9b029a851b3f7de6a40e827a0e7394e014d3d34575530264f71dbb39ae203b"
+            },
+            "revisionLabel": "a2205371923b87a362282e6afeb3a23aa87487c2",
+            "user": null,
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "qdrant-on-tidb-v1.3.4-alpha.0-linux-amd64.tar.gz",
+            "sha256": "a778040735c1db4d157340ba42d7ae526440258466f94487158531053b5ed82e",
+            "size": 227871278,
+            "members": [
+              "serving-service",
+              "qdrant-api",
+              "ctl"
+            ],
+            "elf": [
+              {
+                "name": "serving-service",
+                "machine": 62
+              },
+              {
+                "name": "qdrant-api",
+                "machine": 62
+              },
+              {
+                "name": "ctl",
+                "machine": 62
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/package@sha256:55ad6c78ccc2e489ac52c68678cc8201ee6f7c96e432364434d915316cbdb79b",
+            "checksumFile": "qdrant-on-tidb-v1.3.4-alpha.0-linux-amd64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-qdrant-on-tidb-amd64-rrlpf"
+      },
+      {
+        "run": "sl-validate-qdrant-on-tidb-arm64-g6r8m",
+        "product": "qdrant-on-tidb",
+        "arch": "arm64",
+        "revision": "a2205371923b87a362282e6afeb3a23aa87487c2",
+        "gitVersion": "v1.3.4-alpha.0",
+        "artifactsRevision": "36de7f8d75ca8c981833f0b8ad3aa55a9bea4360",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/image:validation-20261019-qdrant-on-tidb-a220537_linux_arm64",
+            "digest": "sha256:35db1997e5e411b6df57f2080b34da3987c75117dfd59975998206c1c2bf9b1c",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/image:validation-20261019-qdrant-on-tidb-a220537",
+            "manifestDigest": "sha256:ad6b22f1b427795835f7a1be61cac5bfbcb2ef439106f94ab073818920580e58",
+            "platforms": {
+              "arm64": "sha256:35db1997e5e411b6df57f2080b34da3987c75117dfd59975998206c1c2bf9b1c",
+              "amd64": "sha256:cf9b029a851b3f7de6a40e827a0e7394e014d3d34575530264f71dbb39ae203b"
+            },
+            "revisionLabel": "a2205371923b87a362282e6afeb3a23aa87487c2",
+            "user": null,
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "qdrant-on-tidb-v1.3.4-alpha.0-linux-arm64.tar.gz",
+            "sha256": "bde9e4f3f9dfc03b75e16c036279f40f95da04fd217bf74633229b1dfec80ffe",
+            "size": 227319141,
+            "members": [
+              "serving-service",
+              "qdrant-api",
+              "ctl"
+            ],
+            "elf": [
+              {
+                "name": "serving-service",
+                "machine": 183
+              },
+              {
+                "name": "qdrant-api",
+                "machine": 183
+              },
+              {
+                "name": "ctl",
+                "machine": 183
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/qdrant-on-tidb/package@sha256:bcc07d1813b47fa2bbc2333f56f41e4a905f41e0bcdcc8ccd5e4fda3f350448c",
+            "checksumFile": "qdrant-on-tidb-v1.3.4-alpha.0-linux-arm64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-qdrant-on-tidb-arm64-g6r8m"
+      },
+      {
+        "run": "sl-validate-tidb-cse-amd64-ckqb5",
+        "product": "tidb-cse",
+        "arch": "amd64",
+        "revision": "bc268fd3d14b52ac5b80542b619e9bb30588e741",
+        "gitVersion": "v8.5.3-alpha.0",
+        "artifactsRevision": "2f0b135c24162e0c3a6c3a1b72630e97f26ba2ed",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/images/tidb-server:validation-20261019-tidb-cse-bc268fd_linux_amd64",
+            "digest": "sha256:5732993212876c9116bc35763cf135159a4c71938d8db85c9cede48da5e02e93",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/images/tidb-server:validation-20261019-tidb-cse-bc268fd",
+            "manifestDigest": "sha256:dac850a348d983e120bf65728c2c15dfcc17268d291befc43fe25fd1b49bb660",
+            "platforms": {
+              "arm64": "sha256:6a092d0bac0a60c6cb70dd08078ac084321f54934e96964b850aac425aa26aef",
+              "amd64": "sha256:5732993212876c9116bc35763cf135159a4c71938d8db85c9cede48da5e02e93"
+            },
+            "revisionLabel": "bc268fd3d14b52ac5b80542b619e9bb30588e741",
+            "user": null,
+            "entrypoint": [
+              "/usr/bin/dumb-init",
+              "/tidb-server"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "tidb-cse-v8.5.3-alpha.0-linux-amd64.tar.gz",
+            "sha256": "3fb4ca7706b13c0f6ca590ca7e25ddae70c6e05c6b58304b7ec77e5b8d38cb3d",
+            "size": 103612378,
+            "members": [
+              "tidb-server"
+            ],
+            "elf": [
+              {
+                "name": "tidb-server",
+                "machine": 62
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/package@sha256:c9937383249772be0a49171598f6f957366245b835a69c4742fe297dcf3b8938",
+            "checksumFile": "tidb-cse-v8.5.3-alpha.0-linux-amd64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-tidb-cse-amd64-ckqb5"
+      },
+      {
+        "run": "sl-validate-tidb-cse-arm64-lr8ff",
+        "product": "tidb-cse",
+        "arch": "arm64",
+        "revision": "bc268fd3d14b52ac5b80542b619e9bb30588e741",
+        "gitVersion": "v8.5.3-alpha.0",
+        "artifactsRevision": "2f0b135c24162e0c3a6c3a1b72630e97f26ba2ed",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/images/tidb-server:validation-20261019-tidb-cse-bc268fd_linux_arm64",
+            "digest": "sha256:6a092d0bac0a60c6cb70dd08078ac084321f54934e96964b850aac425aa26aef",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/images/tidb-server:validation-20261019-tidb-cse-bc268fd",
+            "manifestDigest": "sha256:dac850a348d983e120bf65728c2c15dfcc17268d291befc43fe25fd1b49bb660",
+            "platforms": {
+              "arm64": "sha256:6a092d0bac0a60c6cb70dd08078ac084321f54934e96964b850aac425aa26aef",
+              "amd64": "sha256:5732993212876c9116bc35763cf135159a4c71938d8db85c9cede48da5e02e93"
+            },
+            "revisionLabel": "bc268fd3d14b52ac5b80542b619e9bb30588e741",
+            "user": null,
+            "entrypoint": [
+              "/usr/bin/dumb-init",
+              "/tidb-server"
+            ]
+          }
+        ],
+        "files": [
+          {
+            "name": "tidb-cse-v8.5.3-alpha.0-linux-arm64.tar.gz",
+            "sha256": "2253a12c7a2e2c4266ec984628ebe3e1972cbcc2a4c2a66e78730f2227545aa7",
+            "size": 98934044,
+            "members": [
+              "tidb-server"
+            ],
+            "elf": [
+              {
+                "name": "tidb-server",
+                "machine": 183
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-cse/package@sha256:3f3d4ff439425e9af85e239949d34c1d36c3da78520ae60f33bf797b2e6e01f3",
+            "checksumFile": "tidb-cse-v8.5.3-alpha.0-linux-arm64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-tidb-cse-arm64-lr8ff"
+      },
+      {
+        "run": "sl-validate-tidb-operator-cse-amd64-kpk65",
+        "product": "tidb-operator-cse",
+        "arch": "amd64",
+        "revision": "bebf620f2215467f9a6861d07556b803e73025a6",
+        "gitVersion": "v1.4.0-alpha.0",
+        "artifactsRevision": "39db48e8759ef8ae15bbb9697fc63bdf743ce6f1",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/images/tidb-operator:validation-20261019-tidb-operator-cse-bebf620_linux_amd64",
+            "digest": "sha256:db7baf519f62d9116d46b7fb8de0086a42af4b5a0c68568d329c9e47a973f013",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/images/tidb-operator:validation-20261019-tidb-operator-cse-bebf620",
+            "manifestDigest": "sha256:10a282b63007f0121fd11e7e3d4a5f6aaee10e3efdede9de6fb1b4752ee7d0d6",
+            "platforms": {
+              "amd64": "sha256:db7baf519f62d9116d46b7fb8de0086a42af4b5a0c68568d329c9e47a973f013",
+              "arm64": "sha256:539cedaa10e55b98735c8ccef8beaf3827e9dea25f17dde2370bf2142c5d74fd"
+            },
+            "revisionLabel": "bebf620f2215467f9a6861d07556b803e73025a6",
+            "user": null,
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "tidb-operator-cse-v1.4.0-alpha.0-linux-amd64.tar.gz",
+            "sha256": "f36dfaf8247c33e8140c894e52c3e9e0dd968ad5f39a3332363ddd544ea8117b",
+            "size": 117433224,
+            "members": [
+              "tidb-scheduler",
+              "tidb-discovery",
+              "tidb-controller-manager",
+              "tidb-admission-webhook"
+            ],
+            "elf": [
+              {
+                "name": "tidb-scheduler",
+                "machine": 62
+              },
+              {
+                "name": "tidb-discovery",
+                "machine": 62
+              },
+              {
+                "name": "tidb-controller-manager",
+                "machine": 62
+              },
+              {
+                "name": "tidb-admission-webhook",
+                "machine": 62
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/package@sha256:f0bcb3ca828267782a75a28d5b889b2b6d3177682cc7cd0b64f74ec2dcada0c6",
+            "checksumFile": "tidb-operator-cse-v1.4.0-alpha.0-linux-amd64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-tidb-operator-cse-amd64-kpk65"
+      },
+      {
+        "run": "sl-validate-tidb-operator-cse-arm64-mtgss",
+        "product": "tidb-operator-cse",
+        "arch": "arm64",
+        "revision": "bebf620f2215467f9a6861d07556b803e73025a6",
+        "gitVersion": "v1.4.0-alpha.0",
+        "artifactsRevision": "39db48e8759ef8ae15bbb9697fc63bdf743ce6f1",
+        "images": [
+          {
+            "ref": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/images/tidb-operator:validation-20261019-tidb-operator-cse-bebf620_linux_arm64",
+            "digest": "sha256:539cedaa10e55b98735c8ccef8beaf3827e9dea25f17dde2370bf2142c5d74fd",
+            "manifestRef": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/images/tidb-operator:validation-20261019-tidb-operator-cse-bebf620",
+            "manifestDigest": "sha256:10a282b63007f0121fd11e7e3d4a5f6aaee10e3efdede9de6fb1b4752ee7d0d6",
+            "platforms": {
+              "amd64": "sha256:db7baf519f62d9116d46b7fb8de0086a42af4b5a0c68568d329c9e47a973f013",
+              "arm64": "sha256:539cedaa10e55b98735c8ccef8beaf3827e9dea25f17dde2370bf2142c5d74fd"
+            },
+            "revisionLabel": "bebf620f2215467f9a6861d07556b803e73025a6",
+            "user": null,
+            "entrypoint": null
+          }
+        ],
+        "files": [
+          {
+            "name": "tidb-operator-cse-v1.4.0-alpha.0-linux-arm64.tar.gz",
+            "sha256": "ddb207e0f60eab6669f61db064295bb86d3dfa0f8a1c62ce5a34c21cfa01077e",
+            "size": 108944293,
+            "members": [
+              "tidb-scheduler",
+              "tidb-discovery",
+              "tidb-controller-manager",
+              "tidb-admission-webhook"
+            ],
+            "elf": [
+              {
+                "name": "tidb-scheduler",
+                "machine": 183
+              },
+              {
+                "name": "tidb-discovery",
+                "machine": 183
+              },
+              {
+                "name": "tidb-controller-manager",
+                "machine": 183
+              },
+              {
+                "name": "tidb-admission-webhook",
+                "machine": 183
+              }
+            ],
+            "ociReference": "us-docker.pkg.dev/pingcap-testing-account/dev/tidbcloud/tidb-operator-cse/package@sha256:ea923b135426bb535b383ce80cb23a7e9b8d4cbc41b2c237c76f7d560ca81b92",
+            "checksumFile": "tidb-operator-cse-v1.4.0-alpha.0-linux-arm64.tar.gz.sha256"
+          }
+        ],
+        "dashboard": "https://prow.tidb.net/tekton/#/namespaces/ee-cd/pipelineruns/sl-validate-tidb-operator-cse-arm64-mtgss"
+      }
+    ]
+  },
+  "devbuildIntegration": {
+    "status": "PASS for branch, PR and commit",
+    "service": "local generated Goa HTTP API/client with in-memory SQLite",
+    "routing": "real isolated Tekton EventListener/CEL and native dev registry builds",
+    "versionCompatibility": "request v99.0.0 retained; actual version derives from local validation Git baseline",
+    "notification": "Lark card JSON rendered; no messages sent",
+    "checksumDownload": "HTTP 200 from https://prow.tidb.net/dl/oci-file using API-generated checksum URL",
+    "records": [
+      {
+        "case": "staged-final",
+        "product": "cassandra-on-mysql",
+        "gitRef": "branch/feat/serverless-artifacts",
+        "platform": "linux",
+        "revision": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "requestVersion": "v99.0.0",
+        "actualVersion": "v0.1.0-alpha.0",
+        "status": "SUCCESS",
+        "events": [
+          "7f623c0d-447f-457e-a9d1-9c8cf880fb5b",
+          "fe1667bb-0565-4346-9474-aca373e3cf51"
+        ],
+        "pipelines": [
+          {
+            "name": "serverless-cassandra-on-mysql-amd64-bd7ll",
+            "status": "Succeeded",
+            "platform": "linux/amd64"
+          },
+          {
+            "name": "serverless-cassandra-on-mysql-arm64-gjzzf",
+            "status": "Succeeded",
+            "platform": "linux/arm64"
+          }
+        ]
+      },
+      {
+        "case": "staged-pr",
+        "product": "cassandra-on-mysql",
+        "gitRef": "pull/49",
+        "platform": "linux/amd64",
+        "revision": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "requestVersion": "v99.0.0",
+        "actualVersion": "v0.1.0-alpha.0",
+        "status": "SUCCESS",
+        "events": [
+          "efa52348-861d-47ad-ac59-5a7e440f24fb"
+        ],
+        "pipelines": [
+          {
+            "name": "serverless-cassandra-on-mysql-amd64-4jd7v",
+            "status": "Succeeded",
+            "platform": "linux/amd64"
+          }
+        ]
+      },
+      {
+        "case": "staged-commit",
+        "product": "cassandra-on-mysql",
+        "gitRef": "commit/bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "platform": "linux/arm64",
+        "revision": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+        "requestVersion": "v99.0.0",
+        "actualVersion": "v0.1.0-alpha.0",
+        "status": "SUCCESS",
+        "events": [
+          "d10ce4b8-6284-446d-9db7-1689948db194"
+        ],
+        "pipelines": [
+          {
+            "name": "serverless-cassandra-on-mysql-arm64-jw7mv",
+            "status": "Succeeded",
+            "platform": "linux/arm64"
+          }
+        ]
+      }
+    ]
+  },
+  "bootstrap": "Validation-only local Git tags were seeded in source checkouts. No remote release tags, formal GAR outputs, production DB changes or business deployment.",
+  "remainingRolloutChecks": [
+    "Provision formal GAR and scoped controller OIDC reader through ee-infra GitOps",
+    "Release/deploy tibuild-v2 and chatops-lark images and reconcile runtime product maps",
+    "Merge each source cutover and create its reachable baseline on the merged commit",
+    "Verify live version-tag devbuild and actual Lark delivery after cutover baselines exist",
+    "Activate formal routes, verify formal GAR manifests and controller reader authentication",
+    "Validate controller dev targets and secondary ECR/AliCloud digest consistency before prod activation",
+    "Run source repository product CI when drafts become ready; these cutovers do not modify product source code"
+  ],
+  "maintenanceCutovers": [
+    {
+      "name": "tidb-cse-20260206",
+      "repo": "tidbcloud/tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2778",
+      "base": "release-8.5-keyspace-20260206",
+      "head": "feat/serverless-cutover-20260206",
+      "baseline": "v8.5.3-alpha.20260206",
+      "commit": "d9759a4fdd7c953c3f1a9491177c808add6c5f5d",
+      "changed": [
+        ".github/SERVERLESS_BUILDS.md",
+        ".github/workflows/cd.yaml"
+      ]
+    },
+    {
+      "name": "tidb-cse-202603",
+      "repo": "tidbcloud/tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2779",
+      "base": "release-8.5-keyspace-202603",
+      "head": "feat/serverless-cutover-202603",
+      "baseline": "v8.5.3-alpha.202603",
+      "commit": "0eef55208a47e7870af60025bee390df3a98a5d0",
+      "changed": [
+        ".github/SERVERLESS_BUILDS.md",
+        ".github/workflows/cd.yaml"
+      ]
+    },
+    {
+      "name": "tidb-cse-202604",
+      "repo": "tidbcloud/tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2780",
+      "base": "release-8.5-keyspace-202604",
+      "head": "feat/serverless-cutover-202604",
+      "baseline": "v8.5.3-alpha.202604",
+      "commit": "d57fe8151d12453e081af799a868d3765d87bebd",
+      "changed": [
+        ".github/SERVERLESS_BUILDS.md",
+        ".github/workflows/cd.yaml"
+      ]
+    },
+    {
+      "name": "tidb-cse-202605",
+      "repo": "tidbcloud/tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2781",
+      "base": "release-8.5-keyspace-202605",
+      "head": "feat/serverless-cutover-202605",
+      "baseline": "v8.5.3-alpha.202605",
+      "commit": "edfb88e557ace1d80a7aae9df6e3f45b951903c7",
+      "changed": [
+        ".github/SERVERLESS_BUILDS.md",
+        ".github/workflows/cd.yaml"
+      ]
+    },
+    {
+      "name": "tidb-cse-202607",
+      "repo": "tidbcloud/tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2782",
+      "base": "release-8.5-keyspace-202607",
+      "head": "feat/serverless-cutover-202607",
+      "baseline": "v8.5.3-alpha.202607",
+      "commit": "541afb7ba569be9f56966b98aa26771c6aac313d",
+      "changed": [
+        ".github/SERVERLESS_BUILDS.md",
+        ".github/workflows/cd.yaml",
+        ".github/workflows/tag-image-for-production-sync.yaml"
+      ]
+    }
+  ],
+  "pullRequests": [
+    {
+      "name": "artifacts",
+      "url": "https://github.com/PingCAP-QE/artifacts/pull/1118",
+      "base": "main",
+      "head": "2f0b135c24162e0c3a6c3a1b72630e97f26ba2ed",
+      "draft": false
+    },
+    {
+      "name": "ci",
+      "url": "https://github.com/PingCAP-QE/ci/pull/5368",
+      "base": "main",
+      "head": "cad8451f0a4a2270ade091b4f1ac37c81c600206",
+      "draft": true
+    },
+    {
+      "name": "ci-formal",
+      "url": "https://github.com/PingCAP-QE/ci/pull/5369",
+      "base": "feat/serverless-artifacts",
+      "head": "36857df2003988d7caa8fc5c91f76a0f57cbbd7d",
+      "draft": true
+    },
+    {
+      "name": "ee-apps",
+      "url": "https://github.com/PingCAP-QE/ee-apps/pull/725",
+      "base": "main",
+      "head": "8ef3d92fc0c3073578cf41d40ad3f83d99005697",
+      "draft": true
+    },
+    {
+      "name": "ee-ops",
+      "url": "https://github.com/PingCAP-QE/ee-ops/pull/2475",
+      "base": "main",
+      "head": "1e46f4d48509dbc2390164c5ad102672987e5c2a",
+      "draft": true
+    },
+    {
+      "name": "ee-infra",
+      "url": "https://github.com/PingCAP-QE/ee-infra/pull/158",
+      "base": "main",
+      "head": "abcf4e571e041cde1f7246f79c8b4d4abd98ddcc",
+      "draft": false
+    },
+    {
+      "name": "controller-dev",
+      "url": "https://github.com/tidbcloud/docker-image-controller/pull/1064",
+      "base": "main",
+      "head": "5e4243fd30345c519bf8f95c262d515728642d07",
+      "draft": true
+    },
+    {
+      "name": "controller-prod",
+      "url": "https://github.com/tidbcloud/docker-image-controller/pull/1065",
+      "base": "feat/serverless-artifacts",
+      "head": "35bfe4fa647c4e498710933f933d94e25f7665c7",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2776",
+      "base": "main-8.5-keyspace",
+      "head": "bc268fd3d14b52ac5b80542b619e9bb30588e741",
+      "draft": true
+    },
+    {
+      "name": "pd-cse",
+      "url": "https://github.com/tidbcloud/pd-cse/pull/590",
+      "base": "release-8.5-keyspace",
+      "head": "9ff180aff1ca36840ca23a8dce50a0c0718a0037",
+      "draft": true
+    },
+    {
+      "name": "tidb-operator-cse",
+      "url": "https://github.com/tidbcloud/tidb-operator-cse/pull/120",
+      "base": "serverless-on-release-1.4",
+      "head": "bebf620f2215467f9a6861d07556b803e73025a6",
+      "draft": true
+    },
+    {
+      "name": "cassandra-on-mysql",
+      "url": "https://github.com/tidbcloud/cassandra-on-mysql/pull/49",
+      "base": "master",
+      "head": "bfd33197bae04e91c40b3bccd59fee332b1fb2c4",
+      "draft": true
+    },
+    {
+      "name": "qdrant-on-tidb",
+      "url": "https://github.com/tidbcloud/qdrant-on-tidb/pull/18",
+      "base": "main",
+      "head": "a2205371923b87a362282e6afeb3a23aa87487c2",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse-20260206",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2778",
+      "base": "release-8.5-keyspace-20260206",
+      "head": "d9759a4fdd7c953c3f1a9491177c808add6c5f5d",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse-202603",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2779",
+      "base": "release-8.5-keyspace-202603",
+      "head": "0eef55208a47e7870af60025bee390df3a98a5d0",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse-202604",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2780",
+      "base": "release-8.5-keyspace-202604",
+      "head": "d57fe8151d12453e081af799a868d3765d87bebd",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse-202605",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2781",
+      "base": "release-8.5-keyspace-202605",
+      "head": "edfb88e557ace1d80a7aae9df6e3f45b951903c7",
+      "draft": true
+    },
+    {
+      "name": "tidb-cse-202607",
+      "url": "https://github.com/tidbcloud/tidb-cse/pull/2782",
+      "base": "release-8.5-keyspace-202607",
+      "head": "541afb7ba569be9f56966b98aa26771c6aac313d",
+      "draft": true
+    }
+  ],
+  "githubChecks": [
+    {
+      "component": "artifacts",
+      "link": "https://github.com/PingCAP-QE/artifacts/actions/runs/39365755956/job/118442105785",
+      "name": "test-packages-cfg",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "artifacts",
+      "link": "https://github.com/PingCAP-QE/artifacts/actions/runs/39365755979/job/118442106096",
+      "name": "zizmor",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "artifacts",
+      "link": "https://cla.pingcap.net/PingCAP-QE/artifacts?pullRequest=1118",
+      "name": "license/cla",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "artifacts",
+      "link": "https://results.pre-commit.ci/run/github/583248438/1792467786.b1RG1eZRScORdlHxU6OO9A",
+      "name": "pre-commit.ci - pr",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/runs/118440873821",
+      "name": "CodeQL",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365318988/job/118440724740",
+      "name": "Skaffold Build (linux/amd64)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365318927/job/118440724009",
+      "name": "Test and Build chatops-lark",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365318936/job/118440724392",
+      "name": "Test and Build experiments/tibuild-v2",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365315084/job/118440717357",
+      "name": "Analyze (go)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365315084/job/118440717246",
+      "name": "Analyze (javascript-typescript)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365314965/job/118440715619",
+      "name": "Analyze (go)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365315084/job/118440717046",
+      "name": "Analyze (python)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365314965/job/118440715465",
+      "name": "Analyze (javascript-typescript)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://github.com/PingCAP-QE/ee-apps/actions/runs/39365314965/job/118440715755",
+      "name": "Analyze (actions)",
+      "state": "SUCCESS"
+    },
+    {
+      "component": "ee-apps",
+      "link": "https://results.pre-commit.ci/run/github/613291775/1792467479.j_m43HZRTK2gTMU7uED1Bw",
+      "name": "pre-commit.ci - pr",
+      "state": "SUCCESS"
+    }
+  ]
+}
