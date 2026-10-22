@@ -601,7 +601,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.9.20-7-g5292897-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.10.11-7-g4832c5c-centos7-go1.25
         # macOS native (darwin) toolchain for this component+range; only the mac agent reads it.
         # Only version-specific tools belong here (mise [tools]); generic CLI tools
         # (deno/yq/jq/oras/...) are worker-global (bootstrap). See packages/README.md.
