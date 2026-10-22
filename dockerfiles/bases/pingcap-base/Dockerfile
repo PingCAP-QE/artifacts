@@ -11,9 +11,10 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       summary="PingCAP QE base image built on Rocky Linux 9" \
       vendor="PingCAP"
 
-ARG _date=20260817
+ARG _date=20261022
 ARG PINGCAP_UID=1000
 ARG PINGCAP_GID=2000
-RUN dnf upgrade -y && dnf clean all && \
+RUN echo "package refresh ${_date}" && \
+    dnf upgrade -y && dnf clean all && \
     groupadd -g ${PINGCAP_GID} pingcap && \
     useradd -u ${PINGCAP_UID} -g ${PINGCAP_GID} -m pingcap
