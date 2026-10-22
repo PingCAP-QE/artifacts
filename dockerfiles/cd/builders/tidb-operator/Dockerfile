@@ -8,7 +8,7 @@
 #   - docker build -t tidb-operator -f Dockerfile ./tidb-operator
 
 ########### stage: builder
-ARG GOLANG_VERSION=1.27.2
+ARG GOLANG_VERSION=1.27.3
 FROM golang:${GOLANG_VERSION} AS builder
 ARG GOLANG_VERSION
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
