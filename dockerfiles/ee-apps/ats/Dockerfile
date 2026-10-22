@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 # renovate: datasource=github-tags depName=apache/trafficserver
-ARG TRAFFIC_SERVER_VERSION=9.2.15
+ARG TRAFFIC_SERVER_VERSION=9.2.16
 
 # Update the package repository
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
