@@ -8,6 +8,7 @@ on:
       - "dockerfiles/bases/**/Dockerfile"
       - "dockerfiles/bases/**/*.Dockerfile"
       - "dockerfiles/bases/skaffold.yaml"
+      - "!dockerfiles/bases/alpine-glibc/**"
 
 permissions:
   contents: read
