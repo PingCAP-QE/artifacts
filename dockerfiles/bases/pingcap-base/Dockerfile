@@ -43,20 +43,25 @@ RUN echo "package refresh ${_date}" && \
 # trust source and a copy would add the removed roots back.
 RUN set -eux; \
     src=/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit; \
-    awk 'BEGIN { RS = ""; ORS = "\n\n" } \
-         !/label: "emSign Root CA - C1"/ && \
-         !/label: "emSign ECC Root CA - C3"/ && \
-         !/label: "emSign ECC Root CA - G3"/ && \
-         !/label: "emSign Root TLS CA - G3"/ && \
-         !/label: "emSign Root CS CA - G3"/ && \
-         !/label: "AAA Certificate Services"/' "$src" > /tmp/ca-bundle.p11-kit; \
-    cat /tmp/ca-bundle.p11-kit > "$src"; \
-    rm -f /tmp/ca-bundle.p11-kit; \
+    orig=/tmp/ca-bundle.p11-kit.orig; \
+    patched=/tmp/ca-bundle.p11-kit; \
+    cp "$src" "$orig"; \
+    roots='emSign Root CA - C1|emSign ECC Root CA - C3|emSign ECC Root CA - G3|emSign Root TLS CA - G3|emSign Root CS CA - G3|AAA Certificate Services'; \
+    matched=$(grep -cE "^label: \"(${roots})\"$" "$orig" || true); \
+    g1_present=0; \
+    grep -qE '^label: "emSign Root CA - G1"$' "$orig" && g1_present=1 || true; \
+    awk -v roots="$roots" 'BEGIN { RS = ""; ORS = "\n\n" } \
+         { keep = 1; n = split($0, l, "\n"); \
+           for (i = 1; i <= n; i++) \
+               if (l[i] ~ ("^label: \"" roots "\"$")) keep = 0; \
+           if (keep) print }' "$orig" > "$patched"; \
+    cat "$patched" > "$src"; \
+    rm -f "$patched"; \
     update-ca-trust extract; \
     bundle=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem; \
     echo "ca-certificates: $(rpm -q --qf '%{VERSION}-%{RELEASE}' ca-certificates)"; \
     echo "tls bundle certs: $(grep -c 'BEGIN CERTIFICATE' "$bundle")"; \
-    ! grep -qE '^# (emSign Root CA - C1|emSign ECC Root CA - C3|emSign ECC Root CA - G3|emSign Root TLS CA - G3|emSign Root CS CA - G3|AAA Certificate Services)$' "$bundle"; \
-    if grep -q 'label: "emSign Root CA - G1"' "$src"; then \
-        grep -q '^# emSign Root CA - G1$' "$bundle"; \
-    fi
+    echo "matching root entries removed from the source: ${matched}"; \
+    ! grep -qE "^# (${roots})$" "$bundle"; \
+    if [ "$g1_present" = 1 ]; then grep -qE '^# emSign Root CA - G1$' "$bundle"; fi; \
+    rm -f "$orig"
