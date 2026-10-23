@@ -59,6 +59,9 @@ jobs:
       matrix:
         profile: ${{ fromJson(needs.define-matrix.outputs.profiles) }}
 
+    env:
+      PROFILE: ${{ matrix.profile }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -80,13 +83,12 @@ jobs:
             --build-concurrency=1 \
             --platform=linux/amd64 \
             --push=false \
-            --profile=${{ matrix.profile }}
+            --profile="${PROFILE}"
 
       - name: Smoke test
         run: |
-          image="alpine-glibc:${{ matrix.profile }}"
-          version="${{ matrix.profile }}"
-          version="${version##*glibc-}"
+          image="alpine-glibc:${PROFILE}"
+          version="${PROFILE##*glibc-}"
           docker run --rm -e GLIBC_VERSION="${version}" "${image}" sh -ec '
             /usr/glibc-compat/lib/libc.so.6 | grep -q "version ${GLIBC_VERSION}"
             readlink -f /lib/ld-linux-x86-64.so.2 | grep -q /usr/glibc-compat/
@@ -110,4 +112,4 @@ jobs:
           trivy image \
             --exit-code 1 \
             --severity HIGH,CRITICAL \
-            "alpine-glibc:${{ matrix.profile }}"
+            "alpine-glibc:${PROFILE}"

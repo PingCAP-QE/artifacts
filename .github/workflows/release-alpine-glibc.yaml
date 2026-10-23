@@ -51,6 +51,9 @@ jobs:
       matrix:
         profile: ${{ fromJson(needs.define-matrix.outputs.profiles) }}
 
+    env:
+      PROFILE: ${{ matrix.profile }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -81,7 +84,7 @@ jobs:
           skaffold build \
             --build-concurrency=1 \
             --default-repo=ghcr.io/pingcap-qe/bases \
-            --profile=${{ matrix.profile }}
+            --profile="${PROFILE}"
 
       - name: Install trivy from official APT repo
         run: |
@@ -97,4 +100,4 @@ jobs:
           trivy image \
             --exit-code 1 \
             --severity HIGH,CRITICAL \
-            "ghcr.io/pingcap-qe/bases/alpine-glibc:${{ matrix.profile }}"
+            "ghcr.io/pingcap-qe/bases/alpine-glibc:${PROFILE}"
