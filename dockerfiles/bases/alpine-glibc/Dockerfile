@@ -17,7 +17,6 @@
 
 ARG GLIBC_IMAGE=frolvlad/alpine-glibc:alpine-3.11_glibc-2.30@sha256:b6165080982253b82ad8e0a782ba2b56309909de48f617fbff1aa2867408c787
 ARG ALPINE_VERSION=3.22
-ARG EXTRA_PACKAGES="tzdata"
 # Optional mirror root, e.g. https://mirrors.aliyun.com/alpine
 ARG ALPINE_REPO=""
 
@@ -27,7 +26,6 @@ FROM ${GLIBC_IMAGE} AS donor-src
 
 FROM alpine:${ALPINE_VERSION} AS donor
 
-ARG EXTRA_PACKAGES
 ARG ALPINE_REPO
 
 COPY --from=donor-src /usr/glibc-compat /usr/glibc-compat
@@ -46,7 +44,7 @@ RUN set -eux; \
     ln -sf /usr/glibc-compat/etc/ld.so.cache /etc/ld.so.cache; \
     echo 'export LANG=C.UTF-8' > /etc/profile.d/locale.sh; \
     /usr/glibc-compat/sbin/ldconfig; \
-    if [ -n "${EXTRA_PACKAGES}" ]; then apk add --no-cache ${EXTRA_PACKAGES}; fi
+    apk add --no-cache tzdata
 
 ENV LANG=C.UTF-8 \
     TZ=UTC
@@ -59,7 +57,6 @@ FROM alpine:${ALPINE_VERSION} AS apk
 
 ARG GLIBC_VERSION=2.36
 ARG TARGETARCH
-ARG EXTRA_PACKAGES
 ARG ALPINE_REPO
 
 RUN set -eux; \
@@ -90,7 +87,7 @@ RUN set -eux; \
     ln -sf /usr/glibc-compat/etc/ld.so.cache /etc/ld.so.cache; \
     /usr/glibc-compat/sbin/ldconfig; \
     apk del .glibc-deps; \
-    if [ -n "${EXTRA_PACKAGES}" ]; then apk add --no-cache ${EXTRA_PACKAGES}; fi
+    apk add --no-cache tzdata
 
 ENV LANG=C.UTF-8 \
     TZ=UTC

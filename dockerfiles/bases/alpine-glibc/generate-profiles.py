@@ -24,7 +24,7 @@ def version_key(entry):
 
 
 def profile_name(alpine, glibc_version):
-    return f"alpine-{alpine}_glibc-{glibc_version}"
+    return f"{alpine}_glibc-{glibc_version}"
 
 
 def build_args(alpine, entry):
@@ -37,7 +37,6 @@ def build_args(alpine, entry):
         args.append(("GLIBC_VERSION", entry["version"]))
     else:
         raise SystemExit(f"glibc {entry['version']}: unknown target {entry['target']!r}")
-    args.append(("EXTRA_PACKAGES", "tzdata"))
     return args
 
 

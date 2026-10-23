@@ -28,7 +28,7 @@ derives it from the version, asset names stay `glibc-2.44.apk`.
 
 Registry: `ghcr.io/pingcap-qe/bases/alpine-glibc`
 
-Tag: `alpine-<minor>_glibc-<version>`, e.g. `alpine-3.22_glibc-2.44`.
+Tag: `<alpine-minor>_glibc-<version>`, e.g. `3.22_glibc-2.44` (the image name already contains `alpine`).
 Production consumers should pin by digest.
 
 ## Build
@@ -38,10 +38,10 @@ The matrix is driven by `matrix.yaml`; `skaffold.yaml` is generated from it.
 ```bash
 make generate                 # regenerate skaffold.yaml
 make check                    # fail if skaffold.yaml is out of date
-make build PROFILE=alpine-3.22_glibc-2.30
+make build PROFILE=3.22_glibc-2.30
 ```
 
-Profiles follow `alpine-<minor>_glibc-<version>`; one `skaffold build`
+Profiles follow `<alpine-minor>_glibc-<version>`; one `skaffold build`
 produces exactly one tag. The release workflow runs one job per profile
 with `--default-repo=ghcr.io/pingcap-qe/bases`.
 
@@ -82,4 +82,6 @@ so do not use `ldd` as a gate.
   before using them in production.
 - dalet-oss packaging drops `lib/gconv`; non-UTF-8 `iconv` conversions may
   not work.
+- Only `tzdata` is installed. `bind-tools`/`curl` are not part of the base;
+  add them in derived images if needed.
 - 2.30-2.35 have no arm64 upstream artifacts; they are amd64-only.

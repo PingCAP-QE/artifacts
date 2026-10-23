@@ -16,9 +16,9 @@ check:
 		|| { echo "ERROR: $(SKAFFOLD) is out of date; run 'make generate'" >&2; exit 1; }
 
 # Build/push one matrix entry, e.g.
-#   make build PROFILE=alpine-3.22_glibc-2.30
+#   make build PROFILE=3.22_glibc-2.30
 build:
-	@test -n "$(PROFILE)" || { echo "usage: make build PROFILE=alpine-3.22_glibc-2.30" >&2; exit 1; }
+	@test -n "$(PROFILE)" || { echo "usage: make build PROFILE=3.22_glibc-2.30" >&2; exit 1; }
 	skaffold build \
 		--build-concurrency=1 \
 		--default-repo=$(REGISTRY) \
