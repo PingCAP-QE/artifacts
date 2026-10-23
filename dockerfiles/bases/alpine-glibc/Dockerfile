@@ -90,13 +90,13 @@ RUN set -eux; \
     if apk info -e gcompat >/dev/null 2>&1; then \
       echo "gcompat must not be installed in the apk target" >&2; exit 1; \
     fi; \
-    /usr/glibc-compat/bin/locale -a | grep -qiE 'C\.utf8|C\.UTF-8'; \
     echo 'export LANG=C.UTF-8' > /etc/profile.d/locale.sh; \
     apk del glibc-i18n; \
     rm -f /tmp/*.apk /etc/apk/keys/alpine-packaging-rsa.pub; \
     mkdir -p /lib64; \
     ln -sf /usr/glibc-compat/etc/ld.so.cache /etc/ld.so.cache; \
     /usr/glibc-compat/sbin/ldconfig; \
+    /usr/glibc-compat/bin/locale -a | grep -qiE 'C\.utf8|C\.UTF-8'; \
     apk del .glibc-deps; \
     apk add --no-cache tzdata
 
