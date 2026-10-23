@@ -1,0 +1,115 @@
+name: Pull test for building alpine-glibc base images
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "dockerfiles/bases/alpine-glibc/**"
+      - ".github/workflows/pull-alpine-glibc.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: check generated skaffold config
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Check skaffold.yaml is up to date
+        working-directory: dockerfiles/bases/alpine-glibc
+        run: make check
+
+  define-matrix:
+    name: define matrix
+    runs-on: ubuntu-24.04
+    outputs:
+      profiles: ${{ steps.profiles.outputs.profiles }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Read profiles
+        id: profiles
+        working-directory: dockerfiles/bases/alpine-glibc
+        run: |
+          profiles=$(yq -o=json '[.profiles[].name]' skaffold.yaml | jq -c .)
+          echo "profiles=${profiles}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: build ${{ matrix.profile }}
+    needs: [lint, define-matrix]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJson(needs.define-matrix.outputs.profiles) }}
+
+    env:
+      PROFILE: ${{ matrix.profile }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
+
+      - name: Setup skaffold
+        uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
+        with:
+          version: 2.23.0
+
+      - name: Build image
+        working-directory: dockerfiles/bases/alpine-glibc
+        run: |
+          skaffold build \
+            --build-concurrency=1 \
+            --platform=linux/amd64 \
+            --push=false \
+            --profile="${PROFILE}"
+
+      - name: Smoke test
+        run: |
+          image="alpine-glibc:${PROFILE}"
+          version="${PROFILE##*glibc-}"
+          docker run --rm -e GLIBC_VERSION="${version}" "${image}" sh -ec '
+            /usr/glibc-compat/lib/libc.so.6 | grep -q "version ${GLIBC_VERSION}"
+            readlink -f /lib/ld-linux-x86-64.so.2 | grep -q /usr/glibc-compat/
+            /usr/glibc-compat/bin/locale charmap | grep -qi utf-8
+            /usr/glibc-compat/bin/getent hosts localhost
+            test -e /usr/share/zoneinfo/UTC
+            apk info -e tzdata
+          '
+
+      - name: Install trivy from official APT repo
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+
+      - name: Scan image
+        run: |
+          # glibc itself is not covered by the Alpine secdb; this gate is for
+          # the Alpine packages that the image ships.
+          trivy image \
+            --exit-code 1 \
+            --severity HIGH,CRITICAL \
+            "alpine-glibc:${PROFILE}"
