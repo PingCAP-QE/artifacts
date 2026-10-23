@@ -35,7 +35,7 @@ jobs:
         id: profiles
         working-directory: dockerfiles/bases/alpine-glibc
         run: |
-          profiles=$(yq -o=json '[.profiles[].name]' skaffold.yaml)
+          profiles=$(yq -o=json '[.profiles[].name]' skaffold.yaml | jq -c .)
           echo "profiles=${profiles}" >> "$GITHUB_OUTPUT"
 
   publish:
