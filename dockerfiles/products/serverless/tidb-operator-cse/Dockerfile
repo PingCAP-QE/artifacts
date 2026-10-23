@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.14@sha256:0f2d5c38dd7a4f4f733e688e3a6733cb5ab1ac6e3cb4603a5dd564e5bfb80eed
+FROM docker.io/library/alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a
 RUN apk add tzdata bind-tools --no-cache
 ARG TARGETARCH
 COPY bin/${TARGETARCH}/tidb-scheduler /usr/local/bin/tidb-scheduler
