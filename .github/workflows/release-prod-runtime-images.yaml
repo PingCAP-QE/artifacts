@@ -54,6 +54,14 @@ jobs:
         with:
           version: 2.23.0
 
+      # Required by dockerfiles/bases/build-old.sh, which composes the
+      # multi-arch manifest with manifest-tool when pushing the release-6-5
+      # module images. Keep in sync with pull-prod-runtime-images.yaml.
+      - name: Setup manifest-tool
+        run: |
+          curl -L https://github.com/estesp/manifest-tool/releases/download/v2.1.7/binaries-manifest-tool-2.1.7.tar.gz | tar -zxvf - manifest-tool-linux-amd64
+          sudo install manifest-tool-linux-amd64 /usr/local/bin/manifest-tool
+
       - name: Cache layers
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
