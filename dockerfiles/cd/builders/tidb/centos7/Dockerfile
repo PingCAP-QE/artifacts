@@ -66,7 +66,7 @@ RUN GOPROXY=${GOPROXY} make server -C /tidb
 RUN /tidb/bin/tidb-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.12.5
 
 COPY --from=building /tidb/bin/tidb-server /tidb-server
 
