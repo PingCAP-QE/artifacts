@@ -1,5 +1,5 @@
-FROM docker.io/library/alpine:3.14@sha256:0f2d5c38dd7a4f4f733e688e3a6733cb5ab1ac6e3cb4603a5dd564e5bfb80eed
-RUN apk add tzdata bind-tools --no-cache
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.4@sha256:fc77996d3438ce6040a48a5caa73fa7a207d120114e37d20b90f86f5db22d70a
+RUN dnf install -y tzdata bind-utils && dnf clean all
 ARG TARGETARCH
 COPY bin/${TARGETARCH}/tidb-scheduler /usr/local/bin/tidb-scheduler
 COPY bin/${TARGETARCH}/tidb-discovery /usr/local/bin/tidb-discovery
