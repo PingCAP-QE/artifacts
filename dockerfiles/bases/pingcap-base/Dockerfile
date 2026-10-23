@@ -22,9 +22,18 @@ RUN echo "package refresh ${_date}" && \
 # Temporary mitigation for the eMudhra intermediate CA compromise disclosed on
 # 2026-10-20 (RHSB-2026-012, CVE-2026-114406; upstream fix is NSS 3.131.1).
 # The fixed ca-certificates package (>= 2026.2.92_v9.0.319) is not published for
-# Rocky Linux 9 yet, and what it ships is exactly the removal of the three roots
-# below, so perform the same removal here. `emSign Root CA - G1` is kept, as
-# upstream keeps it too.
+# Rocky Linux 9 yet, and what it ships is exactly the removal of trusted roots,
+# so that is done here too.
+#
+# Only the roots matter: the eight compromised intermediate CAs are not present
+# in a trust store themselves, so the reachable attack path is a chain that ends
+# in a trusted root. Every root that can anchor one of those intermediates is
+# therefore dropped: the three removed by NSS 3.131.1 (emSign Root CA - C1,
+# emSign ECC Root CA - C3, emSign ECC Root CA - G3) plus the direct issuers
+# emSign Root TLS CA - G3, emSign Root CS CA - G3 and AAA Certificate Services,
+# which are not installed today but are present in other root programs. The
+# assertions below cover that whole set, not just the three labels removed.
+# `emSign Root CA - G1` is kept, as upstream keeps it too.
 #
 # Remove this whole block once the `dnf upgrade -y` above starts installing
 # ca-certificates >= 2026.2.92_v9.0.319: rebuilding this image is then enough.
@@ -37,12 +46,17 @@ RUN set -eux; \
     awk 'BEGIN { RS = ""; ORS = "\n\n" } \
          !/label: "emSign Root CA - C1"/ && \
          !/label: "emSign ECC Root CA - C3"/ && \
-         !/label: "emSign ECC Root CA - G3"/' "$src" > /tmp/ca-bundle.p11-kit; \
+         !/label: "emSign ECC Root CA - G3"/ && \
+         !/label: "emSign Root TLS CA - G3"/ && \
+         !/label: "emSign Root CS CA - G3"/ && \
+         !/label: "AAA Certificate Services"/' "$src" > /tmp/ca-bundle.p11-kit; \
     cat /tmp/ca-bundle.p11-kit > "$src"; \
     rm -f /tmp/ca-bundle.p11-kit; \
     update-ca-trust extract; \
     bundle=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem; \
     echo "ca-certificates: $(rpm -q --qf '%{VERSION}-%{RELEASE}' ca-certificates)"; \
     echo "tls bundle certs: $(grep -c 'BEGIN CERTIFICATE' "$bundle")"; \
-    ! grep -qE '^# (emSign Root CA - C1|emSign ECC Root CA - C3|emSign ECC Root CA - G3)$' "$bundle"; \
-    grep -q '^# emSign Root CA - G1$' "$bundle"
+    ! grep -qE '^# (emSign Root CA - C1|emSign ECC Root CA - C3|emSign ECC Root CA - G3|emSign Root TLS CA - G3|emSign Root CS CA - G3|AAA Certificate Services)$' "$bundle"; \
+    if grep -q 'label: "emSign Root CA - G1"' "$src"; then \
+        grep -q '^# emSign Root CA - G1$' "$bundle"; \
+    fi
