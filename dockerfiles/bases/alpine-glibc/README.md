@@ -51,7 +51,8 @@ For local builds behind a restricted network, point apk at a mirror:
 docker buildx build --target donor --platform linux/amd64 \
   --build-arg ALPINE_VERSION=3.22 \
   --build-arg ALPINE_REPO=https://mirrors.aliyun.com/alpine \
-  --build-arg GLIBC_IMAGE=<donor> --load -t local/alpine-glibc:test .
+  --build-arg GLIBC_IMAGE="${GLIBC_IMAGE:?set GLIBC_IMAGE}" \
+  --load -t local/alpine-glibc:test .
 ```
 
 ### Adding a version
@@ -64,7 +65,10 @@ docker buildx build --target donor --platform linux/amd64 \
 
 ```bash
 /usr/glibc-compat/lib/libc.so.6 | head -1        # must match the profile version
-readlink -f /lib/ld-linux-x86-64.so.2 | grep -q /usr/glibc-compat/
+case "$(apk --print-arch)" in
+  x86_64) readlink -f /lib/ld-linux-x86-64.so.2 | grep -q /usr/glibc-compat/ ;;
+  aarch64) readlink -f /lib/ld-linux-aarch64.so.1 | grep -q /usr/glibc-compat/ ;;
+esac
 /usr/glibc-compat/bin/locale charmap | grep -qi utf-8
 /usr/glibc-compat/bin/getent hosts localhost
 test -e /usr/share/zoneinfo/UTC

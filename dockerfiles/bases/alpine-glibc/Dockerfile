@@ -71,14 +71,25 @@ RUN set -eux; \
     esac; \
     tag="${GLIBC_VERSION}-${TARGETARCH}${suffix}"; \
     base="https://github.com/dalet-oss/alpine-glibc/releases/download/${tag}"; \
+    DALET_COMMIT="6094f4d1e6a16b25168f433814cb6d43f86e1292"; \
+    DALET_KEY_SHA256="a14b57143989380b1e6a0716e4351a788f870db164ea0d6a02098aeddf3f4fdb"; \
     curl -fsSL -o /etc/apk/keys/alpine-packaging-rsa.pub \
-      https://raw.githubusercontent.com/dalet-oss/alpine-glibc/master/alpine-packaging-rsa.pub; \
+      "https://raw.githubusercontent.com/dalet-oss/alpine-glibc/${DALET_COMMIT}/alpine-packaging-rsa.pub"; \
+    echo "${DALET_KEY_SHA256}  /etc/apk/keys/alpine-packaging-rsa.pub" | sha256sum -c -; \
     for p in glibc glibc-bin glibc-i18n; do \
       curl -fsSL -o "/tmp/${p}.apk" "${base}/${p}-${GLIBC_VERSION}.apk"; \
     done; \
     apk add --no-cache --force-overwrite /tmp/glibc.apk; \
     apk add --no-cache /tmp/glibc-bin.apk; \
     apk add --no-cache /tmp/glibc-i18n.apk; \
+    case "${TARGETARCH}" in \
+      amd64) test "$(readlink -f /lib/ld-linux-x86-64.so.2)" = "/usr/glibc-compat/lib/ld-linux-x86-64.so.2" ;; \
+      arm64) test "$(readlink -f /lib/ld-linux-aarch64.so.1)" = "/usr/glibc-compat/lib/ld-linux-aarch64.so.1" ;; \
+      *) echo "unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    if apk info -e gcompat >/dev/null 2>&1; then \
+      echo "gcompat must not be installed in the apk target" >&2; exit 1; \
+    fi; \
     /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 C.UTF-8 || true; \
     echo 'export LANG=C.UTF-8' > /etc/profile.d/locale.sh; \
     apk del glibc-i18n; \
@@ -86,6 +97,7 @@ RUN set -eux; \
     mkdir -p /lib64; \
     ln -sf /usr/glibc-compat/etc/ld.so.cache /etc/ld.so.cache; \
     /usr/glibc-compat/sbin/ldconfig; \
+    /usr/glibc-compat/bin/locale -a | grep -qiE 'C\.utf8|C\.UTF-8'; \
     apk del .glibc-deps; \
     apk add --no-cache tzdata
 
