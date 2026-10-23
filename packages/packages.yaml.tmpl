@@ -2481,7 +2481,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.9.27-1-ge30fb59-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.10.18-7-g4f3112e-centos7-go1.25
         macos:
           tools:
             go: "1.25"
