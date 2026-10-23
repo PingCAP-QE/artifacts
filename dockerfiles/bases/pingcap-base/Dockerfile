@@ -41,10 +41,15 @@ RUN echo "package refresh ${_date}" && \
 # The patched copy must stay outside /usr/share/pki/ca-trust-source and
 # /etc/pki/ca-trust/source, because every file below those trees is read as a
 # trust source and a copy would add the removed roots back.
+#
+# `cat "$patched" > "$src"` is deliberate: it keeps the inode, mode and SELinux
+# context of the package-owned file, which `mv` from /tmp would not.
 RUN set -eux; \
     src=/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit; \
+    bundle=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem; \
     orig=/tmp/ca-bundle.p11-kit.orig; \
     patched=/tmp/ca-bundle.p11-kit; \
+    before=$(grep -c 'BEGIN CERTIFICATE' "$bundle"); \
     cp "$src" "$orig"; \
     roots='emSign Root CA - C1|emSign ECC Root CA - C3|emSign ECC Root CA - G3|emSign Root TLS CA - G3|emSign Root CS CA - G3|AAA Certificate Services'; \
     matched=$(grep -cE "^label: \"(${roots})\"$" "$orig" || true); \
@@ -57,11 +62,14 @@ RUN set -eux; \
            if (keep) print }' "$orig" > "$patched"; \
     cat "$patched" > "$src"; \
     rm -f "$patched"; \
+    [ -s "$src" ]; \
     update-ca-trust extract; \
-    bundle=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem; \
+    after=$(grep -c 'BEGIN CERTIFICATE' "$bundle" || true); \
     echo "ca-certificates: $(rpm -q --qf '%{VERSION}-%{RELEASE}' ca-certificates)"; \
-    echo "tls bundle certs: $(grep -c 'BEGIN CERTIFICATE' "$bundle")"; \
-    echo "matching root entries removed from the source: ${matched}"; \
+    echo "tls bundle certs: ${before} -> ${after}"; \
+    echo "root label entries matched in the source: ${matched}"; \
     ! grep -qE "^# (${roots})$" "$bundle"; \
     if [ "$g1_present" = 1 ]; then grep -qE '^# emSign Root CA - G1$' "$bundle"; fi; \
+    [ "$matched" -le 8 ]; \
+    [ $((before - after)) -le 6 ]; \
     rm -f "$orig"
