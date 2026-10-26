@@ -243,15 +243,14 @@ jobs:
             head -n 1)
 
           if [ -n "${existing}" ]; then
-            gh issue edit "${existing}" --body-file "${body_file}" --add-assignee wuhuizuo
+            gh issue edit "${existing}" --body-file "${body_file}"
             echo "Updated existing weekly scan issue #${existing}"
           else
             gh issue create \
               --title "${title}" \
               --body-file "${body_file}" \
               --label security \
-              --label weekly-scan \
-              --assignee wuhuizuo
+              --label weekly-scan
           fi
 
           echo "::notice::${CRITICAL} CRITICAL and ${HIGH} HIGH findings recorded for tag ${IMAGE_TAG}"
