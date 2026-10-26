@@ -1,4 +1,4 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023.12.20261021.0@sha256:d9b4c61f49de68d41e43af1c0ef89c5600b0ad51da024406a15f5d014720c998
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023.12.20261026.1@sha256:8272aee6146a36222baaf71d72ab6799770957414ac63b1e940cec58c9197188
 RUN yum install -y openssl && yum clean all
 WORKDIR /qdrant-on-tidb
 COPY serving-service qdrant-api ctl ./
