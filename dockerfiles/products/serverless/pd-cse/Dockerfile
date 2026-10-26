@@ -1,4 +1,4 @@
-FROM ghcr.io/pingcap-qe/bases/pd-base:v1.12.4
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.12.5
 RUN dnf install --allowerasing -y curl \
     && ln -sfn /bin/bash /bin/sh \
     && dnf clean all
