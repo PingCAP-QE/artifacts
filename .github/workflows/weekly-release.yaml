@@ -6,6 +6,11 @@ on:
     - cron: "0 0 * * 0"
   # Allow manual trigger
   workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Base image tag to scan (default: tag pinned in dockerfiles/bases/skaffold.yaml)"
+        required: false
+        type: string
 
 # Ensure only one instance of this workflow runs at a time
 concurrency:
@@ -37,19 +42,19 @@ jobs:
 
           if [ -z "$LATEST_RELEASE" ]; then
             echo "No previous releases found. Creating initial release."
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
           else
             echo "Latest release: $LATEST_RELEASE"
 
             # Check if there are any changes since the latest release
-            CHANGES=$(git log $LATEST_RELEASE..HEAD --oneline)
+            CHANGES=$(git log "${LATEST_RELEASE}..HEAD" --oneline)
 
             if [ -n "$CHANGES" ]; then
               echo "Changes detected since last release"
-              echo "has_changes=true" >> $GITHUB_OUTPUT
+              echo "has_changes=true" >> "$GITHUB_OUTPUT"
             else
               echo "No changes since last release"
-              echo "has_changes=false" >> $GITHUB_OUTPUT
+              echo "has_changes=false" >> "$GITHUB_OUTPUT"
             fi
           fi
         env:
@@ -58,7 +63,7 @@ jobs:
       - name: Get current date
         if: steps.check-changes.outputs.has_changes == 'true'
         id: date
-        run: echo "date=$(date +'%Y.%-m.%-d')" >> $GITHUB_OUTPUT
+        run: echo "date=$(date +'%Y.%-m.%-d')" >> "$GITHUB_OUTPUT"
 
       - name: Create new tag and release
         if: steps.check-changes.outputs.has_changes == 'true'
@@ -101,6 +106,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      # Needed to open/update/close the weekly scan issue.
+      issues: write
     env:
       SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
       SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
@@ -111,11 +118,23 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Extract image tag from skaffold
+      - name: Resolve base image tag
         id: tag
         working-directory: dockerfiles/bases
+        env:
+          INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
-          tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+          set -euo pipefail
+          if [ -n "${INPUT_IMAGE_TAG}" ]; then
+            tag="${INPUT_IMAGE_TAG}"
+            echo "Using image_tag from workflow_dispatch: ${tag}"
+          else
+            tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+          fi
+          if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
+            echo "::error::Could not resolve the base image tag (skaffold.yaml or image_tag input)"
+            exit 1
+          fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
       - name: Install trivy from official APT repo
@@ -125,21 +144,34 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
 
-      - name: Scan all base images and build summary
+      # Policy: HIGH + CRITICAL, unfixed included (2026-10-26 owner decision).
+      # The script exits 2 when any image could not be scanned, so registry or
+      # Trivy DB failures never masquerade as vulnerability findings.
+      - name: Scan base images and build report
+        id: scan
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
-          has_vulns=false
-          for img in $images; do
-            echo "=== Scanning $img ==="
-            output=$(trivy image \
-              --format table \
-              "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" || true)
-            echo "$output"
-            if echo "$output" | grep -q '^Total:'; then
-              has_vulns=true
-            fi
-          done
-          echo "has_vulns=${has_vulns}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          .github/scripts/scan-base-images.sh \
+            --tag "${IMAGE_TAG}" \
+            --output-dir "${RUNNER_TEMP}/weekly-scan"
+
+      - name: Publish scan report to the job summary
+        if: always() && steps.scan.outputs.report_file != ''
+        env:
+          REPORT_FILE: ${{ steps.scan.outputs.report_file }}
+        run: cat "${REPORT_FILE}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload scan report artifact
+        if: always() && steps.scan.outputs.report_file != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: weekly-scan-${{ steps.tag.outputs.tag }}
+          path: ${{ runner.temp }}/weekly-scan
+          retention-days: 30
+          if-no-files-found: error
 
       - name: Send scan report via email
         if: always() && env.SMTP_SERVER != ''
@@ -155,8 +187,86 @@ jobs:
           body: |
             Weekly vulnerability scan completed for base images (tag: ${{ steps.tag.outputs.tag }}).
 
-            Results are shown in the workflow log above.
+            HIGH/CRITICAL findings: ${{ steps.scan.outputs.critical }} critical, ${{ steps.scan.outputs.high }} high.
+            Report artifact: weekly-scan-${{ steps.tag.outputs.tag }}
             See: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Open or update the weekly scan issue
+        if: steps.scan.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          TOTAL: ${{ steps.scan.outputs.total }}
+          CRITICAL: ${{ steps.scan.outputs.critical }}
+          HIGH: ${{ steps.scan.outputs.high }}
+          REPORT_FILE: ${{ steps.scan.outputs.report_file }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # Idempotent: create the labels once, reuse them afterwards.
+          gh label create security --color 0E8A16 --description "Security-related findings" --force >/dev/null
+          gh label create weekly-scan --color B60205 --description "Automated weekly base image scan" --force >/dev/null
+
+          if [ "${TOTAL}" -eq 0 ]; then
+            closed=0
+            while IFS= read -r number; do
+              [ -n "${number}" ] || continue
+              gh issue close "${number}" \
+                --comment "Clean weekly scan for base images tag \`${IMAGE_TAG}\`: 0 HIGH/CRITICAL findings. Closing automatically. Run: ${RUN_URL}"
+              closed=$((closed + 1))
+            done < <(gh issue list --label weekly-scan --state open --limit 100 --json number --jq '.[].number')
+            echo "No HIGH/CRITICAL findings; closed ${closed} resolved weekly-scan issue(s)."
+            exit 0
+          fi
+
+          body_file="${RUNNER_TEMP}/weekly-scan/issue-body.md"
+          mkdir -p "$(dirname "${body_file}")"
+          {
+            cat "${REPORT_FILE}"
+            echo
+            echo "## Suggested actions"
+            echo
+            echo "- Rebuild the base images with refreshed packages (same flow as the recent \`fix(bases): refresh packages ...\` PRs)."
+            echo "- Re-run the \`Weekly GitHub Release\` workflow with \`image_tag\` set to an older tag to reproduce a finding."
+            echo "- This issue is closed automatically the next time a scan reports 0 HIGH/CRITICAL findings."
+          } > "${body_file}"
+
+          title="[weekly-scan] HIGH/CRITICAL vulnerabilities in base images (${IMAGE_TAG})"
+          existing=$(gh issue list \
+            --label weekly-scan \
+            --state open \
+            --limit 100 \
+            --json number,title |
+            jq -r --arg title "${title}" '.[] | select(.title == $title) | .number' |
+            head -n 1)
+
+          if [ -n "${existing}" ]; then
+            gh issue edit "${existing}" --body-file "${body_file}" --add-assignee wuhuizuo
+            echo "Updated existing weekly scan issue #${existing}"
+          else
+            gh issue create \
+              --title "${title}" \
+              --body-file "${body_file}" \
+              --label security \
+              --label weekly-scan \
+              --assignee wuhuizuo
+          fi
+
+          echo "::notice::${CRITICAL} CRITICAL and ${HIGH} HIGH findings recorded for tag ${IMAGE_TAG}"
+
+      # Keep this step after the issue step: the issue is the durable signal,
+      # so the job must not fail before it is written.
+      - name: Fail when HIGH/CRITICAL vulnerabilities are found
+        if: steps.scan.outcome == 'success' && steps.scan.outputs.total != '0'
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          CRITICAL: ${{ steps.scan.outputs.critical }}
+          HIGH: ${{ steps.scan.outputs.high }}
+        run: |
+          echo "::error::Base images tag ${IMAGE_TAG} has ${CRITICAL} CRITICAL and ${HIGH} HIGH vulnerabilities; see the weekly-scan issue and report artifact."
+          exit 1
 
       - name: Notify email report skipped
         if: always() && env.SMTP_SERVER == ''

@@ -98,22 +98,22 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
 
-      - name: Run Trivy vulnerability scanner on base images
+      # Same severity policy as the weekly scan (HIGH + CRITICAL, unfixed
+      # included) so a green weekly run can never contradict a red publish.
+      - name: Scan base images for HIGH/CRITICAL vulnerabilities
         if: matrix.module == 'default'
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          images="pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base"
-          has_vulns=false
-          for img in $images; do
-            echo "=== Scanning $img ==="
-            output=$(trivy image \
-              --format table \
-              "ghcr.io/pingcap-qe/bases/${img}:${{ steps.tag.outputs.tag }}" || true)
-            echo "$output"
-            if echo "$output" | grep -q '^Total:'; then
-              has_vulns=true
-            fi
-          done
-          if [ "$has_vulns" = true ]; then
-            echo "Vulnerabilities found in base images. Check scan results above."
+          set -euo pipefail
+          out_dir="${RUNNER_TEMP}/base-image-scan"
+          .github/scripts/scan-base-images.sh \
+            --tag "${IMAGE_TAG}" \
+            --output-dir "${out_dir}"
+          cat "${out_dir}/scan-report.md" >> "$GITHUB_STEP_SUMMARY"
+          total=$(jq -r '.totals.critical + .totals.high' "${out_dir}/scan-summary.json")
+          if [ "${total}" -gt 0 ]; then
+            echo "::error::${total} HIGH/CRITICAL vulnerabilities found in base images tag ${IMAGE_TAG}; see the scan report above."
             exit 1
           fi
