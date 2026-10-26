@@ -8,10 +8,15 @@
 
 ########### stage: Builder - cdc
 FROM centos:7.9.2009 AS builder-cdc
-# CentOS 7 has reached EOL
+# CentOS 7 has reached EOL. The official vault still serves x86_64, but its
+# aarch64 (altarch) tree is incomplete: yum gets 403 for
+# altarch/7/os/aarch64/repodata/*-filelists.sqlite.bz2, so pin aarch64 to the
+# archived 7.9.2009 tree on a public mirror.
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+    && ([ "$(arch)" = "x86_64" ] \
+        || sed -i 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' /etc/yum.repos.d/*.repo)
 
 # install packages with BuildKit cache mount
 # This prevents package cache from being stored in image layers
