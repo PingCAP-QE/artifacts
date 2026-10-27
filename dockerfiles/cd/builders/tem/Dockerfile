@@ -74,7 +74,7 @@ RUN make build -C /tem
 RUN /tem/bin/tem --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.5
 COPY --from=building /tem/bin/tem /tem
 
 WORKDIR /
