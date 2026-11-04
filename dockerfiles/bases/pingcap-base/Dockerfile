@@ -11,7 +11,7 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       summary="PingCAP QE base image built on Rocky Linux 9" \
       vendor="PingCAP"
 
-ARG _date=20261023
+ARG _date=20261104
 ARG PINGCAP_UID=1000
 ARG PINGCAP_GID=2000
 RUN echo "package refresh ${_date}" && \
@@ -21,25 +21,12 @@ RUN echo "package refresh ${_date}" && \
 
 # ca-certificates-2026.2.92_v9.0.319 is the first Rocky Linux 9 build whose trust
 # store no longer anchors the intermediate CAs compromised on 2026-10-20
-# (RHSB-2026-012 / CVE-2026-114406). It is already published on the origin while
-# the mirrorlist-selected mirrors still lag, so the `dnf upgrade` above keeps
-# installing 2025.2.80. Pull that single package from the origin and drop the
-# temporary repo again, so the image keeps the stock mirror configuration.
-# The trailing check is not a version pin: any newer package passes, it only
-# fails the build when a stale source would silently ship the vulnerable trust
-# store. Remove this block once the mirrors serve the fixed package.
+# (RHSB-2026-012 / CVE-2026-114406). The Rocky mirrors serve it since 2026-10-23,
+# so the `dnf upgrade` above installs it on a refreshed (cache-busted) layer and
+# the build-time origin override that #1138 added is no longer needed.
+# The check is not a version pin: any newer package passes, it only fails the
+# build when a stale source would silently ship the vulnerable trust store.
 RUN set -eux; \
-    printf '%s\n' \
-      '[origin-baseos]' \
-      'name=Rocky Linux BaseOS (build-time origin only)' \
-      'baseurl=https://dl.rockylinux.org/pub/rocky/$releasever/BaseOS/$basearch/os/' \
-      'gpgcheck=1' \
-      'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rockyofficial' \
-      'enabled=1' \
-      'metadata_expire=0' \
-      > /etc/yum.repos.d/zz-origin.repo; \
-    dnf -y --refresh upgrade ca-certificates --repo=origin-baseos; \
-    rm -f /etc/yum.repos.d/zz-origin.repo; \
     ver=$(rpm -q --qf '%{VERSION}' ca-certificates); \
     echo "ca-certificates: ${ver}"; \
     test "${ver%%.*}" -ge 2026
