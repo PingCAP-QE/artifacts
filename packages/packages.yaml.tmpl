@@ -3694,7 +3694,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: docker.io/library/golang:1.24.2-bullseye@sha256:f50ff25f8331682b44c1582974eb9e620fcb08052fc6ed434f93ca24636fc4d6
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.4.24-10-g9c32f77-centos7-go1.24@sha256:6b0e1acde8bff7ebf1f8061de2c6d84e61c0d045530813abedca33c93ca45444
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
@@ -3736,7 +3736,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: docker.io/library/golang:1.23.12-bullseye@sha256:161b8513c09cbfa4c174fd32e46eddc5eddf487a43958b9cf8b07d628e9e0f85
+      - image: ghcr.io/pingcap-qe/cd/builders/pd:v2025.12.7-3-g1c0b8cf-centos7-go1.23@sha256:93b0d4b049767182d0827a7fca78ba66819cf1ffdeaa1256cfa16902bc1a2851
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
@@ -3779,7 +3779,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: docker.io/library/golang:1.21.13-bullseye@sha256:40a67e6626bead90d5c7957bd0354cfeb8400e61acc3adc256e03252630014a6
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-91-g6221afa-go1.21@sha256:7bf614824f1c18ff4463278765e5548fc17dc219420f2c94e8779ef917bfc4c7
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
