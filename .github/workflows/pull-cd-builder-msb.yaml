@@ -88,9 +88,12 @@ jobs:
 
       - name: Run specific component build
         working-directory: dockerfiles
+        env:
+          # Passed via env instead of inline `${{ }}` so the value is never
+          # re-parsed as shell code.
+          TASK: ${{ needs.check-label.outputs.task }}
         run: |
           set -euo pipefail
-          TASK="${{ needs.check-label.outputs.task }}"
           if [ "$TASK" == "all" ]; then
             echo "Run all tasks"
             just msb-tidb
@@ -109,11 +112,13 @@ jobs:
 
       - name: Comment on PR with results
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        env:
+          TASK: ${{ needs.check-label.outputs.task }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { pull_request: { number: issue_number }, repo: { owner, repo } } = context;
-            const task = '${{ needs.check-label.outputs.task }}';
+            const task = process.env.TASK;
 
             github.rest.issues.createComment({
               issue_number,

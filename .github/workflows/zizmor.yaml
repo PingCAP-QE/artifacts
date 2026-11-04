@@ -29,4 +29,7 @@ jobs:
       - name: Run zizmor
         run: |
           set -euo pipefail
-          zizmor . --no-progress --no-online-audits --min-severity low
+          # Fail on every finding zizmor reports in its default persona,
+          # including informational ones: the repository currently has none,
+          # so anything that shows up is a regression.
+          zizmor . --no-progress --no-online-audits --min-severity informational

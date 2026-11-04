@@ -67,10 +67,14 @@ jobs:
 
       - name: Create new tag and release
         if: steps.check-changes.outputs.has_changes == 'true'
+        env:
+          # Passed via env instead of inline `${{ }}` so the value is never
+          # re-parsed as shell code.
+          RELEASE_DATE: ${{ steps.date.outputs.date }}
         run: |
           set -euo pipefail
 
-          TAG_NAME="v${{ steps.date.outputs.date }}"
+          TAG_NAME="v${RELEASE_DATE}"
 
           # Delete remote tag if it exists to handle re-runs
           gh api \
