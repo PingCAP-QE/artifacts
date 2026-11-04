@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gh (GitHub CLI)
-# renovate: datasource=github-release depName=cli/cli
+# renovate: datasource=github-releases depName=cli/cli
 ARG GH_VER=2.82.1
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://github.com/cli/cli/releases/download/v${GH_VER}/gh_${GH_VER}_linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
@@ -29,7 +29,7 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-cr
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-acr-env    /usr/local/bin/docker-credential-acr-env
 
 # install tools: crane
-# renovate: datasource=github-release depName=google/go-containerregistry
+# renovate: datasource=github-releases depName=google/go-containerregistry
 ARG CRANE_VER=0.20.2
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo x86_64 || echo arm64); \
     wget -q -O - https://github.com/google/go-containerregistry/releases/download/v${CRANE_VER}/go-containerregistry_Linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
@@ -43,7 +43,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     chmod a+x /usr/local/bin/ks3util
 
 # install tools: tiup
-# renovate: datasource=github-release depName=pingcap/tiup
+# renovate: datasource=github-releases depName=pingcap/tiup
 ARG TIUP_VER=v1.16.3
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
