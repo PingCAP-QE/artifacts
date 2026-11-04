@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y make git gcc wget sshpass unzip findutils
 
 # install protoc.
-# renovate: datasource=github-release depName=protocolbuffers/protobuf
+# renovate: datasource=github-releases depName=protocolbuffers/protobuf
 ARG PROTOBUF_VER=v3.15.8
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
@@ -51,7 +51,7 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1
 ENV PATH=/root/go/bin/:$PATH
 
 # install tools: tiup
-# renovate: datasource=github-release depName=pingcap/tiup
+# renovate: datasource=github-releases depName=pingcap/tiup
 ARG TIUP_VER=v1.16.3
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \

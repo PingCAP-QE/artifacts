@@ -32,7 +32,7 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     rm -f /tmp/mok.zip
 
 # install tools: tiup
-# renovate: datasource=github-release depName=pingcap/tiup
+# renovate: datasource=github-releases depName=pingcap/tiup
 ARG TIUP_VER=v1.16.3
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
