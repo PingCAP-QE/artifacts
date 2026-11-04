@@ -70,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          TAG_NAME="v${{ steps.date.outputs.date }}"
+          TAG_NAME="v${RELEASE_DATE}"
 
           # Delete remote tag if it exists to handle re-runs
           gh api \
@@ -101,6 +101,7 @@ jobs:
             --notes "Weekly automatic release created on $(date +'%Y-%m-%d')"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_DATE: ${{ steps.date.outputs.date }}
 
   image-scan:
     runs-on: ubuntu-latest

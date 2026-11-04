@@ -88,9 +88,10 @@ jobs:
 
       - name: Run specific component build
         working-directory: dockerfiles
+        env:
+          TASK: ${{ needs.check-label.outputs.task }}
         run: |
           set -euo pipefail
-          TASK="${{ needs.check-label.outputs.task }}"
           if [ "$TASK" == "all" ]; then
             echo "Run all tasks"
             just msb-tidb
@@ -113,7 +114,7 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { pull_request: { number: issue_number }, repo: { owner, repo } } = context;
-            const task = '${{ needs.check-label.outputs.task }}';
+            const task = process.env.TASK;
 
             github.rest.issues.createComment({
               issue_number,
@@ -121,3 +122,5 @@ jobs:
               repo,
               body: `✅ Task \`${task}\` completed successfully.`
             });
+        env:
+          TASK: ${{ needs.check-label.outputs.task }}
