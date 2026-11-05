@@ -52,7 +52,7 @@ ENV PATH=/root/go/bin/:$PATH
 
 # install tools: tiup
 # renovate: datasource=github-releases depName=pingcap/tiup
-ARG TIUP_VER=v1.16.5
+ARG TIUP_VER=v1.17.1
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
