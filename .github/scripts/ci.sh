@@ -14,6 +14,20 @@ function check_image_existed() {
     fi
 }
 
+# The commit metadata values are optional at build time, but the generated
+# scripts must always know how to emit them.
+function assert_commit_metadata_support() {
+    local script=$1
+    local key
+    for key in net.pingcap.tibuild.git-commit-title net.pingcap.tibuild.git-commit-time; do
+        if ! grep -q "$key" "$script"; then
+            echo "❌ $script does not emit $key"
+            exit 1
+        fi
+    done
+    echo "✅ $script emits both commit metadata keys"
+}
+
 function test_get_builder() {
     local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0"
     local operating_systems="linux darwin"
@@ -231,6 +245,7 @@ function test_gen_package_artifacts_script() {
             done
         done
     done
+    assert_commit_metadata_support packages/scripts/build-package-artifacts.sh
 }
 
 ##### others that owns theirs non-unified versions #####
@@ -396,6 +411,7 @@ function test_gen_package_images_script() {
             done
         done
     done
+    assert_commit_metadata_support packages/scripts/build-package-images.sh
 }
 
 function test_gen_package_images_script_freedom_releasing() {
