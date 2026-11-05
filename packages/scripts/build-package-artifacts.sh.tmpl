@@ -31,8 +31,19 @@
 
 set -exo pipefail
 
+# Commit metadata of the workspace being built. Both values are informational:
+# when the workspace is not a git checkout, or git fails, they stay empty and
+# the corresponding labels are omitted instead of failing the build.
+COMMIT_TITLE=""
+COMMIT_TIME=""
+function resolve_commit_metadata() {
+    COMMIT_TITLE="$(git log -1 --pretty=%s 2>/dev/null | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' || true)"
+    COMMIT_TIME="$(git log -1 --pretty=%cI 2>/dev/null | tr -d '\r' || true)"
+}
+
 function main() {
     parse_arguments "$@"
+    resolve_commit_metadata
 
     if [ "$NEED_BUILD" = "true" ]; then
         build
@@ -278,6 +289,15 @@ EOF
         .["net.pingcap.tibuild.tiup"] = []
     ' "$save_file"
     SOURCE_URL="$source_url" yq -p json -o json -i '.["org.opencontainers.image.source"] = strenv(SOURCE_URL)' "$save_file"
+
+    # Commit metadata is optional: skip the key entirely when it could not be
+    # resolved instead of writing an empty value.
+    if [ -n "${COMMIT_TITLE}" ]; then
+        COMMIT_TITLE="$COMMIT_TITLE" yq -p json -o json -i '.["net.pingcap.tibuild.git-commit-title"] = strenv(COMMIT_TITLE)' "$save_file"
+    fi
+    if [ -n "${COMMIT_TIME}" ]; then
+        COMMIT_TIME="$COMMIT_TIME" yq -p json -o json -i '.["net.pingcap.tibuild.git-commit-time"] = strenv(COMMIT_TIME)' "$save_file"
+    fi
 
     {{- if has (coll.Slice "release" "nextgen" "next-gen" "rust") .profile }}
     {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false and .tiup != null))`) }}

@@ -32,8 +32,19 @@
 
 set -exo pipefail
 
+# Commit metadata of the workspace being built. Both values are informational:
+# when the workspace is not a git checkout, or git fails, they stay empty and
+# the corresponding label is omitted instead of failing the build.
+COMMIT_TITLE=""
+COMMIT_TIME=""
+resolve_commit_metadata() {
+  COMMIT_TITLE="$(git log -1 --pretty=%s 2>/dev/null | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' || true)"
+  COMMIT_TIME="$(git log -1 --pretty=%cI 2>/dev/null | tr -d '\r' || true)"
+}
+
 main() {
   parse_arguments "$@"
+  resolve_commit_metadata
 
   # Access variables directly within the main function
   mkdir -p "${RELEASE_WS}"
@@ -145,6 +156,20 @@ build_binaries() {
   {{- end }}
 }
 
+# Run kaniko with the generated global options plus the commit labels. The two
+# labels are appended as separate argv entries, so a commit title containing
+# spaces is not split by the shell into several arguments. Reads kaniko_executor
+# and kaniko_global_options from the caller.
+kaniko_run() {
+    if [ -n "${COMMIT_TITLE}" ]; then
+        set -- "$@" "--label=net.pingcap.tibuild.git-commit-title=${COMMIT_TITLE}"
+    fi
+    if [ -n "${COMMIT_TIME}" ]; then
+        set -- "$@" "--label=net.pingcap.tibuild.git-commit-time=${COMMIT_TIME}"
+    fi
+    $kaniko_executor $kaniko_global_options "$@"
+}
+
 build_and_push_images() {
     release_ws="$1"
     digests_file="$2"
@@ -190,7 +215,7 @@ EOF
 
 {{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
-    $kaniko_executor $kaniko_options --context {{ .context }} --dockerfile {{ .dockerfile }}
+    kaniko_run $kaniko_options --context {{ .context }} --dockerfile {{ .dockerfile }}
 {{- else }}
 
     # Prepare build context for image building.
@@ -255,7 +280,7 @@ EOF
     fi
     dockerfile="$(cd "$(dirname "$dockerfile")" && pwd -P)/$(basename "$dockerfile")"
 
-    $kaniko_executor $kaniko_options --context="$archive_dir" --dockerfile="$dockerfile"
+    kaniko_run $kaniko_options --context="$archive_dir" --dockerfile="$dockerfile"
 {{- end }}
 
     # Save digest file path for later use
