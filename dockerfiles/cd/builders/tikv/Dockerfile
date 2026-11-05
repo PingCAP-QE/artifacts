@@ -29,7 +29,7 @@ LABEL go-version="${GOLANG_VERSION}"
 
 # install protoc.
 # renovate: datasource=github-releases depName=protocolbuffers/protobuf
-ARG PROTOBUF_VER=v3.15.8
+ARG PROTOBUF_VER=v3.20.3
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
 
