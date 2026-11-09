@@ -36,9 +36,16 @@ LABEL go-version="${GOLANG_VERSION}"
 
 
 
-# Install nodejs.
-RUN curl -fsSL https://rpm.nodesource.com/setup_16.x | bash -
-RUN yum -y install nodejs && yum clean all
+# Install nodejs from a pinned upstream tarball. A NodeSource `setup_<major>.x`
+# script is mutable and has to be piped into a shell; the dist tarball is
+# version-addressed instead.
+# renovate: datasource=docker depName=node
+ARG NODE_VERSION=16.20.2
+RUN OS_ARCH=$([ "$(arch)" = "x86_64" ] && echo x64 || echo arm64); \
+    curl -fsSL -o /tmp/node.tar.gz "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${OS_ARCH}.tar.gz" && \
+    tar -xzf /tmp/node.tar.gz -C /usr/local --strip-components=1 && \
+    rm -f /tmp/node.tar.gz && \
+    node --version && npm --version
 RUN npm install -g pnpm@7.30.5
 
 ########### stage: non-root-builder, used for development with non-root user.

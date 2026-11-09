@@ -12,12 +12,13 @@ LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="binary builder for TiFlash"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
-# FIXME: replace with official repo and tag.
+# The bake scripts come from a release tag, not from the branch head: a branch
+# is a moving target for a build that runs with credentials.
 # renovate: datasource=github-tags depName=pingcap/tiflash
 ARG TIFLASH_REPO=pingcap/tiflash
-ARG TIFLASH_REF=master
-RUN TAR_DIR="tiflash-${TIFLASH_REF}"; \
-    curl -sSL https://github.com/${TIFLASH_REPO}/archive/refs/heads/${TIFLASH_REF}.tar.gz -o tiflash.tar.gz && \
+ARG TIFLASH_REF=v26.3.13
+RUN TAR_DIR="tiflash-${TIFLASH_REF#v}"; \
+    curl -fsSL "https://github.com/${TIFLASH_REPO}/archive/refs/tags/${TIFLASH_REF}.tar.gz" -o tiflash.tar.gz && \
     tar -zxf tiflash.tar.gz "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
     pushd "$TAR_DIR/release-linux-llvm/dockerfiles/misc" && \
     chmod +x * && \
