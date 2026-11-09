@@ -75,7 +75,7 @@ for cm in tidb-cse pd-cse tidb-operator-cse cassandra-on-mysql qdrant-on-tidb; d
           archive="$package_dir/$package-$version-linux-$arch.tar.gz"
           test "$(tar -tzf "$archive")" = "$binary"
           test "$(tar -xOzf "$archive" "$binary")" = "$binary"
-          (cd "$package_dir" && sha256sum -c "$(basename "$archive").sha256")
+          test "$(sha256sum -b "$archive" | cut -d ' ' -f1)" = "$(cat "$archive.sha256")"
         done
       fi
       "$root/packages/scripts/gen-package-images-with-config.sh" "$cm" linux "$arch" "$version" release validation/Serverless aabbccddeeff1234567890abcdef1234567890abcd "" "$tmp/images.sh" "$prefix"
