@@ -275,17 +275,27 @@ EOF
 )}"
 
     :> "$save_file"
-    # Inject OCI standard metadata labels and PingCAP build labels.
-    yq -p json -o json -i '
-        .["org.opencontainers.image.version"] = "{{ .version }}" |
-        .["org.opencontainers.image.title"] = "{{ .component }}" |
-        .["org.opencontainers.image.licenses"] = "{{ .license | default "Apache-2.0" }}" |
-        .["org.opencontainers.image.ref.name"] = "{{ .git.ref }}" |
-        .["org.opencontainers.image.revision"] = "{{ .git.sha }}" |
-        .["net.pingcap.tibuild.os"] = "{{ .os }}" |
-        .["net.pingcap.tibuild.architecture"] = "{{ .arch }}" |
-        .["net.pingcap.tibuild.profile"] = "{{ .profile }}" |
-        .["net.pingcap.tibuild.git-sha"] = "{{ .git.sha }}" |
+    # Inject OCI standard metadata labels and PingCAP build labels through the
+    # environment, so no value is ever re-parsed as part of the yq expression.
+    OCI_VERSION={{ .version | quote }} \
+        OCI_TITLE={{ .component | quote }} \
+        OCI_LICENSE={{ .license | default "Apache-2.0" | quote }} \
+        OCI_REF_NAME={{ .git.ref | quote }} \
+        OCI_REVISION={{ .git.sha | quote }} \
+        BUILD_OS={{ .os | quote }} \
+        BUILD_ARCH={{ .arch | quote }} \
+        BUILD_PROFILE={{ .profile | quote }} \
+        BUILD_GIT_SHA={{ .git.sha | quote }} \
+        yq -p json -o json -i '
+        .["org.opencontainers.image.version"] = strenv(OCI_VERSION) |
+        .["org.opencontainers.image.title"] = strenv(OCI_TITLE) |
+        .["org.opencontainers.image.licenses"] = strenv(OCI_LICENSE) |
+        .["org.opencontainers.image.ref.name"] = strenv(OCI_REF_NAME) |
+        .["org.opencontainers.image.revision"] = strenv(OCI_REVISION) |
+        .["net.pingcap.tibuild.os"] = strenv(BUILD_OS) |
+        .["net.pingcap.tibuild.architecture"] = strenv(BUILD_ARCH) |
+        .["net.pingcap.tibuild.profile"] = strenv(BUILD_PROFILE) |
+        .["net.pingcap.tibuild.git-sha"] = strenv(BUILD_GIT_SHA) |
         .["net.pingcap.tibuild.tiup"] = []
     ' "$save_file"
     SOURCE_URL="$source_url" yq -p json -o json -i '.["org.opencontainers.image.source"] = strenv(SOURCE_URL)' "$save_file"
@@ -304,7 +314,7 @@ EOF
     {{- with .tiup }}
     yq -p json -o json -i '.["net.pingcap.tibuild.tiup"] += {{ . | toJSON }}' "$save_file"
     {{- end }}
-    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"][-1].file = "{{ .name }}"' "$save_file"
+    yq -p json -o json -i '.["net.pingcap.tibuild.tiup"][-1].file = {{ .name | toJSON }}' "$save_file"
     {{- end }}
     {{- end }}
 }
@@ -312,7 +322,7 @@ EOF
 
 function push_files() {
     local release_ws="$1"
-    local tag="{{ index $tags 0 }}"
+    local tag={{ index $tags 0 | quote }}
     local destination="{{ .artifactory.package_repo }}:$tag"
 
     prepare_artifact_config "$release_ws/artifact-config.json"
@@ -322,7 +332,7 @@ function push_files() {
     #   local registry=$(echo "${destination}" | cut -d/ -f)
     #   oras login -u ${ORAS_USER} -p ${ORAS_PASSWD} ${registry}
     pushd "$release_ws"
-        oras push --artifact-type application/gzip --config artifact-config.json ${destination}
+        oras push --artifact-type application/gzip --config artifact-config.json "${destination}"
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s" .name }}{{- end }}
         {{- range (.artifacts | jq `map(select((.type == "file" or .type == null) and .if != false))`) }}{{ printf " %s.sha256" .name }}{{- end }}
     popd
@@ -356,8 +366,8 @@ add_more_tags() {
     result_file="$1"
     {{- if gt (len $tags) 1 }}
     # add other tags.
-    oras tag {{ .artifactory.package_repo }}:{{ join $tags " " }}
-    yq -i '.oci.tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
+    oras tag {{ .artifactory.package_repo }}:"{{ index $tags 0 }}"{{ range $i, $t := $tags }}{{ if ne $i 0 }} "{{ $t }}"{{ end }}{{ end }}
+    yq -i '.oci.tags = {{ $tags | toJSON }}' "$result_file"
     {{- else }}
     echo "🤷 No more tags need to be tagged."
     {{- end }}

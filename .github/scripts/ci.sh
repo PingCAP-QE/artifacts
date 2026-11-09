@@ -555,6 +555,8 @@ function pre_checks() {
 
 function main() {
     pre_checks
+    # Reject hostile generator inputs before the long matrix below.
+    ./packages/scripts/verify-input-validation.sh
     ./.github/scripts/test-serverless.sh
 
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
