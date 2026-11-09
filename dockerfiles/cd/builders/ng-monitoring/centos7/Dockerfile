@@ -22,11 +22,12 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
 # install packages with BuildKit cache mount
 # This prevents package cache from being stored in image layers
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install --nogpgcheck -y wget
+    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 && \
+    yum update -y && \
+    yum install -y epel-release deltarpm && \
+    yum update -y && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y wget
 
 # install golang toolchain
 # renovate: datasource=docker depName=golang
@@ -39,10 +40,9 @@ LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: Buiding
