@@ -18,9 +18,9 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
     && ([ "$(arch)" = "x86_64" ] || sed -i 's#vault.centos.org/centos/#vault.centos.org/altarch/#g' /etc/yum.repos.d/*.repo)
 
-ARG TIFLASH_REPO=https://github.com/wuhuizuo/tiflash
-ARG TIFLASH_VER=release-8.3
-ARG TIFLASH_VER_TYPE=heads
+ARG TIFLASH_REPO=https://github.com/pingcap/tiflash
+ARG TIFLASH_VER=v8.3.0
+ARG TIFLASH_VER_TYPE=tags
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "bake_llvm_base_aarch64.sh" || echo "bake_llvm_base_amd64.sh"); \
     TAR_DIR="tiflash-$(echo $TIFLASH_VER | sed 's/v//')"; \
     curl -sSL ${TIFLASH_REPO}/archive/refs/${TIFLASH_VER_TYPE}/${TIFLASH_VER}.tar.gz -o tiflash.tar.gz && \

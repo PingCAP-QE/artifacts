@@ -31,7 +31,9 @@ ARG NODE_VERSION=18.20.8
 ARG NVM_VERSION=v0.40.8
 ARG NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR && \
-    curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash && \
+    curl -fsSL -o /tmp/nvm-install.sh https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh && \
+    bash /tmp/nvm-install.sh && \
+    rm -f /tmp/nvm-install.sh && \
     . $NVM_DIR/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     nvm use v${NODE_VERSION} && \

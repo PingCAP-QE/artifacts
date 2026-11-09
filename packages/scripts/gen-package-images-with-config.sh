@@ -119,8 +119,14 @@ function main() {
     yq -i '.artifacts = (.artifacts | map(select(.type == "image")))' release-router.yaml
     # Without a source context, local Dockerfiles belong to this artifacts checkout.
     # Resolve them before the generated script runs from the component source directory.
-    # Entries with context keep source-relative paths; HTTP(S) Dockerfiles stay URLs.
-    yq -i ".artifacts[] |= (with(select((.context == null) and (.dockerfile | test(\"^http(s)?://\") | not)); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-router.yaml
+    # Entries with context keep source-relative paths; https Dockerfiles stay URLs.
+    yq -i ".artifacts[] |= (with(select((.context == null) and (.dockerfile | test(\"^https://\") | not)); .dockerfile = \"$PROJECT_ROOT_DIR/\" + .dockerfile))" release-router.yaml
+
+    # A remote Dockerfile must be served over https; fail before generating a script.
+    if yq -e '.artifacts[] | select(.dockerfile | test("^http://"))' release-router.yaml >/dev/null 2>&1; then
+        echo "❌ Refusing to build from a Dockerfile served over plaintext http." >&2
+        exit 1
+    fi
 
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then
         echo "🤷 No images should be built for target($target_info)."

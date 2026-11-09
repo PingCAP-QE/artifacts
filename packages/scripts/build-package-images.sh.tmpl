@@ -275,9 +275,14 @@ EOF
     {{- end }}
     ## build and push
     dockerfile="{{ .dockerfile }}"
-    # get dockerfile from url if the `.dockerfile` value is a http url.
-    if [ "${dockerfile#https://}" != "$dockerfile" ] || [ "${dockerfile#http://}" != "$dockerfile" ]; then
-        echo "URL starts with https:// or http://, now I will download it and save it into: '$archive_dir/Dockerfile'."
+    # A remote Dockerfile must be fetched over https; plaintext is refused.
+    if [ "${dockerfile#http://}" != "$dockerfile" ]; then
+        echo "❌ refusing to fetch a Dockerfile over plaintext http: ${dockerfile}" >&2
+        exit 1
+    fi
+    # get dockerfile from url if the `.dockerfile` value is an https url.
+    if [ "${dockerfile#https://}" != "$dockerfile" ]; then
+        echo "Fetching the Dockerfile from ${dockerfile} into '$archive_dir/Dockerfile'."
         wget --tries=3 -c -O "$archive_dir/Dockerfile" "$dockerfile"
         dockerfile="$archive_dir/Dockerfile"
     fi

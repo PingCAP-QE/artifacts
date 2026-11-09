@@ -21,8 +21,12 @@ RUN --mount=type=cache,id=dnf-cache,target=/var/cache/dnf \
     file jq nmap-ncat ripgrep socat tmux unzip vim-common
 
 # Install addition perf-tools into /opt/perf-tools folder.
-RUN curl -L https://github.com/brendangregg/perf-tools/archive/refs/heads/master.tar.gz | tar -xz -C /opt && \
-    mv /opt/perf-tools-master /opt/perf-tools
+# Upstream is dormant, so pin the commit instead of tracking the master branch.
+ARG PERF_TOOLS_SHA=cb42511b963a8dd2d8fcca400174c8d5d33a1f37
+RUN curl -fsSL -o /tmp/perf-tools.tar.gz "https://github.com/brendangregg/perf-tools/archive/${PERF_TOOLS_SHA}.tar.gz" && \
+    tar -xzf /tmp/perf-tools.tar.gz -C /opt && \
+    mv "/opt/perf-tools-${PERF_TOOLS_SHA}" /opt/perf-tools && \
+    rm -f /tmp/perf-tools.tar.gz
 
 # install tools: mok
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
