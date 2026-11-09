@@ -167,7 +167,7 @@ kaniko_run() {
     if [ -n "${COMMIT_TIME}" ]; then
         set -- "$@" "--label=net.pingcap.tibuild.git-commit-time=${COMMIT_TIME}"
     fi
-    $kaniko_executor $kaniko_global_options "$@"
+    "$kaniko_executor" "${kaniko_global_options[@]}" "$@"
 }
 
 build_and_push_images() {
@@ -180,20 +180,21 @@ EOF
 )}"
 
     ################# build and push image ################
-    tag="{{ index $tags 0 }}"
-    # Inject OCI standard metadata labels and PingCAP build labels.
-    kaniko_global_options="--cleanup --cache=false"
-    kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.new=yes"
-    {{ if .git.sha }}
-    kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.git-sha={{ .git.sha }}"
-    {{ end }}
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.title={{ .component }}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.source=${source_url}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.ref.name={{ .git.ref }}"
-    {{ if .git.sha }}
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.revision={{ .git.sha }}"
-    {{ end }}
+    tag={{ index $tags 0 | quote }}
+    # Inject OCI standard metadata labels and PingCAP build labels. Every value
+    # is a separate argv entry, so none of it is re-split or re-parsed by the shell.
+    kaniko_global_options=(--cleanup --cache=false)
+    kaniko_global_options+=(--label "net.pingcap.tibuild.new=yes")
+    {{ if .git.sha -}}
+    kaniko_global_options+=(--label "net.pingcap.tibuild.git-sha={{ .git.sha }}")
+    {{ end -}}
+    kaniko_global_options+=(--label "org.opencontainers.image.title={{ .component }}")
+    kaniko_global_options+=(--label "org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}")
+    kaniko_global_options+=(--label "org.opencontainers.image.source=${source_url}")
+    kaniko_global_options+=(--label "org.opencontainers.image.ref.name={{ .git.ref }}")
+    {{ if .git.sha -}}
+    kaniko_global_options+=(--label "org.opencontainers.image.revision={{ .git.sha }}")
+    {{ end -}}
     :> "$digests_file"
 {{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
@@ -201,21 +202,21 @@ EOF
     mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo }}:$tag"
     digest_file="${archive_dir}/digest.txt"
-    kaniko_options="$kaniko_global_options --destination=${destination} --digest-file=${digest_file}"
+    kaniko_options=("${kaniko_global_options[@]}" "--destination=${destination}" "--digest-file=${digest_file}")
 
     {{- if has . "build_args" }}
     {{- range .build_args }}
-    kaniko_options="$kaniko_options --build-arg {{.}}"
+    kaniko_options+=(--build-arg "{{.}}")
     {{- end }}
     {{- end }}
 
     {{- if has . "target" }}
-    kaniko_options="$kaniko_options --target {{.target}} --skip-unused-stages"
+    kaniko_options+=(--target "{{ .target }}" --skip-unused-stages)
     {{- end }}
 
 {{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
-    kaniko_run $kaniko_options --context {{ .context }} --dockerfile {{ .dockerfile }}
+    kaniko_run "${kaniko_options[@]}" --context "{{ .context }}" --dockerfile "{{ .dockerfile }}"
 {{- else }}
 
     # Prepare build context for image building.
@@ -280,7 +281,7 @@ EOF
     fi
     dockerfile="$(cd "$(dirname "$dockerfile")" && pwd -P)/$(basename "$dockerfile")"
 
-    kaniko_run $kaniko_options --context="$archive_dir" --dockerfile="$dockerfile"
+    kaniko_run "${kaniko_options[@]}" --context="$archive_dir" --dockerfile="$dockerfile"
 {{- end }}
 
     # Save digest file path for later use
@@ -315,8 +316,8 @@ add_more_tags() {
 
     {{- if gt (len $tags) 1 }}
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
-    oras tag {{ $image.artifactory.repo }}:{{ join $tags " " }}
-    yq -i '.images[{{ $index }}].tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
+    oras tag {{ $image.artifactory.repo }}:"{{ index $tags 0 }}"{{ range $i, $t := $tags }}{{ if ne $i 0 }} "{{ $t }}"{{ end }}{{ end }}
+    yq -i '.images[{{ $index }}].tags = {{ $tags | toJSON }}' "$result_file"
     {{- end }}
     {{- else }}
     echo "🤷 No more tags need to be tagged."
