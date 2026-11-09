@@ -28,6 +28,27 @@ function assert_commit_metadata_support() {
     echo "✅ $script emits both commit metadata keys"
 }
 
+# Check a generated release script the way the pipeline will run it.
+#
+# `shellcheck -S error` does not catch bash-only syntax in a `#!/bin/sh` script:
+# SC3030 (`name=(...)`) and SC3054 (`"${name[@]}"`) are warnings, not errors.
+# The generated build scripts really do run under a plain POSIX shell (the
+# kaniko executor image only ships busybox ash), so parse them with a POSIX `sh`
+# too. A script with any other shebang is bash by contract and only gets the
+# pass above.
+function check_generated_build_script() {
+    local script=$1
+    shellcheck -S error "$script"
+    if [ "$(head -n 1 "$script")" != "#!/bin/sh" ]; then
+        return 0
+    fi
+    if command -v dash > /dev/null 2>&1; then
+        dash -n "$script"
+    else
+        sh -n "$script"
+    fi
+}
+
 function test_get_builder() {
     local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0"
     local operating_systems="linux darwin"
@@ -358,7 +379,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
@@ -376,7 +397,7 @@ function test_gen_package_images_script() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" "$os" "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
             assert_image_in_multi_arch packages/scripts/build-package-images.sh "$cdc_image"
             local test_image
             for test_image in "${ticdc_test_images[@]}"; do
@@ -393,7 +414,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
@@ -407,7 +428,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
@@ -427,7 +448,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -437,7 +458,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -447,7 +468,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -457,7 +478,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v0.1.2 v0.1.3; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -467,7 +488,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for ac in $architectures; do
         echo -en "[📃💿] $cm $os $ac $version $profile:\t"
         $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
-        shellcheck -S error packages/scripts/build-package-images.sh
+        check_generated_build_script packages/scripts/build-package-images.sh
     done
 
     # tici. currently it only support linux.
@@ -476,7 +497,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 }
@@ -541,7 +562,7 @@ function test_git_tag_short_sha_dedup() {
 
         echo -en "[🏷️💿] $component $git_ref:\t"
         "$image_script" "$component" "$os" "$arch" "$git_ref" "$profile" "$git_ref" "$git_sha" "" "" "$registry" "$DEFAULT_GIT_URL"
-        shellcheck -S error packages/scripts/build-package-images.sh
+        check_generated_build_script packages/scripts/build-package-images.sh
         assert_generated_tag_without_duplicate_sha packages/scripts/build-package-images.sh "$expected_tag" "$duplicated_tag"
     done
 }
