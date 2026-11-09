@@ -2,14 +2,14 @@
 
 Five independent components use the `release` profile: `tidb-cse`, `pd-cse`,
 `tidb-operator-cse`, `cassandra-on-mysql`, and `qdrant-on-tidb`. Each produces Linux
-amd64 and arm64 binaries, a tarball checksum and one container image. Operator
+amd64 and arm64 binaries, tarball checksums and container images. Operator
 keeps its four executables and explicitly passes `TARGETARCH` into its Dockerfile.
 Runtime Dockerfiles live in `dockerfiles/products/serverless/`; use the same
 artifacts revision for builder selection, binaries and images.
 
 | Component | Image suffix under `tidbcloud/<component>/` | Initial Git baseline |
 | --- | --- | --- |
-| tidb-cse | images/tidb-server | v8.5.3-alpha.0 |
+| tidb-cse | images/tidb-server, images/br, images/dumpling, images/tidb-lightning | v8.5.3-alpha.0 |
 | pd-cse | image | v8.5.0-alpha.0 |
 | tidb-operator-cse | images/tidb-operator | v1.4.0-alpha.0 |
 | cassandra-on-mysql | image | v0.1.0-alpha.0 |
@@ -20,6 +20,19 @@ Registry is an execution parameter: formal builds use
 `us-docker.pkg.dev/pingcap-testing-account/dev`. Both place binary artifacts at
 `tidbcloud/<component>/package`. A fork URL changes source checkout/OCI provenance,
 but component identity continues to determine artifact paths.
+
+The `tidb-cse` release builds TiDB server, BR, Dumpling, Lightning and
+Lightning control together using `make server build_tools build_dumpling`.
+Each binary has its own tarball and SHA-256 checksum in the existing package
+repository; the TiDB server tarball keeps its `tidb-cse-<version>-<os>-<arch>`
+name. The Lightning image includes both `tidb-lightning` and
+`tidb-lightning-ctl`. Tool images preserve the source Dockerfiles' executable
+paths, `dumb-init` entrypoints, runtime utilities and BR logging environment.
+
+Merge and validate these tool outputs for both architectures and all six
+maintained TiDB branches before merging the source PRs that remove
+`cd-br.yaml`, `cd-dumpling.yaml` and `cd-lightning.yaml`. The historical native
+validation record below predates the tool outputs and covers TiDB server only.
 
 The version passed to the generator must come from Git, never the devbuild
 request's compatibility `version` field. Tags retain the shared conventions:

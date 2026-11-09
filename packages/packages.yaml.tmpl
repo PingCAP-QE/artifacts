@@ -3679,7 +3679,7 @@ components:
 
   # Dedicated Serverless components; registry selects release or devbuild storage.
   tidb-cse:
-    desc: Serverless tidb-cse binaries and image
+    desc: Serverless TiDB server, BR, Dumpling and Lightning binaries and images
     git:
       url: '{{ .Git.url | default "https://github.com/tidbcloud/tidb-cse.git" }}'
       ref: '{{ .Git.ref }}'
@@ -3708,11 +3708,23 @@ components:
                 export MIN_TIKV_VERSION=6.1.0 REGISTER_METRICS_INIT=false
                 export TIDB_GIT_HASH=$(git rev-parse HEAD)
                 export TIDB_GIT_BRANCH=${GIT_BRANCH:-$(git symbolic-ref --short -q HEAD || echo detached)}
-                make
+                make server build_tools build_dumpling
         artifacts:
           - name: "tidb-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - { name: tidb-server, src: { path: bin/tidb-server } }
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: br, src: { path: bin/br } }
+          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: dumpling, src: { path: bin/dumpling } }
+          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-lightning, src: { path: bin/tidb-lightning } }
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-lightning-ctl, src: { path: bin/tidb-lightning-ctl } }
           - name: container image
             type: image
             artifactory:
@@ -3720,6 +3732,28 @@ components:
             dockerfile: dockerfiles/products/serverless/tidb-cse/Dockerfile
             files:
               - { name: tidb-server, src: { path: bin/tidb-server } }
+          - name: container image - BR
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/br"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/br.Dockerfile
+            files:
+              - { name: br, src: { path: bin/br } }
+          - name: container image - Dumpling
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/dumpling"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/dumpling.Dockerfile
+            files:
+              - { name: dumpling, src: { path: bin/dumpling } }
+          - name: container image - Lightning
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/tidb-lightning"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/tidb-lightning.Dockerfile
+            files:
+              - { name: tidb-lightning, src: { path: bin/tidb-lightning } }
+              - { name: tidb-lightning-ctl, src: { path: bin/tidb-lightning-ctl } }
   pd-cse:
     desc: Serverless pd-cse binaries and image
     git:
