@@ -113,9 +113,10 @@ jobs:
       # Needed to open/update/close the weekly scan issue.
       issues: write
     env:
-      SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
-      SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
-      SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+      # Only a boolean leaves the secret here: the values themselves are scoped
+      # to the step that sends the mail. `secrets` is not available in a step's
+      # `if`, so the flag is computed once at job level instead.
+      SMTP_CONFIGURED: ${{ secrets.SMTP_SERVER != '' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -178,7 +179,11 @@ jobs:
           if-no-files-found: error
 
       - name: Send scan report via email
-        if: always() && env.SMTP_SERVER != ''
+        if: always() && env.SMTP_CONFIGURED == 'true'
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         uses: dawidd6/action-send-mail@27bf7a883db6de205849f760badd38a1a3ce0dd0 # v24
         with:
           server_address: ${{ env.SMTP_SERVER }}
@@ -272,6 +277,6 @@ jobs:
           exit 1
 
       - name: Notify email report skipped
-        if: always() && env.SMTP_SERVER == ''
+        if: always() && env.SMTP_CONFIGURED != 'true'
         run: |
           echo "::warning::SMTP_SERVER secret is not configured; scan report email skipped. Set SMTP_SERVER / SMTP_USERNAME / SMTP_PASSWORD repo secrets to enable email delivery."
