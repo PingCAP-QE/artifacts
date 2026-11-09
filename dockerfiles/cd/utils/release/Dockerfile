@@ -30,7 +30,7 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-cr
 
 # install tools: crane
 # renovate: datasource=github-releases depName=google/go-containerregistry
-ARG CRANE_VER=0.20.2
+ARG CRANE_VER=0.22.1
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo x86_64 || echo arm64); \
     wget -q -O - https://github.com/google/go-containerregistry/releases/download/v${CRANE_VER}/go-containerregistry_Linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
     install /tmp/crane /usr/local/bin/crane && \
