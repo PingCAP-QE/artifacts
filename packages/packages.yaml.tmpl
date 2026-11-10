@@ -3729,7 +3729,7 @@ components:
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/tidb-server"
-            dockerfile: dockerfiles/products/serverless/tidb-cse/Dockerfile
+            dockerfile: dockerfiles/products/serverless/tidb-cse/tidb.Dockerfile
             files:
               - { name: tidb-server, src: { path: bin/tidb-server } }
           - name: container image - BR
