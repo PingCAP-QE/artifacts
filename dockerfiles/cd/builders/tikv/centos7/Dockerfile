@@ -22,7 +22,8 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
 # This prevents package cache from being stored in image layers
 ARG DEVTOOLSET_VER=8
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 && \
+    yum install -y epel-release centos-release-scl deltarpm && \
     sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
     sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
     sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
@@ -30,7 +31,7 @@ RUN --mount=type=cache,target=/var/cache/yum \
         -e 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' \
         -e 's#baseurl=http://vault\.centos\.org/centos/7/sclo/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/sclo/#' \
         /etc/yum.repos.d/*.repo) && \
-    yum update --nogpgcheck -y && \
+    yum update -y && \
     yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip dwz perl-IPC-Cmd perl-Data-Dumper && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake
 ENV DEVTOOLSET_VER=${DEVTOOLSET_VER}
@@ -48,10 +49,9 @@ LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: Buiding

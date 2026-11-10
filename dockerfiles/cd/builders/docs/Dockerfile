@@ -16,11 +16,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
-# Fix EOL of the bullseye sources
+# Bullseye is archived: its pool files were removed from deb.debian.org (the
+# security packages already 404 there), so point the sources at the archive.
+# The archive's Release files are past Valid-Until, so the freshness check is
+# skipped the way Debian documents; package signatures are still verified.
 RUN printf '%s\n' \
-      'deb http://deb.debian.org/debian bullseye main' \
-      'deb http://deb.debian.org/debian-security bullseye-security main' \
-      'deb http://deb.debian.org/debian bullseye-updates main' \
+      'deb http://archive.debian.org/debian bullseye main' \
+      'deb http://archive.debian.org/debian-security bullseye-security main' \
+      'deb http://archive.debian.org/debian bullseye-updates main' \
       >/etc/apt/sources.list \
  && printf '%s\n' \
       'Acquire::Check-Valid-Until "false";' \
@@ -60,10 +63,7 @@ RUN chmod 0755 \
 
 ARG BOTO3_VERSION=1.23.10
 ARG AWSCLI_VERSION=1.24.10
-RUN pip --trusted-host pypi.org \
-        --trusted-host pypi.python.org \
-        --trusted-host files.pythonhosted.org \
-        install \
+RUN pip install \
           boto3==${BOTO3_VERSION} \
           awscli==${AWSCLI_VERSION}
 
