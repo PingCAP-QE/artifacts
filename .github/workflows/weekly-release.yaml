@@ -71,6 +71,7 @@ jobs:
           # Passed via env instead of inline `${{ }}` so the value is never
           # re-parsed as shell code.
           RELEASE_DATE: ${{ steps.date.outputs.date }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -103,8 +104,6 @@ jobs:
           gh release create "$TAG_NAME" \
             --title "Weekly Release $TAG_NAME" \
             --notes "Weekly automatic release created on $(date +'%Y-%m-%d')"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   image-scan:
     runs-on: ubuntu-latest
