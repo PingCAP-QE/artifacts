@@ -32,14 +32,26 @@
 
 set -exo pipefail
 
-# Commit metadata of the workspace being built. Both values are informational:
-# when the workspace is not a git checkout, or git fails, they stay empty and
-# the corresponding label is omitted instead of failing the build.
-COMMIT_TITLE=""
-COMMIT_TIME=""
+# Commit metadata of the commit being built. Both values are informational.
+#
+# The caller can export COMMIT_TITLE and/or COMMIT_TIME before running this
+# script; that is how the build step gets them, because the step image that
+# runs this script (the kaniko executor) ships no git. Anything the caller does
+# not provide is read from the workspace when it is a git checkout. When
+# neither source has a value the corresponding label is omitted instead of
+# failing the build.
+COMMIT_TITLE="${COMMIT_TITLE:-}"
+COMMIT_TIME="${COMMIT_TIME:-}"
 resolve_commit_metadata() {
-  COMMIT_TITLE="$(git log -1 --pretty=%s 2>/dev/null | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' || true)"
-  COMMIT_TIME="$(git log -1 --pretty=%cI 2>/dev/null | tr -d '\r' || true)"
+  if [ -z "${COMMIT_TITLE}" ]; then
+    COMMIT_TITLE="$(git log -1 --pretty=%s 2>/dev/null || true)"
+  fi
+  COMMIT_TITLE="$(printf '%s' "${COMMIT_TITLE}" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+  if [ -z "${COMMIT_TIME}" ]; then
+    COMMIT_TIME="$(git log -1 --pretty=%cI 2>/dev/null || true)"
+  fi
+  COMMIT_TIME="$(printf '%s' "${COMMIT_TIME}" | tr -d '\r')"
 }
 
 main() {
