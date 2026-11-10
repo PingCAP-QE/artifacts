@@ -502,6 +502,85 @@ function test_gen_package_images_script_freedom_releasing() {
     done
 }
 
+# Run the generated image script the way the pipeline runs it: inside the kaniko
+# executor image, which ships no git. The commit metadata has to come from the
+# caller's environment there, otherwise both labels disappear without any error.
+function test_images_commit_metadata_from_env() {
+    local tmp
+    tmp="$(mktemp -d)"
+    local script="$tmp/build-package-images.sh"
+
+    ./packages/scripts/gen-package-images-with-config.sh \
+        tikv linux amd64 v9.0.0 nextgen branch-xxx 123456789abcdef "" "$script" \
+        us-docker.pkg.dev/pingcap-testing-account/tidbx "$DEFAULT_GIT_URL" > /dev/null
+    check_generated_build_script "$script"
+
+    # Minimal build context and hermetic fakes: no registry, no network.
+    mkdir -p "$tmp/src/bin" "$tmp/release" "$tmp/fakes"
+    : > "$tmp/src/bin/tikv-server"
+    : > "$tmp/src/bin/cse-ctl"
+    : > "$tmp/src/bin/tikv-worker"
+
+    cat > "$tmp/fakes/kaniko" <<'FAKE_KANIKO'
+#!/bin/sh
+printf '%s\n' "$@" > "$KANIKO_ARGS_FILE"
+for arg in "$@"; do
+    case "$arg" in
+        --digest-file=*) printf 'sha256:0123456789abcdef\n' > "${arg#--digest-file=}" ;;
+    esac
+done
+FAKE_KANIKO
+    cat > "$tmp/fakes/wget" <<'FAKE_WGET'
+#!/bin/sh
+out_file=""
+while [ "$#" -gt 0 ]; do
+    if [ "$1" = "-O" ]; then
+        out_file="$2"
+        shift 2
+        continue
+    fi
+    shift
+done
+[ -n "$out_file" ] || exit 1
+printf 'FROM scratch\n' > "$out_file"
+FAKE_WGET
+    chmod +x "$tmp/fakes/kaniko" "$tmp/fakes/wget"
+
+    echo -en "[📃💿] image script without commit metadata:\t"
+    (
+        cd "$tmp/src" || exit 1
+        env -u COMMIT_TITLE -u COMMIT_TIME PATH="$tmp/fakes:$PATH" \
+            KANIKO_ARGS_FILE="$tmp/kaniko-args-empty.txt" \
+            sh "$script" -w "$tmp/release" -k "$tmp/fakes/kaniko" -o "$tmp/pushed-empty.yaml"
+    )
+    if grep -qF -- "--label=net.pingcap.tibuild.git-commit-" "$tmp/kaniko-args-empty.txt"; then
+        echo "❌ commit metadata labels must be omitted when the caller provides none and git is unavailable"
+        exit 1
+    fi
+
+    echo -en "[📃💿] image script with exported commit metadata:\t"
+    (
+        cd "$tmp/src" || exit 1
+        env PATH="$tmp/fakes:$PATH" \
+            KANIKO_ARGS_FILE="$tmp/kaniko-args-env.txt" \
+            COMMIT_TITLE="  tests,cloud_worker: keep   worker configs  " \
+            COMMIT_TIME="2026-11-09T11:13:02Z" \
+            sh "$script" -w "$tmp/release" -k "$tmp/fakes/kaniko" -o "$tmp/pushed-env.yaml"
+    )
+    local expected
+    for expected in \
+        "--label=net.pingcap.tibuild.git-commit-title=tests,cloud_worker: keep   worker configs" \
+        "--label=net.pingcap.tibuild.git-commit-time=2026-11-09T11:13:02Z"; do
+        if ! grep -qxF -- "$expected" "$tmp/kaniko-args-env.txt"; then
+            echo "❌ kaniko argv of the image script is missing the single argument '$expected'"
+            exit 1
+        fi
+    done
+    echo "✅ both commit metadata labels come from the environment as single argv entries"
+
+    rm -rf "$tmp"
+}
+
 function test_gen_offline_package_artifacts_script() {
     local versions="v9.0.0 v8.5.0 v8.1.0 v8.0.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0 v6.1.0"
     local operating_systems="linux"
@@ -597,6 +676,7 @@ function main() {
     echo ">>>>>>>> test_gen_package_images_script >>>>>>>>>>"
     test_gen_package_images_script
     test_gen_package_images_script_freedom_releasing
+    test_images_commit_metadata_from_env
     echo "<<<<<<<< test_gen_package_images_script <<<<<<<<<<"
 
     echo ">>>>>>>> test_git_tag_short_sha_dedup >>>>>>>>>>>"
