@@ -14,6 +14,41 @@ function check_image_existed() {
     fi
 }
 
+# The commit metadata values are optional at build time, but the generated
+# scripts must always know how to emit them.
+function assert_commit_metadata_support() {
+    local script=$1
+    local key
+    for key in net.pingcap.tibuild.git-commit-title net.pingcap.tibuild.git-commit-time; do
+        if ! grep -q "$key" "$script"; then
+            echo "❌ $script does not emit $key"
+            exit 1
+        fi
+    done
+    echo "✅ $script emits both commit metadata keys"
+}
+
+# Check a generated release script the way the pipeline will run it.
+#
+# `shellcheck -S error` does not catch bash-only syntax in a `#!/bin/sh` script:
+# SC3030 (`name=(...)`) and SC3054 (`"${name[@]}"`) are warnings, not errors.
+# The generated build scripts really do run under a plain POSIX shell (the
+# kaniko executor image only ships busybox ash), so parse them with a POSIX `sh`
+# too. A script with any other shebang is bash by contract and only gets the
+# pass above.
+function check_generated_build_script() {
+    local script=$1
+    shellcheck -S error "$script"
+    if [ "$(head -n 1 "$script")" != "#!/bin/sh" ]; then
+        return 0
+    fi
+    if command -v dash > /dev/null 2>&1; then
+        dash -n "$script"
+    else
+        sh -n "$script"
+    fi
+}
+
 function test_get_builder() {
     local versions="v9.0.0 v8.5.4 v8.5.0 v8.1.0 v7.5.0 v7.1.0 v6.5.12 v6.5.11 v6.5.7-2 v6.5.0"
     local operating_systems="linux darwin"
@@ -231,6 +266,7 @@ function test_gen_package_artifacts_script() {
             done
         done
     done
+    assert_commit_metadata_support packages/scripts/build-package-artifacts.sh
 }
 
 ##### others that owns theirs non-unified versions #####
@@ -343,7 +379,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
@@ -361,7 +397,7 @@ function test_gen_package_images_script() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" "$os" "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
             assert_image_in_multi_arch packages/scripts/build-package-images.sh "$cdc_image"
             local test_image
             for test_image in "${ticdc_test_images[@]}"; do
@@ -378,7 +414,7 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
@@ -392,10 +428,11 @@ function test_gen_package_images_script() {
             for ac in $architectures; do
                 echo -en "[📃💿] $cm $os $ac $version $profile:\t"
                 $script $cm $os $ac $version $profile branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-                shellcheck -S error packages/scripts/build-package-images.sh
+                check_generated_build_script packages/scripts/build-package-images.sh
             done
         done
     done
+    assert_commit_metadata_support packages/scripts/build-package-images.sh
 }
 
 function test_gen_package_images_script_freedom_releasing() {
@@ -411,7 +448,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v2.0.0 v1.6.0 v1.5.0; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -421,7 +458,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v6.4.0-20221102-1667359250 v20221018; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -431,7 +468,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -441,7 +478,7 @@ function test_gen_package_images_script_freedom_releasing() {
         for version in v0.1.2 v0.1.3; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
 
@@ -451,7 +488,7 @@ function test_gen_package_images_script_freedom_releasing() {
     for ac in $architectures; do
         echo -en "[📃💿] $cm $os $ac $version $profile:\t"
         $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef
-        shellcheck -S error packages/scripts/build-package-images.sh
+        check_generated_build_script packages/scripts/build-package-images.sh
     done
 
     # tici. currently it only support linux.
@@ -460,9 +497,88 @@ function test_gen_package_images_script_freedom_releasing() {
         for ac in $architectures; do
             echo -en "[📃💿] $cm $os $ac $version $profile:\t"
             $script "$cm" linux "$ac" "$version" "$profile" branch-xxx 123456789abcdef "" "" us-docker.pkg.dev/pingcap-testing-account/hub "$DEFAULT_GIT_URL"
-            shellcheck -S error packages/scripts/build-package-images.sh
+            check_generated_build_script packages/scripts/build-package-images.sh
         done
     done
+}
+
+# Run the generated image script the way the pipeline runs it: inside the kaniko
+# executor image, which ships no git. The commit metadata has to come from the
+# caller's environment there, otherwise both labels disappear without any error.
+function test_images_commit_metadata_from_env() {
+    local tmp
+    tmp="$(mktemp -d)"
+    local script="$tmp/build-package-images.sh"
+
+    ./packages/scripts/gen-package-images-with-config.sh \
+        tikv linux amd64 v9.0.0 nextgen branch-xxx 123456789abcdef "" "$script" \
+        us-docker.pkg.dev/pingcap-testing-account/tidbx "$DEFAULT_GIT_URL" > /dev/null
+    check_generated_build_script "$script"
+
+    # Minimal build context and hermetic fakes: no registry, no network.
+    mkdir -p "$tmp/src/bin" "$tmp/release" "$tmp/fakes"
+    : > "$tmp/src/bin/tikv-server"
+    : > "$tmp/src/bin/cse-ctl"
+    : > "$tmp/src/bin/tikv-worker"
+
+    cat > "$tmp/fakes/kaniko" <<'FAKE_KANIKO'
+#!/bin/sh
+printf '%s\n' "$@" > "$KANIKO_ARGS_FILE"
+for arg in "$@"; do
+    case "$arg" in
+        --digest-file=*) printf 'sha256:0123456789abcdef\n' > "${arg#--digest-file=}" ;;
+    esac
+done
+FAKE_KANIKO
+    cat > "$tmp/fakes/wget" <<'FAKE_WGET'
+#!/bin/sh
+out_file=""
+while [ "$#" -gt 0 ]; do
+    if [ "$1" = "-O" ]; then
+        out_file="$2"
+        shift 2
+        continue
+    fi
+    shift
+done
+[ -n "$out_file" ] || exit 1
+printf 'FROM scratch\n' > "$out_file"
+FAKE_WGET
+    chmod +x "$tmp/fakes/kaniko" "$tmp/fakes/wget"
+
+    echo -en "[📃💿] image script without commit metadata:\t"
+    (
+        cd "$tmp/src" || exit 1
+        env -u COMMIT_TITLE -u COMMIT_TIME PATH="$tmp/fakes:$PATH" \
+            KANIKO_ARGS_FILE="$tmp/kaniko-args-empty.txt" \
+            sh "$script" -w "$tmp/release" -k "$tmp/fakes/kaniko" -o "$tmp/pushed-empty.yaml"
+    )
+    if grep -qF -- "--label=net.pingcap.tibuild.git-commit-" "$tmp/kaniko-args-empty.txt"; then
+        echo "❌ commit metadata labels must be omitted when the caller provides none and git is unavailable"
+        exit 1
+    fi
+
+    echo -en "[📃💿] image script with exported commit metadata:\t"
+    (
+        cd "$tmp/src" || exit 1
+        env PATH="$tmp/fakes:$PATH" \
+            KANIKO_ARGS_FILE="$tmp/kaniko-args-env.txt" \
+            COMMIT_TITLE="  tests,cloud_worker: keep   worker configs  " \
+            COMMIT_TIME="2026-11-09T11:13:02Z" \
+            sh "$script" -w "$tmp/release" -k "$tmp/fakes/kaniko" -o "$tmp/pushed-env.yaml"
+    )
+    local expected
+    for expected in \
+        "--label=net.pingcap.tibuild.git-commit-title=tests,cloud_worker: keep   worker configs" \
+        "--label=net.pingcap.tibuild.git-commit-time=2026-11-09T11:13:02Z"; do
+        if ! grep -qxF -- "$expected" "$tmp/kaniko-args-env.txt"; then
+            echo "❌ kaniko argv of the image script is missing the single argument '$expected'"
+            exit 1
+        fi
+    done
+    echo "✅ both commit metadata labels come from the environment as single argv entries"
+
+    rm -rf "$tmp"
 }
 
 function test_gen_offline_package_artifacts_script() {
@@ -525,7 +641,7 @@ function test_git_tag_short_sha_dedup() {
 
         echo -en "[🏷️💿] $component $git_ref:\t"
         "$image_script" "$component" "$os" "$arch" "$git_ref" "$profile" "$git_ref" "$git_sha" "" "" "$registry" "$DEFAULT_GIT_URL"
-        shellcheck -S error packages/scripts/build-package-images.sh
+        check_generated_build_script packages/scripts/build-package-images.sh
         assert_generated_tag_without_duplicate_sha packages/scripts/build-package-images.sh "$expected_tag" "$duplicated_tag"
     done
 }
@@ -539,6 +655,8 @@ function pre_checks() {
 
 function main() {
     pre_checks
+    # Reject hostile generator inputs before the long matrix below.
+    ./packages/scripts/verify-input-validation.sh
     ./.github/scripts/test-serverless.sh
 
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
@@ -558,6 +676,7 @@ function main() {
     echo ">>>>>>>> test_gen_package_images_script >>>>>>>>>>"
     test_gen_package_images_script
     test_gen_package_images_script_freedom_releasing
+    test_images_commit_metadata_from_env
     echo "<<<<<<<< test_gen_package_images_script <<<<<<<<<<"
 
     echo ">>>>>>>> test_git_tag_short_sha_dedup >>>>>>>>>>>"

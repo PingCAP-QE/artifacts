@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/var/cache/dnf \
     dnf install -y make git gcc wget sshpass unzip findutils
 
 # install protoc.
-# renovate: datasource=github-release depName=protocolbuffers/protobuf
+# renovate: datasource=github-releases depName=protocolbuffers/protobuf
 ARG PROTOBUF_VER=v3.15.8
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
@@ -51,8 +51,8 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1
 ENV PATH=/root/go/bin/:$PATH
 
 # install tools: tiup
-# renovate: datasource=github-release depName=pingcap/tiup
-ARG TIUP_VER=v1.16.3
+# renovate: datasource=github-releases depName=pingcap/tiup
+ARG TIUP_VER=v1.17.1
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \
@@ -61,10 +61,9 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: building
@@ -74,7 +73,7 @@ RUN make build -C /tem
 RUN /tem/bin/tem --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.4
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.6
 COPY --from=building /tem/bin/tem /tem
 
 WORKDIR /

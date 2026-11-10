@@ -27,10 +27,9 @@ LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: building
@@ -44,7 +43,7 @@ RUN GOPROXY=${GOPROXY} make kafka_consumer pulsar_consumer storage_consumer -C /
 RUN /ws/bin/cdc version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.6
 
 COPY --from=building /ws/bin/cdc /cdc
 EXPOSE 8300

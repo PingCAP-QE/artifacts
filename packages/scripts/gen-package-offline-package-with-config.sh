@@ -4,6 +4,9 @@ set -euo pipefail
 RELEASE_SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd -P)
 PROJECT_ROOT_DIR=$(cd "${RELEASE_SCRIPTS_DIR}/../.." && pwd -P)
 
+# shellcheck source=lib/validate.sh
+source "${RELEASE_SCRIPTS_DIR}/lib/validate.sh"
+
 function main() {
     local os=$1
     local arch=$2
@@ -16,22 +19,31 @@ function main() {
 
     local target_info="os: $os, arch: $arch, version: $version, edition: $edition"
 
+    # Reject anything that could become yq/gomplate/shell syntax before it is used.
+    assert_os "$os"
+    assert_arch "$arch"
+    assert_version "$version"
+    assert_edition "$edition"
+    assert_tiup_mirror "$tiup_mirror"
+    assert_registry "$registry"
+
     # prepare template file's context.
     : >release-context.yaml
-    yq -i ".Release.os = \"$os\"" release-context.yaml
-    yq -i ".Release.arch = \"$arch\"" release-context.yaml
-    yq -i ".Release.version = \"$version\"" release-context.yaml
-    yq -i ".Release.edition = \"$edition\"" release-context.yaml
-    yq -i ".Release.registry = \"$registry\"" release-context.yaml
+    OS="$os" yq -i '.Release.os = strenv(OS)' release-context.yaml
+    ARCH="$arch" yq -i '.Release.arch = strenv(ARCH)' release-context.yaml
+    VERSION="$version" yq -i '.Release.version = strenv(VERSION)' release-context.yaml
+    EDITION="$edition" yq -i '.Release.edition = strenv(EDITION)' release-context.yaml
+    REGISTRY="$registry" yq -i '.Release.registry = strenv(REGISTRY)' release-context.yaml
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
-    yq ".editions[\"${edition}\"]" release-packages.yaml >release-package.yaml
+    EDITION="$edition" yq '.editions[strenv(EDITION)]' release-packages.yaml >release-package.yaml
 
     # filter routers by os and arch and release version.
-    yq -i ".routers |= map(select(
+    OS="$os" ARCH="$arch" yq -i '
+        .routers |= map(select(
             (.if != false)
-            and ([\"$os\"] - .os | length == 0)
-            and ([\"$arch\"] - .arch | length == 0)
-        ))" release-package.yaml
+            and ([strenv(OS)] - .os | length == 0)
+            and ([strenv(ARCH)] - .arch | length == 0)
+        ))' release-package.yaml
     yq -i '.routers[].artifactory = .artifactory' release-package.yaml
 
     # fail when array length greater than 1.
@@ -46,11 +58,14 @@ function main() {
     yq ".routers[0]" release-package.yaml >release-router.yaml
 
     # generate package build script
-    yq -i ".os = \"$os\"" release-router.yaml
-    yq -i ".arch = \"$arch\"" release-router.yaml
-    yq -i ".version = \"$version\"" release-router.yaml
-    yq -i ".edition = \"$edition\"" release-router.yaml
-    yq -i ".tiup_mirror = \"$tiup_mirror\"" release-router.yaml
+    OS="$os" ARCH="$arch" VERSION="$version" EDITION="$edition" \
+        TIUP_MIRROR="$tiup_mirror" yq -i '
+        .os = strenv(OS) |
+        .arch = strenv(ARCH) |
+        .version = strenv(VERSION) |
+        .edition = strenv(EDITION) |
+        .tiup_mirror = strenv(TIUP_MIRROR)
+    ' release-router.yaml
 
     yq -i '.artifacts |= map(select(.if == null or .if))' release-router.yaml
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then

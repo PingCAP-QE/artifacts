@@ -1773,7 +1773,7 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 1.6.5-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2026.10.18-4-g3c7c430-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2026.10.26-1-g3b090af-go1.25
       - if: {{ semver.CheckConstraint ">= 1.6.0-0, < 1.6.5-0" .Release.version }}
         image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2025.11.9-1-ga8991fa-go1.23
       - if: {{ semver.CheckConstraint "< 1.6.0-0" .Release.version }}
@@ -1945,14 +1945,14 @@ components:
         - {{ .Release.version }}
     builders:
       - if: {{ semver.CheckConstraint ">= 9.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.9.27-1-ge30fb59-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.10.11-7-g4832c5c-centos7-go1.25
         macos:
           tools:
             go: "1.25"
             node: "22"
             pnpm: "8.6"
       - if: {{ semver.CheckConstraint ">= 8.5.6-0, < 9.0.0-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.9.27-1-ge30fb59-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tidb-dashboard:v2026.10.11-7-g4832c5c-centos7-go1.25
         macos:
           tools:
             go: "1.25"
@@ -2481,7 +2481,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.9.27-1-ge30fb59-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/tiflow:v2026.10.26-9-g9ccab05-centos7-go1.25
         macos:
           tools:
             go: "1.25"
@@ -3098,7 +3098,7 @@ components:
     # binary builder, also we need it when build for mac to get build tools versions and other informations.
     builders:
       - if: {{ semver.CheckConstraint ">= 8.5.6-0" .Release.version }}
-        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2026.9.20-7-g5292897-centos7-go1.25
+        image: ghcr.io/pingcap-qe/cd/builders/ticdc:v2026.11.1-13-g90456f6-centos7-go1.25
         macos:
           tools:
             go: "1.25"
@@ -3679,7 +3679,7 @@ components:
 
   # Dedicated Serverless components; registry selects release or devbuild storage.
   tidb-cse:
-    desc: Serverless tidb-cse binaries and image
+    desc: Serverless TiDB server, BR, Dumpling and Lightning binaries and images
     git:
       url: '{{ .Git.url | default "https://github.com/tidbcloud/tidb-cse.git" }}'
       ref: '{{ .Git.ref }}'
@@ -3708,18 +3708,52 @@ components:
                 export MIN_TIKV_VERSION=6.1.0 REGISTER_METRICS_INIT=false
                 export TIDB_GIT_HASH=$(git rev-parse HEAD)
                 export TIDB_GIT_BRANCH=${GIT_BRANCH:-$(git symbolic-ref --short -q HEAD || echo detached)}
-                make
+                make server build_tools build_dumpling
         artifacts:
           - name: "tidb-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
             files:
               - { name: tidb-server, src: { path: bin/tidb-server } }
+          - name: "br-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: br, src: { path: bin/br } }
+          - name: "dumpling-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: dumpling, src: { path: bin/dumpling } }
+          - name: "tidb-lightning-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-lightning, src: { path: bin/tidb-lightning } }
+          - name: "tidb-lightning-ctl-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+            files:
+              - { name: tidb-lightning-ctl, src: { path: bin/tidb-lightning-ctl } }
           - name: container image
             type: image
             artifactory:
               repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/tidb-server"
-            dockerfile: dockerfiles/products/serverless/tidb-cse/Dockerfile
+            dockerfile: dockerfiles/products/serverless/tidb-cse/tidb.Dockerfile
             files:
               - { name: tidb-server, src: { path: bin/tidb-server } }
+          - name: container image - BR
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/br"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/br.Dockerfile
+            files:
+              - { name: br, src: { path: bin/br } }
+          - name: container image - Dumpling
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/dumpling"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/dumpling.Dockerfile
+            files:
+              - { name: dumpling, src: { path: bin/dumpling } }
+          - name: container image - Lightning
+            type: image
+            artifactory:
+              repo: "{{ .Release.registry }}/tidbcloud/tidb-cse/images/tidb-lightning"
+            dockerfile: dockerfiles/products/serverless/tidb-cse/tidb-lightning.Dockerfile
+            files:
+              - { name: tidb-lightning, src: { path: bin/tidb-lightning } }
+              - { name: tidb-lightning-ctl, src: { path: bin/tidb-lightning-ctl } }
   pd-cse:
     desc: Serverless pd-cse binaries and image
     git:

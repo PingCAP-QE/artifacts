@@ -1,4 +1,4 @@
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 
 LABEL org.opencontainers.image.authors="wuhui.zuo@pingcap.com"
 LABEL org.opencontainers.image.description="utils image for CD release"
@@ -8,8 +8,8 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 RUN apk add --no-cache bash git curl jq yq uuidgen
 
 # install tools: gh (GitHub CLI)
-# renovate: datasource=github-release depName=cli/cli
-ARG GH_VER=2.82.1
+# renovate: datasource=github-releases depName=cli/cli
+ARG GH_VER=2.103.3
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://github.com/cli/cli/releases/download/v${GH_VER}/gh_${GH_VER}_linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
     install /tmp/gh_${GH_VER}_linux_${ARCH}/bin/gh /usr/local/bin/gh && \
@@ -19,7 +19,7 @@ RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
 COPY --from=hairyhenderson/gomplate:v4.3.3-alpine /bin/gomplate /usr/local/bin/gomplate
 
 # install tools: oras
-COPY --from=ghcr.io/oras-project/oras:v1.3.5 --chown=0:0 /bin/oras /usr/local/bin/oras
+COPY --from=ghcr.io/oras-project/oras:v1.3.6 --chown=0:0 /bin/oras /usr/local/bin/oras
 
 # install tools: manifest-tool
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /manifest-tool /usr/local/bin/manifest-tool
@@ -29,8 +29,8 @@ COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-cr
 COPY --from=mplatform/manifest-tool:alpine-v2.1.6 --chown=0:0 /usr/bin/docker-credential-acr-env    /usr/local/bin/docker-credential-acr-env
 
 # install tools: crane
-# renovate: datasource=github-release depName=google/go-containerregistry
-ARG CRANE_VER=0.20.2
+# renovate: datasource=github-releases depName=google/go-containerregistry
+ARG CRANE_VER=0.22.1
 RUN ARCH=$([ "$(arch)" = "x86_64" ] && echo x86_64 || echo arm64); \
     wget -q -O - https://github.com/google/go-containerregistry/releases/download/v${CRANE_VER}/go-containerregistry_Linux_${ARCH}.tar.gz | tar -zxvf - -C /tmp && \
     install /tmp/crane /usr/local/bin/crane && \
@@ -43,8 +43,8 @@ RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     chmod a+x /usr/local/bin/ks3util
 
 # install tools: tiup
-# renovate: datasource=github-release depName=pingcap/tiup
-ARG TIUP_VER=v1.16.3
+# renovate: datasource=github-releases depName=pingcap/tiup
+ARG TIUP_VER=v1.17.1
 RUN OS=linux; ARCH=$([ "$(arch)" = "x86_64" ] && echo amd64 || echo arm64); \
     wget -q -O - https://tiup-mirrors.pingcap.com/tiup-${TIUP_VER}-${OS}-${ARCH}.tar.gz | tar -zxvf - -C /usr/local/bin && \
     chmod 755 /usr/local/bin/tiup && \

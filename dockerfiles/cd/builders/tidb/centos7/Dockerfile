@@ -9,10 +9,15 @@
 
 ########### stage: Builder
 FROM centos:7.9.2009 AS builder
-# CentOS 7 has reached EOL
+# CentOS 7 has reached EOL. The official vault still serves x86_64, but its
+# aarch64 (altarch) tree is incomplete: yum gets 403 for
+# altarch/7/os/aarch64/repodata/*-filelists.sqlite.bz2, so pin aarch64 to the
+# archived 7.9.2009 tree on a public mirror.
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+    && ([ "$(arch)" = "x86_64" ] \
+        || sed -i 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' /etc/yum.repos.d/*.repo)
 
 # install packages with BuildKit cache mount
 # This prevents package cache from being stored in image layers.
@@ -20,7 +25,7 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
 ARG GIT_VERSION=2.45.2
 ARG GIT_TAR_XZ_SHA256=51bfe87eb1c02fed1484051875365eeab229831d30d0cec5d89a14f9e40e9adb
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y \
+    yum install -y \
       ca-certificates \
       curl \
       expat-devel \
@@ -52,10 +57,9 @@ LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: Buiding
@@ -66,7 +70,7 @@ RUN GOPROXY=${GOPROXY} make server -C /tidb
 RUN /tidb/bin/tidb-server -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/tidb-base:v1.12.6
 
 COPY --from=building /tidb/bin/tidb-server /tidb-server
 

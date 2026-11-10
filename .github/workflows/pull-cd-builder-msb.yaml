@@ -76,7 +76,8 @@ jobs:
       - name: Set up just tool
         uses: extractions/setup-just@f8a3cce218d9f83db3a2ecd90e41ac3de6cdfd9b
         with:
-          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          # No token: this job only downloads just, and it runs on a PR where the
+          # workflow file itself is PR-controlled.
           just-version: 1.59.0 # optional semver specification, otherwise latest
 
       - name: Log in to the Container registry
@@ -88,9 +89,12 @@ jobs:
 
       - name: Run specific component build
         working-directory: dockerfiles
+        env:
+          # Passed via env instead of inline `${{ }}` so the value is never
+          # re-parsed as shell code.
+          TASK: ${{ needs.check-label.outputs.task }}
         run: |
           set -euo pipefail
-          TASK="${{ needs.check-label.outputs.task }}"
           if [ "$TASK" == "all" ]; then
             echo "Run all tasks"
             just msb-tidb
@@ -109,11 +113,13 @@ jobs:
 
       - name: Comment on PR with results
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd
+        env:
+          TASK: ${{ needs.check-label.outputs.task }}
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const { pull_request: { number: issue_number }, repo: { owner, repo } } = context;
-            const task = '${{ needs.check-label.outputs.task }}';
+            const task = process.env.TASK;
 
             github.rest.issues.createComment({
               issue_number,

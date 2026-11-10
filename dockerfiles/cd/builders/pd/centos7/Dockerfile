@@ -8,19 +8,25 @@
 
 ########### stage: Builder
 FROM centos:7.9.2009 AS builder
-# CentOS 7 has reached EOL
+# CentOS 7 has reached EOL. The official vault still serves x86_64, but its
+# aarch64 (altarch) tree is incomplete: yum gets 403 for
+# altarch/7/os/aarch64/repodata/*-filelists.sqlite.bz2, so pin aarch64 to the
+# archived 7.9.2009 tree on a public mirror.
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
-    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+    && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
+    && ([ "$(arch)" = "x86_64" ] \
+        || sed -i 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' /etc/yum.repos.d/*.repo)
 
 # install packages with BuildKit cache mount
 # This prevents package cache from being stored in image layers
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum update --nogpgcheck -y && \
-    yum install --nogpgcheck -y epel-release deltarpm && \
-    yum update --nogpgcheck -y && \
-    yum groupinstall --nogpgcheck -y "Development Tools" && \
-    yum install --nogpgcheck -y which
+    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 && \
+    yum update -y && \
+    yum install -y epel-release deltarpm && \
+    yum update -y && \
+    yum groupinstall -y "Development Tools" && \
+    yum install -y which
 
 # install golang toolchain
 ARG GOLANG_VERSION=1.27.3
@@ -31,10 +37,9 @@ LABEL go-version="${GOLANG_VERSION}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: Buiding
@@ -47,7 +52,7 @@ RUN /pd/bin/pd-ctl -V
 RUN /pd/bin/pd-recover -V
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pd-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/pd-base:v1.12.6
 
 COPY --from=building /pd/bin/pd-server  /pd-server
 COPY --from=building /pd/bin/pd-ctl     /pd-ctl

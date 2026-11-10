@@ -4,6 +4,9 @@ set -euo pipefail
 RELEASE_SCRIPTS_DIR=$(cd "$(dirname "$0")" && pwd -P)
 PROJECT_ROOT_DIR=$(cd "${RELEASE_SCRIPTS_DIR}/../.." && pwd -P)
 
+# shellcheck source=lib/validate.sh
+source "${RELEASE_SCRIPTS_DIR}/lib/validate.sh"
+
 function normalize_profile_for_match() {
     local profile="${1:-}"
     case "$profile" in
@@ -44,30 +47,42 @@ function main() {
     local git_url="${11:-}"
     local target_info="component: $component, os: $os, arch: $arch, version: $version, profile: $profile"
 
+    # Reject anything that could become yq/gomplate/shell syntax before it is used.
+    assert_component "$component"
+    assert_os "$os"
+    assert_arch "$arch"
+    assert_version "$version"
+    assert_profile "$profile"
+    assert_ref "$git_ref"
+    assert_sha "$git_sha"
+    assert_registry "$registry"
+    assert_url "$git_url"
+
     profile_match="$(normalize_profile_for_match "$profile")"
     profile_output="$(normalize_profile_for_output "$profile")"
 
     # prepare template file's context.
     : >release-context.yaml
-    yq -i ".Release.os = \"$os\"" release-context.yaml
-    yq -i ".Release.arch = \"$arch\"" release-context.yaml
-    yq -i ".Release.version = \"$version\"" release-context.yaml
-    yq -i ".Release.profile = \"$profile_match\"" release-context.yaml
-    yq -i ".Release.registry = \"$registry\"" release-context.yaml
-    yq -i ".Git.ref = \"$git_ref\"" release-context.yaml
-    yq -i ".Git.sha = \"$git_sha\"" release-context.yaml
-    yq -i ".Git.url = \"$git_url\"" release-context.yaml
+    OS="$os" yq -i '.Release.os = strenv(OS)' release-context.yaml
+    ARCH="$arch" yq -i '.Release.arch = strenv(ARCH)' release-context.yaml
+    VERSION="$version" yq -i '.Release.version = strenv(VERSION)' release-context.yaml
+    PROFILE="$profile_match" yq -i '.Release.profile = strenv(PROFILE)' release-context.yaml
+    REGISTRY="$registry" yq -i '.Release.registry = strenv(REGISTRY)' release-context.yaml
+    GIT_REF="$git_ref" yq -i '.Git.ref = strenv(GIT_REF)' release-context.yaml
+    GIT_SHA="$git_sha" yq -i '.Git.sha = strenv(GIT_SHA)' release-context.yaml
+    GIT_URL_VALUE="$git_url" yq -i '.Git.url = strenv(GIT_URL_VALUE)' release-context.yaml
 
     gomplate --context .=release-context.yaml -f "$template_file" --out release-packages.yaml
-    yq ".components[\"${component}\"]" release-packages.yaml >release-package.yaml
+    COMPONENT="$component" yq '.components[strenv(COMPONENT)]' release-packages.yaml >release-package.yaml
 
     # filter routers by os and arch and release version.
-    yq -i ".routers |= map(select(
+    OS="$os" ARCH="$arch" PROFILE="$profile_match" yq -i '
+        .routers |= map(select(
             (.if == null or .if)
-            and ([\"$os\"] - .os | length == 0)
-            and ([\"$arch\"] - .arch | length == 0)
-            and ([\"$profile_match\"] - .profile | length == 0)
-        ))" release-package.yaml
+            and ([strenv(OS)] - .os | length == 0)
+            and ([strenv(ARCH)] - .arch | length == 0)
+            and ([strenv(PROFILE)] - .profile | length == 0)
+        ))' release-package.yaml
     yq -i '.routers[].artifactory = .artifactory' release-package.yaml
 
     # fail when array length greater than 1.
@@ -82,18 +97,19 @@ function main() {
     yq ".routers[0].git = .git | .routers[0].license = .license" release-package.yaml | yq ".routers[0]" >release-router.yaml
 
     # generate package build script
-    yq -i "
-        .component = \"$component\" |
-        .license = (.license // \"Apache-2.0\") |
-        .os = \"$os\" |
-        .arch = \"$arch\" |
-        .profile = \"$profile_output\" |
-        .profile_match = \"$profile_match\" |
-        .version = \"$version\"
-    " release-router.yaml
-    yq -i ".steps = .steps[\"$profile_match\"]" release-router.yaml
-    yq -i ".steps = (.steps | map(select(.os == null or .os == \"$os\")))" release-router.yaml
-    yq -i ".steps = (.steps | map(select(.arch == null or .arch == \"$arch\")))" release-router.yaml
+    COMPONENT="$component" OS="$os" ARCH="$arch" VERSION="$version" \
+        PROFILE="$profile_output" PROFILE_MATCH="$profile_match" yq -i '
+        .component = strenv(COMPONENT) |
+        .license = (.license // "Apache-2.0") |
+        .os = strenv(OS) |
+        .arch = strenv(ARCH) |
+        .profile = strenv(PROFILE) |
+        .profile_match = strenv(PROFILE_MATCH) |
+        .version = strenv(VERSION)
+    ' release-router.yaml
+    PROFILE_MATCH="$profile_match" yq -i '.steps = .steps[strenv(PROFILE_MATCH)]' release-router.yaml
+    OS="$os" yq -i '.steps = (.steps | map(select(.os == null or .os == strenv(OS))))' release-router.yaml
+    ARCH="$arch" yq -i '.steps = (.steps | map(select(.arch == null or .arch == strenv(ARCH))))' release-router.yaml
     yq -i '.artifacts = (.artifacts | map(select(.if == null or .if)))' release-router.yaml
     yq -i '.artifacts = (.artifacts | map(select(.type == "file" or .type == null)))' release-router.yaml
 

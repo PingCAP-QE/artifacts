@@ -87,7 +87,7 @@ image_copy_rules:
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/advanced-statefulset/image:
     - description: delivery the version images.
       tags_regex:
-        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-.+)?$
+        - ^(v[0-9]+[.][0-9]+[.][0-9]+)(-(beta|rc|release)[.][0-9]+)?$
       dest_repositories:
         - docker.io/pingcap/advanced-statefulset
         - gcr.io/pingcap-public/dbaas/advanced-statefulset
@@ -337,7 +337,7 @@ image_copy_rules:
   us-docker.pkg.dev/pingcap-testing-account/hub/pingcap/tiproxy/image:
     - description: publish trunk images.
       tags_regex:
-        - ^(main|master)(-.+)?$
+        - ^(main|master)(-[0-9a-f]{7,40})?$
       dest_repositories:
         - docker.io/pingcap/tiproxy
     - <<: *sync_pre_community

@@ -1,0 +1,103 @@
+name: Publish alpine-glibc base images
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "dockerfiles/bases/alpine-glibc/**"
+      - ".github/workflows/release-alpine-glibc.yaml"
+  schedule:
+    # Rebuild monthly to pick up Alpine patch releases and CA updates.
+    - cron: "0 3 1 * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  define-matrix:
+    name: define matrix
+    runs-on: ubuntu-26.04
+    outputs:
+      profiles: ${{ steps.profiles.outputs.profiles }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Read profiles
+        id: profiles
+        working-directory: dockerfiles/bases/alpine-glibc
+        run: |
+          profiles=$(yq -o=json '[.profiles[].name]' skaffold.yaml | jq -c .)
+          echo "profiles=${profiles}" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: publish ${{ matrix.profile }}
+    needs: define-matrix
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJson(needs.define-matrix.outputs.profiles) }}
+
+    env:
+      PROFILE: ${{ matrix.profile }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup skaffold
+        uses: heypigeonhq/setup-skaffold@3b1a0687de1b580d3879bf6b9d423255c9954587
+        with:
+          version: 2.23.0
+
+      - name: Publish image
+        working-directory: dockerfiles/bases/alpine-glibc
+        run: |
+          skaffold build \
+            --build-concurrency=1 \
+            --default-repo=ghcr.io/pingcap-qe/bases \
+            --profile="${PROFILE}"
+
+      - name: Install trivy from official APT repo
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget gnupg
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
+          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update && sudo apt-get install -y trivy
+
+      - name: Scan published image
+        run: |
+          # glibc itself is not covered by the Alpine secdb; this gate is for
+          # the Alpine packages that the image ships.
+          trivy image \
+            --exit-code 1 \
+            --severity HIGH,CRITICAL \
+            "ghcr.io/pingcap-qe/bases/alpine-glibc:${PROFILE}"

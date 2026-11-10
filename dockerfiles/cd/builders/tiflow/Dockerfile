@@ -31,7 +31,9 @@ ARG NODE_VERSION=18.20.8
 ARG NVM_VERSION=v0.40.8
 ARG NVM_DIR=/usr/local/nvm
 RUN mkdir -p $NVM_DIR && \
-    curl -o- https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh | bash && \
+    curl -fsSL -o /tmp/nvm-install.sh https://cdn.jsdelivr.net/gh/nvm-sh/nvm@${NVM_VERSION}/install.sh && \
+    bash /tmp/nvm-install.sh && \
+    rm -f /tmp/nvm-install.sh && \
     . $NVM_DIR/nvm.sh && \
     nvm install ${NODE_VERSION} && \
     nvm use v${NODE_VERSION} && \
@@ -47,10 +49,9 @@ LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/dnf \
-    dnf install -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: building-cdc
@@ -71,7 +72,7 @@ RUN /ws/bin/dm-syncer -V
 RUN /ws/bin/dmctl -V
 
 ########### stage: Final image - cdc
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.3 AS final-cdc
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.6 AS final-cdc
 COPY --from=building-cdc /ws/bin/cdc /cdc
 
 EXPOSE 8300
@@ -82,7 +83,7 @@ RUN /cdc version
 
 
 ########### stage: Final image - dm
-FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.3 AS final-dm
+FROM ghcr.io/pingcap-qe/bases/tools-base:v1.12.6 AS final-dm
 COPY --from=building-dm /ws/bin/dm-master /dm-master
 COPY --from=building-dm /ws/bin/dm-worker /dm-worker
 COPY --from=building-dm /ws/bin/dm-syncer /dm-syncer

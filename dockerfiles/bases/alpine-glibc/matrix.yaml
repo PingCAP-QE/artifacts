@@ -1,0 +1,92 @@
+# Source of truth for the alpine-glibc matrix.
+#
+# Phase 1 only publishes Alpine 3.22. To add 3.23/3.24, append them to
+# `alpine` and run `make generate` (Dockerfile and profiles stay unchanged).
+#
+# glibc sources:
+#   2.30-2.35: frolvlad donor image (sgerrand recipe), amd64 only.
+#              Pinned by digest; the tag is kept for readability.
+#   2.36-2.44: dalet-oss/alpine-glibc signed APK releases, amd64 + arm64.
+#              The 2.44 release tag has a -r1 suffix; the build target
+#              handles it based on `version`.
+
+alpine:
+  - "3.22"
+
+glibc:
+  - version: "2.30"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.11_glibc-2.30@sha256:b6165080982253b82ad8e0a782ba2b56309909de48f617fbff1aa2867408c787"
+    platforms:
+      - linux/amd64
+  - version: "2.31"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.12_glibc-2.31@sha256:fc21c4baf59006df061ceeeee622e1064ebdebc6f19e1471bfa113951d58481a"
+    platforms:
+      - linux/amd64
+  - version: "2.32"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.13_glibc-2.32@sha256:cc9a97ed4e27fe0129056fa422d1c54f5a2f7ebe9a2856d7d5a15f17a17614fc"
+    platforms:
+      - linux/amd64
+  - version: "2.33"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.15_glibc-2.33@sha256:2cb5dc3a8d237c6db01103c45631ebe6bd151948e3b2fc7cc648a027761748dc"
+    platforms:
+      - linux/amd64
+  - version: "2.34"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.20_glibc-2.34@sha256:321aaeeeab125a6836f26b4fecc935941efda7c63a47b0bf1183db55972e2046"
+    platforms:
+      - linux/amd64
+  - version: "2.35"
+    target: donor
+    donor: "frolvlad/alpine-glibc:alpine-3.18_glibc-2.35@sha256:f54d401340422bfaa06732a28a58661ca024451bb150ba98c614f7744a099200"
+    platforms:
+      - linux/amd64
+
+  - version: "2.36"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.37"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.38"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.39"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.40"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.41"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.42"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.43"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64
+  - version: "2.44"
+    target: apk
+    platforms:
+      - linux/amd64
+      - linux/arm64

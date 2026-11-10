@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.description="binary builder for TiCI"
 LABEL org.opencontainers.image.source="https://github.com/PingCAP-QE/artifacts"
 
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y perl-core openssl-devel
+    yum install -y perl-core openssl-devel
 
 ENV CXXFLAGS="-stdlib=libc++" \
     LDFLAGS="-stdlib=libc++"
@@ -25,10 +25,9 @@ SHELL ["/bin/bash", "-c"]
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: building
@@ -39,7 +38,7 @@ RUN CARGO_NET_GIT_FETCH_WITH_CLI=true make release -c /ws
 RUN mkdir -p /ws/output && mv /ws/target/release/tici-server /ws/output && /ws/output/tici-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.4
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.6
 COPY --from=building /ws/output/tici-server /tici-server
 
 ENTRYPOINT ["/tici-server"]

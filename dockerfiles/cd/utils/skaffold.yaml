@@ -13,10 +13,6 @@ build:
       platforms: [linux/amd64, linux/arm64]
       docker:
         dockerfile: ks3util/Dockerfile
-    - image: remote
-      platforms: [linux/amd64, linux/arm64]
-      docker:
-        dockerfile: remote/Dockerfile
   local:
     useDockerCLI: true
     useBuildkit: true

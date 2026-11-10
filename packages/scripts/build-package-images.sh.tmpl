@@ -32,8 +32,31 @@
 
 set -exo pipefail
 
+# Commit metadata of the commit being built. Both values are informational.
+#
+# The caller can export COMMIT_TITLE and/or COMMIT_TIME before running this
+# script; that is how the build step gets them, because the step image that
+# runs this script (the kaniko executor) ships no git. Anything the caller does
+# not provide is read from the workspace when it is a git checkout. When
+# neither source has a value the corresponding label is omitted instead of
+# failing the build.
+COMMIT_TITLE="${COMMIT_TITLE:-}"
+COMMIT_TIME="${COMMIT_TIME:-}"
+resolve_commit_metadata() {
+  if [ -z "${COMMIT_TITLE}" ]; then
+    COMMIT_TITLE="$(git log -1 --pretty=%s 2>/dev/null || true)"
+  fi
+  COMMIT_TITLE="$(printf '%s' "${COMMIT_TITLE}" | tr -d '\r' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+  if [ -z "${COMMIT_TIME}" ]; then
+    COMMIT_TIME="$(git log -1 --pretty=%cI 2>/dev/null || true)"
+  fi
+  COMMIT_TIME="$(printf '%s' "${COMMIT_TIME}" | tr -d '\r')"
+}
+
 main() {
   parse_arguments "$@"
+  resolve_commit_metadata
 
   # Access variables directly within the main function
   mkdir -p "${RELEASE_WS}"
@@ -145,6 +168,34 @@ build_binaries() {
   {{- end }}
 }
 
+# Run kaniko with the generated global options plus the commit labels. Every
+# value is passed as its own argv entry, so none of it is re-split by the shell.
+# Reads kaniko_executor and source_url from the caller.
+#
+# The argv list is built in the positional parameters, not in an array: this
+# script declares `#!/bin/sh`, and the image that runs it (the kaniko executor)
+# only ships busybox ash, where `name=(...)` is a syntax error.
+kaniko_run() {
+    set -- --cleanup --cache=false --label "net.pingcap.tibuild.new=yes" "$@"
+    {{ if .git.sha -}}
+    set -- "$@" "--label=net.pingcap.tibuild.git-sha={{ .git.sha }}"
+    {{ end -}}
+    set -- "$@" --label "org.opencontainers.image.title={{ .component }}"
+    set -- "$@" --label "org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}"
+    set -- "$@" --label "org.opencontainers.image.source=${source_url}"
+    set -- "$@" --label "org.opencontainers.image.ref.name={{ .git.ref }}"
+    {{ if .git.sha -}}
+    set -- "$@" "--label=org.opencontainers.image.revision={{ .git.sha }}"
+    {{ end -}}
+    if [ -n "${COMMIT_TITLE}" ]; then
+        set -- "$@" "--label=net.pingcap.tibuild.git-commit-title=${COMMIT_TITLE}"
+    fi
+    if [ -n "${COMMIT_TIME}" ]; then
+        set -- "$@" "--label=net.pingcap.tibuild.git-commit-time=${COMMIT_TIME}"
+    fi
+    "$kaniko_executor" "$@"
+}
+
 build_and_push_images() {
     release_ws="$1"
     digests_file="$2"
@@ -155,20 +206,7 @@ EOF
 )}"
 
     ################# build and push image ################
-    tag="{{ index $tags 0 }}"
-    # Inject OCI standard metadata labels and PingCAP build labels.
-    kaniko_global_options="--cleanup --cache=false"
-    kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.new=yes"
-    {{ if .git.sha }}
-    kaniko_global_options="$kaniko_global_options --label net.pingcap.tibuild.git-sha={{ .git.sha }}"
-    {{ end }}
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.title={{ .component }}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.licenses={{ .license | default "Apache-2.0" }}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.source=${source_url}"
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.ref.name={{ .git.ref }}"
-    {{ if .git.sha }}
-    kaniko_global_options="$kaniko_global_options --label org.opencontainers.image.revision={{ .git.sha }}"
-    {{ end }}
+    tag={{ index $tags 0 | quote }}
     :> "$digests_file"
 {{ range (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
     # >>>>>>>>>>>>>>>> image: {{ .name }} >>>>>>>>>>>>>>>>
@@ -176,21 +214,23 @@ EOF
     mkdir -p "$archive_dir"
     destination="{{ .artifactory.repo }}:$tag"
     digest_file="${archive_dir}/digest.txt"
-    kaniko_options="$kaniko_global_options --destination=${destination} --digest-file=${digest_file}"
+    # Per-image kaniko options, in the positional parameters for the same
+    # reason as in kaniko_run().
+    set -- "--destination=${destination}" "--digest-file=${digest_file}"
 
     {{- if has . "build_args" }}
     {{- range .build_args }}
-    kaniko_options="$kaniko_options --build-arg {{.}}"
+    set -- "$@" --build-arg "{{.}}"
     {{- end }}
     {{- end }}
 
     {{- if has . "target" }}
-    kaniko_options="$kaniko_options --target {{.target}} --skip-unused-stages"
+    set -- "$@" --target "{{ .target }}" --skip-unused-stages
     {{- end }}
 
 {{- if has . "context" }}
     # just build it with native build from git repo's dockerfile
-    $kaniko_executor $kaniko_options --context {{ .context }} --dockerfile {{ .dockerfile }}
+    kaniko_run "$@" --context "{{ .context }}" --dockerfile "{{ .dockerfile }}"
 {{- else }}
 
     # Prepare build context for image building.
@@ -247,15 +287,20 @@ EOF
     {{- end }}
     ## build and push
     dockerfile="{{ .dockerfile }}"
-    # get dockerfile from url if the `.dockerfile` value is a http url.
-    if [ "${dockerfile#https://}" != "$dockerfile" ] || [ "${dockerfile#http://}" != "$dockerfile" ]; then
-        echo "URL starts with https:// or http://, now I will download it and save it into: '$archive_dir/Dockerfile'."
+    # A remote Dockerfile must be fetched over https; plaintext is refused.
+    if [ "${dockerfile#http://}" != "$dockerfile" ]; then
+        echo "❌ refusing to fetch a Dockerfile over plaintext http: ${dockerfile}" >&2
+        exit 1
+    fi
+    # get dockerfile from url if the `.dockerfile` value is an https url.
+    if [ "${dockerfile#https://}" != "$dockerfile" ]; then
+        echo "Fetching the Dockerfile from ${dockerfile} into '$archive_dir/Dockerfile'."
         wget --tries=3 -c -O "$archive_dir/Dockerfile" "$dockerfile"
         dockerfile="$archive_dir/Dockerfile"
     fi
     dockerfile="$(cd "$(dirname "$dockerfile")" && pwd -P)/$(basename "$dockerfile")"
 
-    $kaniko_executor $kaniko_options --context="$archive_dir" --dockerfile="$dockerfile"
+    kaniko_run "$@" --context="$archive_dir" --dockerfile="$dockerfile"
 {{- end }}
 
     # Save digest file path for later use
@@ -290,8 +335,8 @@ add_more_tags() {
 
     {{- if gt (len $tags) 1 }}
     {{- range $index, $image := (.artifacts | jq `map(select(.type == "image" and .if != false))`) }}
-    oras tag {{ $image.artifactory.repo }}:{{ join $tags " " }}
-    yq -i '.images[{{ $index }}].tags = ["{{ join $tags "\",\"" }}"]' "$result_file"
+    oras tag {{ $image.artifactory.repo }}:"{{ index $tags 0 }}"{{ range $i, $t := $tags }}{{ if ne $i 0 }} "{{ $t }}"{{ end }}{{ end }}
+    yq -i '.images[{{ $index }}].tags = {{ $tags | toJSON }}' "$result_file"
     {{- end }}
     {{- else }}
     echo "🤷 No more tags need to be tagged."

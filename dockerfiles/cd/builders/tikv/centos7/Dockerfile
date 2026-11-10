@@ -8,28 +8,36 @@
 
 ########### stage: Builder
 FROM centos:7.9.2009 AS builder
-# CentOS 7 has reached EOL
+# CentOS 7 has reached EOL. The official vault still serves x86_64, but its
+# aarch64 (altarch) tree is incomplete: yum gets 403 for
+# altarch/7/os/aarch64/repodata/*-filelists.sqlite.bz2, so pin aarch64 to the
+# archived 7.9.2009 tree on a public mirror.
 RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo \
     && sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo \
     && sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo \
-    && ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo)
+    && ([ "$(arch)" = "x86_64" ] \
+        || sed -i 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' /etc/yum.repos.d/*.repo)
 
 # install packages with BuildKit cache mount
 # This prevents package cache from being stored in image layers
 ARG DEVTOOLSET_VER=8
 RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y epel-release centos-release-scl deltarpm && \
+    rpm --import https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7 && \
+    yum install -y epel-release centos-release-scl deltarpm && \
     sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
     sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo && \
     sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo && \
-    ([ "$(arch)" = "x86_64" ] || sed -i s#vault.centos.org/centos/7/sclo/#vault.centos.org/altarch/7/sclo/#g /etc/yum.repos.d/*.repo) && \
-    yum update --nogpgcheck -y && \
+    ([ "$(arch)" = "x86_64" ] || sed -i \
+        -e 's#baseurl=http://vault\.centos\.org/altarch/\$releasever/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/#' \
+        -e 's#baseurl=http://vault\.centos\.org/centos/7/sclo/#baseurl=https://archive.kernel.org/centos-vault/altarch/7.9.2009/sclo/#' \
+        /etc/yum.repos.d/*.repo) && \
+    yum update -y && \
     yum install -y git devtoolset-${DEVTOOLSET_VER} perl cmake3 unzip dwz perl-IPC-Cmd perl-Data-Dumper && \
     ln -s /usr/bin/cmake3 /usr/bin/cmake
 ENV DEVTOOLSET_VER=${DEVTOOLSET_VER}
 
 # install protoc.
-# renovate: datasource=github-release depName=protocolbuffers/protobuf
+# renovate: datasource=github-releases depName=protocolbuffers/protobuf
 ARG PROTOBUF_VER=v3.15.8
 RUN FILE=$([ "$(arch)" = "aarch64" ] && echo "protoc-${PROTOBUF_VER#?}-linux-aarch_64.zip" || echo "protoc-${PROTOBUF_VER#?}-linux-$(arch).zip"); \
     curl -LO "https://github.com/protocolbuffers/protobuf/releases/download/${PROTOBUF_VER}/${FILE}" && unzip "$FILE" -d /usr/local/ && rm -f "$FILE"
@@ -41,10 +49,9 @@ LABEL devtoolset-ver="${DEVTOOLSET_VER}"
 
 ########### stage: non-root-builder, used for development with non-root user.
 FROM builder AS non-root-builder
-RUN --mount=type=cache,target=/var/cache/yum \
-    yum install --nogpgcheck -y sudo && \
-    useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group && \
-    echo "builder ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/builder
+# The non-root stage exists to prove a build works without root, so it must
+# not carry a passwordless sudo grant.
+RUN useradd builder --create-home --shell=/bin/bash --uid=1000 --user-group
 USER builder
 
 ########### stage: Buiding
@@ -57,7 +64,7 @@ RUN --mount=type=cache,target=/tikv/target \
 RUN /tikv/bin/tikv-server --version
 
 ########### stage: Final image
-FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.12.3
+FROM ghcr.io/pingcap-qe/bases/tikv-base:v1.12.6
 
 ENV MALLOC_CONF="prof:true,prof_active:false"
 COPY --from=building /tikv/bin/tikv-server  /tikv-server
