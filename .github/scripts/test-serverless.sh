@@ -89,6 +89,7 @@ for cm in tidb-cse pd-cse tidb-operator-cse cassandra-on-mysql qdrant-on-tidb; d
       expected_dockerfiles="$tmp/expected-dockerfiles"
       printf '%s\n' "$root/dockerfiles/products/serverless/$cm/Dockerfile" > "$expected_dockerfiles"
       if [ "$cm" = tidb-cse ]; then
+        printf '%s\n' "$root/dockerfiles/products/serverless/$cm/tidb.Dockerfile" > "$expected_dockerfiles"
         test "$(yq '.artifacts | length' release-router.yaml)" = 4
         for tool in br dumpling tidb-lightning; do
           printf '%s\n' "$root/dockerfiles/products/serverless/$cm/$tool.Dockerfile" >> "$expected_dockerfiles"
