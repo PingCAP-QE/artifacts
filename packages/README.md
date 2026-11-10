@@ -117,6 +117,24 @@ Change history:
 > The floor is a property of the produced binaries, not of this repository, so it can change without any
 > change to `go.mod` or `packages.yaml.tmpl`.
 
+### Commit metadata in OCI artifacts
+
+Both artifact kinds record the commit they were built from, so downstream consumers (for example the TiDB-X
+component image build records in TCMS) can show the commit message title instead of only the sha:
+
+| Artifact | Where the keys are written | Keys |
+|---|---|---|
+| binary artifact (`oras push` config) | `build-package-artifacts.sh.tmpl` → `artifact-config.json` | `net.pingcap.tibuild.git-commit-title`, `net.pingcap.tibuild.git-commit-time` |
+| container image (Kaniko `--label`) | `build-package-images.sh.tmpl` | the same two keys |
+
+- `git-commit-title` is the first line of the commit subject (`git log -1 --pretty=%s`) with `\r` and
+  surrounding whitespace trimmed; `git-commit-time` is the committer date in RFC 3339 (`--pretty=%cI`).
+- The image script prefers the caller's `COMMIT_TITLE` / `COMMIT_TIME` environment variables and only falls
+  back to `git log -1` in the build directory. The Kaniko executor image ships no `git`, so CI resolves both
+  values in the generate step and passes them in; image builds never depend on git being present.
+- A value that cannot be resolved is **omitted**, never written as an empty string, and the build still
+  succeeds. Old artifacts legitimately have neither key, so consumers must treat both as optional.
+
 ### Required context
 
 You can get them by run:
