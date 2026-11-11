@@ -3694,7 +3694,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v2026.11.1-6-g8f6c9a5-centos7-go1.27@sha256:f4f34768d26ce205d5c07e4f2915a9faf22b03cfa7d86103a33f644e905c4597
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb:v2025.4.24-10-g9c32f77-centos7-go1.24@sha256:6b0e1acde8bff7ebf1f8061de2c6d84e61c0d045530813abedca33c93ca45444
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
@@ -3704,7 +3704,7 @@ components:
           release:
             - script: |
                 export GOPRIVATE=github.com/tidbcloud/*,github.com/pingcap-inc/*
-                export GOTOOLCHAIN=auto
+                export GOTOOLCHAIN=local
                 export MIN_TIKV_VERSION=6.1.0 REGISTER_METRICS_INIT=false
                 export TIDB_GIT_HASH=$(git rev-parse HEAD)
                 export TIDB_GIT_BRANCH=${GIT_BRANCH:-$(git symbolic-ref --short -q HEAD || echo detached)}
@@ -3813,7 +3813,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2026.10.26-1-g3b090af-go1.27@sha256:c6f6f68e58bf000ba9398fd1d3e5c8dfa911923a2e112bbb9125dec2b865c4e3
+      - image: ghcr.io/pingcap-qe/cd/builders/tidb-operator:v2024.10.8-91-g6221afa-go1.21@sha256:7bf614824f1c18ff4463278765e5548fc17dc219420f2c94e8779ef917bfc4c7
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
@@ -3822,7 +3822,7 @@ components:
         steps:
           release:
             - script: |
-                export GOTOOLCHAIN=auto
+                export GOTOOLCHAIN=local
                 make controller-manager scheduler discovery admission-webhook GOOS=linux GOARCH={{ .Release.arch }}
         artifacts:
           - name: "tidb-operator-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"

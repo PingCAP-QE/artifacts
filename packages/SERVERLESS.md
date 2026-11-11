@@ -48,12 +48,13 @@ and runtime bases are pinned by version and multi-platform digest. Qdrant uses
 Rust `nightly-2024-12-28` on the pinned Amazon Linux base.
 
 Serverless Go components build with pinned images from
-`ghcr.io/pingcap-qe/cd/builders`: `tidb-cse` and `pd-cse` use the `centos7`
-Go 1.27.3 builders, and `tidb-operator-cse` uses the Go 1.27.3 builder. There is
-no automatic builder upgrade: when a source repository raises the `go` directive,
-update the builder here in a pull request. Build scripts use `GOTOOLCHAIN=auto`,
-so a builder older than the source requirement downloads the needed toolchain
-instead of failing the build.
+`ghcr.io/pingcap-qe/cd/builders`. There is no automatic builder upgrade: when a
+source repository raises its `go` directive, update the builder here in a pull
+request. `pd-cse` uses the `centos7` Go 1.27.3 builder to match
+`tidbcloud/pd-cse@release-8.5-keyspace` and sets `GOTOOLCHAIN=auto`, so a lagging
+builder downloads the needed toolchain instead of failing the build. `tidb-cse`
+(Go 1.24) and `tidb-operator-cse` (Go 1.21) stay on their current builders until
+their source `go.mod` moves.
 
 Run `.github/scripts/test-serverless.sh` for both architectures and both registries,
 and `.github/scripts/ci.sh` for the existing package matrix regression. These test
