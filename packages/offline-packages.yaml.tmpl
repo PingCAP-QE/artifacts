@@ -567,9 +567,13 @@ editions:
                 if: {{ eq .Release.arch "amd64" }}
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  # Rebuilt from pingcap/mydumper@0042e179 for the legacy packages: the
+                  # tarball the file server used to serve is gone, and a release asset is
+                  # immutable and fetched over TLS.
+                  url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz"
+                  checksum_url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/sha256sums.txt"
                   extract: true
-                  extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
+                  extract_inner_path: "mydumper-linux-amd64/bin/mydumper"
       - description: "Started from v6.1.0 until v6.6.0"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">=6.1.0-0, <6.6.0-0" .Release.version }}
@@ -673,9 +677,13 @@ editions:
                 if: {{ eq .Release.arch "amd64" }}
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  # Rebuilt from pingcap/mydumper@0042e179 for the legacy packages: the
+                  # tarball the file server used to serve is gone, and a release asset is
+                  # immutable and fetched over TLS.
+                  url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz"
+                  checksum_url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/sha256sums.txt"
                   extract: true
-                  extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
+                  extract_inner_path: "mydumper-linux-amd64/bin/mydumper"
   enterprise:
     artifactory:
       package_repo: "{{ .Release.registry }}/pingcap/offline-package"
@@ -1407,9 +1415,13 @@ editions:
                 if: {{ eq .Release.arch "amd64" }}
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  # Rebuilt from pingcap/mydumper@0042e179 for the legacy packages: the
+                  # tarball the file server used to serve is gone, and a release asset is
+                  # immutable and fetched over TLS.
+                  url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz"
+                  checksum_url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/sha256sums.txt"
                   extract: true
-                  extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
+                  extract_inner_path: "mydumper-linux-amd64/bin/mydumper"
       - description: "Started from v6.1.0 until v6.6.0"
         # ref: https://github.com/Masterminds/semver#checking-version-constraints
         if: {{ semver.CheckConstraint ">=6.1.0-0, <6.6.0-0" .Release.version }}
@@ -1549,6 +1561,10 @@ editions:
                 if: {{ eq .Release.arch "amd64" }}
                 src:
                   type: http
-                  url: "http://fileserver.pingcap.net/download/builds/pingcap/mydumper/0042e179b74fd9cd731be4550bee4c284c212be6/centos7/mydumper-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
+                  # Rebuilt from pingcap/mydumper@0042e179 for the legacy packages: the
+                  # tarball the file server used to serve is gone, and a release asset is
+                  # immutable and fetched over TLS.
+                  url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz"
+                  checksum_url: "https://github.com/pingcap/mydumper/releases/download/build-0042e179/sha256sums.txt"
                   extract: true
-                  extract_inner_path: "mydumper-{{ .Release.os }}-{{ .Release.arch }}/bin/mydumper"
+                  extract_inner_path: "mydumper-linux-amd64/bin/mydumper"

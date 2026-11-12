@@ -69,6 +69,10 @@ assert_rejected 'output file: option'       assert_output_file '-o'
 assert_rejected 'output file: no suffix'    assert_output_file 'out'
 assert_rejected 'output file: empty'        assert_output_file ''
 assert_rejected 'output file: missing dir'  assert_output_file '/nonexistent-dir-xyz/out.sh'
+assert_rejected 'src url: plain http'        assert_src_url    'http://fileserver.pingcap.net/download/x.tar.gz'
+assert_rejected 'src url: foreign host'     assert_src_url    'https://evil.example.com/x.tar.gz'
+assert_rejected 'src url: userinfo'         assert_src_url    'https://u:p@github.com/a/b.tar.gz'
+assert_rejected 'src url: file scheme'      assert_src_url    'file:///etc/passwd'
 
 echo
 echo ">>>>>>>> validate.sh: accepted values >>>>>>>>>>>>"
@@ -93,6 +97,8 @@ assert_accepted 'tiup mirror: reset' assert_tiup_mirror '--reset'
 assert_accepted 'tiup mirror: url' assert_tiup_mirror 'https://tiup-mirrors.pingcap.com'
 assert_accepted 'output file' assert_output_file 'pre-to-ga-tag.sh'
 assert_accepted 'output file: absolute' assert_output_file "${tmpdir}/pre-to-ga-tag.sh"
+assert_accepted 'src url: github release' assert_src_url 'https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz'
+assert_accepted 'src url: empty' assert_src_url ''
 
 echo
 echo ">>>>>>>> gen-pre-to-ga-tag-commands.sh: hostile input must not produce a script >>>>>>>>>>>>"
@@ -187,6 +193,55 @@ else
         failures=$((failures + 1))
     else
         printf '✅ %-30s rejected\n' 'offline generator'
+    fi
+
+    echo
+    echo ">>>>>>>> offline generator: a plaintext source must be refused >>>>>>>>>>>>"
+    # The offline bundle is shipped to customers, so a "src.url" outside the
+    # accepted hosts must stop the generator before the composer downloads it.
+    hostile_tmpl="$tmpdir/offline-hostile.tmpl"
+    sed 's|https://github.com/pingcap/mydumper/releases/download/build-0042e179/mydumper-linux-amd64.tar.gz|http://fileserver.pingcap.net/download/mydumper-linux-amd64.tar.gz|' \
+        "${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl" > "$hostile_tmpl"
+    status=0
+    (
+        cd "$tmpdir"
+        "$RELEASE_SCRIPTS_DIR/gen-package-offline-package-with-config.sh" \
+            linux amd64 v6.5.0 community "$hostile_tmpl" \
+            "$tmpdir/hostile-offline-src.sh" http://tiup.pingcap.net:8987 \
+            us-docker.pkg.dev/pingcap-testing-account/hub
+    ) >/dev/null 2>&1 || status=$?
+    if [ "$status" -ne 2 ]; then
+        printf '❌ %-30s expected exit 2 for a plaintext src.url, got %s\n' 'offline generator' "$status"
+        failures=$((failures + 1))
+    elif [ -e "$tmpdir/hostile-offline-src.sh" ]; then
+        printf '❌ %-30s rejected the source but still wrote a script\n' 'offline generator'
+        failures=$((failures + 1))
+    else
+        printf '✅ %-30s rejected plaintext src.url, no script written\n' 'offline generator'
+    fi
+
+    echo
+    echo ">>>>>>>> offline generator: the bundle verifies a published digest >>>>>>>>>>>>"
+    offline_good="$tmpdir/offline-good.sh"
+    status=0
+    (
+        cd "$tmpdir"
+        "$RELEASE_SCRIPTS_DIR/gen-package-offline-package-with-config.sh" \
+            linux amd64 v6.5.0 community \
+            "${PROJECT_ROOT_DIR}/packages/offline-packages.yaml.tmpl" "$offline_good" \
+            http://tiup.pingcap.net:8987 us-docker.pkg.dev/pingcap-testing-account/hub
+    ) >/dev/null 2>&1 || status=$?
+    if [ "$status" -ne 0 ] || [ ! -s "$offline_good" ]; then
+        printf '❌ %-30s generation failed (exit %s)\n' 'offline generator' "$status"
+        failures=$((failures + 1))
+    elif ! grep -q 'sha256sum -c -' "$offline_good"; then
+        printf '❌ %-30s generated script has no expected-digest check\n' 'offline generator'
+        failures=$((failures + 1))
+    elif ! grep -q 'refusing to fetch' "$offline_good"; then
+        printf '❌ %-30s generated script has no plaintext-source guard\n' 'offline generator'
+        failures=$((failures + 1))
+    else
+        printf '✅ %-30s generated with the https guard and the digest check\n' 'offline generator'
     fi
 
     echo

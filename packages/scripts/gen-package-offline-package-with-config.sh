@@ -57,6 +57,15 @@ function main() {
     fi
     yq ".routers[0]" release-package.yaml >release-router.yaml
 
+    # Every remote download must come over TLS from a known host: the composer
+    # runs wget with the build credentials in scope, and the result becomes part
+    # of a customer-facing offline bundle. `type: oci` sources are registry
+    # references, not URLs, so they are out of scope here.
+    local src_url
+    while IFS= read -r src_url; do
+        assert_src_url "$src_url"
+    done < <(yq -r '.. | select(has("src")) | select(.src.type == "http") | .src | (.url // ""), (.checksum_url // "")' release-router.yaml)
+
     # generate package build script
     OS="$os" ARCH="$arch" VERSION="$version" EDITION="$edition" \
         TIUP_MIRROR="$tiup_mirror" yq -i '
