@@ -47,6 +47,16 @@ do not put tokens into build args, image layers or repository config. Go builder
 and runtime bases are pinned by version and multi-platform digest. Qdrant uses
 Rust `nightly-2024-12-28` on the pinned Amazon Linux base.
 
+Serverless Go components build with pinned images from
+`ghcr.io/pingcap-qe/cd/builders`. There is no automatic builder upgrade: when a
+source repository raises its `go` directive, update the builder here in a pull
+request. `pd-cse` uses the `centos7` Go 1.27.3 builder to match
+`tidbcloud/pd-cse@release-8.5-keyspace` and does not override
+`GOTOOLCHAIN`, so Go's default (`auto`) downloads the needed toolchain when a
+builder lags instead of failing the build. `tidb-cse` (Go 1.24) and
+`tidb-operator-cse` (Go 1.21) stay on their current builders until their source
+`go.mod` moves.
+
 Run `.github/scripts/test-serverless.sh` for both architectures and both registries,
 and `.github/scripts/ci.sh` for the existing package matrix regression. These test
 generated scripts and routes; successful native builds, registry pushes and
@@ -56,11 +66,11 @@ product mappings by `PingCAP-QE/ee-ops`, and formal distribution by
 `tidbcloud/docker-image-controller`. Native regional Qdrant, TiKV and TiFlash are
 outside this change.
 
-TiDB/PD use the official Debian Bullseye runtime by digest directly. The former
-keyspace Harbor alias and Docker Hub contain the identical multi-architecture
-manifest `sha256:acc5810124f0929ab44fc7913c0ad936b074cbd3eadf094ac120190862ba36c4`;
-using Docker Hub preserves every base layer and avoids private Harbor routing
-from GCP build workers.
+Serverless runtime bases are pinned by digest from `ghcr.io/pingcap-qe/bases`:
+`tidb-cse` server uses `tidb-base:v1.12.6`, `pd-cse` uses `pd-base:v1.12.6`, and
+`tidb-operator-cse` uses `pingcap-base:v1.12.6`. The `tidb-cse` BR, Dumpling and
+Lightning images still use `debian:bullseye-slim` by digest to preserve the
+upstream tool images' utilities and init process.
 
 ## Native validation evidence
 
