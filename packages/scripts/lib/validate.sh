@@ -115,3 +115,33 @@ assert_tiup_mirror() {
     [[ "$mirror" =~ ^[A-Za-z0-9._-]+$ ]] && return 0
     _validate_fail tiup_mirror "$mirror"
 }
+
+# Output file for a generated script. The generator truncates this path before
+# writing, so a value that escapes through ".." or points at a non-script file
+# lets the caller destroy something else. Accepted: a plain "*.sh" file name, or
+# an absolute/relative path to one whose parent directory already exists.
+# Refused: a leading "-" (option injection), "..", a missing parent, and
+# anything that is already a symlink or not a regular file.
+assert_output_file() {
+    local path="$1"
+    local dir=""
+
+    [ -n "$path" ] || _validate_fail output_file "$path" "must not be empty"
+    case "$path" in
+    -*) _validate_fail output_file "$path" "must not start with '-'" ;;
+    *..*) _validate_fail output_file "$path" "must not contain '..'" ;;
+    esac
+    [[ "${path##*/}" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*\.sh$ ]] ||
+        _validate_fail output_file "$path" "must be a *.sh file name"
+
+    case "$path" in
+    */*)
+        dir="${path%/*}"
+        [ -d "$dir" ] || _validate_fail output_file "$path" "parent directory does not exist"
+        if [ -e "$path" ]; then
+            [ -L "$path" ] && _validate_fail output_file "$path" "must not be a symlink"
+            [ -f "$path" ] || _validate_fail output_file "$path" "must be a regular file"
+        fi
+        ;;
+    esac
+}

@@ -63,6 +63,12 @@ assert_rejected 'url: plain http'           assert_url       'http://github.com/
 assert_rejected 'url: foreign host'         assert_url       'https://evil.example.com/x.git'
 assert_rejected 'url: userinfo'             assert_url       'https://u:p@github.com/pingcap/tidb'
 assert_rejected 'tiup mirror: shell'        assert_tiup_mirror '--reset; id'
+assert_rejected 'output file: traversal'    assert_output_file '../../etc/passwd'
+assert_rejected 'output file: not a script' assert_output_file '/etc/passwd'
+assert_rejected 'output file: option'       assert_output_file '-o'
+assert_rejected 'output file: no suffix'    assert_output_file 'out'
+assert_rejected 'output file: empty'        assert_output_file ''
+assert_rejected 'output file: missing dir'  assert_output_file '/nonexistent-dir-xyz/out.sh'
 
 echo
 echo ">>>>>>>> validate.sh: accepted values >>>>>>>>>>>>"
@@ -85,6 +91,67 @@ assert_accepted 'url: empty' assert_url ''
 assert_accepted 'url: github' assert_url 'https://github.com/pingcap/tidb.git'
 assert_accepted 'tiup mirror: reset' assert_tiup_mirror '--reset'
 assert_accepted 'tiup mirror: url' assert_tiup_mirror 'https://tiup-mirrors.pingcap.com'
+assert_accepted 'output file' assert_output_file 'pre-to-ga-tag.sh'
+assert_accepted 'output file: absolute' assert_output_file "${tmpdir}/pre-to-ga-tag.sh"
+
+echo
+echo ">>>>>>>> gen-pre-to-ga-tag-commands.sh: hostile input must not produce a script >>>>>>>>>>>>"
+promo_out="${tmpdir}/pre-to-ga-tag.sh"
+
+# The promotion generator is the one script under packages/scripts/ that used to
+# take its version strings straight into the emitted `oras` commands. A value
+# carrying shell metacharacters would become code in the promotion container.
+status=0
+"${RELEASE_SCRIPTS_DIR}/gen-pre-to-ga-tag-commands.sh" 'v9.0.0" ; id ; "' 'v9.0.0' "$promo_out" >/dev/null 2>&1 || status=$?
+if [ "$status" -ne 2 ]; then
+    printf '❌ %-30s expected exit 2 for a hostile rc version, got %s\n' 'promotion generator' "$status"
+    failures=$((failures + 1))
+elif [ -e "$promo_out" ]; then
+    printf '❌ %-30s rejected the input but still wrote %s\n' 'promotion generator' "$promo_out"
+    failures=$((failures + 1))
+else
+    printf '✅ %-30s rejected hostile rc version, no script written\n' 'promotion generator'
+fi
+
+status=0
+"${RELEASE_SCRIPTS_DIR}/gen-pre-to-ga-tag-commands.sh" 'v9.0.0-rc.1' 'v9.0.0$(id)' "$promo_out" >/dev/null 2>&1 || status=$?
+if [ "$status" -ne 2 ] || [ -e "$promo_out" ]; then
+    printf '❌ %-30s expected exit 2 for a hostile ga version, got %s\n' 'promotion generator' "$status"
+    failures=$((failures + 1))
+else
+    printf '✅ %-30s rejected hostile ga version\n' 'promotion generator'
+fi
+
+# The output path is caller-chosen and was truncated before any validation, so it
+# could destroy any file the invoking user can write.
+status=0
+"${RELEASE_SCRIPTS_DIR}/gen-pre-to-ga-tag-commands.sh" 'v9.0.0-rc.1' 'v9.0.0' '../../tmp/evil.sh' >/dev/null 2>&1 || status=$?
+if [ "$status" -ne 2 ]; then
+    printf '❌ %-30s expected exit 2 for a path-traversal output file, got %s\n' 'promotion generator' "$status"
+    failures=$((failures + 1))
+else
+    printf '✅ %-30s rejected path-traversal output file\n' 'promotion generator'
+fi
+
+echo
+echo ">>>>>>>> gen-pre-to-ga-tag-commands.sh: valid input still works >>>>>>>>>>>>"
+status=0
+"${RELEASE_SCRIPTS_DIR}/gen-pre-to-ga-tag-commands.sh" 'v9.0.0-rc.1' 'v9.0.0' "$promo_out" >/dev/null 2>&1 || status=$?
+if [ "$status" -ne 0 ] || [ ! -s "$promo_out" ]; then
+    printf '❌ %-30s generation failed (exit %s)\n' 'promotion generator' "$status"
+    failures=$((failures + 1))
+elif ! sh -n "$promo_out" >/dev/null 2>&1; then
+    printf '❌ %-30s generated script is not valid POSIX sh\n' 'promotion generator'
+    failures=$((failures + 1))
+elif ! grep -qE '"v9\.0\.0"$' "$promo_out"; then
+    printf '❌ %-30s generated GA tag is not quoted\n' 'promotion generator'
+    failures=$((failures + 1))
+elif grep -qE '&& oras tag [^"]*[;$(]' "$promo_out"; then
+    printf '❌ %-30s generated oras commands contain unquoted shell metacharacters\n' 'promotion generator'
+    failures=$((failures + 1))
+else
+    printf '✅ %-30s generated, POSIX-clean and quoted\n' 'promotion generator'
+fi
 
 echo
 if ! command -v yq >/dev/null 2>&1 || ! command -v gomplate >/dev/null 2>&1; then
