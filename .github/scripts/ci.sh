@@ -646,6 +646,123 @@ function test_git_tag_short_sha_dedup() {
     done
 }
 
+# The delivery generator turns the build stage's image list plus the delivery
+# rules into the `crane` commands the delivery job runs with push credentials.
+# Both inputs are data from other stages, so a value outside the expected
+# character set, a permissive rule or a hostile destination must stop the run
+# instead of being quoted into the emitted script.
+function test_gen_delivery_image_commands() {
+    local script="./packages/scripts/gen-delivery-image-commands.ts"
+    local work
+    work="$(mktemp -d)"
+    # shellcheck disable=SC2064 # expand $work now, the trap runs after it is gone
+    trap "rm -rf '$work'" RETURN
+
+    if ! command -v deno > /dev/null 2>&1; then
+        echo "🤷 deno not found; skipping the delivery generator checks."
+        return 0
+    fi
+
+    if ! deno check "$script" packages/scripts/lib/delivery-config.ts packages/scripts/get-delivery-target-images.ts > /dev/null 2>&1; then
+        echo "❌ the delivery scripts do not type-check"
+        exit 1
+    fi
+    echo "✅ delivery scripts type-check"
+
+    local valid_rules="$work/delivery.yaml"
+    cat > "$valid_rules" << 'YAML'
+image_copy_rules:
+  "us-docker.pkg.dev/hub/pingcap/tidb/image":
+    - description: "next-gen trunk rule"
+      tags_regex: ["^(master|dedicated)(-.*)?-nextgen$"]
+      dest_repositories: ["docker.io/pingcap/tidb"]
+      constant_tags: ["latest"]
+YAML
+
+    local valid_images="$work/images.yaml"
+    cat > "$valid_images" << 'YAML'
+images:
+  - repo: "us-docker.pkg.dev/hub/pingcap/tidb/image"
+    tag: "master-nextgen"
+YAML
+
+    # A tag that carries shell metacharacters must be refused before it reaches
+    # the emitted script, even if a permissive rule would match it.
+    local hostile_images="$work/hostile-images.yaml"
+    cat > "$hostile_images" << 'YAML'
+images:
+  - repo: "us-docker.pkg.dev/hub/pingcap/tidb/image"
+    tag: "master-$(id)-nextgen"
+YAML
+
+    # A rule whose destination is a shell fragment must be refused: the rules are
+    # policy, and the policy must not be able to become code.
+    local hostile_dest_rules="$work/hostile-dest.yaml"
+    cat > "$hostile_dest_rules" << 'YAML'
+image_copy_rules:
+  "us-docker.pkg.dev/hub/pingcap/tidb/image":
+    - tags_regex: ["^master-nextgen$"]
+      dest_repositories: ["docker.io/pingcap/tidb; id"]
+YAML
+
+    # An oversized or quadratic rule regex must be refused too.
+    local hostile_regex_rules="$work/hostile-regex.yaml"
+    cat > "$hostile_regex_rules" << 'YAML'
+image_copy_rules:
+  "us-docker.pkg.dev/hub/pingcap/tidb/image":
+    - tags_regex: ["^(a+)+-nextgen$"]
+      dest_repositories: ["docker.io/pingcap/tidb"]
+YAML
+
+    local status out
+    out="$work/delivery-images.sh"
+
+    local case_name
+    for case_name in "hostile tag:hostile_images:valid_rules" "hostile destination:valid_images:hostile_dest_rules" "quadratic regex:valid_images:hostile_regex_rules"; do
+        local label="${case_name%%:*}"
+        local rest="${case_name#*:}"
+        local images_var="${rest%%:*}"
+        local rules_var="${rest##*:}"
+        rm -f "$out"
+        status=0
+        deno run --allow-read --allow-write "$script" \
+            --images_file="${!images_var}" \
+            --yaml_file="${!rules_var}" \
+            --outfile="$out" \
+            --images_outfile="$work/targets.yaml" > /dev/null 2>&1 || status=$?
+        if [ "$status" -ne 2 ]; then
+            echo "❌ delivery generator ($label): expected exit 2, got $status"
+            exit 1
+        fi
+        if [ -e "$out" ]; then
+            echo "❌ delivery generator ($label): rejected the input but wrote $out"
+            exit 1
+        fi
+        echo "✅ delivery generator ($label): rejected, no script written"
+    done
+
+    status=0
+    deno run --allow-read --allow-write "$script" \
+        --images_file="$valid_images" \
+        --yaml_file="$valid_rules" \
+        --outfile="$out" \
+        --images_outfile="$work/targets.yaml" > /dev/null 2>&1 || status=$?
+    if [ "$status" -ne 0 ] || [ ! -s "$out" ]; then
+        echo "❌ delivery generator: valid input produced no script (exit $status)"
+        exit 1
+    fi
+    sh -n "$out"
+    if ! grep -qE "^crane copy '[^']*' '[^']*'$" "$out"; then
+        echo "❌ delivery generator: crane commands are not fully quoted"
+        exit 1
+    fi
+    if ! grep -qE "^crane tag '[^']*' 'latest'$" "$out"; then
+        echo "❌ delivery generator: constant tag command is not quoted"
+        exit 1
+    fi
+    echo "✅ delivery generator: valid input produced a quoted, POSIX-clean script"
+}
+
 function pre_checks() {
     which shellcheck || (
         echo "The script need 'shellcheck' tool, please install it!"
@@ -682,6 +799,10 @@ function main() {
     echo ">>>>>>>> test_git_tag_short_sha_dedup >>>>>>>>>>>"
     test_git_tag_short_sha_dedup
     echo "<<<<<<<< test_git_tag_short_sha_dedup <<<<<<<<<<<"
+
+    echo ">>>>>>>> test_gen_delivery_image_commands >>>>>>>"
+    test_gen_delivery_image_commands
+    echo "<<<<<<<< test_gen_delivery_image_commands <<<<<<<<"
 
     echo ">>>> test_gen_offline_package_artifacts_script >>>"
     test_gen_offline_package_artifacts_script

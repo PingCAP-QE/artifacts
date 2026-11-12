@@ -1,18 +1,16 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write
 import * as yaml from "jsr:@std/yaml@1.0.5";
 import { parseArgs } from "jsr:@std/cli@1.0.9";
-
-interface Rule {
-  description?: string;
-  tags_regex: string[];
-  dest_repositories: string[];
-  constant_tags?: string[];
-  tag_regex_replace?: string;
-}
-
-interface Config {
-  [sourceRepo: string]: Rule[];
-}
+import {
+  type Config,
+  fail,
+  getMatchingRulesFor,
+  REPOSITORY_RE,
+  type Rule,
+  shellQuote,
+  TAG_RE,
+  validateDeliveryConfig,
+} from "./lib/delivery-config.ts";
 
 interface ImageEntry {
   repo: string;
@@ -38,47 +36,53 @@ function parseImageRef(imageUrlWithTag: string): {
   const atIdx = imageUrlWithTag.indexOf("@");
   if (atIdx !== -1) {
     // Digest specified; not supported in single-image mode for matching by tag
-    throw new Error(
+    fail(
       `Image reference "${imageUrlWithTag}" contains a digest. Please provide a tag-based reference.`,
     );
   }
   if (lastColon === -1 || lastColon < lastSlash) {
-    throw new Error(
+    fail(
       `Image reference "${imageUrlWithTag}" must include a tag (e.g., repo/image:tag).`,
     );
   }
-  return {
-    repo: imageUrlWithTag.slice(0, lastColon),
-    tag: imageUrlWithTag.slice(lastColon + 1),
-  };
+  const repo = imageUrlWithTag.slice(0, lastColon);
+  const tag = imageUrlWithTag.slice(lastColon + 1);
+  assertImageRef(repo, tag, "image reference");
+  return { repo, tag };
 }
 
-async function loadImageCopyRules(yamlFile: string): Promise<Config> {
-  const parsed = yaml.parse(await Deno.readTextFile(yamlFile)) as {
-    image_copy_rules: Config;
-  } | null;
-  if (!parsed || typeof parsed !== "object" || !parsed.image_copy_rules) {
-    throw new Error(`Invalid delivery rules file: ${yamlFile}`);
+/**
+ * The source repo and tag come from the build stage's result file and end up in
+ * the `crane` commands the delivery job runs with push credentials, so a value
+ * outside the expected character set must stop the run instead of being quoted
+ * into a shell script.
+ */
+function assertImageRef(repo: string, tag: string, where: string) {
+  if (!REPOSITORY_RE.test(repo)) {
+    fail(`${where}: "${repo}" is not a valid repository reference`);
   }
-  return parsed.image_copy_rules;
+  if (!TAG_RE.test(tag)) {
+    fail(`${where}: "${tag}" is not a valid image tag`);
+  }
 }
 
-function getMatchingRulesFor(
-  imageUrl: string,
-  tag: string,
-  rulesConfig: Config,
-): Rule[] {
-  return (rulesConfig[imageUrl] || [])
-    .map((r) => ({
-      ...r,
-      tags_regex: r.tags_regex.filter((regex) => new RegExp(regex).test(tag)),
-    }))
-    .filter((r) => r.tags_regex.length > 0);
+async function loadImageCopyRules(yamlFile: string) {
+  let parsed: unknown = null;
+  try {
+    parsed = yaml.parse(await Deno.readTextFile(yamlFile));
+  } catch (error) {
+    fail(`cannot read delivery rules file ${yamlFile}: ${error}`);
+  }
+  return validateDeliveryConfig(parsed);
 }
 
 async function writeOutputFile(outFile: string, content: string | undefined) {
   if (!content) {
     return;
+  }
+
+  if (outFile.length === 0 || outFile.split(/[/\\]/).includes("..")) {
+    fail(`refusing to write to output path "${outFile}"`);
   }
 
   using file = await Deno.open(outFile, {
@@ -109,13 +113,31 @@ function copyCommandsForRule(
   console.log(`📜 Description: ${description}`);
   console.log(`🛫 Source Repository: ${repo}`);
   for (const destRepo of dest_repositories) {
+    if (!REPOSITORY_RE.test(destRepo)) {
+      fail(
+        `delivery rule for '${repo}': "${destRepo}" is not a valid destination repository`,
+      );
+    }
     console.group(`🛬 Destination Repository: ${destRepo}`);
 
-    commands.push(`crane copy ${repo}:${tag} ${destRepo}:${tag}`);
+    commands.push(
+      `crane copy ${shellQuote(`${repo}:${tag}`)} ${
+        shellQuote(`${destRepo}:${tag}`)
+      }`,
+    );
     targetImages.push(`${destRepo}:${tag}`);
     for (const constTag of constant_tags) {
+      if (!TAG_RE.test(constTag)) {
+        fail(
+          `delivery rule for '${repo}': "${constTag}" is not a valid constant tag`,
+        );
+      }
       console.log(`📌 Additional tag: ${constTag}`);
-      commands.push(`crane tag ${destRepo}:${tag} ${constTag}`);
+      commands.push(
+        `crane tag ${shellQuote(`${destRepo}:${tag}`)} ${
+          shellQuote(constTag)
+        }`,
+      );
       targetImages.push(`${destRepo}:${constTag}`);
     }
     if (tag_regex_replace !== "" && tags_regex.length > 0) {
@@ -123,8 +145,17 @@ function copyCommandsForRule(
         new RegExp(tags_regex[0]),
         tag_regex_replace,
       );
+      if (!TAG_RE.test(converted)) {
+        fail(
+          `delivery rule for '${repo}': rewritten tag "${converted}" is not a valid image tag`,
+        );
+      }
       console.log(`📌 Additional tag: ${converted}`);
-      commands.push(`crane tag ${destRepo}:${tag} ${converted}`);
+      commands.push(
+        `crane tag ${shellQuote(`${destRepo}:${tag}`)} ${
+          shellQuote(converted)
+        }`,
+      );
       targetImages.push(`${destRepo}:${converted}`);
     }
 
@@ -188,15 +219,17 @@ async function parseImagesFromFile(imagesFilePath: string) {
     const repo = image.repo;
     if (typeof repo !== "string" || repo.trim().length === 0) return [];
 
-    return [
+    const tags = [
       ...new Set([
         image.tag,
         ...(image.tags ?? []),
         ...(image.multi_arch_tags ?? []),
       ]),
-    ]
-      .filter((t): t is string => typeof t === "string" && t.length > 0)
-      .map((t) => ({ repo, tag: t }));
+    ].filter((t): t is string => typeof t === "string" && t.length > 0);
+
+    for (const tag of tags) assertImageRef(repo, tag, "images file");
+
+    return tags.map((tag) => ({ repo, tag }));
   });
 }
 
