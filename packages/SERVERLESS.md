@@ -51,10 +51,11 @@ Serverless Go components build with pinned images from
 `ghcr.io/pingcap-qe/cd/builders`. There is no automatic builder upgrade: when a
 source repository raises its `go` directive, update the builder here in a pull
 request. `pd-cse` uses the `centos7` Go 1.27.3 builder to match
-`tidbcloud/pd-cse@release-8.5-keyspace` and sets `GOTOOLCHAIN=auto`, so a lagging
-builder downloads the needed toolchain instead of failing the build. `tidb-cse`
-(Go 1.24) and `tidb-operator-cse` (Go 1.21) stay on their current builders until
-their source `go.mod` moves.
+`tidbcloud/pd-cse@release-8.5-keyspace` and does not override
+`GOTOOLCHAIN`, so Go's default (`auto`) downloads the needed toolchain when a
+builder lags instead of failing the build. `tidb-cse` (Go 1.24) and
+`tidb-operator-cse` (Go 1.21) stay on their current builders until their source
+`go.mod` moves.
 
 Run `.github/scripts/test-serverless.sh` for both architectures and both registries,
 and `.github/scripts/ci.sh` for the existing package matrix regression. These test

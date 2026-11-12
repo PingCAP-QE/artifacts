@@ -3780,7 +3780,6 @@ components:
           release:
             - script: |
                 export GOPRIVATE=github.com/tidbcloud/*,github.com/pingcap-inc/*
-                export GOTOOLCHAIN=auto
                 SWAGGER=0 DASHBOARD=0 make build
         artifacts:
           - name: "pd-cse-{{ .Release.version }}-{{ .Release.os }}-{{ .Release.arch }}.tar.gz"
