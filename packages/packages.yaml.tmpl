@@ -3770,7 +3770,7 @@ components:
         - {{ strings.ReplaceAll "/" "-" .Git.ref | strings.ToLower }}
         - {{ .Release.version }}
     builders:
-      - image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.10.26-6-gfef24c7-centos7-go1.27@sha256:0cb749cb8278d74a2c0fac9f3975c36e36102e9839eaefd09d9e76e516195ade
+      - image: ghcr.io/pingcap-qe/cd/builders/pd:v2026.10.26-1-g3b090af-go1.27@sha256:fef68fb3774bd9622092c575e33d7a3ebe0ab7ed5edff46fcd7d2ea0a134dc9c
     routers:
       - description: Serverless Linux release (no TiUP delivery)
         os: [linux]
