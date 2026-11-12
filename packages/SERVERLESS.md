@@ -50,12 +50,14 @@ Rust `nightly-2024-12-28` on the pinned Amazon Linux base.
 Serverless Go components build with pinned images from
 `ghcr.io/pingcap-qe/cd/builders`. There is no automatic builder upgrade: when a
 source repository raises its `go` directive, update the builder here in a pull
-request. `pd-cse` uses the `centos7` Go 1.27.3 builder to match
+request. `pd-cse` uses the Rocky Linux 8 Go 1.27.3 builder to match
 `tidbcloud/pd-cse@release-8.5-keyspace` and does not override
 `GOTOOLCHAIN`, so Go's default (`auto`) downloads the needed toolchain when a
-builder lags instead of failing the build. `tidb-cse` (Go 1.24) and
-`tidb-operator-cse` (Go 1.21) stay on their current builders until their source
-`go.mod` moves.
+builder lags instead of failing the build. The `centos7` variant is not usable
+here: CentOS 7 ships git 1.8, which rejects the
+`git ls-remote --end-of-options` invocation that Go 1.27 uses for private
+modules. `tidb-cse` (Go 1.24) and `tidb-operator-cse` (Go 1.21) stay on their
+current builders until their source `go.mod` moves.
 
 Run `.github/scripts/test-serverless.sh` for both architectures and both registries,
 and `.github/scripts/ci.sh` for the existing package matrix regression. These test
