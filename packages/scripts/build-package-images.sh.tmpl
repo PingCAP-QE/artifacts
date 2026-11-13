@@ -267,7 +267,21 @@ EOF
     ## compose files from http.
     {{- range $httpFiles }}
     # {{ .name }}
-    wget --tries=3 -c {{ .src.url }}
+    # Refuse a plaintext source and verify the published digest before the bytes
+    # land in the build context.
+    case "{{ .src.url }}" in
+      https://*) ;;
+      *) echo "refusing to fetch '{{ .name }}' from a non-https source" >&2; exit 1 ;;
+    esac
+    wget --tries=3 -c "{{ .src.url }}"
+    {{- if has .src "checksum_url" }}
+    expected_sha256=$(wget --tries=3 -qO- "{{ .src.checksum_url }}" | awk -v f="{{ path.Base .src.url }}" '$2 == f || $2 == "./" f { print $1; exit }')
+    if [ -z "$expected_sha256" ]; then
+      echo "no expected checksum for '{{ .name }}' in {{ .src.checksum_url }}" >&2
+      exit 1
+    fi
+    echo "$expected_sha256  {{ path.Base .src.url }}" | sha256sum -c - > /dev/null
+    {{- end }}
     mkdir -p $(dirname ${archive_dir}/{{ .name }})
     {{- if has .src "extract" }}
       {{- if strings.HasSuffix ".tar.gz" .src.url }}

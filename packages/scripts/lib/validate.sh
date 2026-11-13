@@ -107,6 +107,30 @@ assert_url() {
     _validate_fail url "$url" "host not in ALLOWED_GIT_HOSTS ('$ALLOWED_GIT_HOSTS')"
 }
 
+# Remote sources for package artifacts (offline bundles and build inputs): https
+# only, no userinfo, no "..", host allowlisted. The composer runs wget with the
+# build credentials in scope and the result lands in a customer-facing bundle, so
+# a plaintext or unlisted origin must fail before anything is downloaded.
+: "${ALLOWED_SRC_HOSTS:=github.com objects.githubusercontent.com cdn.jsdelivr.net tiup-mirrors.pingcap.com}"
+assert_src_url() {
+    local url="$1"
+    local host allowed
+    # Kept in a variable: bash misparses a bare '&' inside an unquoted =~ pattern.
+    local re='^https://[A-Za-z0-9.-]+(:[0-9]+)?/[A-Za-z0-9._~/?=&%+-]*$'
+    [ -z "$url" ] && return 0
+    [[ "$url" =~ $re ]] || _validate_fail src_url "$url"
+    case "$url" in
+    *..*) _validate_fail src_url "$url" ;;
+    esac
+    host="${url#https://}"
+    host="${host%%/*}"
+    host="${host%%:*}"
+    for allowed in $ALLOWED_SRC_HOSTS; do
+        [ "$host" = "$allowed" ] && return 0
+    done
+    _validate_fail src_url "$url" "host not in ALLOWED_SRC_HOSTS ('$ALLOWED_SRC_HOSTS')"
+}
+
 # tiup mirror argument: the literal --reset, an http(s) URL, or a mirror name.
 assert_tiup_mirror() {
     local mirror="$1"

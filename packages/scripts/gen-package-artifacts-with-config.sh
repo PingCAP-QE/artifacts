@@ -96,6 +96,14 @@ function main() {
     fi
     yq ".routers[0].git = .git | .routers[0].license = .license" release-package.yaml | yq ".routers[0]" >release-router.yaml
 
+    # Every remote download must come over TLS from a known host: the generated
+    # script runs wget with the build credentials in scope, and the bytes become
+    # part of a published artifact.
+    local src_url
+    while IFS= read -r src_url; do
+        assert_src_url "$src_url"
+    done < <(yq -r '.. | select(has("src")) | select(.src.type == "http") | .src | (.url // ""), (.checksum_url // "")' release-router.yaml)
+
     # generate package build script
     COMPONENT="$component" OS="$os" ARCH="$arch" VERSION="$version" \
         PROFILE="$profile_output" PROFILE_MATCH="$profile_match" yq -i '
