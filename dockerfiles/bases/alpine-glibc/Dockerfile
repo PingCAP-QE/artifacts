@@ -16,7 +16,7 @@
 #     --build-arg ALPINE_VERSION=3.22 --build-arg GLIBC_VERSION=2.36 .
 
 ARG GLIBC_IMAGE=frolvlad/alpine-glibc:alpine-3.11_glibc-2.30@sha256:b6165080982253b82ad8e0a782ba2b56309909de48f617fbff1aa2867408c787
-ARG ALPINE_VERSION=3.22
+ARG ALPINE_VERSION=3.24
 # Optional mirror root, e.g. https://mirrors.aliyun.com/alpine
 ARG ALPINE_REPO=""
 
