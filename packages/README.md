@@ -135,6 +135,23 @@ component image build records in TCMS) can show the commit message title instead
 - A value that cannot be resolved is **omitted**, never written as an empty string, and the build still
   succeeds. Old artifacts legitimately have neither key, so consumers must treat both as optional.
 
+### Dockerfile references
+
+An image artifact's `dockerfile` is resolved differently depending on whether the artifact also sets `context`:
+
+| Artifact | `dockerfile` semantics |
+|---|---|
+| without `context` | **relative to this repository root** (e.g. `dockerfiles/products/pd/Dockerfile`). `gen-package-images-with-config.sh` turns it into an absolute path inside the artifacts checkout and fails if the file is missing. |
+| with `context` | relative to the component source checkout (e.g. `image/Dockerfile`). |
+
+- Prefer the repo-relative form for anything that lives here: the Dockerfile and the config are then read from the
+  **same revision**, and the build does not depend on a third-party CDN. Do not point at
+  `cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@main/...`; jsdelivr caches branch content for hours, so a freshly
+  committed Dockerfile change may not be picked up. `.github/scripts/ci.sh` enforces this.
+- `https://` Dockerfiles are still supported, but only for files owned by another repository. Because such a fetch
+  cannot come from the checkout, pin it to a tag and let Renovate bump it — `dockerfiles/products/tiflash/tiflash-wrapper`
+  (downloaded inside the tiflash build step, where no artifacts tree exists) works this way.
+
 ### Required context
 
 You can get them by run:

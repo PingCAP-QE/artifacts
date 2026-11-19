@@ -770,11 +770,28 @@ function pre_checks() {
     )
 }
 
+# The image Dockerfiles live in this repository, so they must be referenced with
+# repo-relative paths: the generator resolves them against the artifacts checkout
+# (gen-package-images-with-config.sh), which keeps the Dockerfile and the config
+# at the same revision. A CDN URL brings back a third-party fetch, and
+# jsdelivr's branch cache can serve stale content for hours.
+function test_dockerfile_references_are_relative() {
+    local offenders
+    offenders="$(grep -nE '^[[:space:]]*dockerfile: https://cdn\.jsdelivr\.net/gh/PingCAP-QE/artifacts' packages/packages.yaml.tmpl || true)"
+    if [ -n "$offenders" ]; then
+        echo "❌ image Dockerfiles must use repo-relative paths:"
+        echo "$offenders"
+        exit 1
+    fi
+    echo "✅ image Dockerfile references are repo-relative"
+}
+
 function main() {
     pre_checks
     # Reject hostile generator inputs before the long matrix below.
     ./packages/scripts/verify-input-validation.sh
     ./.github/scripts/test-serverless.sh
+    test_dockerfile_references_are_relative
 
     echo ">>>>>>>> test_get_builder >>>>>>>>>>>>>>>>>>>>>>>>"
     test_get_builder
