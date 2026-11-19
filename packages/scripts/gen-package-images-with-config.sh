@@ -136,6 +136,20 @@ function main() {
         exit 1
     fi
 
+    # A resolved repo-local Dockerfile has to exist in this checkout: otherwise the
+    # failure only shows up inside kaniko, after the build context was prepared.
+    local dockerfile_path
+    while IFS= read -r dockerfile_path; do
+        [ -z "$dockerfile_path" ] && continue
+        case "$dockerfile_path" in
+            https://*) continue ;;
+        esac
+        if [ ! -f "$dockerfile_path" ]; then
+            echo "❌ Dockerfile not found in this artifacts checkout: $dockerfile_path" >&2
+            exit 1
+        fi
+    done < <(yq -r '.artifacts[] | select(.context == null) | .dockerfile // ""' release-router.yaml)
+
     if yq -e '.artifacts | length == 0' release-router.yaml >/dev/null 2>&1; then
         echo "🤷 No images should be built for target($target_info)."
         exit 0

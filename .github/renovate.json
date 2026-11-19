@@ -65,6 +65,19 @@
       "matchDepNames": [
         "/^ghcr\\.io/pingcap-qe/cd//"
       ]
+    },
+    {
+      "description": "The tiflash wrapper pin does not need a PR per weekly artifacts release",
+      "matchDatasources": [
+        "github-tags"
+      ],
+      "matchDepNames": [
+        "PingCAP-QE/artifacts"
+      ],
+      "groupName": "artifacts release pin",
+      "schedule": [
+        "before 5am on the first day of the month"
+      ]
     }
   ],
   "customManagers": [
@@ -91,6 +104,19 @@
       "datasourceTemplate": "docker",
       "versioningTemplate": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)(?:\\.(?<patch>\\d+))?-(?<build>\\d+)-g[0-9a-f]+(?:-(?<compatibility>.+))?$",
       "autoReplaceStringTemplate": "image: {{depName}}:{{newValue}}"
+    },
+    {
+      "customType": "regex",
+      "description": "The tiflash wrapper is downloaded inside the tiflash build step, so it cannot be a repo-relative path; track the weekly date releases of this repository",
+      "managerFilePatterns": [
+        "/.*/packages.yaml.tmpl$$/"
+      ],
+      "matchStrings": [
+        "https://cdn\\.jsdelivr\\.net/gh/PingCAP-QE/artifacts@(?<currentValue>v[0-9]{4}\\.[0-9]{1,2}\\.[0-9]{1,2})/dockerfiles/products/tiflash/tiflash-wrapper"
+      ],
+      "depNameTemplate": "PingCAP-QE/artifacts",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "regex:^v(?<major>\\d{4})\\.(?<minor>\\d{1,2})\\.(?<patch>\\d{1,2})$"
     }
   ]
 }
