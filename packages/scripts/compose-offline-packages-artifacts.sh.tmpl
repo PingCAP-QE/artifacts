@@ -85,26 +85,62 @@ function print_help() {
 function fetch_file_from_oci_artifact() {
     local destination="$1"
     local to_match_file="$2"
-    local repo="$(echo $destination | cut -d ':' -f 1)"
+    local repo="${destination%:*}"
+    local manifest="oci_manifest.json"
+    local download_dir="oci_downloads"
 
-    # get the file blob digest.
-    oras manifest fetch $destination | yq --prettyPrint -oy ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | .[0]" >blob.yaml
+    # The layer title is written by whoever can push to that repository, so it is
+    # data, never a path: match it anchored and accept only a plain file name.
+    oras manifest fetch -o "$manifest" "$destination"
+
+    local title=""
+    local digest=""
+    local hit_title hit_digest
+    while IFS=$'\t' read -r hit_title hit_digest; do
+        if [[ $hit_title =~ ^${to_match_file}$ ]]; then
+            title="$hit_title"
+            digest="$hit_digest"
+            break
+        fi
+    done < <(yq -r '.layers[] | [((.annotations // {})["org.opencontainers.image.title"] // ""), .digest] | @tsv' "$manifest")
+
+    if [ -z "$title" ]; then
+        echo "no layer in '$destination' matches '$to_match_file'" >&2
+        return 1
+    fi
+    if ! [[ $title =~ ^[A-Za-z0-9][A-Za-z0-9._+-]*$ ]]; then
+        echo "refusing layer title '$title' from '$destination': not a plain file name" >&2
+        return 1
+    fi
 
     # download file
-    file="$(yq .annotations[\"org.opencontainers.image.title\"] blob.yaml)"
-    blob="$repo@$(yq .digest blob.yaml)"
-    oras blob fetch --output $file $blob
+    mkdir -p "$download_dir"
+    local file="$download_dir/$title"
+    local blob="$repo@$digest"
+    oras blob fetch --output "$file" "$blob" >&2
     echo "$file"
 }
 
 function check_file_in_oci_artifact() {
     local destination="$1"
     local to_match_file="$2"
-    local repo="$(echo $destination | cut -d ':' -f 1)"
-    oras manifest fetch -o oci_manifest.json $destination
+    local manifest="oci_manifest.json"
+    oras manifest fetch -o "$manifest" "$destination"
 
     # get the file blob digest.
-    yq -e --prettyPrint -oy ".layers | filter(.annotations[\"org.opencontainers.image.title\"] | test \"$to_match_file\") | length > 0" oci_manifest.json > /dev/null
+    local title=""
+    local hit_title hit_digest
+    while IFS=$'\t' read -r hit_title hit_digest; do
+        if [[ $hit_title =~ ^${to_match_file}$ ]]; then
+            title="$hit_title"
+            break
+        fi
+    done < <(yq -r '.layers[] | [((.annotations // {})["org.opencontainers.image.title"] // ""), .digest] | @tsv' "$manifest")
+
+    if [ -z "$title" ]; then
+        echo "OCI artifact '$destination' has no layer matching '$to_match_file'" >&2
+        return 1
+    fi
 }
 
 function pre_check() {
@@ -205,19 +241,19 @@ function compose_artifact{{ $i }}() {
     ## pull tarballs from oci registry and publish to local tiup mirror.
     {{- range ($components | jq `map(select(.src.type == "oci"))`) }}
     # {{ .name }}
-    tarball_file=$(fetch_file_from_oci_artifact {{ .src.url }} "{{ .src.path }}")
+    tarball_file=$(fetch_file_from_oci_artifact "{{ .src.url }}" "{{ .src.path }}")
     {{- if has .src "extract" }}
       {{- if strings.HasSuffix ".tar.gz" .src.path }}
-    tar -zxvf $tarball_file --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
+    tar -zxvf "$tarball_file" --strip-components={{ math.Sub (strings.Split `/` (default "" .src.extract_inner_path) | len) 1 }} -C $archive_dir {{ default "" .src.extract_inner_path }}
       {{- else if strings.HasSuffix ".zip" .src.path }}
-    unzip -j $tarball_file {{ default "" .src.extract_inner_path }} -d $archive_dir
+    unzip -j "$tarball_file" {{ default "" .src.extract_inner_path }} -d $archive_dir
       {{- else }}
         {{ fail "Unsupported archive format, only support .tar.gz and .zip" }}
       {{- end }}
     {{- else if has . "publish" }}
-    tiup mirror publish {{ default .name .publish.name }} $version $tarball_file {{ .publish.entrypoint }} ${tiup_publish_options}
+    tiup mirror publish {{ default .name .publish.name }} "$version" "$tarball_file" {{ .publish.entrypoint }} ${tiup_publish_options}
     {{- else }}
-    mv $tarball_file $archive_dir
+    mv "$tarball_file" $archive_dir
     {{- end }}
     {{- end }}
 
