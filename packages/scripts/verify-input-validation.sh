@@ -263,6 +263,85 @@ else
     else
         printf '✅ %-30s generated and shellcheck-clean\n' 'images generator'
     fi
+
+    echo
+    echo ">>>>>>>> oci layer titles: untrusted data, never a path >>>>>>>>>>>>"
+    # The layer title is read back from a remote OCI manifest, so whoever can
+    # push to that repository chooses it. It must be matched anchored and
+    # accepted only as a plain file name: as a path it escaped the workspace and
+    # as an extra argv word it became flags handed to oras, tar and cp.
+    oci_script="$tmpdir/build-artifacts-oci.sh"
+    status=0
+    (
+        cd "$tmpdir"
+        "$RELEASE_SCRIPTS_DIR/gen-package-artifacts-with-config.sh" \
+            tidb linux amd64 v8.5.4 release release-8.5 bfa749d \
+            "" "$oci_script" us-docker.pkg.dev/pingcap-testing-account/hub ""
+    ) >/dev/null 2>&1 || status=$?
+
+    oci_cwd="$tmpdir/oci-run"
+    mkdir -p "$oci_cwd/fakes"
+    # Pull the function out of the generated script: sourcing it would run the
+    # whole build.
+    awk '/^function fetch_file_from_oci_artifact\(\) \{/{f=1} f{print} f&&/^\}/{exit}' \
+        "$oci_script" > "$oci_cwd/fetch-fn.sh"
+    cat > "$oci_cwd/fakes/oras" <<'FAKE_ORAS'
+#!/usr/bin/env bash
+set -e
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -o)
+            printf '{"layers":[{"digest":"sha256:0000","annotations":{"org.opencontainers.image.title":"%s"}}]}\n' "$FAKE_TITLE" > "$2"
+            exit 0
+            ;;
+        --output)
+            printf 'blob\n' > "$2"
+            exit 0
+            ;;
+    esac
+    shift
+done
+echo "fake oras: no output argument" >&2
+exit 1
+FAKE_ORAS
+    chmod +x "$oci_cwd/fakes/oras"
+
+    # run_fetch <title> <pattern>: the manifest the stub returns holds one layer
+    # whose title is <title>, so the generated function decides on it alone.
+    run_fetch() {
+        (
+            cd "$oci_cwd" || exit 1
+            PATH="$oci_cwd/fakes:$PATH" FAKE_TITLE="$1" \
+                bash -c '. ./fetch-fn.sh; fetch_file_from_oci_artifact reg.example.com/pingcap/tidb-ctl/package:master_linux_amd64 "$1"' _ "$2"
+        )
+    }
+
+    if [ "$status" -ne 0 ] || [ ! -s "$oci_script" ] || [ ! -s "$oci_cwd/fetch-fn.sh" ]; then
+        printf '❌ %-30s could not generate the artifacts script\n' 'oci layer title'
+        failures=$((failures + 1))
+    elif run_fetch '../../escaped-tidb-ctl-x-linux-amd64.tar.gz' 'tidb-ctl-.*-linux-amd64.tar.gz' >/dev/null 2>&1; then
+        printf '❌ %-30s accepted a traversal title\n' 'oci layer title'
+        failures=$((failures + 1))
+    elif [ -e "$tmpdir/escaped-tidb-ctl-x-linux-amd64.tar.gz" ]; then
+        printf '❌ %-30s wrote the blob outside the download directory\n' 'oci layer title'
+        failures=$((failures + 1))
+    elif run_fetch '-rf tidb-ctl-x-linux-amd64.tar.gz' '.*' >/dev/null 2>&1; then
+        printf '❌ %-30s accepted a title that becomes an argv word\n' 'oci layer title'
+        failures=$((failures + 1))
+    else
+        printf '✅ %-30s traversal and argv titles refused\n' 'oci layer title'
+    fi
+
+    fetched="$(run_fetch 'tidb-ctl-v8.5.4-linux-amd64.tar.gz' 'tidb-ctl-.*-linux-amd64.tar.gz' 2>/dev/null || true)"
+    if [ "$fetched" != 'oci_downloads/tidb-ctl-v8.5.4-linux-amd64.tar.gz' ]; then
+        printf '❌ %-30s plain title fetched to %q\n' 'oci layer title' "$fetched"
+        failures=$((failures + 1))
+    elif [ ! -s "$oci_cwd/$fetched" ]; then
+        printf '❌ %-30s plain title was not downloaded\n' 'oci layer title'
+        failures=$((failures + 1))
+    else
+        printf '✅ %-30s plain title downloaded into the download dir\n' 'oci layer title'
+    fi
 fi
 
 echo
