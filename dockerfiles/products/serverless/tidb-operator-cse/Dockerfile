@@ -1,4 +1,4 @@
-FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.6@sha256:047091400d8a700fd3c51bd441cb5cc4436493e1d2e4a9335e7becb51665d51f
+FROM ghcr.io/pingcap-qe/bases/pingcap-base:v1.12.6@sha256:78abe406f6fccdaa962de58c074e1b5b25cf710ebb1bfcba2f01206f75b0b04b
 RUN dnf install -y tzdata bind-utils && dnf clean all
 ARG TARGETARCH
 COPY bin/${TARGETARCH}/tidb-scheduler /usr/local/bin/tidb-scheduler
