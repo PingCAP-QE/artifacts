@@ -70,32 +70,77 @@ jobs:
           restore-keys: |
             skaffold/prod-bases-
 
-      - name: Publish images
-        working-directory: dockerfiles/bases
-        env:
-          BUILD_OUTPUT: ${{ runner.temp }}/build-${{ matrix.module }}.json
-        run: |
-          skaffold build \
-            --build-concurrency 1 \
-            --default-repo ghcr.io/pingcap-qe/bases \
-            --module ${{ matrix.module }} \
-            --file-output "${BUILD_OUTPUT}"
-
-      # The default module builds a git-derived semver tag, so read the tag that
-      # skaffold actually pushed instead of re-deriving it here.
-      - name: Get image tag from skaffold
+      # The default module derives its tag from `git describe`, so a re-run of
+      # this workflow would push the same tag with a different digest (the
+      # build refreshes packages with `dnf upgrade`). Treat the tag as
+      # immutable: resolve it once, and skip the push when every image already
+      # has it. Republishing refreshed packages requires a new commit (e.g. a
+      # `_date` bump), which yields a new tag.
+      - name: Resolve tag and check for published images
         if: matrix.module == 'default'
-        id: tag
+        id: check
         env:
-          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
+          TAGS_FILE: ${{ runner.temp }}/base-image-tags.json
         run: |
           set -euo pipefail
-          tag=$(jq -r '[.builds[].tag | capture(":(?<tag>[^:]+)$").tag] | unique | .[0] // empty' "${BUILD_OUTPUT}")
-          if [ -z "${tag}" ]; then
-            echo "ERROR: could not read the pushed image tag from ${BUILD_OUTPUT}" >&2
+
+          skaffold build \
+            --dry-run \
+            --module default \
+            --default-repo ghcr.io/pingcap-qe/bases \
+            --file-output "${TAGS_FILE}" > /dev/null
+
+          mapfile -t refs < <(jq -r '.builds[].tag' "${TAGS_FILE}")
+          if [ "${#refs[@]}" -eq 0 ]; then
+            echo "ERROR: skaffold did not resolve any image tags" >&2
             exit 1
           fi
+
+          tag="${refs[0]##*:}"
+          for ref in "${refs[@]}"; do
+            if [ "${ref##*:}" != "${tag}" ]; then
+              echo "ERROR: artifacts do not share one tag: ${ref}" >&2
+              exit 1
+            fi
+          done
+
+          missing=0
+          for ref in "${refs[@]}"; do
+            if docker buildx imagetools inspect "${ref}" > /dev/null 2>&1; then
+              echo "already published: ${ref}"
+            else
+              echo "not published yet: ${ref}"
+              missing=$((missing + 1))
+            fi
+          done
+
+          if [ "${missing}" -eq 0 ]; then
+            echo "::notice::All base images are already published under ${tag}; skipping the build to keep the tag immutable."
+            echo "built=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "built=true" >> "$GITHUB_OUTPUT"
+          fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish images
+        if: matrix.module != 'default' || steps.check.outputs.built == 'true'
+        working-directory: dockerfiles/bases
+        env:
+          MODULE: ${{ matrix.module }}
+          RESOLVED_TAG: ${{ steps.check.outputs.tag }}
+        run: |
+          set -euo pipefail
+          args=(
+            --build-concurrency 1
+            --default-repo ghcr.io/pingcap-qe/bases
+            --module "${MODULE}"
+          )
+          if [ "${MODULE}" = "default" ]; then
+            # Build exactly the tag that was checked above, so a weekly release
+            # tag created mid-run cannot shift it.
+            args+=(--tag "${RESOLVED_TAG}")
+          fi
+          skaffold build "${args[@]}"
 
       - name: Install trivy from official APT repo
         if: matrix.module == 'default'
@@ -107,10 +152,11 @@ jobs:
 
       # Same severity policy as the weekly scan (HIGH + CRITICAL, unfixed
       # included) so a green weekly run can never contradict a red publish.
+      # Runs even when the build was skipped, so an existing tag is still gated.
       - name: Scan base images for HIGH/CRITICAL vulnerabilities
         if: matrix.module == 'default'
         env:
-          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+          IMAGE_TAG: ${{ steps.check.outputs.tag }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail

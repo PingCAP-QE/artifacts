@@ -30,6 +30,20 @@ The `image-scan` job runs every Sunday and can be triggered manually with
   code) and `.github/scripts/resolve-published-base-tag.sh` (default tag
   resolution).
 
+## Base image publishing (`release-prod-runtime-images.yaml`)
+
+- The `default` module derives its tag from `git describe --tags --always`
+  (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
+  the commit and is never reused.
+- Tags are **immutable**: before building, the job checks every image for the
+  resolved tag and skips the push when all of them already exist. A re-run of
+  the workflow therefore cannot change the digest behind an existing tag. To
+  publish refreshed packages, change an input (e.g. bump `_date` in
+  `bases/pingcap-base/Dockerfile`) so the commit, and therefore the tag,
+  changes.
+- The `release-6-5` module still uses the fixed `v1.0.2-old` tag and is
+  rebuilt (overwritten) on every run.
+
 ### When the weekly scan fails
 
 1. Open the linked issue; the per-image table shows which base image regressed.
