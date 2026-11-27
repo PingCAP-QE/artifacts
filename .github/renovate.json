@@ -80,7 +80,7 @@
       ]
     },
     {
-      "description": "Base images are tagged with strict semver converted from git describe (e.g. 2026.11.27-2.ge5c763a). The date-based major counts as a regular refresh and the distance/sha parses as a prerelease, so re-enable major updates and allow prereleases, grouped in one PR.",
+      "description": "Base images are tagged with a semver-compatible tag converted from git describe (e.g. v2026.11.27-2.ge5c763a). The date-based major counts as a regular refresh and the distance/sha parses as a prerelease, so re-enable major updates and allow prereleases, grouped in one PR.",
       "matchDatasources": [
         "docker"
       ],

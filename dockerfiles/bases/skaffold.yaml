@@ -61,13 +61,14 @@ build:
   tagPolicy:
     envTemplate:
       # `git describe --tags --always` yields `v2026.11.27-2-ge5c763a`.
-      # Turn that into strict semver:
-      #   - drop the `v` prefix (semver forbids it);
+      # Convert it to a semver-compatible form:
+      #   - keep the `v` prefix, matching the existing tags (Renovate and
+      #     node-semver accept it; strict SemVer 2.0.0 itself does not);
       #   - replace `-g` with `.g` so the distance is its own numeric
       #     prerelease identifier and compares numerically (`-10.` > `-2.`)
       #     instead of lexically (`-2-` > `-10-`).
-      # Result: `2026.11.27-2.ge5c763a`; an exact tag yields `2026.11.27`.
-      template: '{{ $d := cmd "bash" "-c" "git describe --tags --always" }}{{ replace "-g" ".g" (trimPrefix "v" $d) }}'
+      # Result: `v2026.11.27-2.ge5c763a`; an exact tag yields `v2026.11.27`.
+      template: '{{ replace "-g" ".g" (cmd "bash" "-c" "git describe --tags --always") }}'
   local:
     useDockerCLI: true
     useBuildkit: true

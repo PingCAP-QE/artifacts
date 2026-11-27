@@ -35,8 +35,9 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 1. Open the linked issue; the per-image table shows which base image regressed.
 2. Refresh the affected packages and let the publish workflow rebuild the base
    images (the `fix(bases): refresh packages ...` PRs are the reference flow).
-   The default skaffold module converts `git describe --tags --always` into
-   strict semver (`2026.11.27-2.ge5c763a`), so no version bump is needed.
+   The default skaffold module converts `git describe --tags --always` into a
+   semver-compatible tag (`v2026.11.27-2.ge5c763a`), so no version bump is
+   needed.
 3. Re-run the weekly workflow with `image_tag` set to the new tag to confirm it
    is clean; the next clean scheduled run closes the issue automatically.
 4. If the job failed in the scan step (not the gate step) and `failed_images` is

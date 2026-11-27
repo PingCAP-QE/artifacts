@@ -3,8 +3,8 @@
 # Resolve the tag of the most recently published base images.
 #
 # The `default` module in dockerfiles/bases/skaffold.yaml turns
-# `git describe --tags --always` into strict semver
-# (`v2026.11.27-2-ge5c763a` -> `2026.11.27-2.ge5c763a`), so the tag embeds the
+# `git describe --tags --always` into a semver-compatible tag
+# (`v2026.11.27-2-ge5c763a` -> `v2026.11.27-2.ge5c763a`), so the tag embeds the
 # commit that produced the image. Find that tag in the registry instead of
 # re-deriving it here, which also keeps the result stable when tags change
 # after the image was pushed (e.g. the weekly release tag lands on that very
@@ -104,11 +104,11 @@ list_tags() {
 tags=$(list_tags)
 
 # `git describe --tags --always` output converted the same way as in
-# dockerfiles/bases/skaffold.yaml: `v2026.11.27-2-ge5c763a` -> `2026.11.27-2.ge5c763a`.
+# dockerfiles/bases/skaffold.yaml: `v2026.11.27-2-ge5c763a` -> `v2026.11.27-2.ge5c763a`.
 # An exact tag has no `-g<sha>` suffix, so it stays as-is.
 describe=$(git -C "$WORKDIR" describe --tags --always "$commit")
 echo "git describe: ${describe}" >&2
-current_tag=$(printf '%s' "${describe#v}" | sed -E 's/-g([0-9a-f]+)$/.g\1/')
+current_tag=$(printf '%s' "$describe" | sed -E 's/-g([0-9a-f]+)$/.g\1/')
 echo "current tag: ${current_tag}" >&2
 
 # A commit that was already tagged when it was built keeps the bare tag.
@@ -118,7 +118,7 @@ if printf '%s\n' "$tags" | grep -Fxq "$current_tag"; then
 fi
 
 # Otherwise the published tag embeds the abbreviated build commit, e.g.
-# `2026.11.27-2.ge5c763a`.
+# `v2026.11.27-2.ge5c763a`.
 matches=""
 while IFS= read -r candidate; do
   [ -n "$candidate" ] || continue
@@ -126,7 +126,7 @@ while IFS= read -r candidate; do
   case "$commit" in
     "$embedded"*) matches="${matches}${candidate}"$'\n' ;;
   esac
-done <<< "$(printf '%s\n' "$tags" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.g[0-9a-f]{7,}$' || true)"
+done <<< "$(printf '%s\n' "$tags" | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+-[0-9]+\.g[0-9a-f]{7,}$' || true)"
 
 tag=$(printf '%s' "$matches" | sort -V | tail -n 1)
 if [ -n "$tag" ]; then
