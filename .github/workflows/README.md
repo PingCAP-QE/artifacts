@@ -38,6 +38,10 @@ The `image-scan` job runs every Sunday and can be triggered manually with
   `latest` is the movable alias the weekly scan follows; the git-derived tag
   stays the canonical, immutable reference. The alias moves even if the Trivy
   gate later fails, so the weekly scan still reports the regression.
+- Adding a base image: the set of base images is the `default` module of
+  `dockerfiles/bases/skaffold.yaml`. The publish job tags `latest` on whatever
+  skaffold built, and the scan reads the same module (minus `debugging`), so
+  adding a base image only needs its Dockerfile and the artifact entry.
 - Re-runs are deduplicated with skaffold's `--cache-artifacts` plus the
   `~/.skaffold/cache` actions cache: when the tag's remote digest still matches
   the cache entry, skaffold skips the build and push, so re-running the

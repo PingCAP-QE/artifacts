@@ -20,6 +20,11 @@
 #   scan-base-images.sh --tag <image-tag> [--output-dir <dir>]
 #                       [--severity <list>] [--images <comma-separated>]
 #
+# Without --images the list is read from the `default` module of
+# dockerfiles/bases/skaffold.yaml, excluding `debugging` (a heavyweight toolbox
+# image, not a product base image). Adding a base image to that module is
+# enough for it to be scanned.
+#
 # Environment:
 #   RUN_URL       optional workflow run URL recorded in the report
 #   GITHUB_OUTPUT optional; when set, totals are appended for later steps
@@ -31,12 +36,15 @@
 
 set -euo pipefail
 
-DEFAULT_IMAGES=(pingcap-base pd-base tikv-base tidb-base ng-monitoring-base tiflash-base tools-base)
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+REPO_ROOT=$(cd "${SCRIPT_DIR}/../.." && pwd)
+SKAFFOLD_FILE="${REPO_ROOT}/dockerfiles/bases/skaffold.yaml"
+EXCLUDED_IMAGES="debugging"
 
 IMAGE_TAG=""
 OUTPUT_DIR="${RUNNER_TEMP:-/tmp}/weekly-scan"
 SEVERITIES="HIGH,CRITICAL"
-IMAGES=("${DEFAULT_IMAGES[@]}")
+IMAGES=()
 
 usage() {
   awk 'NR > 1 && /^#/ { sub(/^# ?/, ""); print; next } NR > 1 { exit }' "$0"
@@ -76,6 +84,19 @@ if [ -z "$IMAGE_TAG" ]; then
   echo "error: --tag is required" >&2
   usage >&2
   exit 1
+fi
+
+if [ "${#IMAGES[@]}" -eq 0 ]; then
+  if ! command -v yq > /dev/null 2>&1; then
+    echo "error: yq is required to read the image list from ${SKAFFOLD_FILE}" >&2
+    exit 1
+  fi
+  mapfile -t IMAGES < <(yq 'select(.metadata.name == "default") | .build.artifacts[].image' "$SKAFFOLD_FILE" |
+    grep -vx "$EXCLUDED_IMAGES")
+  if [ "${#IMAGES[@]}" -eq 0 ]; then
+    echo "error: no images found in the default module of ${SKAFFOLD_FILE}" >&2
+    exit 1
+  fi
 fi
 
 if ! command -v trivy >/dev/null 2>&1; then
