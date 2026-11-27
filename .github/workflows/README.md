@@ -35,9 +35,11 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 - The `default` module derives its tag from `git describe --tags --always`
   (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
   the commit and is never reused.
-- Tags are **immutable**: before building, the job checks every image for the
-  resolved tag and skips the push when all of them already exist. A re-run of
-  the workflow therefore cannot change the digest behind an existing tag. To
+- Re-runs are deduplicated with skaffold's `--cache-artifacts` plus the
+  `~/.skaffold/cache` actions cache: when the tag's remote digest still matches
+  the cache entry, skaffold skips the build and push, so re-running the
+  workflow normally does not overwrite an existing tag. This is best-effort - a
+  cache miss (e.g. an expired actions cache) rebuilds and re-pushes the tag. To
   publish refreshed packages, change an input (e.g. bump `_date` in
   `bases/pingcap-base/Dockerfile`) so the commit, and therefore the tag,
   changes.
