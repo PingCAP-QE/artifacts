@@ -23,16 +23,44 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 - **Reports:** `scan-report.md` and `scan-summary.json` are written to the job
   summary and uploaded as the `weekly-scan-<tag>` artifact (30 days).
 - **Scan another tag:** dispatch the workflow with the `image_tag` input (for
-  example `v1.12.3`) to reproduce a historical finding.
+  example `v1.12.6`) to reproduce a historical finding. Without the input the
+  job scans `latest`.
 - **Implementation:** `.github/scripts/scan-base-images.sh` (exit `2` means an
   image could not be scanned; vulnerability findings do not change its exit
   code).
 
+## Base image publishing (`release-prod-runtime-images.yaml`)
+
+- The `default` module derives its tag from `git describe --tags --always`
+  (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
+  the commit and is never reused.
+- After publishing, the job re-points `latest` on every image with `oras tag`.
+  `latest` is the movable alias the weekly scan follows; the git-derived tag
+  stays the canonical, immutable reference. The alias moves even if the Trivy
+  gate later fails, so the weekly scan still reports the regression.
+- Adding a base image: the set of base images is the `default` module of
+  `dockerfiles/bases/skaffold.yaml`. The publish job tags `latest` on whatever
+  skaffold built, and the scan reads the same module (minus `debugging`), so
+  adding a base image only needs its Dockerfile and the artifact entry.
+- Re-runs are deduplicated with skaffold's `--cache-artifacts` plus the
+  `~/.skaffold/cache` actions cache: when the tag's remote digest still matches
+  the cache entry, skaffold skips the build and push, so re-running the
+  workflow normally does not overwrite an existing tag. This is best-effort - a
+  cache miss (e.g. an expired actions cache) rebuilds and re-pushes the tag. To
+  publish refreshed packages, change an input (e.g. bump `_date` in
+  `bases/pingcap-base/Dockerfile`) so the commit, and therefore the tag,
+  changes.
+- The `release-6-5` module still uses the fixed `v1.0.2-old` tag and is
+  rebuilt (overwritten) on every run.
+
 ### When the weekly scan fails
 
 1. Open the linked issue; the per-image table shows which base image regressed.
-2. Refresh the affected packages and release a new base image tag (the
-   `fix(bases): refresh packages ...` PRs are the reference flow).
+2. Refresh the affected packages and let the publish workflow rebuild the base
+   images (the `fix(bases): refresh packages ...` PRs are the reference flow).
+   The default skaffold module converts `git describe --tags --always` into a
+   semver-compatible tag (`v2026.11.27-2.ge5c763a`), so no version bump is
+   needed.
 3. Re-run the weekly workflow with `image_tag` set to the new tag to confirm it
    is clean; the next clean scheduled run closes the issue automatically.
 4. If the job failed in the scan step (not the gate step) and `failed_images` is

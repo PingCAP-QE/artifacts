@@ -54,6 +54,13 @@ jobs:
         with:
           version: 2.23.0
 
+      # Required by the `latest` alias step below.
+      - name: Setup ORAS
+        if: matrix.module == 'default'
+        uses: oras-project/setup-oras@ac735097e22fe643015b0d19645f7c9a69942128 # v2.0.4
+        with:
+          version: 1.4.0
+
       # Required by dockerfiles/bases/build-old.sh, which composes the
       # multi-arch manifest with manifest-tool when pushing the release-6-5
       # module images. Keep in sync with pull-prod-runtime-images.yaml.
@@ -70,25 +77,57 @@ jobs:
           restore-keys: |
             skaffold/prod-bases-
 
+      # `--cache-artifacts` makes skaffold skip the build and push when the
+      # tag's remote digest still matches the cache entry, so a re-run of this
+      # workflow normally does not overwrite an existing tag. It is a build
+      # cache, not a hard immutability guarantee: a cache miss (e.g. the
+      # actions cache expired) rebuilds and re-pushes the tag. The cache lives
+      # in `~/.skaffold/cache`, cached by the step above.
       - name: Publish images
         working-directory: dockerfiles/bases
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-${{ matrix.module }}.json
         run: |
           skaffold build \
             --build-concurrency 1 \
+            --cache-artifacts \
             --default-repo ghcr.io/pingcap-qe/bases \
-            --module ${{ matrix.module }}
+            --module ${{ matrix.module }} \
+            --file-output "${BUILD_OUTPUT}"
 
+      # Cached artifacts are reported as `<tag>@sha256:<digest>`, so strip the
+      # digest before extracting the tag.
       - name: Get image tag from skaffold
         if: matrix.module == 'default'
         id: tag
-        working-directory: dockerfiles/bases
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
         run: |
-          tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+          set -euo pipefail
+          tag=$(jq -r '[.builds[].tag | sub("@sha256:[0-9a-f]+$"; "") | capture(":(?<tag>[^:]+)$").tag] | unique | .[0] // empty' "${BUILD_OUTPUT}")
           if [ -z "${tag}" ]; then
-            echo "ERROR: could not extract image tag from skaffold.yaml" >&2
+            echo "ERROR: could not read the image tag from ${BUILD_OUTPUT}" >&2
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      # `latest` is the movable alias used by the weekly scan (and handy for
+      # humans); the immutable `v<date>-<distance>.g<sha>` tag stays the
+      # canonical reference. The alias moves with the build, before the Trivy
+      # gate, so a regression is still visible to the weekly scan instead of
+      # hiding behind an older clean tag.
+      - name: Update the latest tag
+        if: matrix.module == 'default'
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
+        run: |
+          set -euo pipefail
+          # Iterate over what skaffold actually built, so a newly added base
+          # image needs no workflow change. Cached artifacts are reported as
+          # `<tag>@sha256:<digest>`; the tag part is enough here.
+          while IFS= read -r ref; do
+            oras tag "${ref%%@*}" latest
+          done < <(jq -r '.builds[].tag' "${BUILD_OUTPUT}")
 
       - name: Install trivy from official APT repo
         if: matrix.module == 'default'

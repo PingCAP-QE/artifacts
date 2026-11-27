@@ -78,6 +78,18 @@
       "schedule": [
         "before 5am on the first day of the month"
       ]
+    },
+    {
+      "description": "Base images are tagged with a semver-compatible tag converted from git describe (e.g. v2026.11.27-2.ge5c763a). The date-based major counts as a regular refresh and the distance/sha parses as a prerelease, so re-enable major updates and allow prereleases, grouped in one PR.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchDepNames": [
+        "/^ghcr\\.io/pingcap-qe/bases//"
+      ],
+      "enabled": true,
+      "ignoreUnstable": false,
+      "groupName": "pingcap base images"
     }
   ],
   "customManagers": [

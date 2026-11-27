@@ -11,7 +11,7 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       summary="PingCAP QE base image built on Rocky Linux 9" \
       vendor="PingCAP"
 
-ARG _date=20261104
+ARG _date=20261127
 ARG PINGCAP_UID=1000
 ARG PINGCAP_GID=2000
 RUN echo "package refresh ${_date}" && \

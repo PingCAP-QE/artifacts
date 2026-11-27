@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Base image tag to scan (default: tag pinned in dockerfiles/bases/skaffold.yaml)"
+        description: "Base image tag to scan (default: latest)"
         required: false
         type: string
 
@@ -124,21 +124,12 @@ jobs:
 
       - name: Resolve base image tag
         id: tag
-        working-directory: dockerfiles/bases
         env:
           INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
-          if [ -n "${INPUT_IMAGE_TAG}" ]; then
-            tag="${INPUT_IMAGE_TAG}"
-            echo "Using image_tag from workflow_dispatch: ${tag}"
-          else
-            tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
-          fi
-          if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
-            echo "::error::Could not resolve the base image tag (skaffold.yaml or image_tag input)"
-            exit 1
-          fi
+          tag="${INPUT_IMAGE_TAG:-latest}"
+          echo "Using base image tag: ${tag}"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
       - name: Install trivy from official APT repo
