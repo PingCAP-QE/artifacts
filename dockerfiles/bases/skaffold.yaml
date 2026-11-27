@@ -9,6 +9,11 @@ build:
       platforms: [linux/amd64, linux/arm64]
       docker:
         dockerfile: pingcap-base/Dockerfile
+        # The expanded value is part of skaffold's artifact cache key and of the
+        # Docker layer cache, so a new commit always reruns the `dnf upgrade` in
+        # the Dockerfile even when `_date` was not bumped.
+        buildArgs:
+          _git_commit: '{{ cmd "git" "rev-parse" "HEAD" }}'
     - image: pd-base
       platforms: [linux/amd64, linux/arm64]
       requires:

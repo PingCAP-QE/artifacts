@@ -11,10 +11,15 @@ LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
       summary="PingCAP QE base image built on Rocky Linux 9" \
       vendor="PingCAP"
 
+# `_date` is the manual cache buster for an intentional package refresh: bump it
+# when cutting a release that must pick up new packages. `_git_commit` is injected
+# by skaffold (see dockerfiles/bases/skaffold.yaml), so a new commit also
+# invalidates the layer below instead of silently reusing a cached one.
 ARG _date=20261127
+ARG _git_commit=unknown
 ARG PINGCAP_UID=1000
 ARG PINGCAP_GID=2000
-RUN echo "package refresh ${_date}" && \
+RUN echo "package refresh ${_date} ${_git_commit}" && \
     dnf upgrade -y && dnf clean all && \
     groupadd -g ${PINGCAP_GID} pingcap && \
     useradd -u ${PINGCAP_UID} -g ${PINGCAP_GID} -m pingcap
