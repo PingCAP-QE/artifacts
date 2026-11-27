@@ -39,7 +39,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 REPO_ROOT=$(cd "${SCRIPT_DIR}/../.." && pwd)
 SKAFFOLD_FILE="${REPO_ROOT}/dockerfiles/bases/skaffold.yaml"
-EXCLUDED_IMAGES="debugging"
+EXCLUDED_IMAGES="${EXCLUDED_IMAGES:-debugging}"
 
 IMAGE_TAG=""
 OUTPUT_DIR="${RUNNER_TEMP:-/tmp}/weekly-scan"
@@ -92,7 +92,7 @@ if [ "${#IMAGES[@]}" -eq 0 ]; then
     exit 1
   fi
   mapfile -t IMAGES < <(yq 'select(.metadata.name == "default") | .build.artifacts[].image' "$SKAFFOLD_FILE" |
-    grep -vx "$EXCLUDED_IMAGES")
+    grep -vxF "$EXCLUDED_IMAGES")
   if [ "${#IMAGES[@]}" -eq 0 ]; then
     echo "error: no images found in the default module of ${SKAFFOLD_FILE}" >&2
     exit 1

@@ -95,8 +95,8 @@ jobs:
             --module ${{ matrix.module }} \
             --file-output "${BUILD_OUTPUT}"
 
-      # Cached artifacts are reported as `<tag>@sha256:<digest>`, so strip the
-      # digest before extracting the tag.
+      # All artifacts share one tag. Cached artifacts are reported as
+      # `<tag>@sha256:<digest>`, so strip the digest before extracting the tag.
       - name: Get image tag from skaffold
         if: matrix.module == 'default'
         id: tag
@@ -104,30 +104,12 @@ jobs:
           BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
         run: |
           set -euo pipefail
-          tag=$(jq -r '[.builds[].tag | sub("@sha256:[0-9a-f]+$"; "") | capture(":(?<tag>[^:]+)$").tag] | unique | .[0] // empty' "${BUILD_OUTPUT}")
+          tag=$(jq -r '(.builds[0].tag // "") | sub("@sha256:.*$"; "") | sub("^.*:"; "")' "${BUILD_OUTPUT}")
           if [ -z "${tag}" ]; then
             echo "ERROR: could not read the image tag from ${BUILD_OUTPUT}" >&2
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-
-      # `latest` is the movable alias used by the weekly scan (and handy for
-      # humans); the immutable `v<date>-<distance>.g<sha>` tag stays the
-      # canonical reference. The alias moves with the build, before the Trivy
-      # gate, so a regression is still visible to the weekly scan instead of
-      # hiding behind an older clean tag.
-      - name: Update the latest tag
-        if: matrix.module == 'default'
-        env:
-          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
-        run: |
-          set -euo pipefail
-          # Iterate over what skaffold actually built, so a newly added base
-          # image needs no workflow change. Cached artifacts are reported as
-          # `<tag>@sha256:<digest>`; the tag part is enough here.
-          while IFS= read -r ref; do
-            oras tag "${ref%%@*}" latest
-          done < <(jq -r '.builds[].tag' "${BUILD_OUTPUT}")
 
       - name: Install trivy from official APT repo
         if: matrix.module == 'default'
@@ -156,3 +138,21 @@ jobs:
             echo "::error::${total} HIGH/CRITICAL vulnerabilities found in base images tag ${IMAGE_TAG}; see the scan report above."
             exit 1
           fi
+
+      # `latest` is the movable alias the weekly scan follows (and handy for
+      # humans); the immutable `v<date>-<distance>.g<sha>` tag stays the
+      # canonical reference. Only move the alias after the Trivy gate passes, so
+      # it never points at a vulnerable build; a gate failure leaves it on the
+      # last clean image and fails this job.
+      - name: Update the latest tag
+        if: matrix.module == 'default'
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
+        run: |
+          set -euo pipefail
+          # Iterate over what skaffold actually built, so a newly added base
+          # image needs no workflow change. Cached artifacts are reported as
+          # `<tag>@sha256:<digest>`; the tag part is enough here.
+          while IFS= read -r ref; do
+            oras tag "${ref%%@*}" latest
+          done < <(jq -r '.builds[].tag' "${BUILD_OUTPUT}")
