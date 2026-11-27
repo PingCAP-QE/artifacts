@@ -23,16 +23,20 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 - **Reports:** `scan-report.md` and `scan-summary.json` are written to the job
   summary and uploaded as the `weekly-scan-<tag>` artifact (30 days).
 - **Scan another tag:** dispatch the workflow with the `image_tag` input (for
-  example `v1.12.3`) to reproduce a historical finding.
+  example `v1.12.6`) to reproduce a historical finding. Without the input the
+  job scans the newest published base image tag.
 - **Implementation:** `.github/scripts/scan-base-images.sh` (exit `2` means an
   image could not be scanned; vulnerability findings do not change its exit
-  code).
+  code) and `.github/scripts/resolve-published-base-tag.sh` (default tag
+  resolution).
 
 ### When the weekly scan fails
 
 1. Open the linked issue; the per-image table shows which base image regressed.
-2. Refresh the affected packages and release a new base image tag (the
-   `fix(bases): refresh packages ...` PRs are the reference flow).
+2. Refresh the affected packages and let the publish workflow rebuild the base
+   images (the `fix(bases): refresh packages ...` PRs are the reference flow).
+   The default skaffold module builds a git-derived semver tag
+   (`v1.<commit count>.0-<short sha>`), so no version bump is needed.
 3. Re-run the weekly workflow with `image_tag` set to the new tag to confirm it
    is clean; the next clean scheduled run closes the issue automatically.
 4. If the job failed in the scan step (not the gate step) and `failed_images` is

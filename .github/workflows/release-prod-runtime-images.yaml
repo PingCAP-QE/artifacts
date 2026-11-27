@@ -72,20 +72,27 @@ jobs:
 
       - name: Publish images
         working-directory: dockerfiles/bases
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-${{ matrix.module }}.json
         run: |
           skaffold build \
             --build-concurrency 1 \
             --default-repo ghcr.io/pingcap-qe/bases \
-            --module ${{ matrix.module }}
+            --module ${{ matrix.module }} \
+            --file-output "${BUILD_OUTPUT}"
 
+      # The default module builds a git-derived semver tag, so read the tag that
+      # skaffold actually pushed instead of re-deriving it here.
       - name: Get image tag from skaffold
         if: matrix.module == 'default'
         id: tag
-        working-directory: dockerfiles/bases
+        env:
+          BUILD_OUTPUT: ${{ runner.temp }}/build-default.json
         run: |
-          tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+          set -euo pipefail
+          tag=$(jq -r '[.builds[].tag | capture(":(?<tag>[^:]+)$").tag] | unique | .[0] // empty' "${BUILD_OUTPUT}")
           if [ -z "${tag}" ]; then
-            echo "ERROR: could not extract image tag from skaffold.yaml" >&2
+            echo "ERROR: could not read the pushed image tag from ${BUILD_OUTPUT}" >&2
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"

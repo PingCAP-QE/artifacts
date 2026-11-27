@@ -59,8 +59,16 @@ build:
       docker:
         dockerfile: debugging/Dockerfile
   tagPolicy:
-    customTemplate:
-      template: "v1.12.6"
+    envTemplate:
+      # Valid semver tag derived from git:
+      #   v1.<commits reachable from HEAD>.0-<short commit sha>
+      # - the commit count keeps the minor version monotonic on main, so
+      #   Renovate and other version-aware tooling can order the tags;
+      # - the short sha is the semver prerelease component, so the tag still
+      #   points at the exact build commit and is never reused;
+      # - `git` runs in the skaffold working directory (dockerfiles/bases),
+      #   which resolves to this repository.
+      template: 'v1.{{ cmd "git" "rev-list" "--count" "HEAD" }}.0-{{ cmd "git" "rev-parse" "--short" "HEAD" }}'
   local:
     useDockerCLI: true
     useBuildkit: true

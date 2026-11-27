@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Base image tag to scan (default: tag pinned in dockerfiles/bases/skaffold.yaml)"
+        description: "Base image tag to scan (default: newest published base image tag)"
         required: false
         type: string
 
@@ -121,10 +121,13 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          # The tag resolver needs the commits and tags that `git describe`
+          # looks at, so a shallow clone is not enough.
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Resolve base image tag
         id: tag
-        working-directory: dockerfiles/bases
         env:
           INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
@@ -133,10 +136,10 @@ jobs:
             tag="${INPUT_IMAGE_TAG}"
             echo "Using image_tag from workflow_dispatch: ${tag}"
           else
-            tag=$(yq 'select(.metadata.name == "default") | .build.tagPolicy.customTemplate.template' skaffold.yaml)
+            tag=$(.github/scripts/resolve-published-base-tag.sh)
           fi
           if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
-            echo "::error::Could not resolve the base image tag (skaffold.yaml or image_tag input)"
+            echo "::error::Could not resolve the base image tag (registry lookup or image_tag input)"
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"

@@ -78,6 +78,17 @@
       "schedule": [
         "before 5am on the first day of the month"
       ]
+    },
+    {
+      "description": "Base images are tagged `v1.<commit count>.0-<short sha>` (valid semver, the sha is the prerelease part). Follow every publish in one grouped PR; ignoreUnstable stays false so the first move off the stable v1.12.x tags is proposed too.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchDepNames": [
+        "/^ghcr\\.io/pingcap-qe/bases//"
+      ],
+      "ignoreUnstable": false,
+      "groupName": "pingcap base images"
     }
   ],
   "customManagers": [
