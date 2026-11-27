@@ -24,17 +24,20 @@ The `image-scan` job runs every Sunday and can be triggered manually with
   summary and uploaded as the `weekly-scan-<tag>` artifact (30 days).
 - **Scan another tag:** dispatch the workflow with the `image_tag` input (for
   example `v1.12.6`) to reproduce a historical finding. Without the input the
-  job scans the newest published base image tag.
+  job scans `latest`.
 - **Implementation:** `.github/scripts/scan-base-images.sh` (exit `2` means an
   image could not be scanned; vulnerability findings do not change its exit
-  code) and `.github/scripts/resolve-published-base-tag.sh` (default tag
-  resolution).
+  code).
 
 ## Base image publishing (`release-prod-runtime-images.yaml`)
 
 - The `default` module derives its tag from `git describe --tags --always`
   (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
   the commit and is never reused.
+- After publishing, the job re-points `latest` on every image with `crane tag`.
+  `latest` is the movable alias the weekly scan follows; the git-derived tag
+  stays the canonical, immutable reference. The alias moves even if the Trivy
+  gate later fails, so the weekly scan still reports the regression.
 - Re-runs are deduplicated with skaffold's `--cache-artifacts` plus the
   `~/.skaffold/cache` actions cache: when the tag's remote digest still matches
   the cache entry, skaffold skips the build and push, so re-running the

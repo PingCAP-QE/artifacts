@@ -54,6 +54,13 @@ jobs:
         with:
           version: 2.23.0
 
+      # Required by the `latest` alias step below.
+      - name: Install crane
+        if: matrix.module == 'default'
+        run: |
+          curl -fsSL "https://github.com/google/go-containerregistry/releases/download/v0.20.2/go-containerregistry_Linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin crane
+          crane version
+
       # Required by dockerfiles/bases/build-old.sh, which composes the
       # multi-arch manifest with manifest-tool when pushing the release-6-5
       # module images. Keep in sync with pull-prod-runtime-images.yaml.
@@ -103,6 +110,21 @@ jobs:
             exit 1
           fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      # `latest` is the movable alias used by the weekly scan (and handy for
+      # humans); the immutable `v<date>-<distance>.g<sha>` tag stays the
+      # canonical reference. The alias moves with the build, before the Trivy
+      # gate, so a regression is still visible to the weekly scan instead of
+      # hiding behind an older clean tag.
+      - name: Update the latest tag
+        if: matrix.module == 'default'
+        env:
+          IMAGE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          for image in pingcap-base pd-base ng-monitoring-base tidb-base tiflash-base tikv-base tools-base debugging; do
+            crane tag "ghcr.io/pingcap-qe/bases/${image}:${IMAGE_TAG}" latest
+          done
 
       - name: Install trivy from official APT repo
         if: matrix.module == 'default'

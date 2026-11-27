@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       image_tag:
-        description: "Base image tag to scan (default: newest published base image tag)"
+        description: "Base image tag to scan (default: latest)"
         required: false
         type: string
 
@@ -121,10 +121,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-          # The tag resolver needs the commits and tags that `git describe`
-          # looks at, so a shallow clone is not enough.
-          fetch-depth: 0
-          fetch-tags: true
 
       - name: Resolve base image tag
         id: tag
@@ -132,16 +128,8 @@ jobs:
           INPUT_IMAGE_TAG: ${{ inputs.image_tag }}
         run: |
           set -euo pipefail
-          if [ -n "${INPUT_IMAGE_TAG}" ]; then
-            tag="${INPUT_IMAGE_TAG}"
-            echo "Using image_tag from workflow_dispatch: ${tag}"
-          else
-            tag=$(.github/scripts/resolve-published-base-tag.sh)
-          fi
-          if [ -z "${tag}" ] || [ "${tag}" = "null" ]; then
-            echo "::error::Could not resolve the base image tag (registry lookup or image_tag input)"
-            exit 1
-          fi
+          tag="${INPUT_IMAGE_TAG:-latest}"
+          echo "Using base image tag: ${tag}"
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
       - name: Install trivy from official APT repo
