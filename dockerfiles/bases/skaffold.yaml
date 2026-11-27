@@ -60,15 +60,14 @@ build:
         dockerfile: debugging/Dockerfile
   tagPolicy:
     envTemplate:
-      # Valid semver tag derived from git:
-      #   v1.<commits reachable from HEAD>.0-<short commit sha>
-      # - the commit count keeps the minor version monotonic on main, so
-      #   Renovate and other version-aware tooling can order the tags;
-      # - the short sha is the semver prerelease component, so the tag still
-      #   points at the exact build commit and is never reused;
-      # - `git` runs in the skaffold working directory (dockerfiles/bases),
-      #   which resolves to this repository.
-      template: 'v1.{{ cmd "git" "rev-list" "--count" "HEAD" }}.0-{{ cmd "git" "rev-parse" "--short" "HEAD" }}'
+      # `git describe --tags --always` yields `v2026.11.27-2-ge5c763a`.
+      # Turn that into strict semver:
+      #   - drop the `v` prefix (semver forbids it);
+      #   - replace `-g` with `.g` so the distance is its own numeric
+      #     prerelease identifier and compares numerically (`-10.` > `-2.`)
+      #     instead of lexically (`-2-` > `-10-`).
+      # Result: `2026.11.27-2.ge5c763a`; an exact tag yields `2026.11.27`.
+      template: '{{ $d := cmd "bash" "-c" "git describe --tags --always" }}{{ replace "-g" ".g" (trimPrefix "v" $d) }}'
   local:
     useDockerCLI: true
     useBuildkit: true

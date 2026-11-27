@@ -80,13 +80,14 @@
       ]
     },
     {
-      "description": "Base images are tagged `v1.<commit count>.0-<short sha>` (valid semver, the sha is the prerelease part). Follow every publish in one grouped PR; ignoreUnstable stays false so the first move off the stable v1.12.x tags is proposed too.",
+      "description": "Base images are tagged with strict semver converted from git describe (e.g. 2026.11.27-2.ge5c763a). The date-based major counts as a regular refresh and the distance/sha parses as a prerelease, so re-enable major updates and allow prereleases, grouped in one PR.",
       "matchDatasources": [
         "docker"
       ],
       "matchDepNames": [
         "/^ghcr\\.io/pingcap-qe/bases//"
       ],
+      "enabled": true,
       "ignoreUnstable": false,
       "groupName": "pingcap base images"
     }
