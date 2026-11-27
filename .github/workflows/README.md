@@ -34,7 +34,7 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 - The `default` module derives its tag from `git describe --tags --always`
   (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
   the commit and is never reused.
-- After publishing, the job re-points `latest` on every image with `crane tag`.
+- After publishing, the job re-points `latest` on every image with `oras tag`.
   `latest` is the movable alias the weekly scan follows; the git-derived tag
   stays the canonical, immutable reference. The alias moves even if the Trivy
   gate later fails, so the weekly scan still reports the regression.
