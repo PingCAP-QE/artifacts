@@ -1,4 +1,4 @@
-FROM quay.io/rockylinux/rockylinux:9.8.20260525.0
+FROM quay.io/rockylinux/rockylinux:9.9.20261112.0
 COPY --from=busybox:1.38.0-musl /bin/busybox /bin/busybox
 
 LABEL org.opencontainers.image.authors="wuhuizuo <wuhuizuo@gmail.com>" \
