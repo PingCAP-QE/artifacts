@@ -2172,7 +2172,7 @@ components:
                   # Pinned to an artifacts release tag instead of main: this runs inside the
                   # tiflash checkout, which has no artifacts tree to copy from. Renovate bumps
                   # the tag (see .github/renovate.json).
-                  wget -O outputs/tiflash/tiflash https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@v2026.11.13/dockerfiles/products/tiflash/tiflash-wrapper
+                  wget -O outputs/tiflash/tiflash https://cdn.jsdelivr.net/gh/PingCAP-QE/artifacts@v2026.11.27/dockerfiles/products/tiflash/tiflash-wrapper
                 else
                   # Legacy build produces only the tiflash directory.
                   mv release-linux-llvm/tiflash outputs/tiflash
