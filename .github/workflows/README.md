@@ -34,10 +34,11 @@ The `image-scan` job runs every Sunday and can be triggered manually with
 - The `default` module derives its tag from `git describe --tags --always`
   (`v2026.11.27-2-ge5c763a` → `v2026.11.27-2.ge5c763a`), so the tag identifies
   the commit and is never reused.
-- After publishing, the job re-points `latest` on every image with `oras tag`.
-  `latest` is the movable alias the weekly scan follows; the git-derived tag
-  stays the canonical, immutable reference. The alias moves even if the Trivy
-  gate later fails, so the weekly scan still reports the regression.
+- After publishing, and only after the Trivy gate passes, the job re-points
+  `latest` on every image with `oras tag`. `latest` is the movable alias the
+  weekly scan follows; the git-derived tag stays the canonical, immutable
+  reference. A gate failure leaves `latest` on the last clean image and fails
+  the job.
 - Adding a base image: the set of base images is the `default` module of
   `dockerfiles/bases/skaffold.yaml`. The publish job tags `latest` on whatever
   skaffold built, and the scan reads the same module (minus `debugging`), so
